@@ -1,9 +1,11 @@
 from docker import Client
 import logging
 
+from testcontainers_python import config
+
 
 class DockerClient(object):
-    def __init__(self, base_url='unix://var/run/docker.sock'):
+    def __init__(self, base_url=config.docker_base_url):
         self.cli = Client(base_url)
 
     def run(self, image, bind_ports=None, name=None, links=None, env=None):

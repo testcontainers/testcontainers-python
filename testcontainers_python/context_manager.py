@@ -1,8 +1,9 @@
+from testcontainers_python import config
 from testcontainers_python.docker_client import DockerClient
 
 
 class docker_client(object):
-    def __init__(self, base_url='unix://var/run/docker.sock'):
+    def __init__(self, base_url=config.docker_base_url):
         self._docker = DockerClient(base_url)
 
     def __enter__(self):

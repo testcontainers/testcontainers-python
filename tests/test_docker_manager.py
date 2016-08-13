@@ -5,15 +5,14 @@ from testcontainers_python.docker_client import DockerClient
 def test_docker_run_selenium():
     docker = DockerClient()
     docker.stop_all()
-    hub = docker.run('selenium/hub:2.53.0', bind_ports={4444: 4444}, name='selenium-hub')
-    ff = docker.run('selenium/node-firefox:2.53.0', links={'selenium-hub': 'hub'})
+    docker.run('selenium/hub:2.53.0', bind_ports={4444: 4444}, name='selenium-hub')
+    docker.run('selenium/node-firefox:2.53.0', links={'selenium-hub': 'hub'})
     print(docker.get_containers())
     containers = docker.get_containers()
     assert len(containers) >= 2
     for index, cont in enumerate(containers):
         print(index, cont)
-    docker.remove(hub)
-    docker.remove(ff)
+    docker.stop_all()
     assert len(docker.get_containers()) == 0
 
 
@@ -53,5 +52,3 @@ def test_docker_ctx_manager():
     with docker_client() as d:
         container = d.run('selenium/hub:2.53.0', {4444: 4444})
         print(container)
-
-
