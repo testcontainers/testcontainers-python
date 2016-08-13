@@ -1,9 +1,10 @@
 from testcontainers_python.docker_manager import DockerManager
 
 
-def test_docker_run():
+def test_docker_run_selenium():
     docker = DockerManager()
-    hub = docker.run('selenium/hub:2.53.0', ports=[4444], port_bindings={4444: 4444}, name='selenium-hub')
+    docker.stop_all()
+    hub = docker.run('selenium/hub:2.53.0', bind_ports={4444: 4444}, name='selenium-hub')
     ff = docker.run('selenium/node-firefox:2.53.0', links={'selenium-hub': 'hub'})
     print(docker.get_containers())
     containers = docker.get_containers()
@@ -13,6 +14,12 @@ def test_docker_run():
     docker.remove(hub)
     docker.remove(ff)
     assert len(docker.get_containers()) == 0
+
+
+def test_docker_run_mysql():
+    docker = DockerManager()
+    mysql = docker.run('mysql:latest', bind_ports={3306: 3306}, env={"MYSQL_ROOT_PASSWORD": 123456})
+    docker.stop(mysql)
 
 
 def test_docker_images():
