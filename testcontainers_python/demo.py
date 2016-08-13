@@ -57,8 +57,8 @@ class docker(object):
 
 with docker() as doc:
     # hub = doc.create_container('selenium/hub')
-    hub = doc.create_container('selenium/hub', ports=[4444], port_bindings={4444: 4444}, name='selenium-hub')
-    node = doc.create_container('selenium/node-firefox:2.53.0', links={'selenium-hub': 'hub'})
+    hub = doc.create_container('selenium/hub:latest', ports=[4444], port_bindings={4444: 4444}, name='selenium-hub')
+    #node = doc.create_container('selenium/node-firefox:2.53.0', links={'selenium-hub': 'hub'})
     print(doc.get_containers())
     host_info = doc.get_host_info(hub)
     print(host_info)

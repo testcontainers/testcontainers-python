@@ -6,22 +6,24 @@ import logging
 class DockerManager(object):
     def __init__(self, base_url='unix://var/run/docker.sock'):
         self.cli = Client(base_url)
-        self.containers = []
 
     def __enter__(self):
         return self
 
     def __exit__(self, type, value, traceback):
-        for cont in self.containers:
+        for cont in self.get_containers():
             self.stop(cont)
             self.remove(cont)
 
     def run(self, image, ports=None, port_bindings=None, name=None, links=None):
+        if not self.image_exists(image):
+            logging.warning("Downloading image {}".format(image))
+            stream = self.pull(image)
+            for line in stream:
+                print(line)
         host_config = self.cli.create_host_config(port_bindings=port_bindings)
         container = self.cli.create_container(image=image, ports=ports, host_config=host_config, name=name)
-
         self.cli.start(container, publish_all_ports=True, port_bindings=port_bindings, links=links)
-        self.containers.append(container)
         return container
 
     def pull(self, name):
@@ -34,7 +36,7 @@ class DockerManager(object):
         return self.inspect(container)
 
     def get_containers(self):
-        return self.containers
+        return self.cli.containers()
 
     def remove_image(self, name, force=False):
         self.cli.remove_image(name, force)
