@@ -1,5 +1,4 @@
 from docker import Client
-from docker.errors import NotFound
 import logging
 
 
