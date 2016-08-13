@@ -1,8 +1,9 @@
-from testcontainers_python.docker_manager import DockerManager
+from testcontainers_python.context_manager import docker_client
+from testcontainers_python.docker_client import DockerClient
 
 
 def test_docker_run_selenium():
-    docker = DockerManager()
+    docker = DockerClient()
     docker.stop_all()
     hub = docker.run('selenium/hub:2.53.0', bind_ports={4444: 4444}, name='selenium-hub')
     ff = docker.run('selenium/node-firefox:2.53.0', links={'selenium-hub': 'hub'})
@@ -17,32 +18,40 @@ def test_docker_run_selenium():
 
 
 def test_docker_run_mysql():
-    docker = DockerManager()
+    docker = DockerClient()
     mysql = docker.run('mysql:latest', bind_ports={3306: 3306}, env={"MYSQL_ROOT_PASSWORD": 123456})
     docker.stop(mysql)
 
 
 def test_docker_images():
-    docker = DockerManager()
+    docker = DockerClient()
     images = docker.images()
     for im in images:
         print(im)
 
 
 def test_docker_image_exists():
-    docker = DockerManager()
+    docker = DockerClient()
     assert docker.image_exists("selenium/node-chrome:latest")
 
 
 def test_docker_get_containers():
-    docker = DockerManager()
+    docker = DockerClient()
     print docker.get_containers()
 
 
 def test_docker_pull():
     name = "selenium/hub:2.53.0"
-    docker = DockerManager()
+    docker = DockerClient()
     if docker.image_exists(name):
         docker.remove_image(name, True)
     stream = docker.pull(name)
     print list(stream)[-1]
+
+
+def test_docker_ctx_manager():
+    with docker_client() as d:
+        container = d.run('selenium/hub:2.53.0', {4444: 4444})
+        print(container)
+
+

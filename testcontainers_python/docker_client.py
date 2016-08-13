@@ -2,17 +2,9 @@ from docker import Client
 import logging
 
 
-class DockerManager(object):
+class DockerClient(object):
     def __init__(self, base_url='unix://var/run/docker.sock'):
         self.cli = Client(base_url)
-
-    def __enter__(self):
-        return self
-
-    def __exit__(self, type, value, traceback):
-        for cont in self.get_containers():
-            self.stop(cont)
-            self.remove(cont)
 
     def run(self, image, bind_ports=None, name=None, links=None, env=None):
         if not self.image_exists(image):
@@ -57,14 +49,14 @@ class DockerManager(object):
     def stop(self, container):
         self.cli.stop(container)
 
-    def remove(self, container):
+    def remove(self, container, force=False):
         """
         Stop and remote container
         :param container:
+        :param force:
         :return:
         """
-        self.stop(container)
-        self.cli.remove_container(container)
+        self.cli.remove_container(container, force)
 
     def images(self):
         return self.cli.images()
