@@ -18,14 +18,14 @@ def driver(request):
 
 class TestDocker(object):
     @pytest.mark.parametrize("browser", [
-        DesiredCapabilities.CHROME,
         DesiredCapabilities.FIREFOX,
+        DesiredCapabilities.CHROME,
     ])
     def test_selenium(self, browser):
         with WebDriverContainer(browser) as firefox:
-            driver = firefox.get_driver()
-            driver.get("http://google.com")
-            driver.find_element_by_name("q").send_keys("Hello")
+            webdriver = firefox.get_driver()
+            webdriver.get("http://google.com")
+            webdriver.find_element_by_name("q").send_keys("Hello")
 
     def test_fixture(self, driver):
         driver.get("http://google.com")
