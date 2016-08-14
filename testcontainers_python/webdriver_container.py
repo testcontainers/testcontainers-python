@@ -20,11 +20,11 @@ class WebDriverContainer(object):
         self._docker.remove_all()
 
     def start(self):
-        self._docker.run('selenium/hub:2.53.0', bind_ports={4444: 4444}, name='selenium-hub')
+        self._docker.run(**config.hub)
         if self.capabilities["browserName"] == "firefox":
-            self._docker.run('selenium/node-firefox:2.53.0', links={'selenium-hub': 'hub'})
+            self._docker.run(**config.ff_node)
         else:
-            self._docker.run('selenium/node-chrome:2.53.0', links={'selenium-hub': 'hub'})
+            self._docker.run(**config.chrome_node)
         self._driver = self._wait_for_container_to_start()
         return self
 
