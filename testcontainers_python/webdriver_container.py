@@ -12,6 +12,7 @@ class WebDriverContainer(object):
         self._docker = DockerClient()
         self.capabilities = capabilities
         self._driver = None
+        self._containers = []
 
     def __enter__(self):
         return self.start()
@@ -20,11 +21,11 @@ class WebDriverContainer(object):
         self.stop()
 
     def start(self):
-        self._docker.run(**config.hub)
+        self._containers.append(self._docker.run(**config.hub))
         if self.capabilities["browserName"] == "firefox":
-            self._docker.run(**config.ff_node)
+            self._containers.append(self._docker.run(**config.ff_node))
         else:
-            self._docker.run(**config.chrome_node)
+            self._containers.append(self._docker.run(**config.chrome_node))
         self._driver = self._wait_for_container_to_start()
         return self
 
@@ -40,7 +41,8 @@ class WebDriverContainer(object):
         raise Exception()
 
     def stop(self):
-        self._docker.remove_all()
+        for cont in self._containers:
+            self._docker.remove(cont, True)
 
     def get_driver(self):
         return self._driver
