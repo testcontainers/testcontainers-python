@@ -24,9 +24,9 @@ def test_docker_run_mysql():
 
 def test_docker_images():
     docker = DockerClient()
-    images = docker.images()
-    for im in images:
-        print(im)
+    img = docker._cli.containers(all=True, filters={"name": "selenium-hub"})
+
+    assert len(img) >= 0
 
 
 def test_docker_image_exists():
@@ -46,6 +46,12 @@ def test_docker_pull():
         docker.remove_image(name, True)
     stream = docker.pull(name)
     print list(stream)[-1]
+
+
+def test_docker_rm():
+    docker = DockerClient()
+    docker.run(image='selenium/hub:2.53.0', bind_ports={4444: 4444}, name='selenium-hub')
+    docker.stop_all()
 
 
 def test_docker_ctx_manager():
