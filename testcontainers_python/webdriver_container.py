@@ -17,7 +17,7 @@ class WebDriverContainer(object):
         return self.start()
 
     def __exit__(self, type, value, traceback):
-        self._docker.remove_all()
+        self.stop()
 
     def start(self):
         self._docker.run(**config.hub)
@@ -38,6 +38,9 @@ class WebDriverContainer(object):
                 logging.warning("Waiting for container to start")
                 sleep(config.sleep_time)
         raise Exception()
+
+    def stop(self):
+        self._docker.remove_all()
 
     def get_driver(self):
         return self._driver
