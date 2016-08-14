@@ -1,7 +1,6 @@
-from docker import Client
 import logging
 
-from docker.errors import APIError
+from docker import Client
 
 from testcontainers_python import config
 
@@ -12,7 +11,7 @@ class DockerClient(object):
 
     def run(self, image, bind_ports=None, name=None, links=None, env=None):
         self.pull_image(image)
-        container = self.create_container(image, bind_ports=bind_ports, name=name, env=env)
+        container = self._create_container(image, bind_ports=bind_ports, name=name, env=env)
         self._cli.start(container, publish_all_ports=True, port_bindings=bind_ports, links=links)
         return container
 
@@ -25,32 +24,32 @@ class DockerClient(object):
         else:
             logging.warning("Image {} already exists".format(image))
 
+    def pull(self, name):
+        return self._cli.pull(name, stream=True)
+
+    def _create_container(self, image,
+                          bind_ports=None,
+                          name=None,
+                          env=None):
+        for container in self.filter_containers(name):  # filter containers and remove to void name conflict error
+            self.remove(container, True)
+
+        host_config = self._cli.create_host_config(port_bindings=bind_ports)
+        return self._cli.create_container(image=image,
+                                          ports=self._get_exposed_ports(bind_ports),
+                                          host_config=host_config,
+                                          name=name,
+                                          environment=env)
+
+    def _get_exposed_ports(self, ports):
+        return dict(ports).keys() if ports else None
+
     def filter_containers(self, name):
         for container in self._filter_by_name(name):
             yield container['Id']
 
     def _filter_by_name(self, name):
         return self._cli.containers(all=True, filters={"name": name}) if name else []
-
-    def _expose_ports(self, ports):
-        return dict(ports).keys() if ports else None
-
-    def pull(self, name):
-        return self._cli.pull(name, stream=True)
-
-    def create_container(self, image,
-                         bind_ports=None,
-                         name=None,
-                         env=None):
-        for container in self.filter_containers(name):
-            self.remove(container, True)
-
-        host_config = self._cli.create_host_config(port_bindings=bind_ports)
-        return self._cli.create_container(image=image,
-                                          ports=self._expose_ports(bind_ports),
-                                          host_config=host_config,
-                                          name=name,
-                                          environment=env)
 
     def inspect(self, container):
         return self._cli.inspect_container(container)
