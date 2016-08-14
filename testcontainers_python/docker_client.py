@@ -67,3 +67,9 @@ class DockerClient(object):
         for cont in self.get_containers():
             self.stop(cont)
             logging.warning("Container stopped {}".format(cont['Id']))
+
+    def remove_all(self):
+        for cont in self.get_containers():
+            self.stop(cont)
+            self.remove(cont, True)
+            logging.warning("Container removed {}".format(cont['Id']))
