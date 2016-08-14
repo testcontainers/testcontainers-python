@@ -71,6 +71,7 @@ class DockerClient(object):
 
     def stop(self, container):
         self._cli.stop(container)
+        logging.warning("Container stopped {}".format(container['Id']))
 
     def remove(self, container, force=False):
         """
@@ -80,6 +81,7 @@ class DockerClient(object):
         :return:
         """
         self._cli.remove_container(container, force=force)
+        logging.warning("Container removed {}".format(container['Id']))
 
     def images(self):
         return self._cli.images()
@@ -87,9 +89,7 @@ class DockerClient(object):
     def stop_all(self):
         for cont in self.get_containers():
             self.stop(cont)
-            logging.warning("Container stopped {}".format(cont['Id']))
 
     def remove_all(self):
         for cont in self.get_containers():
             self.remove(cont, True)
-            logging.warning("Container removed {}".format(cont['Id']))
