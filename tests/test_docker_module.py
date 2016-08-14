@@ -13,12 +13,9 @@ from testcontainers_python.webdriver_container import WebDriverContainer
 
 
 class TestDocker(object):
-    _ff = WebDriverContainer().start()
 
     def test_selenium(self):
-        try:
-            driver = self._ff.get_driver()
+        with WebDriverContainer() as firefox:
+            driver = firefox.get_driver()
             driver.get("http://google.com")
             driver.find_element_by_name("q").send_keys("Hello")
-        finally:
-            self._ff._docker.remove_all()

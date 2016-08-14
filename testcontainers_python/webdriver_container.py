@@ -8,14 +8,16 @@ from selenium.webdriver.common.desired_capabilities import DesiredCapabilities
 
 
 class WebDriverContainer(object):
-    def __init__(self):
+    def __init__(self, capabilities=DesiredCapabilities.FIREFOX):
         self._docker = DockerClient()
-        self.capabilities = DesiredCapabilities.FIREFOX
+        self.capabilities = capabilities
         self._driver = None
 
-    def with_desired_capabilities(self, capabilities):
-        self.capabilities = capabilities
-        return self
+    def __enter__(self):
+        return self.start()
+
+    def __exit__(self, type, value, traceback):
+        self._docker.remove_all()
 
     def start(self):
         self._docker.run('selenium/hub:2.53.0', bind_ports={4444: 4444}, name='selenium-hub')
