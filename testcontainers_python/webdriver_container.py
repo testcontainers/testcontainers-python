@@ -23,7 +23,7 @@ class WebDriverContainer(object):
     def start(self):
         self._containers.append(self._docker.run(**config.hub))
         if self.capabilities["browserName"] == "firefox":
-            self._containers.append(self._docker.run(**config.ff_node))
+            self._containers.append(self._docker.run(**config.firefox_node))
         else:
             self._containers.append(self._docker.run(**config.chrome_node))
         self._driver = self._wait_for_container_to_start()
