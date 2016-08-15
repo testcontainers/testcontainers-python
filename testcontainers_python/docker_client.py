@@ -10,12 +10,26 @@ class DockerClient(object):
         self._cli = Client(base_url)
 
     def run(self, image, bind_ports=None, name=None, links=None, env=None):
+        """
+        Pulls image if not exists and run
+        :param image:
+        :param bind_ports:
+        :param name:
+        :param links:
+        :param env:
+        :return:
+        """
         self.pull_image(image)
         container = self._create_container(image, bind_ports=bind_ports, name=name, env=env)
         self._cli.start(container, publish_all_ports=True, port_bindings=bind_ports, links=links)
         return container
 
     def pull_image(self, image):
+        """
+        Pulls image if not exists
+        :param image:
+        :return:
+        """
         if not self.image_exists(image):
             logging.warning("Downloading image {}".format(image))
             stream = self._pull(image)
@@ -25,12 +39,25 @@ class DockerClient(object):
             logging.warning("Image {} already exists".format(image))
 
     def _pull(self, name):
+        """
+        Pulls image
+        :param name:
+        :return:
+        """
         return self._cli.pull(name, stream=True)
 
     def _create_container(self, image,
                           bind_ports=None,
                           name=None,
                           env=None):
+        """
+        Creates new container
+        :param image:
+        :param bind_ports:
+        :param name:
+        :param env:
+        :return:
+        """
         for container in self.filter_containers(name):  # filter containers and remove to void name conflict error
             self.remove(container, True)
 
@@ -45,13 +72,26 @@ class DockerClient(object):
         return dict(ports).keys() if ports else None
 
     def filter_containers(self, name):
+        """
+        Filter containers by name
+        :param name:
+        :return:
+        """
         for container in self._filter_by_name(name):
             yield container['Id']
 
     def _filter_by_name(self, name):
+        """
+        :param name:
+        :return:
+        """
         return self._cli.containers(all=True, filters={"name": name}) if name else []
 
     def inspect(self, container):
+        """
+        :param container:
+        :return:
+        """
         return self._cli.inspect_container(container)
 
     def get_host_info(self, container):
