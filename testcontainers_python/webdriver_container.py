@@ -21,6 +21,10 @@ class WebDriverContainer(object):
         self.stop()
 
     def start(self):
+        """
+        Start selenium containers and wait until they are ready
+        :return:
+        """
         self._containers.append(self._docker.run(**config.hub))
         if self.capabilities["browserName"] == "firefox":
             self._containers.append(self._docker.run(**config.firefox_node))
@@ -41,6 +45,10 @@ class WebDriverContainer(object):
         raise Exception()
 
     def stop(self):
+        """
+        Stop all spawned containers
+        :return:
+        """
         for cont in self._containers:
             self._docker.remove(cont, True)
 
