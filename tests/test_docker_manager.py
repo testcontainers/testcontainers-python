@@ -31,6 +31,7 @@ def test_docker_images():
 
 def test_docker_image_exists():
     docker = DockerClient()
+    docker.pull_image("selenium/node-chrome:latest")
     assert docker.image_exists("selenium/node-chrome:latest")
 
 
@@ -44,7 +45,7 @@ def test_docker_pull():
     docker = DockerClient()
     if docker.image_exists(name):
         docker.remove_image(name, True)
-    stream = docker.pull(name)
+    stream = docker.pull_image(name)
     print list(stream)[-1]
 
 
