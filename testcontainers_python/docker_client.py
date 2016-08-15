@@ -18,13 +18,13 @@ class DockerClient(object):
     def pull_image(self, image):
         if not self.image_exists(image):
             logging.warning("Downloading image {}".format(image))
-            stream = self.pull(image)
+            stream = self._pull(image)
             for line in stream:
                 logging.warning(line)
         else:
             logging.warning("Image {} already exists".format(image))
 
-    def pull(self, name):
+    def _pull(self, name):
         return self._cli.pull(name, stream=True)
 
     def _create_container(self, image,
@@ -81,7 +81,10 @@ class DockerClient(object):
         :return:
         """
         self._cli.remove_container(container, force=force)
-        logging.warning("Container removed {}".format(container['Id']))
+        if type(container) == type({}):
+            logging.warning("Container removed {}".format(container['Id']))
+        else:
+            logging.warning("Container removed {}".format(container))
 
     def images(self):
         return self._cli.images()
