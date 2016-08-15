@@ -45,8 +45,8 @@ def test_docker_pull():
     docker = DockerClient()
     if docker.image_exists(name):
         docker.remove_image(name, True)
-    stream = docker.pull_image(name)
-    print list(stream)[-1]
+    docker.pull_image(name)
+    assert docker.image_exists(name)
 
 
 def test_docker_rm():
