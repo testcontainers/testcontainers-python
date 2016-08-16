@@ -2,13 +2,13 @@ from selenium import webdriver
 from selenium.webdriver.common.desired_capabilities import DesiredCapabilities
 
 from testcontainers_python import config
-from testcontainers_python.generic_container import GenericContainer
+from testcontainers_python.generic_container import Container
 from testcontainers_python.waiting_utils import wait_container_is_ready
 
 
-class WebDriverContainer(GenericContainer):
+class WebDriverContainer(Container):
     def __init__(self, capabilities=DesiredCapabilities.FIREFOX):
-        GenericContainer.__init__(self)
+        Container.__init__(self)
         self._capabilities = capabilities
         self.driver = None
         self._default_port = 4444

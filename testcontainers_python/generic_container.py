@@ -1,18 +1,17 @@
 from testcontainers_python.docker_client import DockerClient
 
 
-class GenericContainer(object):
+class Container(object):
     def __init__(self):
         self._docker = DockerClient()
         self._containers = []
         self._default_port = None
 
     def __enter__(self):
-        return self._docker
+        return self.start()
 
     def __exit__(self, type, value, traceback):
-        for container in self._docker.get_containers():
-            self._docker.stop(container)
+        self.stop()
 
     def start(self):
         raise NotImplementedError
@@ -24,3 +23,18 @@ class GenericContainer(object):
         """
         for cont in self._containers:
             self._docker.remove(cont, True)
+
+
+class GenericContainer(Container):
+    def __init__(self, config):
+        Container.__init__(self)
+        self.config = config
+
+    def start(self):
+        """
+        Start container without wait
+        :return:
+        """
+        container = self._docker.run(**self.config)
+        self._containers.append(container)
+        return self

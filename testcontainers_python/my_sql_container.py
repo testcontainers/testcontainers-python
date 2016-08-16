@@ -1,13 +1,13 @@
 import MySQLdb
 
 from testcontainers_python import config
-from testcontainers_python.generic_container import GenericContainer
+from testcontainers_python.generic_container import Container
 from testcontainers_python.waiting_utils import wait_container_is_ready
 
 
-class MySqlContainer(GenericContainer):
+class MySqlContainer(Container):
     def __init__(self, image='mysql:latest'):
-        GenericContainer.__init__(self)
+        Container.__init__(self)
         self.image = image
         self.connection = None
         self._default_port = 3306
@@ -32,4 +32,4 @@ class MySqlContainer(GenericContainer):
         :return:
         """
         self.connection.close()
-        GenericContainer.stop(self)
+        Container.stop(self)
