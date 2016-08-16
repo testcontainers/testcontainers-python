@@ -27,20 +27,22 @@ class WebDriverContainer(object):
         Start selenium containers and wait until they are ready
         :return:
         """
-        self._containers.append(self._docker.run(**config.hub))
+        hub = self._docker.run(**config.hub)
+        self._containers.append(hub)
         if self.capabilities["browserName"] == "firefox":
             self._containers.append(self._docker.run(**config.firefox_node))
         else:
             self._containers.append(self._docker.run(**config.chrome_node))
-        self._driver = self._wait_for_container_to_start()
+        self._driver = self._wait_for_container_to_start(hub)
         return self
 
-    def _wait_for_container_to_start(self):
+    def _wait_for_container_to_start(self, container):
+        hub_info = self._docker.port(container, 4444)[0]
         bar = ConsoleProgressBar().bar
         for _ in bar(range(0, config.max_tries)):
             try:
                 return webdriver.Remote(
-                    command_executor='http://127.0.0.1:4444/wd/hub',
+                    command_executor='http://{}:4444/wd/hub'.format(hub_info['HostIp']),
                     desired_capabilities=self.capabilities)
             except Exception:
                 sleep(config.sleep_time)
