@@ -5,6 +5,7 @@ from testcontainers_python import config
 from testcontainers_python.brogress_bar import ConsoleProgressBar
 from testcontainers_python.docker_client import DockerClient
 import MySQLdb
+import context_manager
 
 from testcontainers_python.exceptions import TimeoutException
 
@@ -31,23 +32,17 @@ class MySqlContainer(object):
                                  env={"MYSQL_ROOT_PASSWORD": config.my_sql_root_password,
                                       "MYSQL_DATABASE": config.my_sql_db_name},
                                  name="mysql")
-        self._connection = self._wait_for_container_to_start(mysql)
+        self._connection = self._connect(mysql, 3306)
         self._containers.append(mysql)
         return self
 
-    def _wait_for_container_to_start(self, container):
-        hub_info = self._docker.port(container, 3306)[0]
-        bar = ConsoleProgressBar().bar
-        logging.warning("Waiting for container to start")
-        for _ in bar(range(0, config.max_tries)):
-            try:
-                return MySQLdb.connect(host=hub_info['HostIp'],  # your host, usually localhost
-                                       user=config.my_sql_db_user,  # your username
-                                       passwd=config.my_sql_root_password,  # your password
-                                       db=config.my_sql_db_name)
-            except Exception:
-                sleep(config.sleep_time)
-        raise TimeoutException("Wait time exceeded {} sec.".format(config.max_tries))
+    @context_manager.wait_container_is_ready()
+    def _connect(self, container, port):
+        hub_info = self._docker.port(container, port)[0]
+        return MySQLdb.connect(host=hub_info['HostIp'],
+                               user=config.my_sql_db_user,
+                               passwd=config.my_sql_root_password,
+                               db=config.my_sql_db_name)
 
     def stop(self):
         """

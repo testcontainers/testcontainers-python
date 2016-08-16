@@ -1,5 +1,12 @@
+import logging
+from time import sleep
+
+import wrapt
+
 from testcontainers_python import config
+from testcontainers_python.brogress_bar import ConsoleProgressBar
 from testcontainers_python.docker_client import DockerClient
+from testcontainers_python.exceptions import TimeoutException
 
 
 class docker_client(object):
@@ -13,3 +20,17 @@ class docker_client(object):
         for cont in self._docker.get_containers():
             self._docker.stop(cont)
             self._docker.remove(cont, True)
+
+
+def wait_container_is_ready():
+    @wrapt.decorator
+    def wrapper(wrapped, instance, args, kwargs):
+        bar = ConsoleProgressBar().bar
+        logging.warning("Waiting for container to start")
+        for _ in bar(range(0, config.max_tries)):
+            try:
+                return wrapped(*args, **kwargs)
+            except Exception:
+                sleep(config.sleep_time)
+        raise TimeoutException("Wait time exceeded {} sec.".format(config.max_tries))
+    return wrapper

@@ -6,6 +6,7 @@ from testcontainers_python.brogress_bar import ConsoleProgressBar
 from testcontainers_python.docker_client import DockerClient
 from selenium import webdriver
 from selenium.webdriver.common.desired_capabilities import DesiredCapabilities
+import context_manager
 
 from testcontainers_python.exceptions import TimeoutException
 
@@ -29,26 +30,20 @@ class WebDriverContainer(object):
         :return:
         """
         hub = self._docker.run(**config.hub)
-        self._containers.append(hub)
         if self.capabilities["browserName"] == "firefox":
             self._containers.append(self._docker.run(**config.firefox_node))
         else:
             self._containers.append(self._docker.run(**config.chrome_node))
-        self._driver = self._wait_for_container_to_start(hub)
+        self._driver = self._connect(hub, 4444)
+        self._containers.append(hub)
         return self
 
-    def _wait_for_container_to_start(self, container):
-        hub_info = self._docker.port(container, 4444)[0]
-        bar = ConsoleProgressBar().bar
-        logging.warning("Waiting for container to start")
-        for _ in bar(range(0, config.max_tries)):
-            try:
-                return webdriver.Remote(
-                    command_executor='http://{}:4444/wd/hub'.format(hub_info['HostIp']),
-                    desired_capabilities=self.capabilities)
-            except Exception:
-                sleep(config.sleep_time)
-        raise TimeoutException("Wait time exceeded {} sec.".format(config.max_tries))
+    @context_manager.wait_container_is_ready()
+    def _connect(self, container, port):
+        hub_info = self._docker.port(container, port)[0]
+        return webdriver.Remote(
+            command_executor='http://{}:4444/wd/hub'.format(hub_info['HostIp']),
+            desired_capabilities=self.capabilities)
 
     def stop(self):
         """
