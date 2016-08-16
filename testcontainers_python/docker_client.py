@@ -112,6 +112,9 @@ class DockerClient(object):
             lists.append(im["RepoTags"])
         return name in [item for sublist in lists for item in sublist]
 
+    def port(self, container, port):
+        return self._cli.port(container, port)
+
     def stop(self, container):
         self._cli.stop(container)
         logging.warning("Container stopped {}".format(container['Id']))
