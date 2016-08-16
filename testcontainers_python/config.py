@@ -2,6 +2,10 @@ docker_base_url = 'unix://var/run/docker.sock'
 max_tries = 60
 sleep_time = 1
 
+# DB container configurations
+my_sql_root_password = "test"
+
+# Selenium container configurations
 hub = {
     'image': 'selenium/hub:2.53.0',
     'bind_ports': {4444: 4444},
