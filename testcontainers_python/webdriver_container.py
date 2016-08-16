@@ -1,10 +1,12 @@
-import logging
 from time import sleep
 
 from testcontainers_python import config
+from testcontainers_python.brogress_bar import ConsoleProgressBar
 from testcontainers_python.docker_client import DockerClient
 from selenium import webdriver
 from selenium.webdriver.common.desired_capabilities import DesiredCapabilities
+
+from testcontainers_python.exceptions import TimeoutException
 
 
 class WebDriverContainer(object):
@@ -34,15 +36,15 @@ class WebDriverContainer(object):
         return self
 
     def _wait_for_container_to_start(self):
-        for _ in range(0, config.max_tries):
+        bar = ConsoleProgressBar().bar
+        for _ in bar(range(0, config.max_tries)):
             try:
                 return webdriver.Remote(
                     command_executor='http://127.0.0.1:4444/wd/hub',
                     desired_capabilities=self.capabilities)
             except Exception:
-                logging.warning("Waiting for container to start")
                 sleep(config.sleep_time)
-        raise Exception()
+        raise TimeoutException("Wait time exceeded {} sec.".format(config.max_tries))
 
     def stop(self):
         """

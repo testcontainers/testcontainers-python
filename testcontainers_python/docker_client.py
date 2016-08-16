@@ -1,8 +1,10 @@
 import logging
+from time import sleep
 
 from docker import Client
 
 from testcontainers_python import config
+from testcontainers_python.brogress_bar import ConsoleProgressBar
 
 
 class DockerClient(object):
@@ -33,8 +35,9 @@ class DockerClient(object):
         if not self.image_exists(image):
             logging.warning("Downloading image {}".format(image))
             stream = self._pull(image)
-            for line in stream:
-                logging.warning(line)
+            bar = ConsoleProgressBar().bar
+            for _ in bar(range(len(list(stream)))):
+                sleep(0.1)
         else:
             logging.warning("Image {} already exists".format(image))
 
