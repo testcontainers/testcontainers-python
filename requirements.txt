@@ -3,3 +3,4 @@ selenium
 docker-py
 progressbar2
 wrapt
+MySQL-python
