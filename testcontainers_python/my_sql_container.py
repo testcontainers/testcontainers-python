@@ -1,3 +1,4 @@
+import logging
 from time import sleep
 
 from testcontainers_python import config
@@ -27,20 +28,23 @@ class MySqlContainer(object):
         :return:
         """
         mysql = self._docker.run(self.image, bind_ports={3306: 3306},
-                                 env={"MYSQL_ROOT_PASSWORD": config.my_sql_root_password})
-        self._containers.append(mysql)
+                                 env={"MYSQL_ROOT_PASSWORD": config.my_sql_root_password,
+                                      "MYSQL_DATABASE": config.my_sql_db_name},
+                                 name="mysql")
         self._connection = self._wait_for_container_to_start(mysql)
+        self._containers.append(mysql)
         return self
 
     def _wait_for_container_to_start(self, container):
         hub_info = self._docker.port(container, 3306)[0]
         bar = ConsoleProgressBar().bar
+        logging.warning("Waiting for container for start")
         for _ in bar(range(0, config.max_tries)):
             try:
                 return MySQLdb.connect(host=hub_info['HostIp'],  # your host, usually localhost
-                                       user="root",  # your username
+                                       user=config.my_sql_db_user,  # your username
                                        passwd=config.my_sql_root_password,  # your password
-                                       db="test")
+                                       db=config.my_sql_db_name)
             except Exception:
                 sleep(config.sleep_time)
         raise TimeoutException("Wait time exceeded {} sec.".format(config.max_tries))
