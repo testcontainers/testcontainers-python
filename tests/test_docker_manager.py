@@ -1,4 +1,3 @@
-from testcontainers_python.context_manager import docker_client
 from testcontainers_python.docker_client import DockerClient
 from testcontainers_python.my_sql_container import MySqlContainer
 
@@ -56,9 +55,3 @@ def test_docker_rm():
     docker = DockerClient()
     docker.run(image='selenium/hub:2.53.0', bind_ports={4444: 4444}, name='selenium-hub')
     docker.stop_all()
-
-
-def test_docker_ctx_manager():
-    with docker_client() as d:
-        container = d.run('selenium/hub:2.53.0', {4444: 4444})
-        print(container)

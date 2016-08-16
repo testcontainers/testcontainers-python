@@ -3,9 +3,20 @@ max_tries = 120
 sleep_time = 1
 
 # DB container configurations
-my_sql_root_password = "test"
-my_sql_db_user = "root"
-my_sql_db_name = "test"
+db = {
+    "user": "root",
+    "passwd": "test",
+    "db": "test"
+}
+
+my_sql_container = {
+    'bind_ports': {3306: 3306},
+    'env': {
+        "MYSQL_ROOT_PASSWORD": db['passwd'],
+        "MYSQL_DATABASE": db['db']
+    },
+    "name": "mysql"
+}
 
 # Selenium container configurations
 hub = {

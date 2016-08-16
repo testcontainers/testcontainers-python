@@ -1,9 +1,9 @@
 from selenium import webdriver
 from selenium.webdriver.common.desired_capabilities import DesiredCapabilities
 
-import context_manager
 from testcontainers_python import config
 from testcontainers_python.generic_container import GenericContainer
+from testcontainers_python.waiting_utils import wait_container_is_ready
 
 
 class WebDriverContainer(GenericContainer):
@@ -26,7 +26,7 @@ class WebDriverContainer(GenericContainer):
         self._containers.append(hub)
         return self
 
-    @context_manager.wait_container_is_ready()
+    @wait_container_is_ready()
     def _connect(self, container, port):
         hub_info = self._docker.port(container, port)[0]
         return webdriver.Remote(
