@@ -18,13 +18,15 @@ def wait_container_is_ready():
     """
     @wrapt.decorator
     def wrapper(wrapped, instance, args, kwargs):
+        exception = None
         bar = ConsoleProgressBar().bar
         logging.warning("Waiting for container to start")
         for _ in bar(range(0, config.max_tries)):
             try:
                 return wrapped(*args, **kwargs)
-            except Exception:
+            except Exception as e:
                 sleep(config.sleep_time)
-        raise TimeoutException("Wait time exceeded {} sec.".format(config.max_tries))
+                exception = e
+        raise TimeoutException("Wait time exceeded {} sec. {}".format(config.max_tries, exception))
 
     return wrapper

@@ -11,6 +11,7 @@ class WebDriverContainer(GenericContainer):
         GenericContainer.__init__(self)
         self._capabilities = capabilities
         self.driver = None
+        self._default_port = 4444
 
     def start(self):
         """
@@ -22,13 +23,12 @@ class WebDriverContainer(GenericContainer):
             self._containers.append(self._docker.run(**config.firefox_node))
         else:
             self._containers.append(self._docker.run(**config.chrome_node))
-        self.driver = self._connect(hub, 4444)
+        self.driver = self._get_connection()
         self._containers.append(hub)
         return self
 
     @wait_container_is_ready()
-    def _connect(self, container, port):
-        hub_info = self._docker.port(container, port)[0]
+    def _get_connection(self):
         return webdriver.Remote(
-            command_executor='http://{}:4444/wd/hub'.format(hub_info['HostIp']),
+            command_executor='http://{}:{}/wd/hub'.format(config.selenium_hub_host, self._default_port),
             desired_capabilities=self._capabilities)

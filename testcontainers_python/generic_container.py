@@ -5,12 +5,14 @@ class GenericContainer(object):
     def __init__(self):
         self._docker = DockerClient()
         self._containers = []
+        self._default_port = None
 
     def __enter__(self):
-        return self.start()
+        return self._docker
 
     def __exit__(self, type, value, traceback):
-        self.stop()
+        for container in self._docker.get_containers():
+            self._docker.stop(container)
 
     def start(self):
         raise NotImplementedError

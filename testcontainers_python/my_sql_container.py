@@ -10,6 +10,7 @@ class MySqlContainer(GenericContainer):
         GenericContainer.__init__(self)
         self.image = image
         self.connection = None
+        self._default_port = 3306
 
     def start(self):
         """
@@ -17,14 +18,13 @@ class MySqlContainer(GenericContainer):
         :return:
         """
         mysql = self._docker.run(self.image, **config.my_sql_container)
-        self.connection = self._connect(mysql, 3306)
+        self.connection = self._get_connection()
         self._containers.append(mysql)
         return self
 
     @wait_container_is_ready()
-    def _connect(self, container, port):
-        hub_info = self._docker.port(container, port)[0]
-        return MySQLdb.connect(host=hub_info['HostIp'], **config.db)
+    def _get_connection(self):
+        return MySQLdb.connect(**config.db)
 
     def stop(self):
         """

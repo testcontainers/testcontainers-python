@@ -4,6 +4,7 @@ sleep_time = 1
 
 # DB container configurations
 db = {
+    "host": "0.0.0.0",
     "user": "root",
     "passwd": "test",
     "db": "test"
@@ -19,6 +20,8 @@ my_sql_container = {
 }
 
 # Selenium container configurations
+selenium_hub_host = "localhost"
+
 hub = {
     'image': 'selenium/hub:2.53.0',
     'bind_ports': {4444: 4444},
