@@ -1,4 +1,5 @@
 from testcontainers_python.docker_client import DockerClient
+from testcontainers_python.generic_container import GenericContainer
 from testcontainers_python.my_sql_container import MySqlContainer
 
 
@@ -55,3 +56,14 @@ def test_docker_rm():
     docker = DockerClient()
     docker.run(image='selenium/hub:2.53.0', bind_ports={4444: 4444}, name='selenium-hub')
     docker.stop_all()
+
+
+def test_generic_container():
+    selenium_chrome = {
+        "image": "selenium/standalone-chrome:2.53.0",
+        "bind_ports": {4444: 4444},
+        "name": "selenium_chrome"
+    }
+
+    with GenericContainer(selenium_chrome) as chrome:
+        assert chrome.id

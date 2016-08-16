@@ -38,3 +38,7 @@ class GenericContainer(Container):
         container = self._docker.run(**self.config)
         self._containers.append(container)
         return self
+
+    @property
+    def id(self):
+        return self._containers[0]["Id"]
