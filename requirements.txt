@@ -1,3 +1,4 @@
 pytest
 selenium
 docker-py
+progressbar2
