@@ -9,7 +9,6 @@ def driver(request):
     container = WebDriverContainer().start()
 
     def fin():
-        print ("teardown container")
         container.stop()
 
     request.addfinalizer(fin)
