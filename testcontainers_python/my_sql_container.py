@@ -1,13 +1,8 @@
-import logging
-from time import sleep
-
-from testcontainers_python import config
-from testcontainers_python.brogress_bar import ConsoleProgressBar
-from testcontainers_python.docker_client import DockerClient
 import MySQLdb
-import context_manager
 
-from testcontainers_python.exceptions import TimeoutException
+import context_manager
+from testcontainers_python import config
+from testcontainers_python.docker_client import DockerClient
 
 
 class MySqlContainer(object):
