@@ -9,7 +9,7 @@ from testcontainers_python.docker_client import DockerClient
 class WebDriverContainer(object):
     def __init__(self, capabilities=DesiredCapabilities.FIREFOX):
         self._docker = DockerClient()
-        self.capabilities = capabilities
+        self._capabilities = capabilities
         self._driver = None
         self._containers = []
 
@@ -25,7 +25,7 @@ class WebDriverContainer(object):
         :return:
         """
         hub = self._docker.run(**config.hub)
-        if self.capabilities["browserName"] == "firefox":
+        if self._capabilities["browserName"] == "firefox":
             self._containers.append(self._docker.run(**config.firefox_node))
         else:
             self._containers.append(self._docker.run(**config.chrome_node))
@@ -38,7 +38,7 @@ class WebDriverContainer(object):
         hub_info = self._docker.port(container, port)[0]
         return webdriver.Remote(
             command_executor='http://{}:4444/wd/hub'.format(hub_info['HostIp']),
-            desired_capabilities=self.capabilities)
+            desired_capabilities=self._capabilities)
 
     def stop(self):
         """
