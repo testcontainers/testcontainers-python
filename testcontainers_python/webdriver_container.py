@@ -3,21 +3,14 @@ from selenium.webdriver.common.desired_capabilities import DesiredCapabilities
 
 import context_manager
 from testcontainers_python import config
-from testcontainers_python.docker_client import DockerClient
+from testcontainers_python.generic_container import GenericContainer
 
 
-class WebDriverContainer(object):
+class WebDriverContainer(GenericContainer):
     def __init__(self, capabilities=DesiredCapabilities.FIREFOX):
-        self._docker = DockerClient()
+        GenericContainer.__init__(self)
         self._capabilities = capabilities
-        self._driver = None
-        self._containers = []
-
-    def __enter__(self):
-        return self.start()
-
-    def __exit__(self, type, value, traceback):
-        self.stop()
+        self.driver = None
 
     def start(self):
         """
@@ -29,7 +22,7 @@ class WebDriverContainer(object):
             self._containers.append(self._docker.run(**config.firefox_node))
         else:
             self._containers.append(self._docker.run(**config.chrome_node))
-        self._driver = self._connect(hub, 4444)
+        self.driver = self._connect(hub, 4444)
         self._containers.append(hub)
         return self
 
@@ -39,14 +32,3 @@ class WebDriverContainer(object):
         return webdriver.Remote(
             command_executor='http://{}:4444/wd/hub'.format(hub_info['HostIp']),
             desired_capabilities=self._capabilities)
-
-    def stop(self):
-        """
-        Stop all spawned containers
-        :return:
-        """
-        for cont in self._containers:
-            self._docker.remove(cont, True)
-
-    def get_driver(self):
-        return self._driver

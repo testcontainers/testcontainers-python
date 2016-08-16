@@ -2,21 +2,14 @@ import MySQLdb
 
 import context_manager
 from testcontainers_python import config
-from testcontainers_python.docker_client import DockerClient
+from testcontainers_python.generic_container import GenericContainer
 
 
-class MySqlContainer(object):
+class MySqlContainer(GenericContainer):
     def __init__(self, image='mysql:latest'):
-        self._docker = DockerClient()
+        GenericContainer.__init__(self)
         self.image = image
-        self._containers = []
-        self._connection = None
-
-    def __enter__(self):
-        return self.start()
-
-    def __exit__(self, type, value, traceback):
-        self.stop()
+        self.connection = None
 
     def start(self):
         """
@@ -27,7 +20,7 @@ class MySqlContainer(object):
                                  env={"MYSQL_ROOT_PASSWORD": config.my_sql_root_password,
                                       "MYSQL_DATABASE": config.my_sql_db_name},
                                  name="mysql")
-        self._connection = self._connect(mysql, 3306)
+        self.connection = self._connect(mysql, 3306)
         self._containers.append(mysql)
         return self
 
@@ -41,12 +34,8 @@ class MySqlContainer(object):
 
     def stop(self):
         """
-        Stop all spawned containers
+        Stop all spawned containers and close DB connection
         :return:
         """
-        self._connection.close()
-        for cont in self._containers:
-            self._docker.remove(cont, True)
-
-    def get_connection(self):
-        return self._connection
+        self.connection.close()
+        GenericContainer.stop(self)

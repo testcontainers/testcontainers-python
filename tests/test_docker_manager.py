@@ -16,7 +16,7 @@ def test_docker_run_selenium():
 
 def test_docker_run_mysql():
     with MySqlContainer() as mysql:
-        conn = mysql.get_connection()
+        conn = mysql.connection
         cur = conn.cursor()
 
         cur.execute("SELECT VERSION()")
