@@ -38,7 +38,7 @@ class MySqlContainer(object):
     def _wait_for_container_to_start(self, container):
         hub_info = self._docker.port(container, 3306)[0]
         bar = ConsoleProgressBar().bar
-        logging.warning("Waiting for container for start")
+        logging.warning("Waiting for container to start")
         for _ in bar(range(0, config.max_tries)):
             try:
                 return MySQLdb.connect(host=hub_info['HostIp'],  # your host, usually localhost

@@ -15,29 +15,15 @@ def test_docker_run_selenium():
 
 
 def test_docker_run_mysql():
-    docker = DockerClient()
-    # my_sql = docker.run('mysql:latest', bind_ports={3306: 3306},
-    # env = {"MYSQL_ROOT_PASSWORD": 123456, "MYSQL_DATABASE": "test"}, name = "mysql")
+    with MySqlContainer() as mysql:
+        conn = mysql.get_connection()
+        cur = conn.cursor()
 
-    # import MySQLdb
-    #
-    # db = MySQLdb.connect(host="0.0.0.0",  # your host, usually localhost
-    #                      user="root",  # your username
-    #                      passwd="123456",  # your password
-    #                      db="test")
-
-    # db.close()
-    # docker.stop(my_sql)
-
-    my_sql = MySqlContainer().start()
-    conn = my_sql.get_connection()
-    cur = conn.cursor()
-
-    cur.execute("SELECT VERSION()")
-    row = cur.fetchone()
-    print "server version:", row[0]
-    cur.close()
-    conn.close()
+        cur.execute("SELECT VERSION()")
+        row = cur.fetchone()
+        print "server version:", row[0]
+        cur.close()
+        assert len(row) > 0
 
 
 def test_docker_images():

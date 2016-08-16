@@ -40,7 +40,7 @@ class WebDriverContainer(object):
     def _wait_for_container_to_start(self, container):
         hub_info = self._docker.port(container, 4444)[0]
         bar = ConsoleProgressBar().bar
-        logging.warning("Waiting for container for start")
+        logging.warning("Waiting for container to start")
         for _ in bar(range(0, config.max_tries)):
             try:
                 return webdriver.Remote(
