@@ -70,13 +70,16 @@ class DockerClient(object):
         host_config = self._cli.create_host_config(port_bindings=bind_ports, binds=volumes)
         return self._cli.create_container(image=image,
                                           ports=self._get_exposed_ports(bind_ports),
+                                          volumes=self._get_volumes_to_mount(volumes),
                                           host_config=host_config,
                                           name=name,
-                                          environment=env,
-                                          volumes=dict(volumes).values())
+                                          environment=env)
 
     def _get_exposed_ports(self, ports):
-        return dict(ports).keys() if ports else None
+        return dict(ports).values() if ports else None
+
+    def _get_volumes_to_mount(self, volumes):
+        return dict(volumes).values() if volumes else None
 
     def filter_containers(self, name):
         """

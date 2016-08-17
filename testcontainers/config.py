@@ -38,6 +38,6 @@ firefox_node = {
 chrome_node = {
     'image': 'selenium/node-chrome-debug:2.53.0',
     'links': {'selenium-hub': 'hub'},
-    'bind_ports': {5900: 5901},
+    'bind_ports': {5901: 5900},
     'env': ['no_proxy=localhost', 'HUB_ENV_no_proxy=localhost']
 }
