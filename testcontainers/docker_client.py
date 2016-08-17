@@ -54,7 +54,8 @@ class DockerClient(object):
     def _create_container(self, image,
                           bind_ports=None,
                           name=None,
-                          env=None):
+                          env=None,
+                          volumes=None):
         """
         Creates new container
         :param image:
@@ -66,12 +67,13 @@ class DockerClient(object):
         for container in self.filter_containers(name):  # filter containers and remove to void name conflict error
             self.remove(container, True)
 
-        host_config = self._cli.create_host_config(port_bindings=bind_ports)
+        host_config = self._cli.create_host_config(port_bindings=bind_ports, binds=volumes)
         return self._cli.create_container(image=image,
                                           ports=self._get_exposed_ports(bind_ports),
                                           host_config=host_config,
                                           name=name,
-                                          environment=env)
+                                          environment=env,
+                                          volumes=dict(volumes).keys())
 
     def _get_exposed_ports(self, ports):
         return dict(ports).keys() if ports else None
