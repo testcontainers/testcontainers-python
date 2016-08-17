@@ -4,7 +4,6 @@ from testcontainers_python.docker_client import DockerClient
 class Container(object):
     def __init__(self):
         self._docker = DockerClient()
-        self._containers = []
         self._default_port = None
 
     def __enter__(self):
@@ -21,13 +20,13 @@ class Container(object):
         Stop all spawned containers
         :return:
         """
-        for cont in self._containers:
-            self._docker.remove(cont, True)
+        self._docker.remove_all_spawned()
 
 
 class GenericContainer(Container):
     def __init__(self, config):
         Container.__init__(self)
+        self.container = None
         self.config = config
 
     def start(self):
@@ -35,10 +34,9 @@ class GenericContainer(Container):
         Start container without wait
         :return:
         """
-        container = self._docker.run(**self.config)
-        self._containers.append(container)
+        self.container = self._docker.run(**self.config)
         return self
 
     @property
     def id(self):
-        return self._containers[0]["Id"]
+        return self.container["Id"]

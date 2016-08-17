@@ -10,6 +10,7 @@ from testcontainers_python.brogress_bar import ConsoleProgressBar
 class DockerClient(object):
     def __init__(self, base_url=config.docker_base_url):
         self._cli = Client(base_url)
+        self._containers = []
 
     def run(self, image, bind_ports=None, name=None, links=None, env=None):
         """
@@ -24,6 +25,7 @@ class DockerClient(object):
         self.pull_image(image)
         container = self._create_container(image, bind_ports=bind_ports, name=name, env=env)
         self._cli.start(container, publish_all_ports=True, port_bindings=bind_ports, links=links)
+        self._containers.append(container)
         return container
 
     def pull_image(self, image):
@@ -100,7 +102,7 @@ class DockerClient(object):
     def get_host_info(self, container):
         return self.inspect(container)
 
-    def get_containers(self):
+    def get_running_containers(self):
         return self._cli.containers()
 
     def remove_image(self, name, force=False):
@@ -136,9 +138,17 @@ class DockerClient(object):
         return self._cli.images()
 
     def stop_all(self):
-        for cont in self.get_containers():
+        for cont in self.get_running_containers():
+            self.stop(cont)
+
+    def stop_all_spawned(self):
+        for cont in self._containers:
             self.stop(cont)
 
     def remove_all(self):
-        for cont in self.get_containers():
+        for cont in self.get_running_containers():
+            self.remove(cont, True)
+
+    def remove_all_spawned(self):
+        for cont in self._containers:
             self.remove(cont, True)

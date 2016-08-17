@@ -8,10 +8,10 @@ def test_docker_run_selenium():
     docker.stop_all()
     docker.run('selenium/hub:2.53.0', bind_ports={4444: 4444}, name='selenium-hub')
     docker.run('selenium/node-firefox:2.53.0', links={'selenium-hub': 'hub'})
-    containers = docker.get_containers()
+    containers = docker.get_running_containers()
     assert len(containers) >= 2
     docker.stop_all()
-    assert len(docker.get_containers()) == 0
+    assert len(docker.get_running_containers()) == 0
 
 
 def test_docker_run_mysql():
@@ -40,7 +40,7 @@ def test_docker_image_exists():
 
 def test_docker_get_containers():
     docker = DockerClient()
-    print docker.get_containers()
+    print docker.get_running_containers()
 
 
 def test_docker_pull():

@@ -17,19 +17,10 @@ class MySqlContainer(Container):
         Start my sql container and wait to be ready
         :return:
         """
-        mysql = self._docker.run(self.image, **config.my_sql_container)
+        self._docker.run(self.image, **config.my_sql_container)
         self.connection = self._get_connection()
-        self._containers.append(mysql)
         return self
 
     @wait_container_is_ready()
     def _get_connection(self):
         return MySQLdb.connect(**config.db)
-
-    def stop(self):
-        """
-        Stop all spawned containers and close DB connection
-        :return:
-        """
-        self.connection.close()
-        Container.stop(self)

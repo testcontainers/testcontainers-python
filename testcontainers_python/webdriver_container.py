@@ -18,13 +18,12 @@ class WebDriverContainer(Container):
         Start selenium containers and wait until they are ready
         :return:
         """
-        hub = self._docker.run(**config.hub)
+        self._docker.run(**config.hub)
         if self._capabilities["browserName"] == "firefox":
-            self._containers.append(self._docker.run(**config.firefox_node))
+            self._docker.run(**config.firefox_node)
         else:
-            self._containers.append(self._docker.run(**config.chrome_node))
+            self._docker.run(**config.chrome_node)
         self.driver = self._get_connection()
-        self._containers.append(hub)
         return self
 
     @wait_container_is_ready()
