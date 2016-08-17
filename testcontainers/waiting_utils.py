@@ -3,9 +3,9 @@ from time import sleep
 
 import wrapt
 
-from testcontainers_python import config
-from testcontainers_python.brogress_bar import ConsoleProgressBar
-from testcontainers_python.exceptions import TimeoutException
+from testcontainers import config
+from testcontainers.brogress_bar import ConsoleProgressBar
+from testcontainers.exceptions import TimeoutException
 
 
 def wait_container_is_ready():

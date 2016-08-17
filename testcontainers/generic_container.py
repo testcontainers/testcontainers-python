@@ -1,4 +1,4 @@
-from testcontainers_python.docker_client import DockerClient
+from testcontainers.docker_client import DockerClient
 
 
 class Container(object):

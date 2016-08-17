@@ -1,6 +1,6 @@
-from testcontainers_python.docker_client import DockerClient
-from testcontainers_python.generic_container import GenericContainer
-from testcontainers_python.my_sql_container import MySqlContainer
+from testcontainers.docker_client import DockerClient
+from testcontainers.generic_container import GenericContainer
+from testcontainers.my_sql_container import MySqlContainer
 
 
 def test_docker_run_selenium():

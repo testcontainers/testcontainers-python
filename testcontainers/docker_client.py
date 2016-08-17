@@ -3,8 +3,8 @@ from time import sleep
 
 from docker import Client
 
-from testcontainers_python import config
-from testcontainers_python.brogress_bar import ConsoleProgressBar
+from testcontainers import config
+from testcontainers.brogress_bar import ConsoleProgressBar
 
 
 class DockerClient(object):

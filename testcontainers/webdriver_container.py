@@ -1,9 +1,9 @@
 from selenium import webdriver
 from selenium.webdriver.common.desired_capabilities import DesiredCapabilities
 
-from testcontainers_python import config
-from testcontainers_python.generic_container import Container
-from testcontainers_python.waiting_utils import wait_container_is_ready
+from testcontainers import config
+from testcontainers.generic_container import Container
+from testcontainers.waiting_utils import wait_container_is_ready
 
 
 class WebDriverContainer(Container):
