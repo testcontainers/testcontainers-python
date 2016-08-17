@@ -11,4 +11,5 @@ setup(
     download_url='https://github.com/SergeyPirogov/testcontainers_python/tarball/1.0',  # I'll explain this in a second
     keywords=['testing', 'logging', 'docker', 'test automation'],  # arbitrary keywords
     classifiers=[],
+    install_requires=['selenium>=2.45.0', 'wrapt', 'progressbar2'],
 )
