@@ -4,7 +4,6 @@ from testcontainers_python.docker_client import DockerClient
 class Container(object):
     def __init__(self):
         self._docker = DockerClient()
-        self._default_port = None
 
     def __enter__(self):
         return self.start()

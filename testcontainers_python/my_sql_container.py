@@ -10,7 +10,6 @@ class MySqlContainer(Container):
         Container.__init__(self)
         self.image = image
         self.connection = None
-        self._default_port = 3306
 
     def start(self):
         """
