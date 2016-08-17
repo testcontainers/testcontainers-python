@@ -25,19 +25,6 @@ def test_docker_run_mysql():
         cur.close()
         assert len(row) > 0
 
-        cur.execute("CREATE TABLE song (id INT UNSIGNED PRIMARY KEY AUTO_INCREMENT, title TEXT NOT NULL )")
-
-        cur.execute("INSERT INTO song(title) VALUES('Hello')")
-        print("Auto Increment ID: %s" % cur.lastrowid)
-
-        cur.execute("Select * FROM song")
-
-        row = cur.fetchone()
-
-        while row is not None:
-            print(row)
-            row = cur.fetchone()
-
 
 def test_docker_images():
     docker = DockerClient()
