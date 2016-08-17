@@ -2,7 +2,7 @@ from selenium import webdriver
 from selenium.webdriver.common.desired_capabilities import DesiredCapabilities
 
 from testcontainers import config
-from testcontainers.generic_container import Container
+from testcontainers.generic import Container
 from testcontainers.waiting_utils import wait_container_is_ready
 
 

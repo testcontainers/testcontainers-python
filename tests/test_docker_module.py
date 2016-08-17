@@ -1,4 +1,4 @@
-from testcontainers.webdriver_container import WebDriverContainer
+from testcontainers.webdriver import WebDriverContainer
 from selenium.webdriver.common.desired_capabilities import DesiredCapabilities
 
 import pytest

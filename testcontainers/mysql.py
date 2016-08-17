@@ -1,7 +1,7 @@
 import MySQLdb
 
 from testcontainers import config
-from testcontainers.generic_container import Container
+from testcontainers.generic import Container
 from testcontainers.waiting_utils import wait_container_is_ready
 
 
