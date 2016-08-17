@@ -73,7 +73,7 @@ class DockerClient(object):
                                           host_config=host_config,
                                           name=name,
                                           environment=env,
-                                          volumes=dict(volumes).keys())
+                                          volumes=dict(volumes).values())
 
     def _get_exposed_ports(self, ports):
         return dict(ports).keys() if ports else None
