@@ -22,4 +22,4 @@ class MySqlDockerContainer(DockerContainer):
 
     @wait_container_is_ready()
     def _get_connection(self):
-        return MySQLdb.connect(**config.db)
+        return MySQLdb.connect(**config.mysql_db)

@@ -1,9 +1,16 @@
+##################
+# General config #
+##################
+
 docker_base_url = 'unix://var/run/docker.sock'
 max_tries = 120
 sleep_time = 1
 
-# DB container configurations
-db = {
+####################
+# My SQL Container #
+####################
+
+mysql_db = {
     "host": "0.0.0.0",
     "user": "root",
     "passwd": "test",
@@ -13,13 +20,38 @@ db = {
 my_sql_container = {
     'bind_ports': {3306: 3306},
     'env': {
-        "MYSQL_ROOT_PASSWORD": db['passwd'],
-        "MYSQL_DATABASE": db['db']
+        "MYSQL_ROOT_PASSWORD": mysql_db['passwd'],
+        "MYSQL_DATABASE": mysql_db['db']
     },
     "name": "mysql"
 }
 
-# Selenium container configurations
+######################
+# Postgres container #
+######################
+
+postgres_db = {
+    "host": "0.0.0.0",
+    "user": "root",
+    "passwd": "test",
+    "db": "test"
+}
+
+postgres_container = {
+    "image": "postgres:latest",
+    "env": {
+        "POSTGRES_USER": "root",
+        "POSTGRES_PASSWORD": "secret",
+        "POSTGRES_DB": "test"
+    },
+    "bing_ports": {5432: 5432},
+    "name": "postgres"
+}
+
+######################
+# Selenium container #
+######################
+
 selenium_hub_host = "localhost"
 
 hub = {
