@@ -1,7 +1,7 @@
 from testcontainers.docker_client import DockerClient
 
 
-class Container(object):
+class DockerContainer(object):
     def __init__(self):
         self._docker = DockerClient()
 
@@ -22,9 +22,9 @@ class Container(object):
         self._docker.remove_all_spawned()
 
 
-class GenericContainer(Container):
+class GenericDockerContainer(DockerContainer):
     def __init__(self, config):
-        Container.__init__(self)
+        DockerContainer.__init__(self)
         self.container = None
         self.config = config
 

@@ -1,4 +1,4 @@
-from testcontainers.webdriver import WebDriverContainer
+from testcontainers.webdriver import WebDriverDockerContainer
 from selenium.webdriver.common.desired_capabilities import DesiredCapabilities
 
 import pytest
@@ -6,7 +6,7 @@ import pytest
 
 @pytest.fixture
 def selenium_container(request):
-    container = WebDriverContainer().start()
+    container = WebDriverDockerContainer().start()
 
     def fin():
         container.stop()
@@ -21,7 +21,7 @@ class TestDocker(object):
         DesiredCapabilities.CHROME,
     ])
     def test_selenium(self, browser):
-        with WebDriverContainer(browser) as firefox:
+        with WebDriverDockerContainer(browser) as firefox:
             webdriver = firefox.driver
             webdriver.get("http://google.com")
             webdriver.find_element_by_name("q").send_keys("Hello")

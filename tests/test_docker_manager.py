@@ -1,6 +1,6 @@
 from testcontainers.docker_client import DockerClient
-from testcontainers.generic import GenericContainer
-from testcontainers.mysql import MySqlContainer
+from testcontainers.generic import GenericDockerContainer
+from testcontainers.mysql import MySqlDockerContainer
 
 
 def test_docker_run_selenium():
@@ -15,7 +15,7 @@ def test_docker_run_selenium():
 
 
 def test_docker_run_mysql():
-    with MySqlContainer() as mysql:
+    with MySqlDockerContainer() as mysql:
         conn = mysql.connection
         cur = conn.cursor()
 
@@ -65,5 +65,5 @@ def test_generic_container():
         "name": "selenium_chrome"
     }
 
-    with GenericContainer(selenium_chrome) as chrome:
+    with GenericDockerContainer(selenium_chrome) as chrome:
         assert chrome.id

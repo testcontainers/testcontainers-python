@@ -1,13 +1,13 @@
 import MySQLdb
 
 from testcontainers import config
-from testcontainers.generic import Container
+from testcontainers.generic import DockerContainer
 from testcontainers.waiting_utils import wait_container_is_ready
 
 
-class MySqlContainer(Container):
+class MySqlDockerContainer(DockerContainer):
     def __init__(self, image='mysql:latest'):
-        Container.__init__(self)
+        DockerContainer.__init__(self)
         self.image = image
         self.connection = None
 
