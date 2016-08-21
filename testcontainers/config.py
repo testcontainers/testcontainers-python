@@ -40,9 +40,9 @@ postgres_db = {
 postgres_container = {
     "image": "postgres:latest",
     "env": {
-        "POSTGRES_USER": "root",
-        "POSTGRES_PASSWORD": "secret",
-        "POSTGRES_DB": "test"
+        "POSTGRES_USER": postgres_db["user"],
+        "POSTGRES_PASSWORD": postgres_db["passwd"],
+        "POSTGRES_DB": postgres_db["db"]
     },
     "bing_ports": {5432: 5432},
     "name": "postgres"
