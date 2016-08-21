@@ -10,7 +10,6 @@ class WebDriverDockerContainer(DockerContainer):
     def __init__(self, capabilities=DesiredCapabilities.FIREFOX):
         DockerContainer.__init__(self)
         self._capabilities = capabilities
-        self.driver = None
         self._default_port = 4444
 
     def start(self):
@@ -23,11 +22,10 @@ class WebDriverDockerContainer(DockerContainer):
             self._docker.run(**config.firefox_node)
         else:
             self._docker.run(**config.chrome_node)
-        self.driver = self._get_connection()
         return self
 
     @wait_container_is_ready()
-    def _get_connection(self):
+    def driver(self):
         return webdriver.Remote(
             command_executor='http://{}:{}/wd/hub'.format(config.selenium_hub_host, self._default_port),
             desired_capabilities=self._capabilities)
