@@ -12,7 +12,7 @@ def selenium_container(request):
         container.stop()
 
     request.addfinalizer(fin)
-    return container.driver
+    return container
 
 
 class TestDocker(object):
@@ -22,14 +22,16 @@ class TestDocker(object):
     ])
     def test_selenium(self, browser):
         with WebDriverDockerContainer(browser) as firefox:
-            webdriver = firefox.driver
+            webdriver = firefox.driver()
             webdriver.get("http://google.com")
             webdriver.find_element_by_name("q").send_keys("Hello")
 
     def test_fixture(self, selenium_container):
-        selenium_container.get("http://google.com")
-        selenium_container.find_element_by_name("q").send_keys("Hello")
+        driver = selenium_container.driver()
+        driver.get("http://google.com")
+        driver.find_element_by_name("q").send_keys("Hello")
 
     def test_fixture_2(self, selenium_container):
-        selenium_container.get("http://google.com")
-        selenium_container.find_element_by_name("q").send_keys("Hello")
+        driver = selenium_container.driver()
+        driver.get("http://google.com")
+        driver.find_element_by_name("q").send_keys("Hello")
