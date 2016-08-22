@@ -38,7 +38,6 @@ postgres_db = {
 }
 
 postgres_container = {
-    "image": "postgres:latest",
     "env": {
         "POSTGRES_USER": postgres_db["user"],
         "POSTGRES_PASSWORD": postgres_db["passwd"],

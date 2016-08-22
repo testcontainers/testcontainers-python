@@ -15,7 +15,7 @@ def test_docker_run_selenium():
 
 
 def test_docker_run_mysql():
-    with MySqlDockerContainer() as mysql:
+    with MySqlDockerContainer('5.5') as mysql:
         conn = mysql.connection()
         cur = conn.cursor()
 
