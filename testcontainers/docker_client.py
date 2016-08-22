@@ -1,3 +1,16 @@
+#
+#    Licensed under the Apache License, Version 2.0 (the "License"); you may
+#    not use this file except in compliance with the License. You may obtain
+#    a copy of the License at
+#
+#         http://www.apache.org/licenses/LICENSE-2.0
+#
+#    Unless required by applicable law or agreed to in writing, software
+#    distributed under the License is distributed on an "AS IS" BASIS, WITHOUT
+#    WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the
+#    License for the specific language governing permissions and limitations
+#    under the License.
+
 import logging
 from time import sleep
 
@@ -23,8 +36,13 @@ class DockerClient(object):
         :return:
         """
         self.pull_image(image)
-        container = self._create_container(image, bind_ports=bind_ports, name=name, env=env)
-        self._cli.start(container, publish_all_ports=True, port_bindings=bind_ports, links=links)
+        container = self._create_container(image,
+                                           bind_ports=bind_ports,
+                                           name=name, env=env)
+        self._cli.start(container,
+                        publish_all_ports=True,
+                        port_bindings=bind_ports,
+                        links=links)
         self._containers.append(container)
         return container
 
@@ -64,16 +82,19 @@ class DockerClient(object):
         :param env:
         :return:
         """
-        for container in self.filter_containers(name):  # filter containers and remove to void name conflict error
+        for container in self.filter_containers(name):
+            # filter containers and remove to void name conflict error
             self.remove(container, True)
 
-        host_config = self._cli.create_host_config(port_bindings=bind_ports, binds=volumes)
-        return self._cli.create_container(image=image,
-                                          ports=self._get_exposed_ports(bind_ports),
-                                          volumes=self._get_volumes_to_mount(volumes),
-                                          host_config=host_config,
-                                          name=name,
-                                          environment=env)
+        host_config = self._cli.create_host_config(
+            port_bindings=bind_ports, binds=volumes)
+        return self._cli.create_container(
+            image=image,
+            ports=self._get_exposed_ports(bind_ports),
+            volumes=self._get_volumes_to_mount(volumes),
+            host_config=host_config,
+            name=name,
+            environment=env)
 
     def _get_exposed_ports(self, ports):
         return dict(ports).values() if ports else None
@@ -95,7 +116,8 @@ class DockerClient(object):
         :param name:
         :return:
         """
-        return self._cli.containers(all=True, filters={"name": name}) if name else []
+        return self._cli.containers(
+            all=True, filters={"name": name}) if name else []
 
     def inspect(self, container):
         """
@@ -134,7 +156,7 @@ class DockerClient(object):
         :return:
         """
         self._cli.remove_container(container, force=force)
-        if type(container) == type({}):
+        if isinstance(container, dict):
             logging.warning("Container removed {}".format(container['Id']))
         else:
             logging.warning("Container removed {}".format(container))
