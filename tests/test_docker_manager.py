@@ -10,7 +10,7 @@
 #    WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the
 #    License for the specific language governing permissions and limitations
 #    under the License.
-
+from pprint import pprint
 
 from testcontainers.docker_client import DockerClient
 from testcontainers.generic import GenericDockerContainer
@@ -42,7 +42,7 @@ def test_docker_run_mysql():
 
 def test_docker_images():
     docker = DockerClient()
-    img = docker._cli.containers(all=True, filters={"name": "selenium-hub"})
+    img = docker.containers(all=True, filters={"name": "selenium-hub"})
     assert len(img) >= 0
 
 
@@ -81,3 +81,19 @@ def test_generic_container():
 
     with GenericDockerContainer(selenium_chrome) as chrome:
         assert chrome.id
+
+
+def test_docker_build():
+    dockerfile = """
+                FROM busybox:buildroot-2014.02
+                MAINTAINER first last, first.last@yourdomain.com
+                VOLUME /data
+                CMD ["/bin/sh"]
+                """
+
+    docker = DockerClient()
+    docker.build(dockerfile, "my_container")
+    out = docker.images("my_container")
+    pprint(out)
+    assert len(out) == 1
+    assert out[0]['RepoTags'][0] == 'my_container:latest'
