@@ -7,7 +7,7 @@ from testcontainers.waiting_utils import wait_container_is_ready
 
 class MySqlDockerContainer(DockerContainer):
     def __init__(self, image='mysql:latest'):
-        DockerContainer.__init__(self)
+        super(DockerContainer, self).__init__()
         self.image = image
 
     def start(self):

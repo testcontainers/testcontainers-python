@@ -15,5 +15,5 @@ class PostgresContainer(DockerContainer):
         return psycopg2.connect(**config.postgres_db)
 
     def __init__(self, image="postgres:latest"):
-        DockerContainer.__init__(self)
+        super(DockerContainer, self).__init__()
         config.postgres_container["image"] = image
