@@ -92,8 +92,17 @@ def test_docker_build():
                 """
 
     docker = DockerClient()
-    docker.build(dockerfile, "my_container")
+    docker.build(fileobj=dockerfile, tag="my_container")
     out = docker.images("my_container")
     pprint(out)
     assert len(out) == 1
     assert out[0]['RepoTags'][0] == 'my_container:latest'
+
+
+def test_docker_build_with_dockerfile():
+    docker = DockerClient()
+    docker.build(path="/Users/sepi/PycharmProjects/testcontainers_python/tests/", tag="my_container_2")
+    out = docker.images("my_container_2")
+    pprint(out)
+    assert len(out) == 1
+    assert out[0]['RepoTags'][0] == 'my_container_2:latest'

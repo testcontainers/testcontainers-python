@@ -123,9 +123,11 @@ class DockerClient(object):
         return self.containers(
             all=True, filters={"name": name}) if name else []
 
-    def build(self, dockerfile, tag):
-        f = BytesIO(dockerfile.encode('utf-8'))
-        response = [line for line in self._cli.build(fileobj=f, rm=True, tag=tag)]
+    def build(self, path=None, tag=None, fileobj=None, rm=True):
+        f = None
+        if fileobj:
+            f = BytesIO(fileobj.encode('utf-8'))
+        response = [line for line in self._cli.build(path=path, fileobj=f, rm=rm, tag=tag)]
         for line in response:
             logging.warning(line)
 
