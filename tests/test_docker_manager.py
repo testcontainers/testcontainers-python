@@ -92,7 +92,7 @@ def test_docker_build():
                 """
 
     docker = DockerClient()
-    docker.build(fileobj=dockerfile, tag="my_container")
+    docker.build(dockerfile=dockerfile, tag="my_container")
     out = docker.images("my_container")
     pprint(out)
     assert len(out) == 1
