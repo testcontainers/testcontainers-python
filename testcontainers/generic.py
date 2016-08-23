@@ -16,8 +16,9 @@ from testcontainers.docker_client import DockerClient
 
 
 class DockerContainer(object):
-    def __init__(self):
+    def __init__(self, version="latest"):
         self._docker = DockerClient()
+        self._version = version
         self._env = {}
         self._exposed_ports = None
         self._host = "0.0.0.0"

@@ -21,9 +21,8 @@ class MySqlDockerContainer(DockerContainer):
     user = "test"
     passwd = "secret"
 
-    def __init__(self, version="latest"):
+    def __init__(self):
         super(MySqlDockerContainer, self).__init__()
-        self._version = version
         self._image = "mysql"
 
     def start(self):
