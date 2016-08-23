@@ -21,7 +21,7 @@ from testcontainers.waiting_utils import wait_container_is_ready
 
 class WebDriverDockerContainer(DockerContainer):
     def __init__(self, capabilities=DesiredCapabilities.FIREFOX):
-        super(DockerContainer, self).__init__()
+        super(WebDriverDockerContainer, self).__init__()
         self._capabilities = capabilities
         self._default_port = 4444
 

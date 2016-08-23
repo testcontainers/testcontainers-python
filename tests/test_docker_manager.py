@@ -29,7 +29,17 @@ def test_docker_run_selenium():
 
 
 def test_docker_run_mysql():
-    with MySqlDockerContainer('5.5') as mysql:
+    config = {
+        'image': "mysql:latest",
+        'bind_ports': {3306: 3306},
+        'env': {
+            "MYSQL_ROOT_PASSWORD": "test",
+            "MYSQL_DATABASE": "test"
+        },
+        "name": "mysql"
+    }
+
+    with MySqlDockerContainer(config) as mysql:
         conn = mysql.connection()
         cur = conn.cursor()
 

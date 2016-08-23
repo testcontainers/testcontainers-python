@@ -11,7 +11,6 @@
 #    License for the specific language governing permissions and limitations
 #    under the License.
 
-
 import MySQLdb
 
 from testcontainers import config
@@ -19,19 +18,25 @@ from testcontainers.generic import DockerContainer
 from testcontainers.waiting_utils import wait_container_is_ready
 
 
+class ContainerConfig(dict):
+    def __init__(self, *args, **kw):
+        super(ContainerConfig, self).__init__(*args, **kw)
+
+
 class MySqlDockerContainer(DockerContainer):
-    def __init__(self, version='latest', image='mysql'):
-        super(self.__class__, self).__init__()
-        self.image = "{}:{}".format(image, version)
+    def __init__(self, config):
+        super(MySqlDockerContainer, self).__init__()
+        self.config = config
 
     def start(self):
         """
         Start my sql container and wait to be ready
         :return:
         """
-        self._docker.run(self.image, **config.my_sql_container)
+        self._docker.run(**self.config)
+        self._connect()
         return self
 
     @wait_container_is_ready()
-    def connection(self):
+    def _connect(self):
         return MySQLdb.connect(**config.mysql_db)

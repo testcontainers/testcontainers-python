@@ -19,7 +19,7 @@ from testcontainers.generic import DockerContainer
 from testcontainers.waiting_utils import wait_container_is_ready
 
 
-class PostgresContainer(DockerContainer):
+class PostgresDockerContainer(DockerContainer):
     def start(self):
         self._docker.run(**config.postgres_container)
         return self
@@ -29,5 +29,5 @@ class PostgresContainer(DockerContainer):
         return psycopg2.connect(self.image, **config.postgres_db)
 
     def __init__(self, version='latest', image="postgres"):
-        super(DockerContainer, self).__init__()
+        super(PostgresDockerContainer, self).__init__()
         self.image = "{}:{}".format(image, version)

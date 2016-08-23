@@ -38,7 +38,7 @@ class DockerContainer(object):
 
 class GenericDockerContainer(DockerContainer):
     def __init__(self, config):
-        super(DockerContainer, self).__init__()
+        super(GenericDockerContainer, self).__init__()
         self.container = None
         self.config = config
 
