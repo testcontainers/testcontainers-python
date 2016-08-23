@@ -20,6 +20,7 @@ class DockerContainer(object):
         self._docker = DockerClient()
         self._env = {}
         self._exposed_port = None
+        self._host = "0.0.0.0"
 
     def __enter__(self):
         return self.start()

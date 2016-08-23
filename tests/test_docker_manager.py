@@ -12,6 +12,8 @@
 #    under the License.
 from pprint import pprint
 
+import MySQLdb
+
 from testcontainers.docker_client import DockerClient
 from testcontainers.generic import GenericDockerContainer
 from testcontainers.mysql import MySqlDockerContainer
@@ -30,10 +32,11 @@ def test_docker_run_selenium():
 
 def test_docker_run_mysql():
     with MySqlDockerContainer() as mysql:
-        conn = MySQLdb.connect(host="0.0.0.0",
-                               user=self.user,
-                               passwd=self.passwd,
-                               db=self.user)
+        print(mysql.password)
+        conn = MySQLdb.connect(host=mysql.host,
+                               user=mysql.user,
+                               passwd=mysql.password,
+                               db=mysql.db)
         cur = conn.cursor()
 
         cur.execute("SELECT VERSION()")
