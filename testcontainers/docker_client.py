@@ -127,7 +127,10 @@ class DockerClient(object):
         f = None
         if dockerfile:
             f = BytesIO(dockerfile.encode('utf-8'))
-        response = [line for line in self._cli.build(path=path, fileobj=f, rm=rm, tag=tag)]
+        response = [line for line in self._cli.build(path=path,
+                                                     fileobj=f,
+                                                     rm=rm,
+                                                     tag=tag)]
         for line in response:
             logging.warning(line)
 
