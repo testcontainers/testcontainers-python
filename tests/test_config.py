@@ -1,7 +1,5 @@
 from testcontainers import mysql
 
-config = mysql.MySqlConfig()
-
-config.username = "root"
-
-print config.username
+config = mysql.ContainerConfig()
+print config.user
+print config.passwd

@@ -18,12 +18,20 @@ from testcontainers.docker_client import DockerClient
 class DockerContainer(object):
     def __init__(self):
         self._docker = DockerClient()
+        self._env = {}
+        self._exposed_port = None
 
     def __enter__(self):
         return self.start()
 
     def __exit__(self, type, value, traceback):
         self.stop()
+
+    def _add_env(self, key, value):
+        self._env[key] = value
+
+    def _expose_port(self, port):
+        self._exposed_port = port
 
     def start(self):
         raise NotImplementedError

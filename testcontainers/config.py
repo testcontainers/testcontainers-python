@@ -23,21 +23,21 @@ sleep_time = 1
 # My SQL Container #
 ####################
 
-mysql_db = {
-    "host": "0.0.0.0",
-    "user": "root",
-    "passwd": "test",
-    "db": "test"
-}
-
-my_sql_container = {
-    'bind_ports': {3306: 3306},
-    'env': {
-        "MYSQL_ROOT_PASSWORD": mysql_db['passwd'],
-        "MYSQL_DATABASE": mysql_db['db']
-    },
-    "name": "mysql"
-}
+# mysql_db = {
+#     "host": "0.0.0.0",
+#     "user": "root",
+#     "passwd": "test",
+#     "db": "test"
+# }
+#
+# my_sql_container = {
+#     'bind_ports': {3306: 3306},
+#     'env': {
+#         "MYSQL_ROOT_PASSWORD": mysql_db['passwd'],
+#         "MYSQL_DATABASE": mysql_db['db']
+#     },
+#     "name": "mysql"
+# }
 
 ######################
 # Postgres container #
