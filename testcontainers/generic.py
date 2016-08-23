@@ -19,7 +19,7 @@ class DockerContainer(object):
     def __init__(self):
         self._docker = DockerClient()
         self._env = {}
-        self._exposed_port = None
+        self._exposed_ports = None
         self._host = "0.0.0.0"
 
     def __enter__(self):
@@ -28,11 +28,11 @@ class DockerContainer(object):
     def __exit__(self, type, value, traceback):
         self.stop()
 
-    def _add_env(self, key, value):
+    def add_env(self, key, value):
         self._env[key] = value
 
-    def _expose_port(self, port):
-        self._exposed_port = port
+    def bind_ports(self, ports):
+        self._exposed_ports = ports
 
     def _configure(self):
         raise NotImplementedError

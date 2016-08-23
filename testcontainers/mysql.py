@@ -35,16 +35,16 @@ class MySqlDockerContainer(DockerContainer):
         self._docker.run(image="{}:{}".format(self._image, self._version),
                          env=self._env,
                          name=self._image,
-                         bind_ports={self._exposed_port: self._exposed_port})
+                         bind_ports=self._exposed_ports)
         self._connect()
         return self
 
     def _configure(self):
-        self._add_env("MYSQL_USER", self.user)
-        self._add_env("MYSQL_PASSWORD", self.passwd)
-        self._add_env("MYSQL_ROOT_PASSWORD", self.passwd)
-        self._add_env("MYSQL_DATABASE", self.user)
-        self._expose_port(3306)
+        self.add_env("MYSQL_USER", self.user)
+        self.add_env("MYSQL_PASSWORD", self.passwd)
+        self.add_env("MYSQL_ROOT_PASSWORD", self.passwd)
+        self.add_env("MYSQL_DATABASE", self.user)
+        self.bind_ports({3306: 3306})
 
     @wait_container_is_ready()
     def _connect(self):
