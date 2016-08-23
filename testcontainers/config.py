@@ -43,22 +43,22 @@ sleep_time = 1
 # Postgres container #
 ######################
 
-postgres_db = {
-    "host": "0.0.0.0",
-    "user": "root",
-    "passwd": "test",
-    "db": "test"
-}
-
-postgres_container = {
-    "env": {
-        "POSTGRES_USER": postgres_db["user"],
-        "POSTGRES_PASSWORD": postgres_db["passwd"],
-        "POSTGRES_DB": postgres_db["db"]
-    },
-    "bing_ports": {5432: 5432},
-    "name": "postgres"
-}
+# postgres_db = {
+#     "host": "0.0.0.0",
+#     "user": "root",
+#     "passwd": "test",
+#     "db": "test"
+# }
+#
+# postgres_container = {
+#     "env": {
+#         "POSTGRES_USER": postgres_db["user"],
+#         "POSTGRES_PASSWORD": postgres_db["passwd"],
+#         "POSTGRES_DB": postgres_db["db"]
+#     },
+#     "bing_ports": {5432: 5432},
+#     "name": "postgres"
+# }
 
 ######################
 # Selenium container #

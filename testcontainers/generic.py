@@ -17,10 +17,10 @@ from testcontainers.waiting_utils import wait_container_is_ready
 
 
 class DockerContainer(object):
-    def __init__(self, version="latest"):
+    def __init__(self):
         self._docker = DockerClient()
-        self._image = None
-        self._version = version
+        self._image_name = None
+        self._version = "latest"
         self._env = {}
         self._exposed_ports = {}
         self._host = "0.0.0.0"
@@ -38,12 +38,6 @@ class DockerContainer(object):
     def bind_ports(self, host, container):
         self._exposed_ports[host] = container
 
-    def _configure(self):
-        raise NotImplementedError
-
-    def _connect(self):
-        raise NotImplementedError
-
     def start(self):
         raise NotImplementedError
 
@@ -53,6 +47,16 @@ class DockerContainer(object):
         :return:
         """
         self._docker.remove_all_spawned()
+
+    def _configure(self):
+        raise NotImplementedError
+
+    def _connect(self):
+        raise NotImplementedError
+
+    @property
+    def _get_image(self):
+        return "{}:{}".format(self._image_name, self._version)
 
 
 class GenericDockerContainer(DockerContainer):
@@ -87,9 +91,9 @@ class GenericDbContainer(DockerContainer):
         :return:
         """
         self._configure()
-        self._docker.run(image="{}:{}".format(self._image, self._version),
+        self._docker.run(image=self._get_image,
                          env=self._env,
-                         name=self._image,
+                         name=self._image_name,
                          bind_ports=self._exposed_ports)
         self._connect()
         return self
@@ -101,7 +105,7 @@ class GenericDbContainer(DockerContainer):
         :return:
         """
         engine = sqlalchemy.create_engine(
-            "{}://{}:{}@{}/{}".format(self._image,
+            "{}://{}:{}@{}/{}".format(self._image_name,
                                       self.user,
                                       self.passwd,
                                       self._host,

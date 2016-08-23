@@ -16,9 +16,10 @@ from testcontainers.generic import GenericDbContainer
 
 
 class PostgresDockerContainer(GenericDbContainer):
-    def __init__(self):
+    def __init__(self, version="latest"):
         super(PostgresDockerContainer, self).__init__()
-        self._image = "postgres"
+        self._image_name = "postgres"
+        self._version = version
 
     def _configure(self):
         self.add_env("POSTGRES_USER", self.user)

@@ -19,6 +19,21 @@ from testcontainers.generic import DockerContainer
 from testcontainers.waiting_utils import wait_container_is_ready
 
 
+class SeleniumHubContainer(DockerContainer):
+    def __init__(self):
+        super(SeleniumHubContainer, self).__init__()
+        self._image = "selenium/hub"
+
+    def _configure(self):
+        self.bind_ports(4444, 4444)
+
+    def start(self):
+        self._docker.run(image="{}:{}".format(self._image, self._version), name=self._image)
+
+    def _connect(self):
+        pass
+
+
 class WebDriverDockerContainer(DockerContainer):
     def __init__(self, capabilities=DesiredCapabilities.FIREFOX):
         super(WebDriverDockerContainer, self).__init__()
@@ -37,8 +52,16 @@ class WebDriverDockerContainer(DockerContainer):
             self._docker.run(**config.chrome_node)
         return self
 
+    def _configure(self):
+        hub = {
+            'image': 'selenium/hub:2.53.0',
+            'bind_ports': {4444: 4444},
+            'name': 'selenium-hub'
+        }
+        pass
+
     @wait_container_is_ready()
-    def driver(self):
+    def _connect(self):
         return webdriver.Remote(
             command_executor=('http://{}:{}/wd/hub'.format(
                 config.selenium_hub_host, self._default_port)),

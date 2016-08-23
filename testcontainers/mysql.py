@@ -15,9 +15,10 @@ from testcontainers.generic import GenericDbContainer
 
 
 class MySqlDockerContainer(GenericDbContainer):
-    def __init__(self):
+    def __init__(self, version="latest"):
         super(MySqlDockerContainer, self).__init__()
-        self._image = "mysql"
+        self._image_name = "mysql"
+        self._version = version
 
     def _configure(self):
         self.add_env("MYSQL_USER", self.user)
