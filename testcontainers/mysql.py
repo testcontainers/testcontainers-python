@@ -18,30 +18,33 @@ from testcontainers.waiting_utils import wait_container_is_ready
 
 
 class MySqlDockerContainer(DockerContainer):
-    image = "mysql"
     user = "test"
     passwd = "secret"
 
     def __init__(self, version="latest"):
         super(MySqlDockerContainer, self).__init__()
         self._version = version
-        self._add_env("MYSQL_USER", self.user)
-        self._add_env("MYSQL_PASSWORD", self.passwd)
-        self._add_env("MYSQL_ROOT_PASSWORD", self.passwd)
-        self._add_env("MYSQL_DATABASE", self.user)
-        self._expose_port(3306)
+        self._image = "mysql"
 
     def start(self):
         """
         Start my sql container and wait to be ready
         :return:
         """
-        self._docker.run(image="{}:{}".format(self.image, self._version),
+        self._configure()
+        self._docker.run(image="{}:{}".format(self._image, self._version),
                          env=self._env,
-                         name=self.image,
+                         name=self._image,
                          bind_ports={self._exposed_port: self._exposed_port})
         self._connect()
         return self
+
+    def _configure(self):
+        self._add_env("MYSQL_USER", self.user)
+        self._add_env("MYSQL_PASSWORD", self.passwd)
+        self._add_env("MYSQL_ROOT_PASSWORD", self.passwd)
+        self._add_env("MYSQL_DATABASE", self.user)
+        self._expose_port(3306)
 
     @wait_container_is_ready()
     def _connect(self):

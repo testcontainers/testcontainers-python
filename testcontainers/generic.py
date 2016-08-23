@@ -34,6 +34,9 @@ class DockerContainer(object):
     def _expose_port(self, port):
         self._exposed_port = port
 
+    def _configure(self):
+        raise NotImplementedError
+
     def start(self):
         raise NotImplementedError
 
