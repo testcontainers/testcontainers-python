@@ -23,6 +23,7 @@ class DockerContainer(object):
         self._version = "latest"
         self._env = {}
         self._exposed_ports = {}
+        self._links = {}
         self._host = "0.0.0.0"
 
     def __enter__(self):
@@ -37,6 +38,9 @@ class DockerContainer(object):
 
     def bind_ports(self, host, container):
         self._exposed_ports[host] = container
+
+    def link_containers(self, target, current):
+        self._links[target] = current
 
     def start(self):
         raise NotImplementedError
@@ -111,6 +115,9 @@ class GenericDbContainer(DockerContainer):
                                       self._host,
                                       self.user))
         engine.connect()
+
+    def _configure(self):
+        pass
 
     @property
     def username(self):

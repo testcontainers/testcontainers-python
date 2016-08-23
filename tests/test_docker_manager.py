@@ -31,7 +31,7 @@ def test_docker_run_selenium():
 
 
 def test_docker_run_mysql():
-    with MySqlDockerContainer(version="5.5") as mysql:
+    with MySqlDockerContainer() as mysql:
         print(mysql.password)
         conn = MySQLdb.connect(host=mysql.host,
                                user=mysql.user,

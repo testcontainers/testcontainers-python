@@ -12,15 +12,15 @@
 #    under the License.
 
 
-from testcontainers.webdriver import WebDriverDockerContainer
+import pytest
 from selenium.webdriver.common.desired_capabilities import DesiredCapabilities
 
-import pytest
+from testcontainers.webdriver import BrowserWebDriverContainer
 
 
 @pytest.fixture
 def selenium_container(request):
-    container = WebDriverDockerContainer().start()
+    container = BrowserWebDriverContainer().start()
 
     def fin():
         container.stop()
@@ -35,17 +35,17 @@ class TestDocker(object):
         DesiredCapabilities.CHROME,
     ])
     def test_selenium(self, browser):
-        with WebDriverDockerContainer(browser) as firefox:
-            webdriver = firefox.driver()
+        with BrowserWebDriverContainer(browser) as firefox:
+            webdriver = firefox.get_driver()
             webdriver.get("http://google.com")
             webdriver.find_element_by_name("q").send_keys("Hello")
 
     def test_fixture(self, selenium_container):
-        driver = selenium_container.driver()
+        driver = selenium_container.get_driver()
         driver.get("http://google.com")
         driver.find_element_by_name("q").send_keys("Hello")
 
     def test_fixture_2(self, selenium_container):
-        driver = selenium_container.driver()
+        driver = selenium_container.get_driver()
         driver.get("http://google.com")
         driver.find_element_by_name("q").send_keys("Hello")
