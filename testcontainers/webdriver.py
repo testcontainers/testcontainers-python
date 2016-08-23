@@ -35,7 +35,7 @@ class SeleniumHubContainer(DockerContainer):
 
     def start(self):
         self._configure()
-        self._docker.run(image=self._get_image, bind_ports=self._exposed_ports, name=self.name)
+        return self._docker.run(image=self._get_image, bind_ports=self._exposed_ports, name=self.name)
 
     @wait_container_is_ready()
     def _connect(self):
@@ -57,11 +57,11 @@ class FireFoxContainer(DockerContainer):
 
     def start(self):
         self._configure()
-        self._docker.run(image=self._get_image,
-                         bind_ports=self._exposed_ports,
-                         env=self._env,
-                         links=self._links,
-                         name=self.name)
+        return self._docker.run(image=self._get_image,
+                                bind_ports=self._exposed_ports,
+                                env=self._env,
+                                links=self._links,
+                                name=self.name)
 
     def _connect(self):
         pass
@@ -85,11 +85,11 @@ class ChromeContainer(DockerContainer):
 
     def start(self):
         self._configure()
-        self._docker.run(image=self._get_image,
-                         bind_ports=self._exposed_ports,
-                         env=self._env,
-                         links=self._links,
-                         name=self.name)
+        return self._docker.run(image=self._get_image,
+                                bind_ports=self._exposed_ports,
+                                env=self._env,
+                                links=self._links,
+                                name=self.name)
 
     def _connect(self):
         pass
@@ -106,26 +106,33 @@ class BrowserWebDriverContainer(DockerContainer):
         super(BrowserWebDriverContainer, self).__init__()
         self._capabilities = capabilities
         self._version = version
-        self.hub = SeleniumHubContainer(capabilities, version)
-
-    def _configure(self):
-        pass
+        self.hub = SeleniumHubContainer(self._capabilities, self._version)
+        self._spawned = []
 
     def start(self):
         """
         Start selenium containers and wait until they are ready
         :return:
         """
-        self.hub.start()
+        hub_container = self.hub.start()
+        self._add_to_spawn(hub_container)
         if self._capabilities["browserName"] == "firefox":
-            FireFoxContainer(self._version).start()
+            ff = FireFoxContainer(self._version).start()
+            self._add_to_spawn(ff)
         else:
-            ChromeContainer(self._version).start()
+            chrome = ChromeContainer(self._version).start()
+            self._add_to_spawn(chrome)
         self.hub._connect()
         return self
 
+    def _configure(self):
+        pass
+
     def _connect(self):
         pass
+
+    def _add_to_spawn(self, container):
+        self._docker._containers.append(container)
 
     def get_driver(self):
         return self.hub.driver
