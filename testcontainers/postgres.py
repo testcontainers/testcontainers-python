@@ -12,17 +12,10 @@
 #    under the License.
 
 
-import psycopg2
-
-from testcontainers import config
-from testcontainers.generic import DockerContainer
-from testcontainers.waiting_utils import wait_container_is_ready
+from testcontainers.generic import GenericDbContainer
 
 
-class PostgresDockerContainer(DockerContainer):
-    user = "test"
-    passwd = "secret"
-
+class PostgresDockerContainer(GenericDbContainer):
     def __init__(self):
         super(PostgresDockerContainer, self).__init__()
         self._image = "postgres"
@@ -31,20 +24,4 @@ class PostgresDockerContainer(DockerContainer):
         self.add_env("POSTGRES_USER", self.user)
         self.add_env("POSTGRES_PASSWORD", self.passwd)
         self.add_env("POSTGRES_DB", self.user)
-        self.bind_ports({5432: 5432})
-
-    def start(self):
-        self._configure()
-        self._docker.run(image="{}:{}".format(self._image, self._version),
-                         env=self._env,
-                         name=self._image,
-                         bind_ports=self._exposed_ports)
-        self._connect()
-        return self
-
-    @wait_container_is_ready()
-    def _connect(self):
-        return psycopg2.connect(host=self._host,
-                                user=self.user,
-                                password=self.passwd,
-                                database=self.user)
+        self.bind_ports(5432, 5432)
