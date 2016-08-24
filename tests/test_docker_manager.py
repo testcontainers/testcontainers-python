@@ -33,7 +33,7 @@ def test_docker_run_selenium():
 
 
 def test_docker_run_mysql():
-    config = MySqlConfig("test", "secret")
+    config = MySqlConfig("test", "test")
     with MySqlDockerContainer(config) as mysql:
         print(mysql.username, mysql.password)
         conn = MySQLdb.connect(host=mysql.host_ip,

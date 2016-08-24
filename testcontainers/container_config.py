@@ -48,20 +48,27 @@ class MySqlConfig(ContainerConfig):
     mysql_root_password = "MYSQL_ROOT_PASSWORD"
     mysql_db_name = "MYSQL_DATABASE"
 
-    def __init__(self, user, password, root_pass="secret", db="test", host_port=3306, image="mysql", version="latest"):
+    def __init__(self, user, password, superuser=False, root_pass="secret", db="test", host_port=3306, image="mysql",
+                 version="latest"):
         super(MySqlConfig, self).__init__(image, version)
-        self.add_env(self.mysql_user, user)
-        self.add_env(self.mysql_password, password)
+        self.superuser = superuser
+        if not superuser:
+            self.add_env(self.mysql_user, user)
+            self.add_env(self.mysql_password, password)
         self.add_env(self.mysql_root_password, root_pass)
         self.add_env(self.mysql_db_name, db)
         self.bind_ports(host_port, 3306)
 
     @property
     def username(self):
+        if self.superuser:
+            return "root"
         return self.env[self.mysql_user]
 
     @property
     def password(self):
+        if self.superuser:
+            return self.env[self.mysql_root_password]
         return self.env[self.mysql_password]
 
     @property
