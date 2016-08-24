@@ -13,14 +13,14 @@
 
 
 import pytest
-from selenium.webdriver.common.desired_capabilities import DesiredCapabilities
 
-from testcontainers.webdriver import BrowserWebDriverContainer, StandaloneSeleniumContainer
+from testcontainers.webdriver import StandaloneSeleniumContainer
+from testcontainers.webdriver import SeleniumGridContainers
 
 
 @pytest.fixture
 def selenium_container(request):
-    container = BrowserWebDriverContainer().start()
+    container = SeleniumGridContainers().start()
 
     def fin():
         container.stop()
@@ -31,11 +31,11 @@ def selenium_container(request):
 
 class TestDocker(object):
     @pytest.mark.parametrize("browser", [
-        DesiredCapabilities.FIREFOX,
-        DesiredCapabilities.CHROME,
+        "firefox",
+        "chrome",
     ])
-    def test_selenium(self, browser):
-        with BrowserWebDriverContainer(browser) as firefox:
+    def test_selenium_grid(self, browser):
+        with SeleniumGridContainers(browser) as firefox:
             webdriver = firefox.get_driver()
             webdriver.get("http://google.com")
             webdriver.find_element_by_name("q").send_keys("Hello")
