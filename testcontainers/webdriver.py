@@ -10,9 +10,8 @@
 #    WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the
 #    License for the specific language governing permissions and limitations
 #    under the License.
-
+from selenium import webdriver
 from selenium.webdriver.common.desired_capabilities import DesiredCapabilities
-from selenium.webdriver.remote import webdriver
 
 from testcontainers.generic import DockerContainer
 from testcontainers.waiting_utils import wait_container_is_ready
