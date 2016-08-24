@@ -47,6 +47,7 @@ class MySqlConfig(ContainerConfig):
     mysql_password = "MYSQL_PASSWORD"
     mysql_root_password = "MYSQL_ROOT_PASSWORD"
     mysql_db_name = "MYSQL_DATABASE"
+    _super_user_name = "root"
 
     def __init__(self, user, password, superuser=False, root_pass="secret", db="test", host_port=3306, image="mysql",
                  version="latest"):
@@ -62,7 +63,7 @@ class MySqlConfig(ContainerConfig):
     @property
     def username(self):
         if self.superuser:
-            return "root"
+            return self._super_user_name
         return self.env[self.mysql_user]
 
     @property
