@@ -58,7 +58,7 @@ class StandaloneSeleniumContainer(GenericSeleniumContainer):
 
     def start(self):
         self._configure()
-        self._docker.run(image=self._get_image, bind_ports=self._exposed_ports)
+        self._docker.run(image=self._get_image, bind_ports=self._binded_ports)
         self._connect()
         return self
 
@@ -102,7 +102,7 @@ class SeleniumGridContainers(GenericSeleniumContainer):
 
     def _start_node(self):
         return self._docker.run(image=self._get_image,
-                                bind_ports=self._exposed_ports,
+                                bind_ports=self._binded_ports,
                                 env=self._env,
                                 links=self._links)
 

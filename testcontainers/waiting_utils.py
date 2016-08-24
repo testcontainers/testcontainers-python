@@ -30,6 +30,7 @@ def wait_container_is_ready():
     Polling interval is 1 sec.
     :return:
     """
+
     @wrapt.decorator
     def wrapper(wrapped, instance, args, kwargs):
         exception = None
@@ -42,7 +43,7 @@ def wait_container_is_ready():
                 sleep(config.sleep_time)
                 exception = e
         raise TimeoutException(
-            "Wait time exceeded {} sec. {}".
-            format(config.max_tries, exception))
-
+            """Wait time exceeded {0} sec.
+                Method {1}, args {2} , kwargs {3}.
+                 Exception {4}""".format(config.max_tries, wrapped.__name__, args, kwargs, exception))
     return wrapper

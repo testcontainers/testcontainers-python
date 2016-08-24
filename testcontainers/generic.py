@@ -17,30 +17,15 @@ from testcontainers.waiting_utils import wait_container_is_ready
 
 
 class DockerContainer(object):
-    def __init__(self):
+    def __init__(self, config):
         self._docker = DockerClient()
-        self._image_name = None
-        self._version = "latest"
-        self._env = {}
-        self._exposed_ports = {}
-        self._links = {}
-        self._host = "0.0.0.0"
+        self._container_config = config
 
     def __enter__(self):
         return self.start()
 
     def __exit__(self, type, value, traceback):
         self.stop()
-
-    def add_env(self, key, value):
-        self._env[key] = value
-        return self
-
-    def bind_ports(self, host, container):
-        self._exposed_ports[host] = container
-
-    def link_containers(self, target, current):
-        self._links[target] = current
 
     def start(self):
         raise NotImplementedError
@@ -52,15 +37,12 @@ class DockerContainer(object):
         """
         self._docker.remove_all_spawned()
 
-    def _configure(self):
-        raise NotImplementedError
+    @property
+    def config(self):
+        return self._container_config
 
     def _connect(self):
         raise NotImplementedError
-
-    @property
-    def _get_image(self):
-        return "{}:{}".format(self._image_name, self._version)
 
 
 class GenericDockerContainer(DockerContainer):
@@ -83,22 +65,18 @@ class GenericDockerContainer(DockerContainer):
 
 
 class GenericDbContainer(DockerContainer):
-    user = "test"
-    passwd = "secret"
-
-    def __init__(self):
-        super(GenericDbContainer, self).__init__()
+    def __init__(self, config):
+        super(GenericDbContainer, self).__init__(config)
 
     def start(self):
         """
         Start my sql container and wait to be ready
         :return:
         """
-        self._configure()
-        self._docker.run(image=self._get_image,
-                         env=self._env,
-                         name=self._image_name,
-                         bind_ports=self._exposed_ports)
+        self._docker.run(image=self.config.image,
+                         env=self.config.env,
+                         name=self.config.container_name,
+                         bind_ports=self.config.port_bindings)
         self._connect()
         return self
 
@@ -109,11 +87,11 @@ class GenericDbContainer(DockerContainer):
         :return:
         """
         engine = sqlalchemy.create_engine(
-            "{}://{}:{}@{}/{}".format(self._image_name,
-                                      self.user,
-                                      self.passwd,
-                                      self._host,
-                                      self.user))
+            "{}://{}:{}@{}/{}".format(self.config.container_name,
+                                      self.username,
+                                      self.password,
+                                      self.host_ip,
+                                      self.db))
         engine.connect()
 
     def _configure(self):
@@ -121,16 +99,16 @@ class GenericDbContainer(DockerContainer):
 
     @property
     def username(self):
-        return self.user
+        raise NotImplementedError
 
     @property
     def password(self):
-        return self.passwd
+        raise NotImplementedError
 
     @property
     def db(self):
-        return self.user
+        raise NotImplementedError
 
     @property
-    def host(self):
-        return self._host
+    def host_ip(self):
+        return self._container_config.host_ip

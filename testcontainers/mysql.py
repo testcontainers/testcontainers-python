@@ -10,21 +10,21 @@
 #    WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the
 #    License for the specific language governing permissions and limitations
 #    under the License.
-
 from testcontainers.generic import GenericDbContainer
 
 
 class MySqlDockerContainer(GenericDbContainer):
-    host_port = 3306
+    def __init__(self, config):
+        super(MySqlDockerContainer, self).__init__(config)
 
-    def __init__(self, version="latest"):
-        super(MySqlDockerContainer, self).__init__()
-        self._image_name = "mysql"
-        self._version = version
+    @property
+    def password(self):
+        return self.config.password
 
-    def _configure(self):
-        self.add_env("MYSQL_USER", self.user)
-        self.add_env("MYSQL_PASSWORD", self.passwd)
-        self.add_env("MYSQL_ROOT_PASSWORD", self.passwd)
-        self.add_env("MYSQL_DATABASE", self.user)
-        self.bind_ports(self.host_port, 3306)
+    @property
+    def username(self):
+        return self.config.username
+
+    @property
+    def db(self):
+        return self.config.db
