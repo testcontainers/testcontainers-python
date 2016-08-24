@@ -11,8 +11,8 @@
 #    License for the specific language governing permissions and limitations
 #    under the License.
 
-from selenium import webdriver
 from selenium.webdriver.common.desired_capabilities import DesiredCapabilities
+from selenium.webdriver.remote import webdriver
 
 from testcontainers.generic import DockerContainer
 from testcontainers.waiting_utils import wait_container_is_ready
@@ -20,7 +20,8 @@ from testcontainers.waiting_utils import wait_container_is_ready
 
 class GenericSeleniumContainer(DockerContainer):
     hub_port = 4444
-    vnc_port = 5900
+    host_vnc_port = 5900
+    container_vnc_port = 5900
 
     def __init__(self, browser, version):
         super(GenericSeleniumContainer, self).__init__()
@@ -58,7 +59,7 @@ class StandaloneSeleniumContainer(GenericSeleniumContainer):
 
     def _configure(self):
         self.bind_ports(self.hub_port, self.hub_port)
-        self.bind_ports(self.vnc_port, self.vnc_port)
+        self.bind_ports(self.host_vnc_port, self.container_vnc_port)
         if self._browser.__contains__("chrome"):
             self._set_capabilities(DesiredCapabilities.CHROME)
 
@@ -76,121 +77,45 @@ class StandaloneSeleniumContainer(GenericSeleniumContainer):
         return "{}:{}".format(self._image_name, self._version)
 
 
-class SeleniumHubContainer(DockerContainer):
-    name = "selenium-hub"
-    host = "localhost"
-    default_port = 4444
+class SeleniumGridContainers(GenericSeleniumContainer):
+    hub_image = "selenium/hub"
+    firefox_node_image = "selenium/node-firefox-debug"
+    chrome_node_image = "selenium/node-chrome-debug"
+    host_hub_port = 4444
+    hub_container_name = "selenium-hub"
 
-    def __init__(self, capabilities, version):
-        super(SeleniumHubContainer, self).__init__()
-        self._image_name = "selenium/hub"
-        self._version = version
-        self._capabilities = capabilities
-        self.driver = None
+    def __init__(self, image_for="firefox", version="latest"):
+        super(SeleniumGridContainers, self).__init__(image_for, version)
 
     def _configure(self):
-        self.bind_ports(self.default_port, self.default_port)
-
-    def start(self):
-        self._configure()
-        return self._docker.run(image=self._get_image, bind_ports=self._exposed_ports, name=self.name)
-
-    @wait_container_is_ready()
-    def _connect(self):
-        self.driver = webdriver.Remote(
-            command_executor=('http://{}:{}/wd/hub'.format(
-                self.host, self.default_port)),
-            desired_capabilities=self._capabilities)
-
-
-class FireFoxContainer(DockerContainer):
-    name = "firefox-node"
-    default_port = 5900
-
-    def __init__(self, version):
-        super(FireFoxContainer, self).__init__()
-        self._version = version
-        self._image_name = "selenium/node-firefox-debug"
-        self.vnc_port = 5900
-
-    def start(self):
-        self._configure()
-        return self._docker.run(image=self._get_image,
-                                bind_ports=self._exposed_ports,
-                                env=self._env,
-                                links=self._links,
-                                name=self.name)
-
-    def _connect(self):
-        pass
-
-    def _configure(self):
-        self.bind_ports(self.default_port, self.vnc_port)
+        if self._browser.__contains__("chrome"):
+            self._set_capabilities(DesiredCapabilities.CHROME)
         self.add_env("no_proxy", "localhost")
         self.add_env("HUB_ENV_no_proxy", "localhost")
-        self.link_containers(SeleniumHubContainer.name, "hub")
-
-
-class ChromeContainer(DockerContainer):
-    name = "chrome-node"
-    default_port = 5900
-
-    def __init__(self, version):
-        super(ChromeContainer, self).__init__()
-        self._version = version
-        self._image_name = "selenium/node-chrome-debug"
-        self.vnc_port = 5900
+        self.link_containers(SeleniumGridContainers.hub_container_name, "hub")
+        self.bind_ports(self.host_vnc_port, self.container_vnc_port)
 
     def start(self):
         self._configure()
-        return self._docker.run(image=self._get_image,
-                                bind_ports=self._exposed_ports,
-                                env=self._env,
-                                links=self._links,
-                                name=self.name)
-
-    def _connect(self):
-        pass
-
-    def _configure(self):
-        self.bind_ports(self.default_port, self.vnc_port)
-        self.add_env("no_proxy", "localhost")
-        self.add_env("HUB_ENV_no_proxy", "localhost")
-        self.link_containers(SeleniumHubContainer.name, "hub")
-
-
-class BrowserWebDriverContainer(DockerContainer):
-    def __init__(self, capabilities=DesiredCapabilities.FIREFOX, version="latest"):
-        super(BrowserWebDriverContainer, self).__init__()
-        self._capabilities = capabilities
-        self._version = version
-        self.hub = SeleniumHubContainer(self._capabilities, self._version)
-        self._spawned = []
-
-    def start(self):
-        """
-        Start selenium containers and wait until they are ready
-        :return:
-        """
-        hub_container = self.hub.start()
-        self._add_to_spawn(hub_container)
-        if self._capabilities["browserName"] == "firefox":
-            ff = FireFoxContainer(self._version).start()
-            self._add_to_spawn(ff)
-        else:
-            chrome = ChromeContainer(self._version).start()
-            self._add_to_spawn(chrome)
-        self.hub._connect()
+        self._start_nub()
+        self._start_node()
+        self._connect()
         return self
 
-    def _configure(self):
-        pass
+    def _start_nub(self):
+        image_name = "{}:{}".format(self.hub_image, self._version)
+        return self._docker.run(image=image_name, bind_ports={self.hub_port: self.host_hub_port},
+                                name=self.hub_container_name)
 
-    def _connect(self):
-        pass
+    def _start_node(self):
+        return self._docker.run(image=self._get_image,
+                                bind_ports=self._exposed_ports,
+                                env=self._env,
+                                links=self._links)
 
-    def _add_to_spawn(self, container):
-        self._docker._containers.append(container)
-
-    def get_driver(self):
-        return self.hub.driver
+    @property
+    def _get_image(self):
+        self._image_name = self.firefox_node_image
+        if self._capabilities["browserName"] == "chrome":
+            self._image_name = self.chrome_node_image
+        return "{}:{}".format(self._image_name, self._version)
