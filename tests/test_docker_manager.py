@@ -15,7 +15,7 @@ from pprint import pprint
 
 import MySQLdb
 
-from testcontainers.container_config import MySqlConfig
+from testcontainers.config import MySqlConfig
 from testcontainers.docker_client import DockerClient
 from testcontainers.generic import GenericDockerContainer
 from testcontainers.mysql import MySqlDockerContainer
@@ -33,7 +33,7 @@ def test_docker_run_selenium():
 
 
 def test_docker_run_mysql():
-    config = MySqlConfig("test", "test")
+    config = MySqlConfig("user", "secret")
     with MySqlDockerContainer(config) as mysql:
         print(mysql.username, mysql.password)
         conn = MySQLdb.connect(host=mysql.host_ip,

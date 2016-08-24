@@ -18,37 +18,26 @@ from testcontainers.waiting_utils import wait_container_is_ready
 
 
 class GenericSeleniumContainer(DockerContainer):
-    hub_port = 4444
-    host_vnc_port = 5900
-    container_vnc_port = 5900
-
-    def __init__(self, browser, version):
-        super(GenericSeleniumContainer, self).__init__()
-        self._capabilities = DesiredCapabilities.FIREFOX
-        self._driver = None
-        self._version = version
-        self._browser = browser
+    def __init__(self, config):
+        super(GenericSeleniumContainer, self).__init__(config)
 
     @wait_container_is_ready()
     def _connect(self):
         self._driver = webdriver.Remote(
             command_executor=('http://{}:{}/wd/hub'.format(
-                self._host, self.hub_port)),
-            desired_capabilities=self._capabilities)
-
-    def _set_capabilities(self, capabilities):
-        self._capabilities = capabilities
+                self.config.host_ip, self.config.hub_port)),
+            desired_capabilities=self.config.capabilities)
 
     def get_driver(self):
         return self._driver
 
+    def start(self):
+        raise NotImplementedError
+
 
 class StandaloneSeleniumContainer(GenericSeleniumContainer):
-    standalone_firefox = "selenium/standalone-firefox-debug"
-    standalone_chrome = "selenium/standalone-chrome-debug"
-
-    def __init__(self, image_for="firefox", version="latest"):
-        super(StandaloneSeleniumContainer, self).__init__(image_for, version)
+    def __init__(self, config):
+        super(StandaloneSeleniumContainer, self).__init__(config)
 
     def _configure(self):
         self.bind_ports(self.hub_port, self.hub_port)
