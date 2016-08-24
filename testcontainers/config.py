@@ -1,3 +1,5 @@
+from selenium.webdriver import DesiredCapabilities
+
 docker_base_url = 'unix://var/run/docker.sock'
 max_tries = 120
 sleep_time = 1
@@ -89,6 +91,6 @@ class SeleniumConfig(ContainerConfig):
     host_vnc_port = 5900
     container_vnc_port = 5900
 
-    def __init__(self, image, version="latest", capabilities=None):
+    def __init__(self, image, capabilities, version="latest"):
         super(SeleniumConfig, self).__init__(image, version)
         self.capabilities = capabilities

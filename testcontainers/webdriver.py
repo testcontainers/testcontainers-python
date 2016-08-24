@@ -39,24 +39,17 @@ class StandaloneSeleniumContainer(GenericSeleniumContainer):
     def __init__(self, config):
         super(StandaloneSeleniumContainer, self).__init__(config)
 
-    def _configure(self):
-        self.bind_ports(self.hub_port, self.hub_port)
-        self.bind_ports(self.host_vnc_port, self.container_vnc_port)
-        if self._browser.__contains__("chrome"):
-            self._set_capabilities(DesiredCapabilities.CHROME)
-
     def start(self):
-        self._configure()
-        self._docker.run(image=self._get_image, bind_ports=self._binded_ports)
+        self._docker.run(image=self._get_image, bind_ports=self.config.port_bindings)
         self._connect()
         return self
 
     @property
     def _get_image(self):
-        self._image_name = self.standalone_firefox
-        if self._capabilities["browserName"] == "chrome":
-            self._image_name = self.standalone_chrome
-        return "{}:{}".format(self._image_name, self._version)
+        self.config._image_name = self.config.standalone_firefox
+        if self.config.capabilities["browserName"] == "chrome":
+            self.config._image_name = self.config.standalone_chrome
+        return self.config.image
 
 
 class SeleniumGridContainers(GenericSeleniumContainer):

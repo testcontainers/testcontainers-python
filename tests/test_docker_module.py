@@ -13,7 +13,9 @@
 
 
 import pytest
+from selenium.webdriver import DesiredCapabilities
 
+from testcontainers.config import SeleniumConfig
 from testcontainers.webdriver import StandaloneSeleniumContainer
 from testcontainers.webdriver import SeleniumGridContainers
 
@@ -55,7 +57,12 @@ class TestDocker(object):
         "chrome",
     ])
     def test_standalone_container(self, browser):
-        with StandaloneSeleniumContainer(browser) as container:
+        config = SeleniumConfig(SeleniumConfig.standalone_chrome, DesiredCapabilities.CHROME)
+        config.add_env("no_proxy", "localhost")
+        config.add_env("HUB_ENV_no_proxy", "localhost")
+        config.bind_ports(4444, 4444)
+
+        with StandaloneSeleniumContainer(config) as container:
             driver = container.get_driver()
             driver.get("http://google.com")
             driver.find_element_by_name("q").send_keys("Hello")
