@@ -16,6 +16,8 @@ from testcontainers.generic import GenericDbContainer
 
 
 class PostgresDockerContainer(GenericDbContainer):
+    host_port = 5432
+
     def __init__(self, version="latest"):
         super(PostgresDockerContainer, self).__init__()
         self._image_name = "postgres"
@@ -25,4 +27,4 @@ class PostgresDockerContainer(GenericDbContainer):
         self.add_env("POSTGRES_USER", self.user)
         self.add_env("POSTGRES_PASSWORD", self.passwd)
         self.add_env("POSTGRES_DB", self.user)
-        self.bind_ports(5432, 5432)
+        self.bind_ports(self.host_port, 5432)

@@ -15,6 +15,8 @@ from testcontainers.generic import GenericDbContainer
 
 
 class MySqlDockerContainer(GenericDbContainer):
+    host_port = 3306
+
     def __init__(self, version="latest"):
         super(MySqlDockerContainer, self).__init__()
         self._image_name = "mysql"
@@ -25,4 +27,4 @@ class MySqlDockerContainer(GenericDbContainer):
         self.add_env("MYSQL_PASSWORD", self.passwd)
         self.add_env("MYSQL_ROOT_PASSWORD", self.passwd)
         self.add_env("MYSQL_DATABASE", self.user)
-        self.bind_ports(3306, 3306)
+        self.bind_ports(self.host, 3306)
