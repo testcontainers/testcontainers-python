@@ -15,7 +15,7 @@
 import pytest
 from selenium.webdriver.common.desired_capabilities import DesiredCapabilities
 
-from testcontainers.webdriver import BrowserWebDriverContainer
+from testcontainers.webdriver import BrowserWebDriverContainer, StandaloneSeleniumContainer
 
 
 @pytest.fixture
@@ -49,3 +49,13 @@ class TestDocker(object):
         driver = selenium_container.get_driver()
         driver.get("http://google.com")
         driver.find_element_by_name("q").send_keys("Hello")
+
+    @pytest.mark.parametrize("browser", [
+        "firefox",
+        "chrome",
+    ])
+    def test_standalone_container(self, browser):
+        with StandaloneSeleniumContainer(browser) as container:
+            driver = container.get_driver()
+            driver.get("http://google.com")
+            driver.find_element_by_name("q").send_keys("Hello")

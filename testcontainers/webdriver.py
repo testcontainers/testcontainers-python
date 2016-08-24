@@ -18,6 +18,64 @@ from testcontainers.generic import DockerContainer
 from testcontainers.waiting_utils import wait_container_is_ready
 
 
+class GenericSeleniumContainer(DockerContainer):
+    hub_port = 4444
+    vnc_port = 5900
+
+    def __init__(self, browser, version):
+        super(GenericSeleniumContainer, self).__init__()
+        self._capabilities = DesiredCapabilities.FIREFOX
+        self._driver = None
+        self._version = version
+        self._browser = browser
+
+    @wait_container_is_ready()
+    def _connect(self):
+        self._driver = webdriver.Remote(
+            command_executor=('http://{}:{}/wd/hub'.format(
+                self._host, self.hub_port)),
+            desired_capabilities=self._capabilities)
+
+    def _set_capabilities(self, capabilities):
+        self._capabilities = capabilities
+
+    def get_driver(self):
+        return self._driver
+
+    def _configure(self):
+        pass
+
+    def start(self):
+        pass
+
+
+class StandaloneSeleniumContainer(GenericSeleniumContainer):
+    standalone_firefox = "selenium/standalone-firefox-debug"
+    standalone_chrome = "selenium/standalone-chrome-debug"
+
+    def __init__(self, image_for="firefox", version="latest"):
+        super(StandaloneSeleniumContainer, self).__init__(image_for, version)
+
+    def _configure(self):
+        self.bind_ports(self.hub_port, self.hub_port)
+        self.bind_ports(self.vnc_port, self.vnc_port)
+        if self._browser.__contains__("chrome"):
+            self._set_capabilities(DesiredCapabilities.CHROME)
+
+    def start(self):
+        self._configure()
+        self._docker.run(image=self._get_image, bind_ports=self._exposed_ports)
+        self._connect()
+        return self
+
+    @property
+    def _get_image(self):
+        self._image_name = self.standalone_firefox
+        if self._capabilities["browserName"] == "chrome":
+            self._image_name = self.standalone_chrome
+        return "{}:{}".format(self._image_name, self._version)
+
+
 class SeleniumHubContainer(DockerContainer):
     name = "selenium-hub"
     host = "localhost"
@@ -47,7 +105,7 @@ class SeleniumHubContainer(DockerContainer):
 
 class FireFoxContainer(DockerContainer):
     name = "firefox-node"
-    default_port = 5901
+    default_port = 5900
 
     def __init__(self, version):
         super(FireFoxContainer, self).__init__()
