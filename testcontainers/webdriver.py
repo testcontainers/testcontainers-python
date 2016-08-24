@@ -42,12 +42,6 @@ class GenericSeleniumContainer(DockerContainer):
     def get_driver(self):
         return self._driver
 
-    def _configure(self):
-        pass
-
-    def start(self):
-        pass
-
 
 class StandaloneSeleniumContainer(GenericSeleniumContainer):
     standalone_firefox = "selenium/standalone-firefox-debug"
