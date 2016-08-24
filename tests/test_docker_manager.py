@@ -10,6 +10,7 @@
 #    WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the
 #    License for the specific language governing permissions and limitations
 #    under the License.
+import os
 from pprint import pprint
 
 import MySQLdb
@@ -107,7 +108,7 @@ def test_docker_build():
 
 def test_docker_build_with_dockerfile():
     docker = DockerClient()
-    docker.build(path="/Users/sepi/PycharmProjects/testcontainers_python/tests/", tag="my_container_2")
+    docker.build(path=os.path.dirname(os.path.abspath(__file__)), tag="my_container_2")
     out = docker.images("my_container_2")
     pprint(out)
     assert len(out) == 1
