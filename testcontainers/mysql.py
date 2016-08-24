@@ -27,4 +27,4 @@ class MySqlDockerContainer(GenericDbContainer):
         self.add_env("MYSQL_PASSWORD", self.passwd)
         self.add_env("MYSQL_ROOT_PASSWORD", self.passwd)
         self.add_env("MYSQL_DATABASE", self.user)
-        self.bind_ports(self.host, 3306)
+        self.bind_ports(self.host_port, 3306)
