@@ -17,7 +17,6 @@ import MySQLdb
 import psycopg2
 
 from testcontainers.docker_client import DockerClient
-from testcontainers.generic import GenericDockerContainer
 from testcontainers.mysql import MySqlConfig
 from testcontainers.mysql import MySqlDockerContainer
 from testcontainers.postgres import PostgresConfig, PostgresDockerContainer
@@ -96,17 +95,6 @@ def test_docker_rm():
     docker = DockerClient()
     docker.run(image='selenium/hub:2.53.0', bind_ports={4444: 4444}, name='selenium-hub')
     docker.stop_all()
-
-
-def test_generic_container():
-    selenium_chrome = {
-        "image": "selenium/standalone-chrome:2.53.0",
-        "bind_ports": {4444: 4444},
-        "name": "selenium_chrome"
-    }
-
-    with GenericDockerContainer(selenium_chrome) as chrome:
-        assert chrome.id
 
 
 def test_docker_build():

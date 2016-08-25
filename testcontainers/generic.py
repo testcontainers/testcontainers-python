@@ -45,25 +45,6 @@ class DockerContainer(object):
         raise NotImplementedError
 
 
-class GenericDockerContainer(DockerContainer):
-    def __init__(self, config):
-        super(GenericDockerContainer, self).__init__()
-        self.container = None
-        self.config = config
-
-    def start(self):
-        """
-        Start container without wait
-        :return:
-        """
-        self.container = self._docker.run(**self.config)
-        return self
-
-    @property
-    def id(self):
-        return self.container["Id"]
-
-
 class GenericDbContainer(DockerContainer):
     def __init__(self, config):
         super(GenericDbContainer, self).__init__(config)
