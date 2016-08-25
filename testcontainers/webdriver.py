@@ -47,9 +47,9 @@ class StandaloneSeleniumContainer(GenericSeleniumContainer):
 
     @property
     def _get_image(self):
-        self.config._image_name = self.config.standalone_firefox
+        self.config._image_name = self.config.FIREFOX
         if self.config.capabilities["browserName"] == "chrome":
-            self.config._image_name = self.config.standalone_chrome
+            self.config._image_name = self.config.CHROME
         return self.config.image
 
 
@@ -64,7 +64,7 @@ class SeleniumGridContainers(GenericSeleniumContainer):
         return self
 
     def _start_nub(self):
-        hub_image_name = "{}:{}".format(SeleniumConfig.hub_image, self.config.version)
+        hub_image_name = "{}:{}".format(SeleniumConfig.HUB_IMAGE, self.config.version)
         return self._docker.run(image=hub_image_name,
                                 bind_ports={self.config.hub_host_port: self.config.hub_container_port},
                                 name=self.config.hub_container_name)
@@ -77,7 +77,7 @@ class SeleniumGridContainers(GenericSeleniumContainer):
 
     @property
     def _get_image(self):
-        self.config._image_name = SeleniumConfig.firefox_node_image
+        self.config._image_name = SeleniumConfig.FF_NODE_IMAGE
         if self.config.capabilities["browserName"] == "chrome":
-            self.config._image_name = SeleniumConfig.chrome_node_image
+            self.config._image_name = SeleniumConfig.CHROME_NODE_IMAGE
         return self.config.image

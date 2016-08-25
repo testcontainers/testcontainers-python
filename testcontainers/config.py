@@ -1,3 +1,7 @@
+from selenium.webdriver import DesiredCapabilities
+
+from testcontainers.exceptions import NoSuchBrowserException
+
 docker_base_url = 'unix://var/run/docker.sock'
 max_tries = 120
 sleep_time = 1
@@ -91,17 +95,17 @@ class MySqlConfig(ContainerConfig):
 
 
 class SeleniumConfig(ContainerConfig):
-    hub_image = "selenium/hub"
-    firefox_node_image = "selenium/node-firefox-debug"
-    chrome_node_image = "selenium/node-chrome-debug"
-    standalone_firefox = "selenium/standalone-firefox-debug"
-    standalone_chrome = "selenium/standalone-chrome-debug"
+    HUB_IMAGE = "selenium/hub"
+    FF_NODE_IMAGE = "selenium/node-firefox-debug"
+    CHROME_NODE_IMAGE = "selenium/node-chrome-debug"
+    FIREFOX = "selenium/standalone-firefox-debug"
+    CHROME = "selenium/standalone-chrome-debug"
 
-    def __init__(self, image, capabilities, hub_host_port=4444, hub_container_port=4444,
+    def __init__(self, image, capabilities=None, hub_host_port=4444, hub_container_port=4444,
                  hub_container_name="selenium-hub", vnc_host_port=5900, vnc_container_port=5900,
                  version="latest"):
         super(SeleniumConfig, self).__init__(image, version)
-        self.capabilities = capabilities
+        self.capabilities = capabilities if capabilities else self._get_capabilities_for(image)
         self.hub_container_port = hub_container_port
         self.vnc_container_port = vnc_container_port
         self.hub_host_port = hub_host_port
@@ -111,3 +115,11 @@ class SeleniumConfig(ContainerConfig):
         self.bind_ports(vnc_host_port, self.vnc_container_port)
         self.add_env("no_proxy", "localhost")
         self.add_env("HUB_ENV_no_proxy", "localhost")
+
+    def _get_capabilities_for(self, image):
+        if str(image).__contains__("chrome"):
+            return DesiredCapabilities.FIREFOX
+        elif str(image).__contains__("firefox"):
+            return DesiredCapabilities.FIREFOX
+        else:
+            raise NoSuchBrowserException("No capabilities for image {}".format(image))

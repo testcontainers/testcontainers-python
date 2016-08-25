@@ -22,7 +22,7 @@ from testcontainers.webdriver import SeleniumGridContainers
 
 @pytest.fixture
 def selenium_container(request):
-    config = SeleniumConfig(SeleniumConfig.standalone_chrome, DesiredCapabilities.CHROME)
+    config = SeleniumConfig(SeleniumConfig.CHROME, DesiredCapabilities.CHROME)
     container = SeleniumGridContainers(config).start()
 
     def fin():
@@ -34,7 +34,7 @@ def selenium_container(request):
 
 class TestDocker(object):
     def test_selenium_grid(self):
-        config = SeleniumConfig(SeleniumConfig.standalone_chrome, DesiredCapabilities.CHROME)
+        config = SeleniumConfig(SeleniumConfig.CHROME)
         with SeleniumGridContainers(config) as firefox:
             webdriver = firefox.get_driver()
             webdriver.get("http://google.com")
@@ -46,7 +46,7 @@ class TestDocker(object):
         driver.find_element_by_name("q").send_keys("Hello")
 
     def test_standalone_container(self):
-        config = SeleniumConfig(SeleniumConfig.standalone_chrome, DesiredCapabilities.CHROME)
+        config = SeleniumConfig(SeleniumConfig.CHROME, DesiredCapabilities.CHROME)
 
         with StandaloneSeleniumContainer(config) as container:
             driver = container.get_driver()

@@ -18,3 +18,7 @@ class ContainerStartException(Exception):
 
 class TimeoutException(Exception):
     pass
+
+
+class NoSuchBrowserException(Exception):
+    pass
