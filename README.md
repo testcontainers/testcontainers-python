@@ -1,8 +1,14 @@
 python-testcontainers
 =====================
 
-python-testcontainers provides capabilities to spin up a containers to test purposes would that be a database, or Selenium web browser.
+python-testcontainers provides capabilities to spin up a docker containers for test purposes would that be a database, Selenium web browser or any other cotainer.
 
+Currently available features:
+
+- Selenium Grid containers
+- Selenim Standalone containers
+- MySql db container
+- PostgreSQL db container
 
 Contribution
 ------------
