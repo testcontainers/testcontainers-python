@@ -75,3 +75,15 @@ class DbConfig(ContainerConfig):
     @property
     def db(self):
         raise NotImplementedError()
+
+
+class SeleniumConfig(ContainerConfig):
+    def __init__(self, image, name, host_port, container_port,
+                 host_vnc_port, container_vnc_port, version="latest"):
+        super(SeleniumConfig, self).__init__(image=image, version=version)
+        self.name = name
+        self.host_port = host_port
+        self.bind_ports(host_port, container_port)
+        self.bind_ports(host_vnc_port, container_vnc_port)
+        self.add_env("no_proxy", "localhost")  # this is workaround due to bug in Selenium images
+        self.add_env("HUB_ENV_no_proxy", "localhost")

@@ -10,8 +10,7 @@
 #    WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the
 #    License for the specific language governing permissions and limitations
 #    under the License.
-
-from testcontainers.config import ContainerConfig
+from testcontainers.config import SeleniumConfig
 from testcontainers.generic import GenericSeleniumContainer
 
 
@@ -26,16 +25,43 @@ class SeleniumImages(object):
         pass
 
 
-class SeleniumConfig(ContainerConfig):
-    def __init__(self, image, name, host_port, container_port,
-                 host_vnc_port, container_vnc_port, version="latest"):
-        super(SeleniumConfig, self).__init__(image=image, version=version)
-        self.name = name
-        self.host_port = host_port
-        self.bind_ports(host_port, container_port)
-        self.bind_ports(host_vnc_port, container_vnc_port)
-        self.add_env("no_proxy", "localhost")  # this is workaround due to bug in Selenium images
-        self.add_env("HUB_ENV_no_proxy", "localhost")
+class StandaloneSeleniumConfig(SeleniumConfig):
+    def __init__(self, image, capabilities, version="latest", name=None, host_port=4444, container_port=4444,
+                 host_vnc_port=5900, container_vnc_port=5900):
+        super(StandaloneSeleniumConfig, self).__init__(image=image,
+                                                       version=version,
+                                                       name=name,
+                                                       host_port=host_port,
+                                                       container_port=container_port,
+                                                       host_vnc_port=host_vnc_port,
+                                                       container_vnc_port=container_vnc_port)
+
+        self.capabilities = capabilities
+
+
+class NodeConfig(SeleniumConfig):
+    def __init__(self, image, version="latest", hub_name="selenium-hub",
+                 host_vnc_port=None, container_vnc_port=5900, name=None):
+        super(NodeConfig, self).__init__(image=image,
+                                         version=version,
+                                         name=name,
+                                         host_vnc_port=host_vnc_port,
+                                         container_vnc_port=container_vnc_port,
+                                         host_port=None,
+                                         container_port=None)
+        self.link_containers(hub_name, "hub")
+
+
+class HubConfig(SeleniumConfig):
+    def __init__(self, image, capabilities, version="latest",
+                 name="selenium-hub", host_port=4444, container_port=4444):
+        super(HubConfig, self).__init__(image=image,
+                                        version=version,
+                                        host_port=host_port,
+                                        container_port=container_port,
+                                        name=name, host_vnc_port=None,
+                                        container_vnc_port=None)
+        self.capabilities = capabilities
 
 
 class StandaloneSeleniumContainer(GenericSeleniumContainer):
@@ -49,58 +75,6 @@ class StandaloneSeleniumContainer(GenericSeleniumContainer):
                          links=self.config.container_links,
                          name=self.config.name)
         return self
-
-
-class StandaloneSeleniumConfig(SeleniumConfig):
-    def __init__(self, image, capabilities, version="latest", name=None, host_port=4444, container_port=4444,
-                 host_vnc_port=5900, container_vnc_port=5900):
-        super(StandaloneSeleniumConfig, self).__init__(image=image,
-                                                       version=version,
-                                                       name=name,
-                                                       host_port=host_port,
-                                                       container_port=container_port,
-                                                       host_vnc_port=host_vnc_port,
-                                                       container_vnc_port=container_vnc_port)
-
-        # self.host_port = host_port
-        self.capabilities = capabilities
-        # self.name = name
-        # if host_port:
-        #    self.bind_ports(host_port, container_port)
-        # self.bind_ports(host_vnc_port, container_vnc_port)
-        # self.add_env("no_proxy", "localhost")  # this is workaround due to bug in Selenium images
-        # self.add_env("HUB_ENV_no_proxy", "localhost")
-
-
-class NodeConfig(SeleniumConfig):
-    def __init__(self, image, version="latest", hub_name="selenium-hub",
-                 host_vnc_port=None, container_vnc_port=5900, name=None):
-        super(NodeConfig, self).__init__(image=image,
-                                         version=version,
-                                         name=name,
-                                         host_vnc_port=host_vnc_port,
-                                         container_vnc_port=container_vnc_port, host_port=None, container_port=None)
-
-        # if host_vnc_port:
-        #    self.bind_ports(host_vnc_port, container_vnc_port)
-        self.link_containers(hub_name, "hub")
-        # self.add_env("no_proxy", "localhost")  # this is workaround due to bug in Selenium images
-        # self.add_env("HUB_ENV_no_proxy", "localhost")
-
-
-class HubConfig(SeleniumConfig):
-    def __init__(self, image, capabilities, version="latest",
-                 name="selenium-hub", host_port=4444, container_port=4444):
-        super(HubConfig, self).__init__(image=image,
-                                        version=version,
-                                        host_port=host_port,
-                                        container_port=container_port,
-                                        name=name, host_vnc_port=None,
-                                        container_vnc_port=None)
-        # self.host_port = host_port
-        self.capabilities = capabilities
-        # self.name = name
-        # self.bind_ports(host_port, container_port)
 
 
 class SeleniumGridContainers(GenericSeleniumContainer):
