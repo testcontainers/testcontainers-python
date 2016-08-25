@@ -18,7 +18,8 @@ class ContainerConfig(object):
         self._links = {}
 
     def bind_ports(self, host, container):
-        self._port_bindings[host] = container
+        if host:
+            self._port_bindings[host] = container
 
     def link_containers(self, target, current):
         self._links[target] = current
