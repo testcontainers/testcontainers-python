@@ -94,20 +94,17 @@ class GenericDbContainer(DockerContainer):
                                       self.db))
         engine.connect()
 
-    def _configure(self):
-        pass
-
     @property
-    def username(self):
-        raise NotImplementedError
+    def db(self):
+        return self.config.db
 
     @property
     def password(self):
-        raise NotImplementedError
+        return self.config.password
 
     @property
-    def db(self):
-        raise NotImplementedError
+    def username(self):
+        return self.config.username
 
     @property
     def host_ip(self):
