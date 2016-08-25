@@ -115,7 +115,10 @@ def test_docker_build():
 
 def test_docker_build_with_dockerfile():
     docker = DockerClient()
-    docker.build(path=os.path.dirname(os.path.abspath(__file__)), tag="my_container_2")
+
+    dockerfile = open("Dockerfile").read()
+
+    docker.build(dockerfile=dockerfile, tag="my_container_2")
     out = docker.images("my_container_2")
     pprint(out)
     assert len(out) == 1
