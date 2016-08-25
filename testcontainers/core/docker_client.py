@@ -12,13 +12,13 @@
 #    under the License.
 
 import logging
+from io import BytesIO
 from time import sleep
 
 from docker import Client
-from io import BytesIO
 
-from testcontainers import config
-from testcontainers.progress_bar import ConsoleProgressBar
+from testcontainers.core import config
+from testcontainers.core.progress_bar import ConsoleProgressBar
 
 
 class DockerClient(object):

@@ -12,9 +12,9 @@
 #    under the License.
 import sqlalchemy
 from selenium import webdriver
+from testcontainers.core.docker_client import DockerClient
 
-from testcontainers.docker_client import DockerClient
-from testcontainers.waiting_utils import wait_container_is_ready
+from testcontainers.core.waiting_utils import wait_container_is_ready
 
 
 class DockerContainer(object):
