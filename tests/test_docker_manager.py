@@ -15,14 +15,14 @@ from pprint import pprint
 
 import MySQLdb
 import psycopg2
+from testcontainers.core.config import ContainerConfig
+from testcontainers.core.docker_client import DockerClient
+from testcontainers.core.generic import DockerContainer
 
-from testcontainers.config import ContainerConfig
-from testcontainers.docker_client import DockerClient
-from testcontainers.generic import DockerContainer
+from testcontainers.core.waiting_utils import wait_container_is_ready
 from testcontainers.mysql import MySqlConfig
 from testcontainers.mysql import MySqlDockerContainer
 from testcontainers.postgres import PostgresConfig, PostgresDockerContainer
-from testcontainers.waiting_utils import wait_container_is_ready
 
 
 def test_docker_run_selenium():

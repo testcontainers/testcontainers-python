@@ -10,8 +10,9 @@
 #    WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the
 #    License for the specific language governing permissions and limitations
 #    under the License.
-from testcontainers.config import SeleniumConfig
-from testcontainers.generic import GenericSeleniumContainer
+from testcontainers.core.config import SeleniumConfig
+
+from testcontainers.core.generic import GenericSeleniumContainer
 
 
 class SeleniumImage(object):

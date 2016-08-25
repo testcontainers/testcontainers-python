@@ -10,8 +10,9 @@
 #    WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the
 #    License for the specific language governing permissions and limitations
 #    under the License.
-from testcontainers.config import DbConfig
-from testcontainers.generic import GenericDbContainer
+from testcontainers.core.config import DbConfig
+
+from testcontainers.core.generic import GenericDbContainer
 
 
 class PostgresDockerContainer(GenericDbContainer):
