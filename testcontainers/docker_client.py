@@ -18,7 +18,7 @@ from docker import Client
 from io import BytesIO
 
 from testcontainers import config
-from testcontainers.brogress_bar import ConsoleProgressBar
+from testcontainers.progress_bar import ConsoleProgressBar
 
 
 class DockerClient(object):

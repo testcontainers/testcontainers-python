@@ -18,7 +18,7 @@ from time import sleep
 import wrapt
 
 from testcontainers import config
-from testcontainers.brogress_bar import ConsoleProgressBar
+from testcontainers.progress_bar import ConsoleProgressBar
 from testcontainers.exceptions import TimeoutException
 
 
