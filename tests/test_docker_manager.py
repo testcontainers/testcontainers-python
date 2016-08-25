@@ -16,10 +16,13 @@ from pprint import pprint
 import MySQLdb
 import psycopg2
 
+from testcontainers.config import ContainerConfig
 from testcontainers.docker_client import DockerClient
+from testcontainers.generic import DockerContainer
 from testcontainers.mysql import MySqlConfig
 from testcontainers.mysql import MySqlDockerContainer
 from testcontainers.postgres import PostgresConfig, PostgresDockerContainer
+from testcontainers.waiting_utils import wait_container_is_ready
 
 
 def test_docker_run_selenium():
@@ -116,10 +119,34 @@ def test_docker_build():
 def test_docker_build_with_dockerfile():
     docker = DockerClient()
 
-    dockerfile = open("Dockerfile").read()
+    dockerfile = open(os.path.dirname(os.path.realpath(__file__)) +
+                      "/Dockerfile").read()
 
     docker.build(dockerfile=dockerfile, tag="my_container_2")
     out = docker.images("my_container_2")
     pprint(out)
     assert len(out) == 1
     assert out[0]['RepoTags'][0] == 'my_container_2:latest'
+
+
+def test_generic_docker_container():
+    config = ContainerConfig("mariadb", version="latest")
+    config.set_container_name("some-mariadb")
+    config.add_env("MYSQL_ROOT_PASSWORD", "secret")
+    config.add_env("MYSQL_DATABASE", "test_db")
+    config.bind_ports(3306, 3306)
+    with DockerContainer(config) as mariabd:
+        @wait_container_is_ready()
+        def connect():
+            return MySQLdb.connect(host=mariabd.host_ip,
+                                   user="root",
+                                   passwd="secret",
+                                   db="test_db")
+
+        cur = connect().cursor()
+
+        cur.execute("SELECT VERSION()")
+        row = cur.fetchone()
+        print("server version:", row[0])
+        cur.close()
+        assert row[0] == '10.1.16-MariaDB-1~jessie'
