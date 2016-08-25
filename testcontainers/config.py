@@ -15,6 +15,7 @@ class ContainerConfig(object):
         self._environment = {}
         self._port_bindings = {}
         self._volumes = {}
+        self._container_name = None
         self._links = {}
 
     def bind_ports(self, host, container):
@@ -31,6 +32,9 @@ class ContainerConfig(object):
         self._environment[key] = value
         return self
 
+    def set_container_name(self, name):
+        self._container_name = name
+
     @property
     def port_bindings(self):
         return self._port_bindings
@@ -38,6 +42,10 @@ class ContainerConfig(object):
     @property
     def image(self):
         return "{}:{}".format(self._image_name, self._version)
+
+    @property
+    def image_name(self):
+        return self._image_name
 
     @property
     def version(self):
@@ -49,7 +57,7 @@ class ContainerConfig(object):
 
     @property
     def container_name(self):
-        return self._image_name
+        return self._container_name
 
     @property
     def container_links(self):
@@ -81,7 +89,7 @@ class SeleniumConfig(ContainerConfig):
     def __init__(self, image, name, host_port, container_port,
                  host_vnc_port, container_vnc_port, version="latest"):
         super(SeleniumConfig, self).__init__(image=image, version=version)
-        self.name = name
+        self.set_container_name(name)
         self.host_port = host_port
         self.bind_ports(host_port, container_port)
         self.bind_ports(host_vnc_port, container_vnc_port)

@@ -68,14 +68,6 @@ class StandaloneSeleniumContainer(GenericSeleniumContainer):
     def __init__(self, config):
         super(StandaloneSeleniumContainer, self).__init__(config)
 
-    def start(self):
-        self._docker.run(image=self.config.image,
-                         bind_ports=self.config.port_bindings,
-                         env=self.config.env,
-                         links=self.config.container_links,
-                         name=self.config.name)
-        return self
-
 
 class SeleniumGridContainers(GenericSeleniumContainer):
     def __init__(self, hub_config, node_config, node_count=1):

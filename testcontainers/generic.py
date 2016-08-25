@@ -29,7 +29,12 @@ class DockerContainer(object):
         self.stop()
 
     def start(self):
-        raise NotImplementedError
+        self._docker.run(image=self.image,
+                         bind_ports=self.port_bindings,
+                         env=self.environment,
+                         links=self.config.container_links,
+                         name=self.container_name)
+        return self
 
     def stop(self):
         """
@@ -45,6 +50,34 @@ class DockerContainer(object):
     def _connect(self):
         raise NotImplementedError()
 
+    @property
+    def environment(self):
+        return self.config.env
+
+    @property
+    def image(self):
+        return self.config.image
+
+    @property
+    def image_name(self):
+        return self.config.image_name
+
+    @property
+    def container_name(self):
+        return self.config.container_name
+
+    @property
+    def port_bindings(self):
+        return self.config.port_bindings
+
+    @property
+    def host_ip(self):
+        return self.config.host_ip
+
+    @property
+    def host_port(self):
+        return self.config.host_port
+
 
 class GenericDbContainer(DockerContainer):
     def __init__(self, config):
@@ -55,10 +88,7 @@ class GenericDbContainer(DockerContainer):
         Start my sql container and wait to be ready
         :return:
         """
-        self._docker.run(image=self.config.image,
-                         env=self.config.env,
-                         name=self.config.container_name,
-                         bind_ports=self.config.port_bindings)
+        super(GenericDbContainer, self).start()
         self._connect()
         return self
 
@@ -69,7 +99,7 @@ class GenericDbContainer(DockerContainer):
         :return:
         """
         engine = sqlalchemy.create_engine(
-            "{}://{}:{}@{}/{}".format(self.config.container_name,
+            "{}://{}:{}@{}/{}".format(self.image_name,
                                       self.username,
                                       self.password,
                                       self.host_ip,
@@ -88,10 +118,6 @@ class GenericDbContainer(DockerContainer):
     def username(self):
         return self.config.username
 
-    @property
-    def host_ip(self):
-        return self._container_config.host_ip
-
 
 class GenericSeleniumContainer(DockerContainer):
     def __init__(self, config):
@@ -101,16 +127,13 @@ class GenericSeleniumContainer(DockerContainer):
     def _connect(self):
         return webdriver.Remote(
             command_executor=('http://{}:{}/wd/hub'.format(
-                self.config.host_ip,
-                self.config.host_port)
+                self.host_ip,
+                self.host_port)
             ),
             desired_capabilities=self.config.capabilities)
 
     def get_driver(self):
         return self._connect()
-
-    def start(self):
-        raise NotImplementedError()
 
     def _is_chrome(self):
         return self.config.capabilities["browserName"] == "chrome"
