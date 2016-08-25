@@ -14,6 +14,11 @@ from testcontainers.config import DbConfig
 from testcontainers.generic import GenericDbContainer
 
 
+class PostgresDockerContainer(GenericDbContainer):
+    def __init__(self, config):
+        super(PostgresDockerContainer, self).__init__(config)
+
+
 class PostgresConfig(DbConfig):
     POSTGRES_USER = "POSTGRES_USER"
     POSTGRES_PASSWORD = "POSTGRES_PASSWORD"
@@ -38,8 +43,3 @@ class PostgresConfig(DbConfig):
     @property
     def username(self):
         return self.env[self.POSTGRES_USER]
-
-
-class PostgresDockerContainer(GenericDbContainer):
-    def __init__(self, config):
-        super(PostgresDockerContainer, self).__init__(config)
