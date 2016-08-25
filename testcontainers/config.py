@@ -59,39 +59,7 @@ class ContainerConfig(object):
         return self._host
 
 
-class MySqlConfig(ContainerConfig):
-    mysql_user = "MYSQL_USER"
-    mysql_password = "MYSQL_PASSWORD"
-    mysql_root_password = "MYSQL_ROOT_PASSWORD"
-    mysql_db_name = "MYSQL_DATABASE"
-    _super_user_name = "root"
 
-    def __init__(self, user, password, superuser=False, root_pass="secret",
-                 db="test", host_port=3306, image="mysql", version="latest"):
-        super(MySqlConfig, self).__init__(image, version)
-        self.superuser = superuser
-        if not superuser:
-            self.add_env(self.mysql_user, user)
-            self.add_env(self.mysql_password, password)
-        self.add_env(self.mysql_root_password, root_pass)
-        self.add_env(self.mysql_db_name, db)
-        self.bind_ports(host_port, 3306)
-
-    @property
-    def username(self):
-        if self.superuser:
-            return self._super_user_name
-        return self.env[self.mysql_user]
-
-    @property
-    def password(self):
-        if self.superuser:
-            return self.env[self.mysql_root_password]
-        return self.env[self.mysql_password]
-
-    @property
-    def db(self):
-        return self.env[self.mysql_db_name]
 
 
 class SeleniumConfig(ContainerConfig):

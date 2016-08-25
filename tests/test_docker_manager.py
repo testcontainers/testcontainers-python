@@ -15,10 +15,10 @@ from pprint import pprint
 
 import MySQLdb
 
-from testcontainers.config import MySqlConfig
 from testcontainers.docker_client import DockerClient
 from testcontainers.generic import GenericDockerContainer
 from testcontainers.mysql import MySqlDockerContainer
+from testcontainers.mysql import MySqlConfig
 
 
 def test_docker_run_selenium():
