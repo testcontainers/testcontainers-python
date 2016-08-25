@@ -14,11 +14,13 @@ import os
 from pprint import pprint
 
 import MySQLdb
+import psycopg2
 
 from testcontainers.docker_client import DockerClient
 from testcontainers.generic import GenericDockerContainer
-from testcontainers.mysql import MySqlDockerContainer
 from testcontainers.mysql import MySqlConfig
+from testcontainers.mysql import MySqlDockerContainer
+from testcontainers.postgres import PostgresConfig, PostgresDockerContainer
 
 
 def test_docker_run_selenium():
@@ -35,11 +37,26 @@ def test_docker_run_selenium():
 def test_docker_run_mysql():
     config = MySqlConfig("user", "secret")
     with MySqlDockerContainer(config) as mysql:
-        print(mysql.username, mysql.password)
         conn = MySQLdb.connect(host=mysql.host_ip,
                                user=mysql.username,
                                passwd=mysql.password,
                                db=mysql.db)
+        cur = conn.cursor()
+
+        cur.execute("SELECT VERSION()")
+        row = cur.fetchone()
+        print("server version:", row[0])
+        cur.close()
+        assert len(row) > 0
+
+
+def test_docker_run_postgress():
+    config = PostgresConfig("user", "secret")
+    with PostgresDockerContainer(config) as postgres:
+        conn = psycopg2.connect(host=postgres.host_ip,
+                                user=postgres.username,
+                                password=postgres.password,
+                                database=postgres.db)
         cur = conn.cursor()
 
         cur.execute("SELECT VERSION()")
