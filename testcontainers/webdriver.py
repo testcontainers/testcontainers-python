@@ -14,7 +14,7 @@ from testcontainers.config import SeleniumConfig
 from testcontainers.generic import GenericSeleniumContainer
 
 
-class SeleniumImages(object):
+class SeleniumImage(object):
     STANDALONE_FIREFOX = "selenium/standalone-firefox-debug"
     STANDALONE_CHROME = "selenium/standalone-chrome-debug"
     HUB_IMAGE = "selenium/hub"
