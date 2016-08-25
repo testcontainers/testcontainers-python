@@ -22,7 +22,8 @@ from testcontainers.webdriver import SeleniumGridContainers
 
 @pytest.fixture
 def selenium_container(request):
-    container = SeleniumGridContainers().start()
+    config = SeleniumConfig(SeleniumConfig.standalone_chrome, DesiredCapabilities.CHROME)
+    container = SeleniumGridContainers(config).start()
 
     def fin():
         container.stop()
@@ -32,12 +33,9 @@ def selenium_container(request):
 
 
 class TestDocker(object):
-    @pytest.mark.parametrize("browser", [
-        "firefox",
-        "chrome",
-    ])
-    def test_selenium_grid(self, browser):
-        with SeleniumGridContainers(browser) as firefox:
+    def test_selenium_grid(self):
+        config = SeleniumConfig(SeleniumConfig.standalone_chrome, DesiredCapabilities.CHROME)
+        with SeleniumGridContainers(config) as firefox:
             webdriver = firefox.get_driver()
             webdriver.get("http://google.com")
             webdriver.find_element_by_name("q").send_keys("Hello")
@@ -47,20 +45,8 @@ class TestDocker(object):
         driver.get("http://google.com")
         driver.find_element_by_name("q").send_keys("Hello")
 
-    def test_fixture_2(self, selenium_container):
-        driver = selenium_container.get_driver()
-        driver.get("http://google.com")
-        driver.find_element_by_name("q").send_keys("Hello")
-
-    @pytest.mark.parametrize("browser", [
-        "firefox",
-        "chrome",
-    ])
-    def test_standalone_container(self, browser):
+    def test_standalone_container(self):
         config = SeleniumConfig(SeleniumConfig.standalone_chrome, DesiredCapabilities.CHROME)
-        config.add_env("no_proxy", "localhost")
-        config.add_env("HUB_ENV_no_proxy", "localhost")
-        config.bind_ports(4444, 4444)
 
         with StandaloneSeleniumContainer(config) as container:
             driver = container.get_driver()

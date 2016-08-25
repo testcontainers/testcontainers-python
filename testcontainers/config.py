@@ -1,5 +1,3 @@
-from selenium.webdriver import DesiredCapabilities
-
 docker_base_url = 'unix://var/run/docker.sock'
 max_tries = 120
 sleep_time = 1
@@ -37,12 +35,20 @@ class ContainerConfig(object):
         return "{}:{}".format(self._image_name, self._version)
 
     @property
+    def version(self):
+        return self._version
+
+    @property
     def env(self):
         return self._environment
 
     @property
     def container_name(self):
         return self._image_name
+
+    @property
+    def container_links(self):
+        return self._links
 
     @property
     def host_ip(self):
@@ -85,12 +91,23 @@ class MySqlConfig(ContainerConfig):
 
 
 class SeleniumConfig(ContainerConfig):
+    hub_image = "selenium/hub"
+    firefox_node_image = "selenium/node-firefox-debug"
+    chrome_node_image = "selenium/node-chrome-debug"
     standalone_firefox = "selenium/standalone-firefox-debug"
     standalone_chrome = "selenium/standalone-chrome-debug"
-    hub_port = 4444
-    host_vnc_port = 5900
-    container_vnc_port = 5900
 
-    def __init__(self, image, capabilities, version="latest"):
+    def __init__(self, image, capabilities, hub_host_port=4444, hub_container_port=4444,
+                 hub_container_name="selenium-hub", vnc_host_port=5900, vnc_container_port=5900,
+                 version="latest"):
         super(SeleniumConfig, self).__init__(image, version)
         self.capabilities = capabilities
+        self.hub_container_port = hub_container_port
+        self.vnc_container_port = vnc_container_port
+        self.hub_host_port = hub_host_port
+        self.hub_container_name = hub_container_name
+        self.vnc_host_port = vnc_host_port
+        self.bind_ports(hub_host_port, self.hub_container_port)
+        self.bind_ports(vnc_host_port, self.vnc_container_port)
+        self.add_env("no_proxy", "localhost")
+        self.add_env("HUB_ENV_no_proxy", "localhost")
