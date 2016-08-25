@@ -49,7 +49,6 @@ class TestDocker(object):
 
     def test_standalone_container(self):
         config = StandaloneSeleniumConfig(StandaloneSeleniumConfig.CHROME, DesiredCapabilities.CHROME)
-
         with StandaloneSeleniumContainer(config) as container:
             driver = container.get_driver()
             driver.get("http://google.com")
