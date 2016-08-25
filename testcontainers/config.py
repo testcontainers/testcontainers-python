@@ -59,7 +59,21 @@ class ContainerConfig(object):
         return self._host
 
 
+class DbConfig(ContainerConfig):
+    def __init__(self, image, version):
+        super(DbConfig, self).__init__(image=image, version=version)
 
+    @property
+    def username(self):
+        raise NotImplementedError()
+
+    @property
+    def password(self):
+        raise NotImplementedError()
+
+    @property
+    def db(self):
+        raise NotImplementedError()
 
 
 class SeleniumConfig(ContainerConfig):
