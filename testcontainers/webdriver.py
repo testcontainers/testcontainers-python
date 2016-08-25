@@ -15,6 +15,29 @@ from testcontainers.config import ContainerConfig
 from testcontainers.generic import GenericSeleniumContainer
 
 
+class SeleniumImages(object):
+    STANDALONE_FIREFOX = "selenium/standalone-firefox-debug"
+    STANDALONE_CHROME = "selenium/standalone-chrome-debug"
+    HUB_IMAGE = "selenium/hub"
+    FIREFOX_NODE = "selenium/node-firefox-debug"
+    CHROME_NODE = "selenium/node-chrome-debug"
+
+    def __init__(self):
+        pass
+
+
+class SeleniumConfig(ContainerConfig):
+    def __init__(self, image, name, host_port, container_port,
+                 host_vnc_port, container_vnc_port, version="latest"):
+        super(SeleniumConfig, self).__init__(image=image, version=version)
+        self.name = name
+        self.host_port = host_port
+        self.bind_ports(host_port, container_port)
+        self.bind_ports(host_vnc_port, container_vnc_port)
+        self.add_env("no_proxy", "localhost")  # this is workaround due to bug in Selenium images
+        self.add_env("HUB_ENV_no_proxy", "localhost")
+
+
 class StandaloneSeleniumContainer(GenericSeleniumContainer):
     def __init__(self, config):
         super(StandaloneSeleniumContainer, self).__init__(config)
@@ -28,50 +51,59 @@ class StandaloneSeleniumContainer(GenericSeleniumContainer):
         return self
 
 
-class StandaloneSeleniumConfig(ContainerConfig):
-    FIREFOX = "selenium/standalone-firefox-debug"
-    CHROME = "selenium/standalone-chrome-debug"
-
+class StandaloneSeleniumConfig(SeleniumConfig):
     def __init__(self, image, capabilities, version="latest", name=None, host_port=4444, container_port=4444,
                  host_vnc_port=5900, container_vnc_port=5900):
-        super(StandaloneSeleniumConfig, self).__init__(image=image, version=version)
-        self.host_port = host_port
+        super(StandaloneSeleniumConfig, self).__init__(image=image,
+                                                       version=version,
+                                                       name=name,
+                                                       host_port=host_port,
+                                                       container_port=container_port,
+                                                       host_vnc_port=host_vnc_port,
+                                                       container_vnc_port=container_vnc_port)
+
+        # self.host_port = host_port
         self.capabilities = capabilities
-        self.name = name
-        if host_port:
-            self.bind_ports(host_port, container_port)
-        self.bind_ports(host_vnc_port, container_vnc_port)
-        self.add_env("no_proxy", "localhost")  # this is workaround due to bug in Selenium images
-        self.add_env("HUB_ENV_no_proxy", "localhost")
+        # self.name = name
+        # if host_port:
+        #    self.bind_ports(host_port, container_port)
+        # self.bind_ports(host_vnc_port, container_vnc_port)
+        # self.add_env("no_proxy", "localhost")  # this is workaround due to bug in Selenium images
+        # self.add_env("HUB_ENV_no_proxy", "localhost")
 
 
-class NodeConfig(ContainerConfig):
-    def __init__(self, image, version="latest", link_name="selenium-hub",
+class NodeConfig(SeleniumConfig):
+    def __init__(self, image, version="latest", hub_name="selenium-hub",
                  host_vnc_port=None, container_vnc_port=5900, name=None):
-        super(NodeConfig, self).__init__(image=image, version=version)
-        self.name = name
-        if host_vnc_port:
-            self.bind_ports(host_vnc_port, container_vnc_port)
-        self.link_containers(link_name, "hub")
-        self.add_env("no_proxy", "localhost")  # this is workaround due to bug in Selenium images
-        self.add_env("HUB_ENV_no_proxy", "localhost")
+        super(NodeConfig, self).__init__(image=image,
+                                         version=version,
+                                         name=name,
+                                         host_vnc_port=host_vnc_port,
+                                         container_vnc_port=container_vnc_port, host_port=None, container_port=None)
+
+        # if host_vnc_port:
+        #    self.bind_ports(host_vnc_port, container_vnc_port)
+        self.link_containers(hub_name, "hub")
+        # self.add_env("no_proxy", "localhost")  # this is workaround due to bug in Selenium images
+        # self.add_env("HUB_ENV_no_proxy", "localhost")
 
 
-class HubConfig(ContainerConfig):
+class HubConfig(SeleniumConfig):
     def __init__(self, image, capabilities, version="latest",
                  name="selenium-hub", host_port=4444, container_port=4444):
-        super(HubConfig, self).__init__(image=image, version=version)
-        self.host_port = host_port
+        super(HubConfig, self).__init__(image=image,
+                                        version=version,
+                                        host_port=host_port,
+                                        container_port=container_port,
+                                        name=name, host_vnc_port=None,
+                                        container_vnc_port=None)
+        # self.host_port = host_port
         self.capabilities = capabilities
-        self.name = name
-        self.bind_ports(host_port, container_port)
+        # self.name = name
+        # self.bind_ports(host_port, container_port)
 
 
 class SeleniumGridContainers(GenericSeleniumContainer):
-    HUB_IMAGE = "selenium/hub"
-    FF_NODE_IMAGE = "selenium/node-firefox-debug"
-    CHROME_NODE_IMAGE = "selenium/node-chrome-debug"
-
     def __init__(self, hub_config, node_config, node_count=1):
         super(SeleniumGridContainers, self).__init__(hub_config)
         self.hub = StandaloneSeleniumContainer(self.config)
