@@ -10,21 +10,36 @@
 #    WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the
 #    License for the specific language governing permissions and limitations
 #    under the License.
-
-
+from testcontainers.config import DbConfig
 from testcontainers.generic import GenericDbContainer
 
 
+class PostgresConfig(DbConfig):
+    POSTGRES_USER = "POSTGRES_USER"
+    POSTGRES_PASSWORD = "POSTGRES_PASSWORD"
+    POSTGRES_DB = "POSTGRES_DB"
+
+    def __init__(self, user, passwd,
+                 db="test", host_port=5432, image="postgres", version="latest"):
+        super(PostgresConfig, self).__init__(image, version=version)
+        self.add_env(self.POSTGRES_USER, user)
+        self.add_env(self.POSTGRES_PASSWORD, passwd)
+        self.add_env(self.POSTGRES_DB, db)
+        self.bind_ports(host_port, 5432)
+
+    @property
+    def db(self):
+        return self.env[self.POSTGRES_DB]
+
+    @property
+    def password(self):
+        return self.env[self.POSTGRES_PASSWORD]
+
+    @property
+    def username(self):
+        return self.env[self.POSTGRES_USER]
+
+
 class PostgresDockerContainer(GenericDbContainer):
-    host_port = 5432
-
-    def __init__(self, version="latest"):
-        super(PostgresDockerContainer, self).__init__()
-        self._image_name = "postgres"
-        self._version = version
-
-    def _configure(self):
-        self.add_env("POSTGRES_USER", self.user)
-        self.add_env("POSTGRES_PASSWORD", self.passwd)
-        self.add_env("POSTGRES_DB", self.user)
-        self.bind_ports(self.host_port, 5432)
+    def __init__(self, config):
+        super(PostgresDockerContainer, self).__init__(config)
