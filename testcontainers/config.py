@@ -66,8 +66,8 @@ class MySqlConfig(ContainerConfig):
     mysql_db_name = "MYSQL_DATABASE"
     _super_user_name = "root"
 
-    def __init__(self, user, password, superuser=False, root_pass="secret", db="test", host_port=3306, image="mysql",
-                 version="latest"):
+    def __init__(self, user, password, superuser=False, root_pass="secret",
+                 db="test", host_port=3306, image="mysql", version="latest"):
         super(MySqlConfig, self).__init__(image, version)
         self.superuser = superuser
         if not superuser:
@@ -101,11 +101,13 @@ class SeleniumConfig(ContainerConfig):
     FIREFOX = "selenium/standalone-firefox-debug"
     CHROME = "selenium/standalone-chrome-debug"
 
-    def __init__(self, image, capabilities=None, hub_host_port=4444, hub_container_port=4444,
-                 hub_container_name="selenium-hub", vnc_host_port=5900, vnc_container_port=5900,
+    def __init__(self, image, capabilities=None, hub_host_port=4444,
+                 hub_container_port=4444, hub_container_name="selenium-hub",
+                 vnc_host_port=5900, vnc_container_port=5900,
                  version="latest"):
         super(SeleniumConfig, self).__init__(image, version)
-        self.capabilities = capabilities if capabilities else self._get_capabilities_for(image)
+        self.capabilities = capabilities if \
+            capabilities else self._get_capabilities_for(image)
         self.hub_container_port = hub_container_port
         self.vnc_container_port = vnc_container_port
         self.hub_host_port = hub_host_port
@@ -122,4 +124,5 @@ class SeleniumConfig(ContainerConfig):
         elif str(image).__contains__("firefox"):
             return DesiredCapabilities.FIREFOX
         else:
-            raise NoSuchBrowserException("No capabilities for image {}".format(image))
+            raise NoSuchBrowserException("No capabilities for "
+                                         "image {}".format(image))

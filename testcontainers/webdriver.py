@@ -11,7 +11,6 @@
 #    License for the specific language governing permissions and limitations
 #    under the License.
 from selenium import webdriver
-from selenium.webdriver.common.desired_capabilities import DesiredCapabilities
 
 from testcontainers.config import SeleniumConfig
 from testcontainers.generic import DockerContainer
@@ -41,7 +40,8 @@ class StandaloneSeleniumContainer(GenericSeleniumContainer):
         super(StandaloneSeleniumContainer, self).__init__(config)
 
     def start(self):
-        self._docker.run(image=self._get_image, bind_ports=self.config.port_bindings)
+        self._docker.run(image=self._get_image,
+                         bind_ports=self.config.port_bindings)
         self._connect()
         return self
 
@@ -64,14 +64,21 @@ class SeleniumGridContainers(GenericSeleniumContainer):
         return self
 
     def _start_nub(self):
-        hub_image_name = "{}:{}".format(SeleniumConfig.HUB_IMAGE, self.config.version)
+        hub_image_name = "{}:{}".format(SeleniumConfig.HUB_IMAGE,
+                                        self.config.version)
         return self._docker.run(image=hub_image_name,
-                                bind_ports={self.config.hub_host_port: self.config.hub_container_port},
+                                bind_ports={
+                                    self.config.hub_host_port:
+                                        self.config.hub_container_port
+                                },
                                 name=self.config.hub_container_name)
 
     def _start_node(self):
         return self._docker.run(image=self._get_image,
-                                bind_ports={self.config.vnc_host_port: self.config.vnc_container_port},
+                                bind_ports={
+                                    self.config.vnc_host_port:
+                                        self.config.vnc_container_port
+                                },
                                 env=self.config.env,
                                 links={self.config.hub_container_name: "hub"})
 
