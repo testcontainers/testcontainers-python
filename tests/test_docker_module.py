@@ -15,7 +15,6 @@
 import pytest
 from selenium.webdriver import DesiredCapabilities
 
-from testcontainers.config import SeleniumConfig
 from testcontainers.webdriver import SeleniumGridContainers, NodeConfig
 from testcontainers.webdriver import StandaloneSeleniumConfig, StandaloneSeleniumContainer, \
     HubConfig
@@ -24,7 +23,7 @@ from testcontainers.webdriver import StandaloneSeleniumConfig, StandaloneSeleniu
 @pytest.fixture
 def selenium_container(request):
     hub_config = HubConfig(SeleniumGridContainers.HUB_IMAGE, DesiredCapabilities.FIREFOX)
-    node_config = NodeConfig(SeleniumGridContainers.FF_NODE_IMAGE)
+    node_config = NodeConfig(SeleniumGridContainers.FF_NODE_IMAGE, host_vnc_port=None)
     container = SeleniumGridContainers(hub_config, node_config).start()
 
     def fin():
@@ -38,7 +37,7 @@ class TestDocker(object):
     def test_selenium_grid(self):
         hub_config = HubConfig(SeleniumGridContainers.HUB_IMAGE, DesiredCapabilities.FIREFOX)
         node_config = NodeConfig(SeleniumGridContainers.FF_NODE_IMAGE)
-        with SeleniumGridContainers(hub_config, node_config) as firefox:
+        with SeleniumGridContainers(hub_config, node_config, node_count=3) as firefox:
             webdriver = firefox.get_driver()
             webdriver.get("http://google.com")
             webdriver.find_element_by_name("q").send_keys("Hello")
