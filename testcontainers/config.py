@@ -74,36 +74,3 @@ class DbConfig(ContainerConfig):
     @property
     def db(self):
         raise NotImplementedError()
-
-
-class SeleniumConfig(ContainerConfig):
-    HUB_IMAGE = "selenium/hub"
-    FF_NODE_IMAGE = "selenium/node-firefox-debug"
-    CHROME_NODE_IMAGE = "selenium/node-chrome-debug"
-
-
-    def __init__(self, image, capabilities=None, hub_host_port=4444,
-                 hub_container_port=4444, hub_container_name="selenium-hub",
-                 vnc_host_port=5900, vnc_container_port=5900,
-                 version="latest"):
-        super(SeleniumConfig, self).__init__(image, version)
-        self.capabilities = capabilities if \
-            capabilities else self._get_capabilities_for(image)
-        self.hub_container_port = hub_container_port
-        self.vnc_container_port = vnc_container_port
-        self.hub_host_port = hub_host_port
-        self.hub_container_name = hub_container_name
-        self.vnc_host_port = vnc_host_port
-        self.bind_ports(hub_host_port, self.hub_container_port)
-        self.bind_ports(vnc_host_port, self.vnc_container_port)
-        self.add_env("no_proxy", "localhost")
-        self.add_env("HUB_ENV_no_proxy", "localhost")
-
-    def _get_capabilities_for(self, image):
-        if str(image).__contains__("chrome"):
-            return DesiredCapabilities.FIREFOX
-        elif str(image).__contains__("firefox"):
-            return DesiredCapabilities.FIREFOX
-        else:
-            raise NoSuchBrowserException("No capabilities for "
-                                         "image {}".format(image))
