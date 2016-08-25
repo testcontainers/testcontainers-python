@@ -34,6 +34,9 @@ class GenericSeleniumContainer(DockerContainer):
     def start(self):
         raise NotImplementedError
 
+    def _is_chrome(self):
+        return self.config.capabilities["browserName"] == "chrome"
+
 
 class StandaloneSeleniumContainer(GenericSeleniumContainer):
     def __init__(self, config):
@@ -48,7 +51,7 @@ class StandaloneSeleniumContainer(GenericSeleniumContainer):
     @property
     def _get_image(self):
         self.config._image_name = self.config.FIREFOX
-        if self.config.capabilities["browserName"] == "chrome":
+        if self._is_chrome():
             self.config._image_name = self.config.CHROME
         return self.config.image
 
@@ -85,6 +88,6 @@ class SeleniumGridContainers(GenericSeleniumContainer):
     @property
     def _get_image(self):
         self.config._image_name = SeleniumConfig.FF_NODE_IMAGE
-        if self.config.capabilities["browserName"] == "chrome":
+        if self._is_chrome():
             self.config._image_name = SeleniumConfig.CHROME_NODE_IMAGE
         return self.config.image
