@@ -10,32 +10,9 @@
 #    WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the
 #    License for the specific language governing permissions and limitations
 #    under the License.
-from selenium import webdriver
 
-from testcontainers.config import SeleniumConfig
-from testcontainers.generic import DockerContainer
-from testcontainers.waiting_utils import wait_container_is_ready
-
-
-class GenericSeleniumContainer(DockerContainer):
-    def __init__(self, config):
-        super(GenericSeleniumContainer, self).__init__(config)
-
-    @wait_container_is_ready()
-    def _connect(self):
-        self._driver = webdriver.Remote(
-            command_executor=('http://{}:{}/wd/hub'.format(
-                self.config.host_ip, self.config.hub_container_port)),
-            desired_capabilities=self.config.capabilities)
-
-    def get_driver(self):
-        return self._driver
-
-    def start(self):
-        raise NotImplementedError
-
-    def _is_chrome(self):
-        return self.config.capabilities["browserName"] == "chrome"
+from testcontainers.config import ContainerConfig
+from testcontainers.generic import GenericSeleniumContainer
 
 
 class StandaloneSeleniumContainer(GenericSeleniumContainer):
@@ -43,51 +20,70 @@ class StandaloneSeleniumContainer(GenericSeleniumContainer):
         super(StandaloneSeleniumContainer, self).__init__(config)
 
     def start(self):
-        self._docker.run(image=self._get_image,
-                         bind_ports=self.config.port_bindings)
-        self._connect()
+        self._docker.run(image=self.config.image,
+                         bind_ports=self.config.port_bindings,
+                         env=self.config.env,
+                         links=self.config.container_links,
+                         name=self.config.name)
         return self
 
-    @property
-    def _get_image(self):
-        self.config._image_name = self.config.FIREFOX
-        if self._is_chrome():
-            self.config._image_name = self.config.CHROME
-        return self.config.image
+
+class StandaloneSeleniumConfig(ContainerConfig):
+    FIREFOX = "selenium/standalone-firefox-debug"
+    CHROME = "selenium/standalone-chrome-debug"
+
+    def __init__(self, image, capabilities, version="latest", name=None, host_port=4444, container_port=4444,
+                 host_vnc_port=5900, container_vnc_port=5900):
+        super(StandaloneSeleniumConfig, self).__init__(image=image, version=version)
+        self.host_port = host_port
+        self.capabilities = capabilities
+        self.name = name
+        if host_port:
+            self.bind_ports(host_port, container_port)
+        self.bind_ports(host_vnc_port, container_vnc_port)
+        self.add_env("no_proxy", "localhost")  # this is workaround due to bug in Selenium images
+        self.add_env("HUB_ENV_no_proxy", "localhost")
+
+
+class NodeConfig(ContainerConfig):
+    def __init__(self, image, version="latest", link_name="selenium-hub",
+                 host_vnc_port=5900, container_vnc_port=5900, name=None):
+        super(NodeConfig, self).__init__(image=image, version=version)
+        self.name = name
+        self.bind_ports(host_vnc_port, container_vnc_port)
+        self.link_containers(link_name, "hub")
+        self.add_env("no_proxy", "localhost")  # this is workaround due to bug in Selenium images
+        self.add_env("HUB_ENV_no_proxy", "localhost")
+
+
+class HubConfig(ContainerConfig):
+    def __init__(self, image, capabilities, version="latest",
+                 name="selenium-hub", host_port=4444, container_port=4444):
+        super(HubConfig, self).__init__(image=image, version=version)
+        self.host_port = host_port
+        self.capabilities = capabilities
+        self.name = name
+        self.bind_ports(host_port, container_port)
 
 
 class SeleniumGridContainers(GenericSeleniumContainer):
-    def __init__(self, config):
-        super(SeleniumGridContainers, self).__init__(config)
+    HUB_IMAGE = "selenium/hub"
+    FF_NODE_IMAGE = "selenium/node-firefox-debug"
+    CHROME_NODE_IMAGE = "selenium/node-chrome-debug"
+
+    def __init__(self, hub_config, node_config):
+        super(SeleniumGridContainers, self).__init__(hub_config)
+        self.hub = StandaloneSeleniumContainer(self.config)
+        self.node = StandaloneSeleniumContainer(node_config)
 
     def start(self):
-        self._start_nub()
-        self._start_node()
-        self._connect()
+        self.hub.start()
+        self.node.start()
         return self
 
-    def _start_nub(self):
-        hub_image_name = "{}:{}".format(SeleniumConfig.HUB_IMAGE,
-                                        self.config.version)
-        return self._docker.run(image=hub_image_name,
-                                bind_ports={
-                                    self.config.hub_host_port:
-                                        self.config.hub_container_port
-                                },
-                                name=self.config.hub_container_name)
+    def stop(self):
+        self.hub.stop()
+        self.node.stop()
 
-    def _start_node(self):
-        return self._docker.run(image=self._get_image,
-                                bind_ports={
-                                    self.config.vnc_host_port:
-                                        self.config.vnc_container_port
-                                },
-                                env=self.config.env,
-                                links={self.config.hub_container_name: "hub"})
-
-    @property
-    def _get_image(self):
-        self.config._image_name = SeleniumConfig.FF_NODE_IMAGE
-        if self._is_chrome():
-            self.config._image_name = SeleniumConfig.CHROME_NODE_IMAGE
-        return self.config.image
+    def get_driver(self):
+        return self.hub.get_driver()

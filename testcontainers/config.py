@@ -80,8 +80,7 @@ class SeleniumConfig(ContainerConfig):
     HUB_IMAGE = "selenium/hub"
     FF_NODE_IMAGE = "selenium/node-firefox-debug"
     CHROME_NODE_IMAGE = "selenium/node-chrome-debug"
-    FIREFOX = "selenium/standalone-firefox-debug"
-    CHROME = "selenium/standalone-chrome-debug"
+
 
     def __init__(self, image, capabilities=None, hub_host_port=4444,
                  hub_container_port=4444, hub_container_name="selenium-hub",

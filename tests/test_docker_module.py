@@ -16,14 +16,16 @@ import pytest
 from selenium.webdriver import DesiredCapabilities
 
 from testcontainers.config import SeleniumConfig
-from testcontainers.webdriver import StandaloneSeleniumContainer
-from testcontainers.webdriver import SeleniumGridContainers
+from testcontainers.webdriver import SeleniumGridContainers, NodeConfig
+from testcontainers.webdriver import StandaloneSeleniumConfig, StandaloneSeleniumContainer, \
+    HubConfig
 
 
 @pytest.fixture
 def selenium_container(request):
-    config = SeleniumConfig(SeleniumConfig.CHROME, DesiredCapabilities.CHROME)
-    container = SeleniumGridContainers(config).start()
+    hub_config = HubConfig(SeleniumGridContainers.HUB_IMAGE, DesiredCapabilities.FIREFOX)
+    node_config = NodeConfig(SeleniumGridContainers.FF_NODE_IMAGE)
+    container = SeleniumGridContainers(hub_config, node_config).start()
 
     def fin():
         container.stop()
@@ -34,8 +36,9 @@ def selenium_container(request):
 
 class TestDocker(object):
     def test_selenium_grid(self):
-        config = SeleniumConfig(SeleniumConfig.CHROME)
-        with SeleniumGridContainers(config) as firefox:
+        hub_config = HubConfig(SeleniumGridContainers.HUB_IMAGE, DesiredCapabilities.FIREFOX)
+        node_config = NodeConfig(SeleniumGridContainers.FF_NODE_IMAGE)
+        with SeleniumGridContainers(hub_config, node_config) as firefox:
             webdriver = firefox.get_driver()
             webdriver.get("http://google.com")
             webdriver.find_element_by_name("q").send_keys("Hello")
@@ -46,7 +49,7 @@ class TestDocker(object):
         driver.find_element_by_name("q").send_keys("Hello")
 
     def test_standalone_container(self):
-        config = SeleniumConfig(SeleniumConfig.CHROME, DesiredCapabilities.CHROME)
+        config = StandaloneSeleniumConfig(StandaloneSeleniumConfig.CHROME, DesiredCapabilities.CHROME)
 
         with StandaloneSeleniumContainer(config) as container:
             driver = container.get_driver()

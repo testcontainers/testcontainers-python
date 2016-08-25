@@ -11,6 +11,7 @@
 #    License for the specific language governing permissions and limitations
 #    under the License.
 import sqlalchemy
+from selenium import webdriver
 
 from testcontainers.docker_client import DockerClient
 from testcontainers.waiting_utils import wait_container_is_ready
@@ -42,7 +43,7 @@ class DockerContainer(object):
         return self._container_config
 
     def _connect(self):
-        raise NotImplementedError
+        raise NotImplementedError()
 
 
 class GenericDbContainer(DockerContainer):
@@ -90,3 +91,26 @@ class GenericDbContainer(DockerContainer):
     @property
     def host_ip(self):
         return self._container_config.host_ip
+
+
+class GenericSeleniumContainer(DockerContainer):
+    def __init__(self, config):
+        super(GenericSeleniumContainer, self).__init__(config)
+
+    @wait_container_is_ready()
+    def _connect(self):
+        return webdriver.Remote(
+            command_executor=('http://{}:{}/wd/hub'.format(
+                self.config.host_ip,
+                self.config.host_port)
+            ),
+            desired_capabilities=self.config.capabilities)
+
+    def get_driver(self):
+        return self._connect()
+
+    def start(self):
+        raise NotImplementedError()
+
+    def _is_chrome(self):
+        return self.config.capabilities["browserName"] == "chrome"
