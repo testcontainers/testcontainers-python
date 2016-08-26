@@ -15,6 +15,8 @@ from pprint import pprint
 
 import MySQLdb
 import psycopg2
+import requests
+
 from testcontainers.core.config import ContainerConfig
 from testcontainers.core.docker_client import DockerClient
 from testcontainers.core.generic import DockerContainer
@@ -150,3 +152,18 @@ def test_generic_docker_container():
         print("server version:", row[0])
         cur.close()
         assert row[0] == '10.1.16-MariaDB-1~jessie'
+
+
+def test_user_rest():
+    config = ContainerConfig("user-rest", version="latest")
+    config.bind_ports(8080, 8080)
+    config.set_host_port(8080)
+    with DockerContainer(config) as user_rest:
+        @wait_container_is_ready()
+        def wait_to_start():
+            requests.get("http://localhost:8080/rest")
+
+        wait_to_start()
+        resp = requests.get("http://{host}:{port}/rest/users".format(host=user_rest.host_ip,
+                                                                     port=user_rest.host_port))
+        print(resp.json()[0])

@@ -5,7 +5,8 @@ sleep_time = 1
 
 class ContainerConfig(object):
     def __init__(self, image, version):
-        self._host = "0.0.0.0"
+        self._host_ip = "localhost"
+        self._host_port = None
         self._version = version
         self._image_name = image
         self._environment = {}
@@ -30,6 +31,9 @@ class ContainerConfig(object):
 
     def set_container_name(self, name):
         self._container_name = name
+
+    def set_host_port(self, port):
+        self._host_port = port
 
     @property
     def port_bindings(self):
@@ -61,7 +65,11 @@ class ContainerConfig(object):
 
     @property
     def host_ip(self):
-        return self._host
+        return self._host_ip
+
+    @property
+    def host_port(self):
+        return self._host_port
 
 
 class DbConfig(ContainerConfig):
@@ -86,7 +94,7 @@ class SeleniumConfig(ContainerConfig):
                  host_vnc_port, container_vnc_port, version="latest"):
         super(SeleniumConfig, self).__init__(image=image, version=version)
         self.set_container_name(name)
-        self.host_port = host_port
+        self.set_host_port(host_port)
         self.bind_ports(host_port, container_port)
         self.bind_ports(host_vnc_port, container_vnc_port)
         # this is workaround due to bug in Selenium images
