@@ -125,7 +125,9 @@ class DockerClient(object):
 
     def build(self, dockerfile, tag, rm=True):
         f = BytesIO(dockerfile.encode('utf-8'))
-        response = [line for line in self._cli.build(fileobj=f, rm=rm, tag=tag)]
+        response = [line for line in self._cli.build(fileobj=f,
+                                                     rm=rm,
+                                                     tag=tag)]
         for line in response:
             logging.warning(line)
 

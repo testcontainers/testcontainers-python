@@ -89,5 +89,6 @@ class SeleniumConfig(ContainerConfig):
         self.host_port = host_port
         self.bind_ports(host_port, container_port)
         self.bind_ports(host_vnc_port, container_vnc_port)
-        self.add_env("no_proxy", "localhost")  # this is workaround due to bug in Selenium images
+        # this is workaround due to bug in Selenium images
+        self.add_env("no_proxy", "localhost")
         self.add_env("HUB_ENV_no_proxy", "localhost")

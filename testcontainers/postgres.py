@@ -26,8 +26,10 @@ class PostgresConfig(DbConfig):
     POSTGRES_DB = "POSTGRES_DB"
 
     def __init__(self, user, passwd,
-                 db="test", host_port=5432, image="postgres", version="latest"):
-        super(PostgresConfig, self).__init__(image, version=version)
+                 db="test", host_port=5432,
+                 image="postgres",
+                 version="latest"):
+        super(PostgresConfig, self).__init__(image=image, version=version)
         self.add_env(self.POSTGRES_USER, user)
         self.add_env(self.POSTGRES_PASSWORD, passwd)
         self.add_env(self.POSTGRES_DB, db)
