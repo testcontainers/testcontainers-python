@@ -26,6 +26,7 @@ class ContainerConfig(object):
 
     def link_containers(self, target, current):
         self.container_links[target] = current
+        logging.warning("Container {} linked to {}".format(current, target))
 
     def mount_volume(self, host, container):
         self.volumes[host] = container

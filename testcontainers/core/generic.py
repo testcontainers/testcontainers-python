@@ -58,6 +58,12 @@ class DockerContainer(object):
     def bind_ports(self, host, container):
         self._config.bind_ports(host, container)
 
+    def mount_volume(self, host, container):
+        self._config.mount_volume(host, container)
+
+    def link_to_container(self, name):
+        self._config.link_containers(name, self._config.container_name)
+
 
 class GenericDbContainer(DockerContainer):
     def __init__(self, image_name,
