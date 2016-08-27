@@ -15,29 +15,29 @@
 import pytest
 from selenium.webdriver import DesiredCapabilities
 
-from testcontainers.webdriver import SeleniumGridContainers, NodeConfig, SeleniumImage
-from testcontainers.webdriver import StandaloneSeleniumConfig, StandaloneSeleniumContainer, \
-    HubConfig
+from testcontainers.webdriver import SeleniumImage, SeleniumHub, SeleniumNode, SeleniumGrid
+from testcontainers.webdriver import StandaloneSeleniumContainer
 
 
 @pytest.fixture
 def selenium_container(request):
-    hub_config = HubConfig(SeleniumImage.HUB_IMAGE, DesiredCapabilities.FIREFOX)
-    node_config = NodeConfig(SeleniumImage.FIREFOX_NODE)
-    container = SeleniumGridContainers(hub_config, node_config).start()
+    pass
+    # hub_config = HubConfig(SeleniumImage.HUB_IMAGE, DesiredCapabilities.FIREFOX)
+    # node_config = NodeConfig(SeleniumImage.FIREFOX_NODE)
+    # container = SeleniumGrid(hub_config, node_config).start()
 
-    def fin():
-        container.stop()
+    # def fin():
+    #    container.stop()
 
-    request.addfinalizer(fin)
-    return container
+    # request.addfinalizer(fin)
+    # return container
 
 
 class TestDocker(object):
     def test_selenium_grid(self):
-        hub_config = HubConfig(SeleniumImage.HUB_IMAGE, DesiredCapabilities.FIREFOX)
-        node_config = NodeConfig(SeleniumImage.FIREFOX_NODE)
-        with SeleniumGridContainers(hub_config, node_config, node_count=3) as firefox:
+        hub = SeleniumHub(SeleniumImage.HUB_IMAGE, DesiredCapabilities.FIREFOX)
+        node = SeleniumNode(SeleniumImage.FIREFOX_NODE)
+        with SeleniumGrid(hub, node, node_count=3) as firefox:
             webdriver = firefox.get_driver()
             webdriver.get("http://google.com")
             webdriver.find_element_by_name("q").send_keys("Hello")
@@ -48,8 +48,8 @@ class TestDocker(object):
         driver.find_element_by_name("q").send_keys("Hello")
 
     def test_standalone_container(self):
-        config = StandaloneSeleniumConfig(SeleniumImage.STANDALONE_CHROME, DesiredCapabilities.CHROME)
-        with StandaloneSeleniumContainer(config) as container:
+        chrome = StandaloneSeleniumContainer(SeleniumImage.STANDALONE_CHROME, DesiredCapabilities.CHROME)
+        with chrome as container:
             driver = container.get_driver()
             driver.get("http://google.com")
             driver.find_element_by_name("q").send_keys("Hello")

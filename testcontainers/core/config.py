@@ -44,31 +44,26 @@ class ContainerConfig(object):
         return self._host_ip
 
 
-class DbConfig(ContainerConfig):
-    def __init__(self, image_name, version):
-        super(DbConfig, self).__init__(image_name=image_name, version=version)
+# class DbConfig(ContainerConfig):
+#     def __init__(self, image_name, version):
+#         super(DbConfig, self).__init__(image_name=image_name, version=version)
+#
+#     @property
+#     def username(self):
+#         raise NotImplementedError()
+#
+#     @property
+#     def password(self):
+#         raise NotImplementedError()
+#
+#     @property
+#     def db(self):
+#         raise NotImplementedError()
+#
+#
+# class SeleniumConfig(ContainerConfig):
+#     def __init__(self, image_name, name, host_port, container_port,
+#                  host_vnc_port, container_vnc_port, version="latest"):
+#         super(SeleniumConfig, self).__init__(image_name=image_name, version=version)
 
-    @property
-    def username(self):
-        raise NotImplementedError()
 
-    @property
-    def password(self):
-        raise NotImplementedError()
-
-    @property
-    def db(self):
-        raise NotImplementedError()
-
-
-class SeleniumConfig(ContainerConfig):
-    def __init__(self, image_name, name, host_port, container_port,
-                 host_vnc_port, container_vnc_port, version="latest"):
-        super(SeleniumConfig, self).__init__(image_name=image_name, version=version)
-        self.set_container_name(name)
-        self.set_host_port(host_port)
-        self.bind_ports(host_port, container_port)
-        self.bind_ports(host_vnc_port, container_vnc_port)
-        # this is workaround due to bug in Selenium images
-        self.add_env("no_proxy", "localhost")
-        self.add_env("HUB_ENV_no_proxy", "localhost")

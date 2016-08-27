@@ -52,6 +52,10 @@ class DockerContainer(object):
     def host_port(self):
         return self._config.host_port
 
+    @property
+    def container_name(self):
+        return self._config.container_name
+
     def get_env(self, key):
         return self._config.environment[key]
 
@@ -64,8 +68,8 @@ class DockerContainer(object):
     def mount_volume(self, host, container):
         self._config.mount_volume(host, container)
 
-    def link_to_container(self, name):
-        self._config.link_containers(name, self._config.container_name)
+    def link_containers(self, target, current):
+        self._config.link_containers(target, current)
 
 
 class GenericDbContainer(DockerContainer):
@@ -119,10 +123,10 @@ class GenericDbContainer(DockerContainer):
 class GenericSeleniumContainer(DockerContainer):
     def __init__(self, image_name,
                  capabilities,
+                 host_port,
+                 container_port,
+                 name,
                  version="latest",
-                 name=None,
-                 host_port=4444,
-                 container_port=4444,
                  host_vnc_port=5900,
                  container_vnc_port=5900):
         super(GenericSeleniumContainer, self).__init__(image_name=image_name,
