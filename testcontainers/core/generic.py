@@ -20,9 +20,12 @@ from testcontainers.core.waiting_utils import wait_container_is_ready
 
 
 class DockerContainer(object):
-    def __init__(self, image_name, version):
+    def __init__(self, image_name, version, container_name, host_port):
         self._docker = DockerClient()
-        self._config = ContainerConfig(image_name=image_name, version=version)
+        self._config = ContainerConfig(image_name=image_name,
+                                       version=version,
+                                       container_name=container_name,
+                                       host_port=host_port)
 
     def __enter__(self):
         return self.start()
@@ -72,14 +75,15 @@ class GenericDbContainer(DockerContainer):
                  user,
                  password,
                  database,
-                 root_password):
-        super(GenericDbContainer, self).__init__(image_name=image_name, version=version)
-        self._config.set_host_port(host_port)
+                 root_password, name):
+        super(GenericDbContainer, self).__init__(image_name=image_name,
+                                                 version=version,
+                                                 host_port=host_port,
+                                                 container_name=name)
         self.username = user
         self.password = password
         self.database = database
         self.root_password = root_password
-        self._configure()
 
     def start(self):
         """
@@ -113,8 +117,22 @@ class GenericDbContainer(DockerContainer):
 
 
 class GenericSeleniumContainer(DockerContainer):
-    def __init__(self, config):
-        super(GenericSeleniumContainer, self).__init__(config)
+    def __init__(self, image_name,
+                 capabilities,
+                 version="latest",
+                 name=None,
+                 host_port=4444,
+                 container_port=4444,
+                 host_vnc_port=5900,
+                 container_vnc_port=5900):
+        super(GenericSeleniumContainer, self).__init__(image_name=image_name,
+                                                       version=version,
+                                                       host_port=host_port,
+                                                       container_name=name)
+        self.capabilities = capabilities
+        self.container_port = container_port
+        self.host_vnc_port = host_vnc_port
+        self.container_vnc_port = container_vnc_port
 
     @wait_container_is_ready()
     def _connect(self):
@@ -123,10 +141,10 @@ class GenericSeleniumContainer(DockerContainer):
                 self.host_ip,
                 self.host_port)
             ),
-            desired_capabilities=self._config.capabilities)
+            desired_capabilities=self.capabilities)
 
     def get_driver(self):
         return self._connect()
 
     def _is_chrome(self):
-        return self._config.capabilities["browserName"] == "chrome"
+        return self.capabilities["browserName"] == "chrome"

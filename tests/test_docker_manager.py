@@ -136,15 +136,17 @@ def test_docker_build_with_dockerfile():
 
 
 def test_generic_docker_container():
-    config = ContainerConfig("mariadb", version="latest")
-    config.set_container_name("some-mariadb")
-    config.add_env("MYSQL_ROOT_PASSWORD", "secret")
-    config.add_env("MYSQL_DATABASE", "test_db")
-    config.bind_ports(3306, 3306)
-    with DockerContainer(config) as mariabd:
+    container = DockerContainer(image_name="mariadb",
+                                version="latest",
+                                container_name="mariadb",
+                                host_port=3306)
+    container.add_env("MYSQL_ROOT_PASSWORD", "secret")
+    container.add_env("MYSQL_DATABASE", "test_db")
+    container.bind_ports(3306, 3306)
+    with container as mariabd:
         @wait_container_is_ready()
         def connect():
-            return MySQLdb.connect(host=mariabd.host_ip,
+            return MySQLdb.connect(host="0.0.0.0",
                                    user="root",
                                    passwd="secret",
                                    db="test_db")
@@ -156,18 +158,3 @@ def test_generic_docker_container():
         print("server version:", row[0])
         cur.close()
         assert row[0] == '10.1.16-MariaDB-1~jessie'
-
-
-def test_user_rest():
-    config = ContainerConfig("user-rest", version="latest")
-    config.bind_ports(8080, 8080)
-    config.set_host_port(8080)
-    with DockerContainer(config) as user_rest:
-        @wait_container_is_ready()
-        def wait_to_start():
-            requests.get("http://localhost:8080/rest")
-
-        wait_to_start()
-        resp = requests.get("http://{host}:{port}/rest/users".format(host=user_rest.host_ip,
-                                                                     port=user_rest.host_port))
-        print(resp.json()[0])

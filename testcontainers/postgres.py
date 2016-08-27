@@ -27,12 +27,13 @@ class PostgresContainer(GenericDbContainer):
                                                 password=passwd,
                                                 database=db,
                                                 host_port=host_port,
-                                                root_password=passwd)
-
+                                                root_password=passwd,
+                                                name=image_name)
         self.container_port = 5432
+        self._configure()
 
     def _configure(self):
-        self._config.add_env("POSTGRES_USER", self.username)
-        self._config.add_env("POSTGRES_PASSWORD", self.password)
-        self._config.add_env("POSTGRES_DB", self.database)
-        self._config.bind_ports(self.host_port, 5432)
+        self.add_env("POSTGRES_USER", self.username)
+        self.add_env("POSTGRES_PASSWORD", self.password)
+        self.add_env("POSTGRES_DB", self.database)
+        self.bind_ports(self.host_port, self.container_port)

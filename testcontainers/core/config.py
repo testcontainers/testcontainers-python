@@ -6,19 +6,16 @@ sleep_time = 1
 
 
 class ContainerConfig(object):
-    def __init__(self, image_name, version):
+    def __init__(self, image_name, version, container_name, host_port):
         self._host_ip = "localhost"
         self._version = version
-        self.host_port = None
+        self.host_port = host_port
         self.environment = {}
         self.port_bindings = {}
         self.volumes = {}
-        self.container_name = None
+        self.container_name = container_name
         self.container_links = {}
         self.image_name = image_name
-
-    def set_host_port(self, port):
-        self.host_port = port
 
     def bind_ports(self, host, container):
         if host:
@@ -37,9 +34,6 @@ class ContainerConfig(object):
             logging.warning("Env variable {} set to {}".format(key, value))
         else:
             raise ValueError("Can't override {}.It has been initialized".format(key))
-
-    def set_container_name(self, name):
-        self.container_name = name
 
     @property
     def image(self):

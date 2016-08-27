@@ -26,27 +26,6 @@ class SeleniumImage(object):
         pass
 
 
-class StandaloneSeleniumConfig(SeleniumConfig):
-    def __init__(self, image_name,
-                 capabilities,
-                 version="latest",
-                 name=None,
-                 host_port=4444,
-                 container_port=4444,
-                 host_vnc_port=5900,
-                 container_vnc_port=5900):
-        super(StandaloneSeleniumConfig, self). \
-            __init__(image_name=image_name,
-                     version=version,
-                     name=name,
-                     host_port=host_port,
-                     container_port=container_port,
-                     host_vnc_port=host_vnc_port,
-                     container_vnc_port=container_vnc_port)
-
-        self.capabilities = capabilities
-
-
 class NodeConfig(SeleniumConfig):
     def __init__(self, image_name,
                  version="latest",
@@ -80,9 +59,34 @@ class HubConfig(SeleniumConfig):
         self.capabilities = capabilities
 
 
+class StandaloneSeleniumConfig(SeleniumConfig):
+    def __init__(self, image_name,
+                 capabilities,
+                 version="latest",
+                 name=None,
+                 host_port=4444,
+                 container_port=4444,
+                 host_vnc_port=5900,
+                 container_vnc_port=5900):
+        super(StandaloneSeleniumConfig, self). \
+            __init__(image_name=image_name,
+                     version=version,
+                     name=name,
+                     host_port=host_port,
+                     container_port=container_port,
+                     host_vnc_port=host_vnc_port,
+                     container_vnc_port=container_vnc_port)
+
+        self.capabilities = capabilities
+
+
 class StandaloneSeleniumContainer(GenericSeleniumContainer):
-    def __init__(self, config):
-        super(StandaloneSeleniumContainer, self).__init__(config)
+    def __init__(self, image,
+                 capabilities,
+                 version="latest", ):
+        super(StandaloneSeleniumContainer, self).__init__(image_name=image,
+                                                          version=version,
+                                                          capabilities=capabilities)
 
 
 class SeleniumGridContainers(GenericSeleniumContainer):

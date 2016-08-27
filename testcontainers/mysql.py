@@ -30,15 +30,17 @@ class MySqlContainer(GenericDbContainer):
                                              user=user,
                                              password=password,
                                              database=db,
-                                             root_password=root_password)
+                                             root_password=root_password, name=image_name)
+        self.container_port = 3306
+        self._configure()
 
     def _configure(self):
         if not self._is_root():
-            self._config.add_env("MYSQL_USER", self.username)
-            self._config.add_env("MYSQL_PASSWORD", self.password)
-        self._config.add_env("MYSQL_ROOT_PASSWORD", self.root_password)
-        self._config.add_env("MYSQL_DATABASE", self.database)
-        self._config.bind_ports(self.host_port, 3306)
+            self.add_env("MYSQL_USER", self.username)
+            self.add_env("MYSQL_PASSWORD", self.password)
+        self.add_env("MYSQL_ROOT_PASSWORD", self.root_password)
+        self.add_env("MYSQL_DATABASE", self.database)
+        self.bind_ports(self.host_port, self.container_port)
 
     def _is_root(self):
         return self.username == self._super_user_name
