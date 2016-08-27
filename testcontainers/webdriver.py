@@ -27,7 +27,7 @@ class SeleniumImage(object):
 
 
 class StandaloneSeleniumConfig(SeleniumConfig):
-    def __init__(self, image,
+    def __init__(self, image_name,
                  capabilities,
                  version="latest",
                  name=None,
@@ -36,7 +36,7 @@ class StandaloneSeleniumConfig(SeleniumConfig):
                  host_vnc_port=5900,
                  container_vnc_port=5900):
         super(StandaloneSeleniumConfig, self). \
-            __init__(image=image,
+            __init__(image_name=image_name,
                      version=version,
                      name=name,
                      host_port=host_port,
@@ -48,13 +48,13 @@ class StandaloneSeleniumConfig(SeleniumConfig):
 
 
 class NodeConfig(SeleniumConfig):
-    def __init__(self, image,
+    def __init__(self, image_name,
                  version="latest",
                  hub_name="selenium-hub",
                  host_vnc_port=None,
                  container_vnc_port=5900,
                  name=None):
-        super(NodeConfig, self).__init__(image=image,
+        super(NodeConfig, self).__init__(image_name=image_name,
                                          version=version,
                                          name=name,
                                          host_vnc_port=host_vnc_port,
@@ -65,13 +65,13 @@ class NodeConfig(SeleniumConfig):
 
 
 class HubConfig(SeleniumConfig):
-    def __init__(self, image,
+    def __init__(self, image_name,
                  capabilities,
                  version="latest",
                  name="selenium-hub",
                  host_port=4444,
                  container_port=4444):
-        super(HubConfig, self).__init__(image=image,
+        super(HubConfig, self).__init__(image_name=image_name,
                                         version=version,
                                         host_port=host_port,
                                         container_port=container_port,

@@ -10,46 +10,59 @@
 #    WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the
 #    License for the specific language governing permissions and limitations
 #    under the License.
-from testcontainers.core.config import DbConfig
 
 from testcontainers.core.generic import GenericDbContainer
 
 
-class MySqlDockerContainer(GenericDbContainer):
-    def __init__(self, config):
-        super(MySqlDockerContainer, self).__init__(config)
-
-
-class MySqlConfig(DbConfig):
+class MySqlContainer(GenericDbContainer):
     MYSQL_USER = "MYSQL_USER"
     MYSQL_PASSWORD = "MYSQL_PASSWORD"
     MYSQL_ROOT_PASSWORD = "MYSQL_ROOT_PASSWORD"
     MYSQL_DB_NAME = "MYSQL_DATABASE"
     _super_user_name = "root"
 
-    def __init__(self, user, password, superuser=False, root_pass="secret",
-                 db="test", host_port=3306, image="mysql", version="latest"):
-        super(MySqlConfig, self).__init__(image, version)
-        self.superuser = superuser
-        if not superuser:
-            self.add_env(self.MYSQL_USER, user)
-            self.add_env(self.MYSQL_PASSWORD, password)
-        self.add_env(self.MYSQL_ROOT_PASSWORD, root_pass)
-        self.add_env(self.MYSQL_DB_NAME, db)
-        self.bind_ports(host_port, 3306)
+    def __init__(self, user,
+                 password,
+                 root_password="secret",
+                 db="test",
+                 host_port=3306,
+                 image_name="mysql",
+                 version="latest"):
+        super(MySqlContainer, self).__init__(image_name=image_name,
+                                             version=version,
+                                             host_port=host_port,
+                                             user=user,
+                                             password=password,
+                                             database=db,
+                                             root_password=root_password)
+
+    def _configure(self):
+        if not self._is_root():
+            self.config.add_env(self.MYSQL_USER, self.user)
+            self.config.add_env(self.MYSQL_PASSWORD, self.passwd)
+        self.config.add_env(self.MYSQL_ROOT_PASSWORD, self.root_password)
+        self.config.add_env(self.MYSQL_DB_NAME, self.database)
+        self.config.bind_ports(self.host_port, 3306)
 
     @property
     def username(self):
-        if self.superuser:
+        if self._is_root():
             return self._super_user_name
-        return self.env[self.MYSQL_USER]
+        return self.get_env(self.MYSQL_USER)
 
     @property
     def password(self):
-        if self.superuser:
-            return self.env[self.MYSQL_ROOT_PASSWORD]
-        return self.env[self.MYSQL_PASSWORD]
+        if self._is_root():
+            return self.get_env(self.MYSQL_ROOT_PASSWORD)
+        return self.get_env(self.MYSQL_PASSWORD)
 
     @property
     def db(self):
-        return self.env[self.MYSQL_DB_NAME]
+        return self.get_env(self.MYSQL_DB_NAME)
+
+    @property
+    def host_ip(self):
+        return "0.0.0.0"
+
+    def _is_root(self):
+        return self.user == self._super_user_name

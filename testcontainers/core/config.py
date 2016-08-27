@@ -4,77 +4,49 @@ sleep_time = 1
 
 
 class ContainerConfig(object):
-    def __init__(self, image, version):
+    def __init__(self, image_name, version):
         self._host_ip = "localhost"
-        self._host_port = None
         self._version = version
-        self._image_name = image
-        self._environment = {}
-        self._port_bindings = {}
-        self._volumes = {}
-        self._container_name = None
-        self._links = {}
+        self.host_port = None
+        self.environment = {}
+        self.port_bindings = {}
+        self.volumes = {}
+        self.container_name = None
+        self.container_links = {}
+        self.image_name = image_name
+
+    def set_host_port(self, port):
+        self.host_port = port
 
     def bind_ports(self, host, container):
         if host:
-            self._port_bindings[host] = container
+            self.port_bindings[host] = container
 
     def link_containers(self, target, current):
-        self._links[target] = current
+        self.container_links[target] = current
 
     def mount_volume(self, host, container):
-        self._volumes[host] = container
+        self.volumes[host] = container
 
     def add_env(self, key, value):
-        self._environment[key] = value
+        self.environment[key] = value
         return self
 
     def set_container_name(self, name):
-        self._container_name = name
-
-    def set_host_port(self, port):
-        self._host_port = port
-
-    @property
-    def port_bindings(self):
-        return self._port_bindings
+        self.container_name = name
 
     @property
     def image(self):
-        return "{}:{}".format(self._image_name, self._version)
-
-    @property
-    def image_name(self):
-        return self._image_name
-
-    @property
-    def version(self):
-        return self._version
-
-    @property
-    def env(self):
-        return self._environment
-
-    @property
-    def container_name(self):
-        return self._container_name
-
-    @property
-    def container_links(self):
-        return self._links
+        return "{}:{}".format(self.image_name, self._version)
 
     @property
     def host_ip(self):
         return self._host_ip
 
-    @property
-    def host_port(self):
-        return self._host_port
-
 
 class DbConfig(ContainerConfig):
-    def __init__(self, image, version):
-        super(DbConfig, self).__init__(image=image, version=version)
+    def __init__(self, image_name, version):
+        super(DbConfig, self).__init__(image_name=image_name, version=version)
 
     @property
     def username(self):
@@ -90,9 +62,9 @@ class DbConfig(ContainerConfig):
 
 
 class SeleniumConfig(ContainerConfig):
-    def __init__(self, image, name, host_port, container_port,
+    def __init__(self, image_name, name, host_port, container_port,
                  host_vnc_port, container_vnc_port, version="latest"):
-        super(SeleniumConfig, self).__init__(image=image, version=version)
+        super(SeleniumConfig, self).__init__(image_name=image_name, version=version)
         self.set_container_name(name)
         self.set_host_port(host_port)
         self.bind_ports(host_port, container_port)

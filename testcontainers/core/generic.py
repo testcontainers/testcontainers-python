@@ -12,15 +12,17 @@
 #    under the License.
 import sqlalchemy
 from selenium import webdriver
+
+from testcontainers.core.config import ContainerConfig
 from testcontainers.core.docker_client import DockerClient
 
 from testcontainers.core.waiting_utils import wait_container_is_ready
 
 
 class DockerContainer(object):
-    def __init__(self, config):
+    def __init__(self, image_name, version):
         self._docker = DockerClient()
-        self._container_config = config
+        self._config = ContainerConfig(image_name=image_name, version=version)
 
     def __enter__(self):
         return self.start()
@@ -29,46 +31,19 @@ class DockerContainer(object):
         self.stop()
 
     def start(self):
-        self._docker.run(image=self.image,
-                         bind_ports=self.port_bindings,
-                         env=self.environment,
+        self._docker.run(image=self.config.image,
+                         bind_ports=self.config.port_bindings,
+                         env=self.config.environment,
                          links=self.config.container_links,
-                         name=self.container_name)
+                         name=self.config.container_name)
         return self
 
     def stop(self):
-        """
-        Stop all spawned containers
-        :return:
-        """
         self._docker.remove_all_spawned()
 
     @property
     def config(self):
-        return self._container_config
-
-    def _connect(self):
-        raise NotImplementedError()
-
-    @property
-    def environment(self):
-        return self.config.env
-
-    @property
-    def image(self):
-        return self.config.image
-
-    @property
-    def image_name(self):
-        return self.config.image_name
-
-    @property
-    def container_name(self):
-        return self.config.container_name
-
-    @property
-    def port_bindings(self):
-        return self.config.port_bindings
+        return self._config
 
     @property
     def host_ip(self):
@@ -76,18 +51,30 @@ class DockerContainer(object):
 
     @property
     def host_port(self):
-        return self.config.host_port
+        return self._config.host_port
 
 
 class GenericDbContainer(DockerContainer):
-    def __init__(self, config):
-        super(GenericDbContainer, self).__init__(config)
+    def __init__(self, image_name,
+                 version,
+                 host_port,
+                 user,
+                 password,
+                 database,
+                 root_password):
+        super(GenericDbContainer, self).__init__(image_name=image_name, version=version)
+        self.config.set_host_port(host_port)
+        self.user = user
+        self.passwd = password
+        self.database = database
+        self.root_password = root_password
 
     def start(self):
         """
         Start my sql container and wait to be ready
         :return:
         """
+        self._configure()
         super(GenericDbContainer, self).start()
         self._connect()
         return self
@@ -98,25 +85,35 @@ class GenericDbContainer(DockerContainer):
         dialect+driver://username:password@host:port/database
         :return:
         """
+        self._configure()
         engine = sqlalchemy.create_engine(
-            "{}://{}:{}@{}/{}".format(self.image_name,
+            "{}://{}:{}@{}/{}".format(self.config.image_name,
                                       self.username,
                                       self.password,
                                       self.host_ip,
                                       self.db))
         engine.connect()
 
+    def _configure(self):
+        raise NotImplementedError()
+
     @property
     def db(self):
-        return self.config.db
+        raise NotImplementedError()
 
     @property
     def password(self):
-        return self.config.password
+        raise NotImplementedError()
 
     @property
     def username(self):
-        return self.config.username
+        raise NotImplementedError()
+
+    def get_env(self, key):
+        return self.config.environment[key]
+
+    def add_env(self, key, value):
+        self.config.add_env(key, value)
 
 
 class GenericSeleniumContainer(DockerContainer):

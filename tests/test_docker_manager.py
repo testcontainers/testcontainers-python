@@ -22,9 +22,10 @@ from testcontainers.core.docker_client import DockerClient
 from testcontainers.core.generic import DockerContainer
 
 from testcontainers.core.waiting_utils import wait_container_is_ready
-from testcontainers.mysql import MySqlConfig
-from testcontainers.mysql import MySqlDockerContainer
-from testcontainers.postgres import PostgresConfig, PostgresDockerContainer
+from testcontainers.mysql import MySqlContainer
+#from testcontainers.mysql import MySqlDockerContainer
+from testcontainers.postgres import PostgresContainer
+    #PostgresDockerContainer
 
 
 def test_docker_run_selenium():
@@ -39,8 +40,8 @@ def test_docker_run_selenium():
 
 
 def test_docker_run_mysql():
-    config = MySqlConfig("user", "secret")
-    with MySqlDockerContainer(config) as mysql:
+    config = MySqlContainer("user", "secret")
+    with config as mysql:
         conn = MySQLdb.connect(host=mysql.host_ip,
                                user=mysql.username,
                                passwd=mysql.password,
@@ -55,8 +56,8 @@ def test_docker_run_mysql():
 
 
 def test_docker_run_postgress():
-    config = PostgresConfig("user", "secret")
-    with PostgresDockerContainer(config) as postgres:
+    postgres_container = PostgresContainer("user", "secret")
+    with postgres_container as postgres:
         conn = psycopg2.connect(host=postgres.host_ip,
                                 user=postgres.username,
                                 password=postgres.password,
