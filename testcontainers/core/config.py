@@ -1,3 +1,5 @@
+import logging
+
 docker_base_url = 'unix://var/run/docker.sock'
 max_tries = 120
 sleep_time = 1
@@ -31,8 +33,9 @@ class ContainerConfig(object):
     def add_env(self, key, value):
         if key not in self.environment.keys():
             self.environment[key] = value
+            logging.warning("Env variable {} set to {}".format(key, value))
         else:
-            raise ValueError("Value {} has been initialized".format(key))
+            raise ValueError("Can't override {}.It has been initialized".format(key))
 
     def set_container_name(self, name):
         self.container_name = name

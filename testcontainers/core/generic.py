@@ -69,7 +69,7 @@ class GenericDbContainer(DockerContainer):
                  root_password):
         super(GenericDbContainer, self).__init__(image_name=image_name, version=version)
         self._config.set_host_port(host_port)
-        self.user = user
+        self.username = user
         self.password = password
         self.database = database
         self.root_password = root_password
@@ -92,7 +92,7 @@ class GenericDbContainer(DockerContainer):
         """
         engine = sqlalchemy.create_engine(
             "{}://{}:{}@{}/{}".format(self._config.image_name,
-                                      self.user,
+                                      self.username,
                                       self.password,
                                       self.host_ip,
                                       self.database))
