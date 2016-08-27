@@ -33,23 +33,7 @@ class PostgresContainer(GenericDbContainer):
         self.ENV_POSTGRES_DB = "POSTGRES_DB"
 
     def _configure(self):
-        self.add_env(self.ENV_POSTGRES_USER, self.user)
-        self.add_env(self.ENV_POSTGRES_PASSWORD, self.passwd)
-        self.add_env(self.ENV_POSTGRES_DB, self.database)
-        self.config.bind_ports(self.host_port, 5432)
-
-    @property
-    def db(self):
-        return self.get_env(self.ENV_POSTGRES_DB)
-
-    @property
-    def password(self):
-        return self.get_env(self.ENV_POSTGRES_PASSWORD)
-
-    @property
-    def username(self):
-        return self.get_env(self.ENV_POSTGRES_USER)
-
-    @property
-    def host_ip(self):
-        return "0.0.0.0"
+        self._config.add_env(self.ENV_POSTGRES_USER, self.user)
+        self._config.add_env(self.ENV_POSTGRES_PASSWORD, self.password)
+        self._config.add_env(self.ENV_POSTGRES_DB, self.database)
+        self._config.bind_ports(self.host_port, 5432)

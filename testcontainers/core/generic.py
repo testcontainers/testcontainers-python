@@ -31,27 +31,32 @@ class DockerContainer(object):
         self.stop()
 
     def start(self):
-        self._docker.run(image=self.config.image,
-                         bind_ports=self.config.port_bindings,
-                         env=self.config.environment,
-                         links=self.config.container_links,
-                         name=self.config.container_name)
+        self._docker.run(image=self._config.image,
+                         bind_ports=self._config.port_bindings,
+                         env=self._config.environment,
+                         links=self._config.container_links,
+                         name=self._config.container_name)
         return self
 
     def stop(self):
         self._docker.remove_all_spawned()
 
     @property
-    def config(self):
-        return self._config
-
-    @property
     def host_ip(self):
-        return self.config.host_ip
+        return self._config.host_ip
 
     @property
     def host_port(self):
         return self._config.host_port
+
+    def get_env(self, key):
+        return self._config.environment[key]
+
+    def add_env(self, key, value):
+        self._config.add_env(key, value)
+
+    def bind_ports(self, host, container):
+        self._config.bind_ports(host, container)
 
 
 class GenericDbContainer(DockerContainer):
@@ -63,18 +68,18 @@ class GenericDbContainer(DockerContainer):
                  database,
                  root_password):
         super(GenericDbContainer, self).__init__(image_name=image_name, version=version)
-        self.config.set_host_port(host_port)
+        self._config.set_host_port(host_port)
         self.user = user
-        self.passwd = password
+        self.password = password
         self.database = database
         self.root_password = root_password
+        self._configure()
 
     def start(self):
         """
         Start my sql container and wait to be ready
         :return:
         """
-        self._configure()
         super(GenericDbContainer, self).start()
         self._connect()
         return self
@@ -85,35 +90,20 @@ class GenericDbContainer(DockerContainer):
         dialect+driver://username:password@host:port/database
         :return:
         """
-        self._configure()
         engine = sqlalchemy.create_engine(
-            "{}://{}:{}@{}/{}".format(self.config.image_name,
-                                      self.username,
+            "{}://{}:{}@{}/{}".format(self._config.image_name,
+                                      self.user,
                                       self.password,
                                       self.host_ip,
-                                      self.db))
+                                      self.database))
         engine.connect()
 
     def _configure(self):
         raise NotImplementedError()
 
     @property
-    def db(self):
-        raise NotImplementedError()
-
-    @property
-    def password(self):
-        raise NotImplementedError()
-
-    @property
-    def username(self):
-        raise NotImplementedError()
-
-    def get_env(self, key):
-        return self.config.environment[key]
-
-    def add_env(self, key, value):
-        self.config.add_env(key, value)
+    def host_ip(self):
+        return "0.0.0.0"
 
 
 class GenericSeleniumContainer(DockerContainer):
@@ -127,10 +117,10 @@ class GenericSeleniumContainer(DockerContainer):
                 self.host_ip,
                 self.host_port)
             ),
-            desired_capabilities=self.config.capabilities)
+            desired_capabilities=self._config.capabilities)
 
     def get_driver(self):
         return self._connect()
 
     def _is_chrome(self):
-        return self.config.capabilities["browserName"] == "chrome"
+        return self._config.capabilities["browserName"] == "chrome"

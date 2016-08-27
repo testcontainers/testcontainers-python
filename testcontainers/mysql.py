@@ -38,27 +38,27 @@ class MySqlContainer(GenericDbContainer):
 
     def _configure(self):
         if not self._is_root():
-            self.config.add_env(self.MYSQL_USER, self.user)
-            self.config.add_env(self.MYSQL_PASSWORD, self.passwd)
-        self.config.add_env(self.MYSQL_ROOT_PASSWORD, self.root_password)
-        self.config.add_env(self.MYSQL_DB_NAME, self.database)
-        self.config.bind_ports(self.host_port, 3306)
+            self._config.add_env(self.MYSQL_USER, self.user)
+            self._config.add_env(self.MYSQL_PASSWORD, self.password)
+        self._config.add_env(self.MYSQL_ROOT_PASSWORD, self.root_password)
+        self._config.add_env(self.MYSQL_DB_NAME, self.database)
+        self._config.bind_ports(self.host_port, 3306)
 
     @property
     def username(self):
         if self._is_root():
             return self._super_user_name
-        return self.get_env(self.MYSQL_USER)
+        return self.user
 
     @property
     def password(self):
         if self._is_root():
-            return self.get_env(self.MYSQL_ROOT_PASSWORD)
-        return self.get_env(self.MYSQL_PASSWORD)
+            return self.root_password
+        return self.password
 
     @property
     def db(self):
-        return self.get_env(self.MYSQL_DB_NAME)
+        return self.database
 
     @property
     def host_ip(self):

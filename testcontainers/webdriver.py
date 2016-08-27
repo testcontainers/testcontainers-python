@@ -88,7 +88,7 @@ class StandaloneSeleniumContainer(GenericSeleniumContainer):
 class SeleniumGridContainers(GenericSeleniumContainer):
     def __init__(self, hub_config, node_config, node_count=1):
         super(SeleniumGridContainers, self).__init__(hub_config)
-        self.hub = StandaloneSeleniumContainer(self.config)
+        self.hub = StandaloneSeleniumContainer(self._config)
         self.node = StandaloneSeleniumContainer(node_config)
         self.node_count = node_count
 

@@ -29,8 +29,10 @@ class ContainerConfig(object):
         self.volumes[host] = container
 
     def add_env(self, key, value):
-        self.environment[key] = value
-        return self
+        if key not in self.environment.keys():
+            self.environment[key] = value
+        else:
+            raise ValueError("Value {} has been initialized".format(key))
 
     def set_container_name(self, name):
         self.container_name = name
