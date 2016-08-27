@@ -10,7 +10,6 @@
 #    WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the
 #    License for the specific language governing permissions and limitations
 #    under the License.
-from selenium.webdriver import DesiredCapabilities
 
 from testcontainers.core.generic import GenericSeleniumContainer
 
@@ -24,39 +23,6 @@ class SeleniumImage(object):
 
     def __init__(self):
         pass
-
-
-# class NodeConfig(SeleniumConfig):
-#     def __init__(self, image_name,
-#                  version="latest",
-#                  hub_name="selenium-hub",
-#                  host_vnc_port=None,
-#                  container_vnc_port=5900,
-#                  name=None):
-#         super(NodeConfig, self).__init__(image_name=image_name,
-#                                          version=version,
-#                                          name=name,
-#                                          host_vnc_port=host_vnc_port,
-#                                          container_vnc_port=container_vnc_port,
-#                                          host_port=None,
-#                                          container_port=None)
-#         self.link_containers(hub_name, "hub")
-#
-#
-# class HubConfig(SeleniumConfig):
-#     def __init__(self, image_name,
-#                  capabilities,
-#                  version="latest",
-#                  name="selenium-hub",
-#                  host_port=4444,
-#                  container_port=4444):
-#         super(HubConfig, self).__init__(image_name=image_name,
-#                                         version=version,
-#                                         host_port=host_port,
-#                                         container_port=container_port,
-#                                         name=name, host_vnc_port=None,
-#                                         container_vnc_port=None)
-#         self.capabilities = capabilities
 
 
 class StandaloneSeleniumContainer(GenericSeleniumContainer):
@@ -111,6 +77,10 @@ class SeleniumNode(GenericSeleniumContainer):
                                            host_port=None,
                                            container_port=None,
                                            name=None)
+        self.link_label = "hub"
+
+    def link_to_hub(self, hub):
+        self.link_containers(hub.container_name, self.link_label)
 
 
 class SeleniumGrid(object):
@@ -127,7 +97,7 @@ class SeleniumGrid(object):
 
     def start(self):
         self.hub.start()
-        self.node.link_containers(self.hub.container_name, "hub")
+        self.node.link_to_hub(self.hub)
         for _ in range(self.node_count):
             self.node.start()
         return self
