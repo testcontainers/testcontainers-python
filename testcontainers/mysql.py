@@ -15,10 +15,6 @@ from testcontainers.core.generic import GenericDbContainer
 
 
 class MySqlContainer(GenericDbContainer):
-    MYSQL_USER = "MYSQL_USER"
-    MYSQL_PASSWORD = "MYSQL_PASSWORD"
-    MYSQL_ROOT_PASSWORD = "MYSQL_ROOT_PASSWORD"
-    MYSQL_DB_NAME = "MYSQL_DATABASE"
     _super_user_name = "root"
 
     def __init__(self, user,
@@ -38,10 +34,10 @@ class MySqlContainer(GenericDbContainer):
 
     def _configure(self):
         if not self._is_root():
-            self._config.add_env(self.MYSQL_USER, self.username)
-            self._config.add_env(self.MYSQL_PASSWORD, self.password)
-        self._config.add_env(self.MYSQL_ROOT_PASSWORD, self.root_password)
-        self._config.add_env(self.MYSQL_DB_NAME, self.database)
+            self._config.add_env("MYSQL_USER", self.username)
+            self._config.add_env("MYSQL_PASSWORD", self.password)
+        self._config.add_env("MYSQL_ROOT_PASSWORD", self.root_password)
+        self._config.add_env("MYSQL_DATABASE", self.database)
         self._config.bind_ports(self.host_port, 3306)
 
     def _is_root(self):
