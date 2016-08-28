@@ -17,20 +17,21 @@ from testcontainers.core.generic import GenericDbContainer
 class MySqlContainer(GenericDbContainer):
     _super_user_name = "root"
 
-    def __init__(self, user,
+    def __init__(self, username,
                  password,
                  root_password="secret",
-                 db="test",
+                 database="test",
                  host_port=3306,
                  image_name="mysql",
                  version="latest"):
         super(MySqlContainer, self).__init__(image_name=image_name,
                                              version=version,
                                              host_port=host_port,
-                                             user=user,
+                                             username=username,
                                              password=password,
-                                             database=db,
-                                             root_password=root_password, name=image_name)
+                                             database=database,
+                                             root_password=root_password,
+                                             name=image_name)
         self.container_port = 3306
         self._configure()
 

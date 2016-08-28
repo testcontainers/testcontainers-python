@@ -15,19 +15,19 @@ from testcontainers.core.generic import GenericDbContainer
 
 
 class PostgresContainer(GenericDbContainer):
-    def __init__(self, user,
-                 passwd,
-                 db="test",
+    def __init__(self, username,
+                 password,
+                 database="test",
                  host_port=5432,
                  image_name="postgres",
                  version="latest"):
         super(PostgresContainer, self).__init__(image_name=image_name,
                                                 version=version,
-                                                user=user,
-                                                password=passwd,
-                                                database=db,
+                                                username=username,
+                                                password=password,
+                                                database=database,
                                                 host_port=host_port,
-                                                root_password=passwd,
+                                                root_password=password,
                                                 name=image_name)
         self.container_port = 5432
         self._configure()

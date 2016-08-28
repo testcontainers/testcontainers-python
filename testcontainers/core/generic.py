@@ -76,7 +76,7 @@ class GenericDbContainer(DockerContainer):
     def __init__(self, image_name,
                  version,
                  host_port,
-                 user,
+                 username,
                  password,
                  database,
                  root_password, name):
@@ -84,7 +84,7 @@ class GenericDbContainer(DockerContainer):
                                                  version=version,
                                                  host_port=host_port,
                                                  container_name=name)
-        self.username = user
+        self.username = username
         self.password = password
         self.database = database
         self.root_password = root_password
@@ -104,12 +104,7 @@ class GenericDbContainer(DockerContainer):
         dialect+driver://username:password@host:port/database
         :return:
         """
-        engine = sqlalchemy.create_engine(
-            "{}://{}:{}@{}/{}".format(self._config.image_name,
-                                      self.username,
-                                      self.password,
-                                      self.host_ip,
-                                      self.database))
+        engine = sqlalchemy.create_engine(self.get_connection_url())
         engine.connect()
 
     def _configure(self):
@@ -118,6 +113,14 @@ class GenericDbContainer(DockerContainer):
     @property
     def host_ip(self):
         return "0.0.0.0"
+
+    def get_connection_url(self):
+        return "{lang}://{username}:{password}@{host}:{port}/{db}".format(lang=self._config.image_name,
+                                                                          username=self.username,
+                                                                          password=self.password,
+                                                                          host=self.host_ip,
+                                                                          port=self.host_port,
+                                                                          db=self.database)
 
 
 class GenericSeleniumContainer(DockerContainer):
