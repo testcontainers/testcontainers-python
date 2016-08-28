@@ -21,23 +21,22 @@ from testcontainers.webdriver import StandaloneSeleniumContainer
 
 @pytest.fixture
 def selenium_container(request):
-    pass
-    # hub_config = HubConfig(SeleniumImage.HUB_IMAGE, DesiredCapabilities.FIREFOX)
-    # node_config = NodeConfig(SeleniumImage.FIREFOX_NODE)
-    # container = SeleniumGrid(hub_config, node_config).start()
+    hub = SeleniumHub(SeleniumImage.HUB_IMAGE, DesiredCapabilities.FIREFOX)
+    node = SeleniumNode(SeleniumImage.FIREFOX_NODE)
+    container = SeleniumGrid(hub, node).start()
 
-    # def fin():
-    #    container.stop()
+    def fin():
+        container.stop()
 
-    # request.addfinalizer(fin)
-    # return container
+    request.addfinalizer(fin)
+    return container
 
 
 class TestDocker(object):
     def test_selenium_grid(self):
-        hub = SeleniumHub(SeleniumImage.HUB_IMAGE, DesiredCapabilities.FIREFOX)
-        node = SeleniumNode(SeleniumImage.FIREFOX_NODE)
-        with SeleniumGrid(hub, node, node_count=3) as firefox:
+        # hub = SeleniumHub(SeleniumImage.HUB_IMAGE, DesiredCapabilities.FIREFOX)
+        # node = SeleniumNode(SeleniumImage.FIREFOX_NODE)
+        with SeleniumGrid(DesiredCapabilities.FIREFOX, node_count=3) as firefox:
             webdriver = firefox.get_driver()
             webdriver.get("http://google.com")
             webdriver.find_element_by_name("q").send_keys("Hello")

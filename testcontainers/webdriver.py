@@ -71,12 +71,12 @@ class SeleniumHub(GenericSeleniumContainer):
 
 
 class SeleniumNode(GenericSeleniumContainer):
-    def __init__(self, image_name):
+    def __init__(self, image_name, version="latest"):
         super(SeleniumNode, self).__init__(image_name=image_name,
                                            capabilities=None,
                                            host_port=None,
                                            container_port=None,
-                                           name=None)
+                                           name=None, version=version)
         self.link_label = "hub"
 
     def link_to_hub(self, hub):
@@ -84,9 +84,20 @@ class SeleniumNode(GenericSeleniumContainer):
 
 
 class SeleniumGrid(object):
-    def __init__(self, hub, node, node_count=1):
-        self.hub = hub
-        self.node = node
+    def __init__(self,
+                 capabilities,
+                 hub_image="selenium/hub",
+                 host_port=4444,
+                 container_port=4444,
+                 name="selenium-hub",
+                 version="latest", node_count=1):
+        self.hub = SeleniumHub(hub_image,
+                               capabilities=capabilities,
+                               host_port=host_port,
+                               container_port=container_port,
+                               name=name,
+                               version=version)
+        self.node = SeleniumNode(self._get_node_image(), version=version)
         self.node_count = node_count
 
     def __enter__(self):
@@ -105,6 +116,14 @@ class SeleniumGrid(object):
     def stop(self):
         self.hub.stop()
         self.node.stop()
+
+    def _get_node_image(self):
+        if self._is_chrome():
+            return SeleniumImage.CHROME_NODE
+        return SeleniumImage.FIREFOX_NODE
+
+    def _is_chrome(self):
+        return self.hub.capabilities["browserName"] == "chrome"
 
     def get_driver(self):
         return self.hub.get_driver()
