@@ -43,27 +43,3 @@ class ContainerConfig(object):
     def host_ip(self):
         return self._host_ip
 
-
-# class DbConfig(ContainerConfig):
-#     def __init__(self, image_name, version):
-#         super(DbConfig, self).__init__(image_name=image_name, version=version)
-#
-#     @property
-#     def username(self):
-#         raise NotImplementedError()
-#
-#     @property
-#     def password(self):
-#         raise NotImplementedError()
-#
-#     @property
-#     def db(self):
-#         raise NotImplementedError()
-#
-#
-# class SeleniumConfig(ContainerConfig):
-#     def __init__(self, image_name, name, host_port, container_port,
-#                  host_vnc_port, container_vnc_port, version="latest"):
-#         super(SeleniumConfig, self).__init__(image_name=image_name, version=version)
-
-
