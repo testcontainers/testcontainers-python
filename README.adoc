@@ -28,6 +28,9 @@ You can execute test scripts using Standalone Selenium Docker containers for Fir
 
 === Selenium Grid
 
+It can spin up Selenium Grid Hub and Nodes for either Firefox or Chrome.
+You can control number of nodes by setting constructor parameter `node_count`
+
 [source,python]
 ----
     def test_selenium_grid(self):
