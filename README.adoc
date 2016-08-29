@@ -30,7 +30,7 @@ You can execute test scripts using Standalone Selenium Docker containers for Fir
 
 You can spin up already implemented MySQL, MariaDB, PostgreSQL and Oracle-XE containers
 
-==== MySQL Example:
+==== MySQL:
 
 [source,python]
 ----
@@ -43,7 +43,7 @@ You can spin up already implemented MySQL, MariaDB, PostgreSQL and Oracle-XE con
             assert row[0] == '5.7.14'
 ----
 
-==== PostgreSQL example:
+==== PostgreSQL:
 
 [source,python]
 ----
