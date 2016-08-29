@@ -8,6 +8,7 @@ from pymongo import MongoClient
 from testcontainers.core.generic import GenericDbContainer, DockerContainer
 from testcontainers.core.waiting_utils import wait_container_is_ready
 from testcontainers.mysql import MySqlContainer, MariaDbContainer
+from testcontainers.oracle import OracleDbContainer
 from testcontainers.postgres import PostgresContainer
 
 
@@ -49,6 +50,16 @@ def test_docker_run_mariadb():
         row = cur.fetchone()
         cur.close()
         assert row[0] == '10.1.16-MariaDB-1~jessie'
+
+
+def test_docker_oracle_xe():
+    oracle_container = OracleDbContainer()
+
+    with oracle_container:
+        e = sqlalchemy.create_engine(oracle_container.get_connection_url())
+        result = e.execute("SELECT 1 FROM DUAL")
+        for row in result:
+            print(row)
 
 
 def test_docker_generic_db():
