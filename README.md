@@ -21,7 +21,8 @@ Usage example:
 
 ```
     def test_standalone_container(self):
-        chrome = StandaloneSeleniumContainer(SeleniumImage.STANDALONE_CHROME, DesiredCapabilities.CHROME)
+        chrome = StandaloneSeleniumContainer(SeleniumImage.STANDALONE_CHROME,
+                                             DesiredCapabilities.CHROME)
         with chrome:
             driver = chrome.get_driver()
             driver.get("http://google.com")
