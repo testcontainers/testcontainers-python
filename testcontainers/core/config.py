@@ -6,10 +6,9 @@ sleep_time = 1
 
 
 class ContainerConfig(object):
-    def __init__(self, image_name, version, container_name, host_port):
+    def __init__(self, image_name, version, container_name):
         self._host_ip = "localhost"
         self._version = version
-        self.host_port = host_port
         self.environment = {}
         self.port_bindings = {}
         self.volumes = {}

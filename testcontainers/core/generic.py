@@ -19,12 +19,11 @@ from testcontainers.core.waiting_utils import wait_container_is_ready
 
 
 class DockerContainer(object):
-    def __init__(self, image_name, version, container_name, host_port):
+    def __init__(self, image_name, version, container_name):
         self._docker = DockerClient()
         self._config = ContainerConfig(image_name=image_name,
                                        version=version,
-                                       container_name=container_name,
-                                       host_port=host_port)
+                                       container_name=container_name)
 
     def __enter__(self):
         return self.start()
@@ -46,10 +45,6 @@ class DockerContainer(object):
     @property
     def host_ip(self):
         return self._config.host_ip
-
-    @property
-    def host_port(self):
-        return self._config.host_port
 
     @property
     def container_name(self):
@@ -83,8 +78,8 @@ class GenericDbContainer(DockerContainer):
                  root_password=None):
         super(GenericDbContainer, self).__init__(image_name=image_name,
                                                  version=version,
-                                                 host_port=host_port,
                                                  container_name=name)
+        self.host_port = host_port
         self.username = username
         self.password = password
         self.database = database
@@ -136,8 +131,8 @@ class GenericSeleniumContainer(DockerContainer):
                  container_vnc_port=5900):
         super(GenericSeleniumContainer, self).__init__(image_name=image_name,
                                                        version=version,
-                                                       host_port=host_port,
                                                        container_name=name)
+        self.host_port = host_port
         self.capabilities = capabilities
         self.container_port = container_port
         self.host_vnc_port = host_vnc_port
