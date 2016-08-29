@@ -13,14 +13,7 @@
 import os
 from pprint import pprint
 
-import MySQLdb
-
 from testcontainers.core.docker_client import DockerClient
-from testcontainers.core.generic import DockerContainer, GenericDbContainer
-from testcontainers.core.waiting_utils import wait_container_is_ready
-
-
-# PostgresDockerContainer
 
 
 def test_docker_run_selenium():
