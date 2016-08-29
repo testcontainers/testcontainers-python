@@ -16,10 +16,10 @@ import logging
 from time import sleep
 
 import wrapt
+from testcontainers.core.progress_bar import ConsoleProgressBar
 
-from testcontainers import config
-from testcontainers.brogress_bar import ConsoleProgressBar
-from testcontainers.exceptions import TimeoutException
+from testcontainers.core import config
+from testcontainers.core.exceptions import TimeoutException
 
 
 def wait_container_is_ready():
@@ -48,4 +48,5 @@ def wait_container_is_ready():
                  Exception {4}""".format(config.max_tries,
                                          wrapped.__name__,
                                          args, kwargs, exception))
+
     return wrapper

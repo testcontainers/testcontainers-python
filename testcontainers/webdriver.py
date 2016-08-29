@@ -11,75 +11,102 @@
 #    License for the specific language governing permissions and limitations
 #    under the License.
 
-from testcontainers.config import ContainerConfig
-from testcontainers.generic import GenericSeleniumContainer
+from testcontainers.core.generic import GenericSeleniumContainer
+
+
+class SeleniumImage(object):
+    STANDALONE_FIREFOX = "selenium/standalone-firefox-debug"
+    STANDALONE_CHROME = "selenium/standalone-chrome-debug"
+    HUB_IMAGE = "selenium/hub"
+    FIREFOX_NODE = "selenium/node-firefox-debug"
+    CHROME_NODE = "selenium/node-chrome-debug"
+
+    def __init__(self):
+        pass
 
 
 class StandaloneSeleniumContainer(GenericSeleniumContainer):
-    def __init__(self, config):
-        super(StandaloneSeleniumContainer, self).__init__(config)
+    def __init__(self, image,
+                 capabilities,
+                 host_port=4444,
+                 container_port=4444,
+                 name=None,
+                 version="latest"):
+        super(StandaloneSeleniumContainer, self).__init__(image_name=image,
+                                                          host_port=host_port,
+                                                          container_port=container_port,
+                                                          name=name,
+                                                          version=version,
+                                                          capabilities=capabilities)
 
-    def start(self):
-        self._docker.run(image=self.config.image,
-                         bind_ports=self.config.port_bindings,
-                         env=self.config.env,
-                         links=self.config.container_links,
-                         name=self.config.name)
-        return self
+        self._configure()
 
-
-class StandaloneSeleniumConfig(ContainerConfig):
-    FIREFOX = "selenium/standalone-firefox-debug"
-    CHROME = "selenium/standalone-chrome-debug"
-
-    def __init__(self, image, capabilities, version="latest", name=None, host_port=4444, container_port=4444,
-                 host_vnc_port=5900, container_vnc_port=5900):
-        super(StandaloneSeleniumConfig, self).__init__(image=image, version=version)
-        self.host_port = host_port
-        self.capabilities = capabilities
-        self.name = name
-        if host_port:
-            self.bind_ports(host_port, container_port)
-        self.bind_ports(host_vnc_port, container_vnc_port)
-        self.add_env("no_proxy", "localhost")  # this is workaround due to bug in Selenium images
-        self.add_env("HUB_ENV_no_proxy", "localhost")
+    def _configure(self):
+        self.bind_ports(self.host_port, self.container_port)
+        self.bind_ports(self.host_vnc_port, self.container_vnc_port)
 
 
-class NodeConfig(ContainerConfig):
-    def __init__(self, image, version="latest", link_name="selenium-hub",
-                 host_vnc_port=None, container_vnc_port=5900, name=None):
-        super(NodeConfig, self).__init__(image=image, version=version)
-        self.name = name
-        if host_vnc_port:
-            self.bind_ports(host_vnc_port, container_vnc_port)
-        self.link_containers(link_name, "hub")
-        self.add_env("no_proxy", "localhost")  # this is workaround due to bug in Selenium images
-        self.add_env("HUB_ENV_no_proxy", "localhost")
+class SeleniumHub(GenericSeleniumContainer):
+    def __init__(self, image,
+                 capabilities,
+                 host_port=4444,
+                 container_port=4444,
+                 name="selenium-hub",
+                 version="latest"):
+        super(SeleniumHub, self).__init__(image_name=image,
+                                          host_port=host_port,
+                                          container_port=container_port,
+                                          name=name,
+                                          version=version,
+                                          capabilities=capabilities,
+                                          host_vnc_port=None)
+
+        self._configure()
+
+    def _configure(self):
+        self.bind_ports(self.host_port, self.container_port)
 
 
-class HubConfig(ContainerConfig):
-    def __init__(self, image, capabilities, version="latest",
-                 name="selenium-hub", host_port=4444, container_port=4444):
-        super(HubConfig, self).__init__(image=image, version=version)
-        self.host_port = host_port
-        self.capabilities = capabilities
-        self.name = name
-        self.bind_ports(host_port, container_port)
+class SeleniumNode(GenericSeleniumContainer):
+    def __init__(self, image_name, version="latest"):
+        super(SeleniumNode, self).__init__(image_name=image_name,
+                                           capabilities=None,
+                                           host_port=None,
+                                           container_port=None,
+                                           name=None,
+                                           version=version)
+        self.link_label = "hub"
+
+    def link_to_hub(self, hub):
+        self.link_containers(hub.container_name, self.link_label)
 
 
-class SeleniumGridContainers(GenericSeleniumContainer):
-    HUB_IMAGE = "selenium/hub"
-    FF_NODE_IMAGE = "selenium/node-firefox-debug"
-    CHROME_NODE_IMAGE = "selenium/node-chrome-debug"
-
-    def __init__(self, hub_config, node_config, node_count=1):
-        super(SeleniumGridContainers, self).__init__(hub_config)
-        self.hub = StandaloneSeleniumContainer(self.config)
-        self.node = StandaloneSeleniumContainer(node_config)
+class SeleniumGrid(object):
+    def __init__(self,
+                 capabilities,
+                 hub_image="selenium/hub",
+                 host_port=4444,
+                 container_port=4444,
+                 name="selenium-hub",
+                 version="latest", node_count=1):
+        self.hub = SeleniumHub(hub_image,
+                               capabilities=capabilities,
+                               host_port=host_port,
+                               container_port=container_port,
+                               name=name,
+                               version=version)
+        self.node = SeleniumNode(self._get_node_image(), version=version)
         self.node_count = node_count
+
+    def __enter__(self):
+        return self.start()
+
+    def __exit__(self, exc_type, exc_val, exc_tb):
+        self.stop()
 
     def start(self):
         self.hub.start()
+        self.node.link_to_hub(self.hub)
         for _ in range(self.node_count):
             self.node.start()
         return self
@@ -87,6 +114,14 @@ class SeleniumGridContainers(GenericSeleniumContainer):
     def stop(self):
         self.hub.stop()
         self.node.stop()
+
+    def _get_node_image(self):
+        if self._is_chrome():
+            return SeleniumImage.CHROME_NODE
+        return SeleniumImage.FIREFOX_NODE
+
+    def _is_chrome(self):
+        return self.hub.capabilities["browserName"] == "chrome"
 
     def get_driver(self):
         return self.hub.get_driver()

@@ -10,45 +10,59 @@
 #    WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the
 #    License for the specific language governing permissions and limitations
 #    under the License.
-from testcontainers.config import DbConfig
-from testcontainers.generic import GenericDbContainer
+
+from testcontainers.core.generic import GenericDbContainer
 
 
-class MySqlDockerContainer(GenericDbContainer):
-    def __init__(self, config):
-        super(MySqlDockerContainer, self).__init__(config)
-
-
-class MySqlConfig(DbConfig):
-    MYSQL_USER = "MYSQL_USER"
-    MYSQL_PASSWORD = "MYSQL_PASSWORD"
-    MYSQL_ROOT_PASSWORD = "MYSQL_ROOT_PASSWORD"
-    MYSQL_DB_NAME = "MYSQL_DATABASE"
+class MySqlContainer(GenericDbContainer):
     _super_user_name = "root"
 
-    def __init__(self, user, password, superuser=False, root_pass="secret",
-                 db="test", host_port=3306, image="mysql", version="latest"):
-        super(MySqlConfig, self).__init__(image, version)
-        self.superuser = superuser
-        if not superuser:
-            self.add_env(self.MYSQL_USER, user)
-            self.add_env(self.MYSQL_PASSWORD, password)
-        self.add_env(self.MYSQL_ROOT_PASSWORD, root_pass)
-        self.add_env(self.MYSQL_DB_NAME, db)
-        self.bind_ports(host_port, 3306)
+    def __init__(self, username,
+                 password,
+                 root_password="secret",
+                 database="test",
+                 host_port=3306,
+                 image_name="mysql",
+                 version="latest",
+                 db_dialect="mysql"):
+        super(MySqlContainer, self).__init__(image_name=image_name,
+                                             version=version,
+                                             host_port=host_port,
+                                             username=username,
+                                             password=password,
+                                             database=database,
+                                             root_password=root_password,
+                                             name=image_name,
+                                             db_dialect=db_dialect)
+        self.container_port = 3306
+        self._configure()
 
-    @property
-    def username(self):
-        if self.superuser:
-            return self._super_user_name
-        return self.env[self.MYSQL_USER]
+    def _configure(self):
+        if not self._is_root():
+            self.add_env("MYSQL_USER", self.username)
+            self.add_env("MYSQL_PASSWORD", self.password)
+        self.add_env("MYSQL_ROOT_PASSWORD", self.root_password)
+        self.add_env("MYSQL_DATABASE", self.database)
+        self.bind_ports(self.host_port, self.container_port)
 
-    @property
-    def password(self):
-        if self.superuser:
-            return self.env[self.MYSQL_ROOT_PASSWORD]
-        return self.env[self.MYSQL_PASSWORD]
+    def _is_root(self):
+        return self.username == self._super_user_name
 
-    @property
-    def db(self):
-        return self.env[self.MYSQL_DB_NAME]
+
+class MariaDbContainer(MySqlContainer):
+    def __init__(self, username,
+                 password,
+                 root_password="secret",
+                 database="test",
+                 host_port=3306,
+                 image_name="mariadb",
+                 version="latest",
+                 db_dialect="mysql"):
+        super(MariaDbContainer, self).__init__(username=username,
+                                               password=password,
+                                               root_password=root_password,
+                                               database=database,
+                                               host_port=host_port,
+                                               image_name=image_name,
+                                               version=version,
+                                               db_dialect=db_dialect)

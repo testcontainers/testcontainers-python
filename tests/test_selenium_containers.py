@@ -15,16 +15,13 @@
 import pytest
 from selenium.webdriver import DesiredCapabilities
 
-from testcontainers.webdriver import SeleniumGridContainers, NodeConfig
-from testcontainers.webdriver import StandaloneSeleniumConfig, StandaloneSeleniumContainer, \
-    HubConfig
+from testcontainers.webdriver import SeleniumImage, SeleniumGrid
+from testcontainers.webdriver import StandaloneSeleniumContainer
 
 
 @pytest.fixture
 def selenium_container(request):
-    hub_config = HubConfig(SeleniumGridContainers.HUB_IMAGE, DesiredCapabilities.FIREFOX)
-    node_config = NodeConfig(SeleniumGridContainers.FF_NODE_IMAGE, host_vnc_port=None)
-    container = SeleniumGridContainers(hub_config, node_config).start()
+    container = SeleniumGrid(DesiredCapabilities.FIREFOX).start()
 
     def fin():
         container.stop()
@@ -35,9 +32,7 @@ def selenium_container(request):
 
 class TestDocker(object):
     def test_selenium_grid(self):
-        hub_config = HubConfig(SeleniumGridContainers.HUB_IMAGE, DesiredCapabilities.FIREFOX)
-        node_config = NodeConfig(SeleniumGridContainers.FF_NODE_IMAGE)
-        with SeleniumGridContainers(hub_config, node_config, node_count=3) as firefox:
+        with SeleniumGrid(DesiredCapabilities.FIREFOX, node_count=3) as firefox:
             webdriver = firefox.get_driver()
             webdriver.get("http://google.com")
             webdriver.find_element_by_name("q").send_keys("Hello")
@@ -48,8 +43,8 @@ class TestDocker(object):
         driver.find_element_by_name("q").send_keys("Hello")
 
     def test_standalone_container(self):
-        config = StandaloneSeleniumConfig(StandaloneSeleniumConfig.CHROME, DesiredCapabilities.CHROME)
-        with StandaloneSeleniumContainer(config) as container:
+        chrome = StandaloneSeleniumContainer(SeleniumImage.STANDALONE_CHROME, DesiredCapabilities.CHROME)
+        with chrome as container:
             driver = container.get_driver()
             driver.get("http://google.com")
             driver.find_element_by_name("q").send_keys("Hello")

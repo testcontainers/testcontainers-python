@@ -12,13 +12,13 @@
 #    under the License.
 
 import logging
+from io import BytesIO
 from time import sleep
 
 from docker import Client
-from io import BytesIO
 
-from testcontainers import config
-from testcontainers.brogress_bar import ConsoleProgressBar
+from testcontainers.core import config
+from testcontainers.core.progress_bar import ConsoleProgressBar
 
 
 class DockerClient(object):
@@ -123,12 +123,9 @@ class DockerClient(object):
         return self.containers(
             all=True, filters={"name": name}) if name else []
 
-    def build(self, path=None, tag=None, dockerfile=None, rm=True):
-        f = None
-        if dockerfile:
-            f = BytesIO(dockerfile.encode('utf-8'))
-        response = [line for line in self._cli.build(path=path,
-                                                     fileobj=f,
+    def build(self, dockerfile, tag, rm=True):
+        f = BytesIO(dockerfile.encode('utf-8'))
+        response = [line for line in self._cli.build(fileobj=f,
                                                      rm=rm,
                                                      tag=tag)]
         for line in response:

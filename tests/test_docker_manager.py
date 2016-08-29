@@ -13,13 +13,7 @@
 import os
 from pprint import pprint
 
-import MySQLdb
-import psycopg2
-
-from testcontainers.docker_client import DockerClient
-from testcontainers.mysql import MySqlConfig
-from testcontainers.mysql import MySqlDockerContainer
-from testcontainers.postgres import PostgresConfig, PostgresDockerContainer
+from testcontainers.core.docker_client import DockerClient
 
 
 def test_docker_run_selenium():
@@ -31,38 +25,6 @@ def test_docker_run_selenium():
     assert len(containers) >= 2
     docker.stop_all()
     assert len(docker.get_running_containers()) == 0
-
-
-def test_docker_run_mysql():
-    config = MySqlConfig("user", "secret")
-    with MySqlDockerContainer(config) as mysql:
-        conn = MySQLdb.connect(host=mysql.host_ip,
-                               user=mysql.username,
-                               passwd=mysql.password,
-                               db=mysql.db)
-        cur = conn.cursor()
-
-        cur.execute("SELECT VERSION()")
-        row = cur.fetchone()
-        print("server version:", row[0])
-        cur.close()
-        assert len(row) > 0
-
-
-def test_docker_run_postgress():
-    config = PostgresConfig("user", "secret")
-    with PostgresDockerContainer(config) as postgres:
-        conn = psycopg2.connect(host=postgres.host_ip,
-                                user=postgres.username,
-                                password=postgres.password,
-                                database=postgres.db)
-        cur = conn.cursor()
-
-        cur.execute("SELECT VERSION()")
-        row = cur.fetchone()
-        print("server version:", row[0])
-        cur.close()
-        assert len(row) > 0
 
 
 def test_docker_images():
@@ -115,8 +77,13 @@ def test_docker_build():
 
 def test_docker_build_with_dockerfile():
     docker = DockerClient()
-    docker.build(path=os.path.dirname(os.path.abspath(__file__)), tag="my_container_2")
+
+    dockerfile = open(os.path.dirname(os.path.realpath(__file__)) +
+                      "/Dockerfile").read()
+
+    docker.build(dockerfile=dockerfile, tag="my_container_2")
     out = docker.images("my_container_2")
     pprint(out)
     assert len(out) == 1
     assert out[0]['RepoTags'][0] == 'my_container_2:latest'
+
