@@ -137,6 +137,12 @@ class GenericSeleniumContainer(DockerContainer):
         self.container_port = container_port
         self.host_vnc_port = host_vnc_port
         self.container_vnc_port = container_vnc_port
+        self._add_env()
+
+    def _add_env(self):
+        # this is workaround due to bug in Selenium images
+        self.add_env("no_proxy", "localhost")
+        self.add_env("HUB_ENV_no_proxy", "localhost")
 
     @wait_container_is_ready()
     def _connect(self):

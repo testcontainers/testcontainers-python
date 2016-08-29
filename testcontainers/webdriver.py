@@ -44,9 +44,6 @@ class StandaloneSeleniumContainer(GenericSeleniumContainer):
     def _configure(self):
         self.bind_ports(self.host_port, self.container_port)
         self.bind_ports(self.host_vnc_port, self.container_vnc_port)
-        # this is workaround due to bug in Selenium images
-        self.add_env("no_proxy", "localhost")
-        self.add_env("HUB_ENV_no_proxy", "localhost")
 
 
 class SeleniumHub(GenericSeleniumContainer):
@@ -76,7 +73,8 @@ class SeleniumNode(GenericSeleniumContainer):
                                            capabilities=None,
                                            host_port=None,
                                            container_port=None,
-                                           name=None, version=version)
+                                           name=None,
+                                           version=version)
         self.link_label = "hub"
 
     def link_to_hub(self, hub):
