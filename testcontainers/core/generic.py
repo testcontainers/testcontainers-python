@@ -65,6 +65,10 @@ class DockerContainer(object):
     def link_containers(self, target, current):
         self._config.link_containers(target, current)
 
+    def get_info(self):
+        for container in self._docker._containers:
+            yield self._docker.inspect(container)
+
 
 class GenericDbContainer(DockerContainer):
     def __init__(self, image_name,
