@@ -1,7 +1,8 @@
+import MySQLdb
 import psycopg2
 import sqlalchemy
 
-from testcontainers.mysql import MySqlContainer
+from testcontainers.mysql import MySqlContainer, MariaDbContainer
 from testcontainers.postgres import PostgresContainer
 
 
@@ -28,3 +29,18 @@ def test_docker_run_postgress():
         print("server version:", row[0])
         cur.close()
         assert len(row) > 0
+
+
+def test_docker_run_mariadb():
+    mariadb_container = MariaDbContainer("test", "test")
+    with mariadb_container as mariadb:
+        conn = MySQLdb.connect(host=mariadb.host_ip,
+                               user=mariadb.username,
+                               passwd=mariadb.password,
+                               db=mariadb.database)
+        cur = conn.cursor()
+
+        cur.execute("SELECT VERSION()")
+        row = cur.fetchone()
+        cur.close()
+        assert row[0] == '10.1.16-MariaDB-1~jessie'

@@ -23,7 +23,8 @@ class MySqlContainer(GenericDbContainer):
                  database="test",
                  host_port=3306,
                  image_name="mysql",
-                 version="latest"):
+                 version="latest",
+                 db_dialect="mysql"):
         super(MySqlContainer, self).__init__(image_name=image_name,
                                              version=version,
                                              host_port=host_port,
@@ -31,7 +32,8 @@ class MySqlContainer(GenericDbContainer):
                                              password=password,
                                              database=database,
                                              root_password=root_password,
-                                             name=image_name)
+                                             name=image_name,
+                                             db_dialect=db_dialect)
         self.container_port = 3306
         self._configure()
 
@@ -45,3 +47,22 @@ class MySqlContainer(GenericDbContainer):
 
     def _is_root(self):
         return self.username == self._super_user_name
+
+
+class MariaDbContainer(MySqlContainer):
+    def __init__(self, username,
+                 password,
+                 root_password="secret",
+                 database="test",
+                 host_port=3306,
+                 image_name="mariadb",
+                 version="latest",
+                 db_dialect="mysql"):
+        super(MariaDbContainer, self).__init__(username=username,
+                                               password=password,
+                                               root_password=root_password,
+                                               database=database,
+                                               host_port=host_port,
+                                               image_name=image_name,
+                                               version=version,
+                                               db_dialect=db_dialect)

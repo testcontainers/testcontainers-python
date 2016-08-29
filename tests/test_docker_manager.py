@@ -16,7 +16,7 @@ from pprint import pprint
 import MySQLdb
 
 from testcontainers.core.docker_client import DockerClient
-from testcontainers.core.generic import DockerContainer
+from testcontainers.core.generic import DockerContainer, GenericDbContainer
 from testcontainers.core.waiting_utils import wait_container_is_ready
 
 
@@ -98,11 +98,13 @@ def test_docker_build_with_dockerfile():
 def test_generic_docker_container():
     container = DockerContainer(image_name="mariadb",
                                 version="latest",
-                                container_name="mariadb",
-                                host_port=3306)
+                                host_port=3306,
+                                container_name="mariadb")
+
     container.add_env("MYSQL_ROOT_PASSWORD", "secret")
     container.add_env("MYSQL_DATABASE", "test_db")
     container.bind_ports(3306, 3306)
+
     with container as mariabd:
         @wait_container_is_ready()
         def connect():

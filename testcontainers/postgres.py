@@ -28,7 +28,8 @@ class PostgresContainer(GenericDbContainer):
                                                 database=database,
                                                 host_port=host_port,
                                                 root_password=password,
-                                                name=image_name)
+                                                name=image_name,
+                                                db_dialect=image_name)
         self.container_port = 5432
         self._configure()
 

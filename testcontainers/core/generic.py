@@ -75,10 +75,12 @@ class GenericDbContainer(DockerContainer):
     def __init__(self, image_name,
                  version,
                  host_port,
-                 username,
-                 password,
-                 database,
-                 root_password, name):
+                 name,
+                 db_dialect,
+                 username=None,
+                 password=None,
+                 database=None,
+                 root_password=None):
         super(GenericDbContainer, self).__init__(image_name=image_name,
                                                  version=version,
                                                  host_port=host_port,
@@ -87,6 +89,7 @@ class GenericDbContainer(DockerContainer):
         self.password = password
         self.database = database
         self.root_password = root_password
+        self.db_dialect = db_dialect
 
     def start(self):
         """
@@ -114,7 +117,7 @@ class GenericDbContainer(DockerContainer):
         return "0.0.0.0"
 
     def get_connection_url(self):
-        return "{lang}://{username}:{password}@{host}:{port}/{db}".format(lang=self._config.image_name,
+        return "{lang}://{username}:{password}@{host}:{port}/{db}".format(lang=self.db_dialect,
                                                                           username=self.username,
                                                                           password=self.password,
                                                                           host=self.host_ip,
