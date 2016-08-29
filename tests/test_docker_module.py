@@ -21,9 +21,7 @@ from testcontainers.webdriver import StandaloneSeleniumContainer
 
 @pytest.fixture
 def selenium_container(request):
-    hub = SeleniumHub(SeleniumImage.HUB_IMAGE, DesiredCapabilities.FIREFOX)
-    node = SeleniumNode(SeleniumImage.FIREFOX_NODE)
-    container = SeleniumGrid(hub, node).start()
+    container = SeleniumGrid(DesiredCapabilities.FIREFOX).start()
 
     def fin():
         container.stop()
@@ -34,8 +32,6 @@ def selenium_container(request):
 
 class TestDocker(object):
     def test_selenium_grid(self):
-        # hub = SeleniumHub(SeleniumImage.HUB_IMAGE, DesiredCapabilities.FIREFOX)
-        # node = SeleniumNode(SeleniumImage.FIREFOX_NODE)
         with SeleniumGrid(DesiredCapabilities.FIREFOX, node_count=3) as firefox:
             webdriver = firefox.get_driver()
             webdriver.get("http://google.com")

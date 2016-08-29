@@ -107,6 +107,7 @@ class GenericDbContainer(DockerContainer):
         engine = sqlalchemy.create_engine(self.get_connection_url())
         engine.connect()
 
+
     def _configure(self):
         raise NotImplementedError()
 

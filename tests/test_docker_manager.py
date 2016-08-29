@@ -15,15 +15,11 @@ from pprint import pprint
 
 import MySQLdb
 import psycopg2
-import requests
 
-from testcontainers.core.config import ContainerConfig
 from testcontainers.core.docker_client import DockerClient
 from testcontainers.core.generic import DockerContainer
-
 from testcontainers.core.waiting_utils import wait_container_is_ready
 from testcontainers.mysql import MySqlContainer
-# from testcontainers.mysql import MySqlDockerContainer
 from testcontainers.postgres import PostgresContainer
 
 
@@ -41,37 +37,7 @@ def test_docker_run_selenium():
     assert len(docker.get_running_containers()) == 0
 
 
-def test_docker_run_mysql():
-    config = MySqlContainer("user", "secret")
-    with config as mysql:
-        conn = MySQLdb.connect(host=mysql.host_ip,
-                               user=mysql.username,
-                               passwd=mysql.password,
-                               db=mysql.database)
-        cur = conn.cursor()
 
-        cur.execute("SELECT VERSION()")
-        row = cur.fetchone()
-        print("server version:", row[0])
-        cur.close()
-        assert len(row) > 0
-
-
-def test_docker_run_postgress():
-    postgres_container = PostgresContainer("user", "secret")
-
-    with postgres_container as postgres:
-        conn = psycopg2.connect(host=postgres.host_ip,
-                                user=postgres.user,
-                                password=postgres.password,
-                                database=postgres.database)
-        cur = conn.cursor()
-
-        cur.execute("SELECT VERSION()")
-        row = cur.fetchone()
-        print("server version:", row[0])
-        cur.close()
-        assert len(row) > 0
 
 
 def test_docker_images():
