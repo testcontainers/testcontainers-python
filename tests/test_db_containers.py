@@ -1,9 +1,6 @@
-import MySQLdb
 import psycopg2
 import sqlalchemy
-from testcontainers.waiting_utils import wait_container_is_ready
 
-from testcontainers.core.generic import DockerContainer
 from testcontainers.mysql import MySqlContainer
 from testcontainers.postgres import PostgresContainer
 
