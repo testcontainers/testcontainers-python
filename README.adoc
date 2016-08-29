@@ -28,7 +28,9 @@ You can execute test scripts using Standalone Selenium Docker containers for Fir
 
 === Database containers
 
-You can spin up already implemented MySql, PostgresSQL and Oracle-XE containers
+You can spin up already implemented MySQL, MariaDB, PostgreSQL and Oracle-XE containers
+
+==== MySQL Example:
 
 [source,python]
 ----
@@ -39,6 +41,25 @@ You can spin up already implemented MySql, PostgresSQL and Oracle-XE containers
         result = e.execute("select version()")
         for row in result:
             assert row[0] == '5.7.14'
+----
+
+==== PostgreSQL example:
+
+[source,python]
+----
+    def test_docker_run_postgress():
+        postgres_container = PostgresContainer("user", "secret", version="9.5")
+        with postgres_container as postgres:
+            conn = psycopg2.connect(host=postgres.host_ip,
+                                user=postgres.username,
+                                password=postgres.password,
+                                database=postgres.database)
+            cur = conn.cursor()
+
+            cur.execute("SELECT VERSION()")
+            row = cur.fetchone()
+            print("server version:", row[0])
+            cur.close()
 ----
 
 
