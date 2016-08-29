@@ -94,29 +94,3 @@ def test_docker_build_with_dockerfile():
     assert len(out) == 1
     assert out[0]['RepoTags'][0] == 'my_container_2:latest'
 
-
-def test_generic_docker_container():
-    container = DockerContainer(image_name="mariadb",
-                                version="latest",
-                                host_port=3306,
-                                container_name="mariadb")
-
-    container.add_env("MYSQL_ROOT_PASSWORD", "secret")
-    container.add_env("MYSQL_DATABASE", "test_db")
-    container.bind_ports(3306, 3306)
-
-    with container as mariabd:
-        @wait_container_is_ready()
-        def connect():
-            return MySQLdb.connect(host="0.0.0.0",
-                                   user="root",
-                                   passwd="secret",
-                                   db="test_db")
-
-        cur = connect().cursor()
-
-        cur.execute("SELECT VERSION()")
-        row = cur.fetchone()
-        print("server version:", row[0])
-        cur.close()
-        assert row[0] == '10.1.16-MariaDB-1~jessie'
