@@ -65,9 +65,9 @@ You can spin up already implemented MySQL, MariaDB, PostgreSQL and Oracle-XE con
         postgres_container = PostgresContainer("user", "secret", version="9.5")
         with postgres_container as postgres:
             conn = psycopg2.connect(host=postgres.host_ip,
-                                user=postgres.username,
-                                password=postgres.password,
-                                database=postgres.database)
+                                    user=postgres.username,
+                                    password=postgres.password,
+                                    database=postgres.database)
             cur = conn.cursor()
 
             cur.execute("SELECT VERSION()")
