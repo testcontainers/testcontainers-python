@@ -1,4 +1,4 @@
-=== python-testcontainers
+== python-testcontainers
 =====================
 
 python-testcontainers provides capabilities to spin up a docker containers for test purposes would that be a database, Selenium web browser or any other cotainer.
@@ -14,7 +14,7 @@ Currently available features:
 
 Usage example:
 
-== Selenium Standalone containers
+=== Selenium Standalone containers
 
 You can execute test scripts using Standalone Selenium Docker containers for Firefox and Chrome:
 
