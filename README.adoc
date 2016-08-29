@@ -62,6 +62,36 @@ You can spin up already implemented MySQL, MariaDB, PostgreSQL and Oracle-XE con
             cur.close()
 ----
 
+==== Generic database (ex. Mongo)
+
+[source,python]
+----
+    def test_docker_generic_db():
+    mongo_container = DockerContainer(image_name="mongo",
+                                      version="latest",
+                                      container_name="mongodb")
+    mongo_container.bind_ports(27017, 27017)
+
+    with mongo_container:
+        @wait_container_is_ready()
+        def connect():
+            return MongoClient("mongodb://0.0.0.0:27017")
+
+        db = connect().primer
+        result = db.restaurants.insert_one(
+            {
+                "borough": "Manhattan",
+                "cuisine": "Italian",
+                "name": "Vella",
+                "restaurant_id": "41704620"
+            }
+        )
+        print(result.inserted_id)
+        cursor = db.restaurants.find({"borough": "Manhattan"})
+        for document in cursor:
+            print(document)
+----
+
 
 Contribution
 ------------
