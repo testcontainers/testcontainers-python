@@ -26,6 +26,17 @@ You can execute test scripts using Standalone Selenium Docker containers for Fir
             driver.find_element_by_name("q").send_keys("Hello")
 ----
 
+=== Selenium Grid
+
+[source,python]
+----
+    def test_selenium_grid(self):
+        with SeleniumGrid(DesiredCapabilities.FIREFOX, node_count=3) as firefox:
+            webdriver = firefox.get_driver()
+            webdriver.get("http://google.com")
+            webdriver.find_element_by_name("q").send_keys("Hello")
+----
+
 === Database containers
 
 You can spin up already implemented MySQL, MariaDB, PostgreSQL and Oracle-XE containers
