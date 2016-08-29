@@ -15,7 +15,6 @@ from selenium import webdriver
 
 from testcontainers.core.config import ContainerConfig
 from testcontainers.core.docker_client import DockerClient
-
 from testcontainers.core.waiting_utils import wait_container_is_ready
 
 
@@ -106,7 +105,6 @@ class GenericDbContainer(DockerContainer):
         """
         engine = sqlalchemy.create_engine(self.get_connection_url())
         engine.connect()
-
 
     def _configure(self):
         raise NotImplementedError()

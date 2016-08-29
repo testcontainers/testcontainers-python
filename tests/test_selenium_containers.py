@@ -15,7 +15,7 @@
 import pytest
 from selenium.webdriver import DesiredCapabilities
 
-from testcontainers.webdriver import SeleniumImage, SeleniumHub, SeleniumNode, SeleniumGrid
+from testcontainers.webdriver import SeleniumImage, SeleniumGrid
 from testcontainers.webdriver import StandaloneSeleniumContainer
 
 

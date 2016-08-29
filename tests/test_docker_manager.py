@@ -14,13 +14,10 @@ import os
 from pprint import pprint
 
 import MySQLdb
-import psycopg2
 
 from testcontainers.core.docker_client import DockerClient
 from testcontainers.core.generic import DockerContainer
 from testcontainers.core.waiting_utils import wait_container_is_ready
-from testcontainers.mysql import MySqlContainer
-from testcontainers.postgres import PostgresContainer
 
 
 # PostgresDockerContainer
@@ -35,9 +32,6 @@ def test_docker_run_selenium():
     assert len(containers) >= 2
     docker.stop_all()
     assert len(docker.get_running_containers()) == 0
-
-
-
 
 
 def test_docker_images():
