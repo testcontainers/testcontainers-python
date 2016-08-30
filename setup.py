@@ -45,7 +45,7 @@ setuptools.setup(
         'progressbar2',
         'wrapt',
         'MySQL-python',
-        'sphinx',
+        'sphinx>=1.4.4',
         'sqlalchemy'
     ],
 )
