@@ -67,7 +67,7 @@ class DockerContainer(object):
 
     def get_info(self):
         for container in self._docker._containers:
-            yield self._docker.inspect(container)
+            return self._docker.inspect(container)
 
 
 class GenericDbContainer(DockerContainer):
