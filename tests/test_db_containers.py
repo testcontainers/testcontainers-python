@@ -51,17 +51,6 @@ def test_docker_run_mariadb():
         cur.close()
         assert row[0] == '10.1.16-MariaDB-1~jessie'
 
-
-def test_docker_oracle_xe():
-    oracle_container = OracleDbContainer()
-
-    with oracle_container:
-        e = sqlalchemy.create_engine(oracle_container.get_connection_url())
-        result = e.execute("SELECT 1 FROM DUAL")
-        for row in result:
-            print(row)
-
-
 def test_docker_generic_db():
     mongo_container = DockerContainer(image_name="mongo",
                                       version="latest",

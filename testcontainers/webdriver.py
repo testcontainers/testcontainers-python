@@ -125,3 +125,6 @@ class SeleniumGrid(object):
 
     def get_driver(self):
         return self.hub.get_driver()
+
+    def get_info(self):
+        return self.hub.get_info()
