@@ -8,7 +8,7 @@ Welcome to python-testcontainers's documentation!
 Overview
 --------
 
-**testcontainers** provides capabilities to spin up a docker containers for test purposes would that be a database, Selenium web browser or any other cotainer.
+**python-testcontainers** provides capabilities to spin up a docker containers for test purposes would that be a database, Selenium web browser or any other cotainer.
 
 Currently available features:
 
