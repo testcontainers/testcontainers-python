@@ -7,7 +7,8 @@ Selenium Standalone example:
 ----------------------------
 ::
 
-    chrome = StandaloneSeleniumContainer(SeleniumImage.STANDALONE_CHROME, DesiredCapabilities.CHROME)
+    chrome = StandaloneSeleniumContainer(SeleniumImage.STANDALONE_CHROME,
+                                         DesiredCapabilities.CHROME)
             with chrome as container:
             driver = container.get_driver()
             driver.get("http://google.com")
