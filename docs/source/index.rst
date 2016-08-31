@@ -26,3 +26,4 @@ Documentation
 
    quick-start
    selenium
+   database
