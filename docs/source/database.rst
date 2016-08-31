@@ -81,3 +81,43 @@ Connection detail for Oracle DB.
     sid: xe
     username: system
     password: oracle
+
+Generic Database containers
+---------------------------
+
+Generally you are able to run any database container, but you need to configure it yourself.
+
+Mongo example:
+
+::
+
+    mongo_container = DockerContainer(image_name="mongo",
+                                      version="latest",
+                                      container_name="mongodb")
+    mongo_container.bind_ports(27017, 27017)
+
+    with mongo_container:
+        @wait_container_is_ready()
+        def connect():
+            return MongoClient("mongodb://0.0.0.0:27017")
+
+        db = connect().primer
+        result = db.restaurants.insert_one(
+            {
+                "address": {
+                    "street": "2 Avenue",
+                    "zipcode": "10075",
+                    "building": "1480",
+                    "coord": [-73.9557413, 40.7720266]
+                },
+                "borough": "Manhattan",
+                "cuisine": "Italian",
+                "name": "Vella",
+                "restaurant_id": "41704620"
+            }
+        )
+        print(result.inserted_id)
+        cursor = db.restaurants.find({"borough": "Manhattan"})
+        for document in cursor:
+            print(document)
+
