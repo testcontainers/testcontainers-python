@@ -18,7 +18,7 @@ def test_docker_run_mysql():
         e = sqlalchemy.create_engine(mysql.get_connection_url())
         result = e.execute("select version()")
         for row in result:
-            assert row[0] == '5.7.14'
+            assert row[0] == '5.7.15'
 
 
 def test_docker_run_postgress():
@@ -49,7 +49,7 @@ def test_docker_run_mariadb():
         cur.execute("SELECT VERSION()")
         row = cur.fetchone()
         cur.close()
-        assert row[0] == '10.1.16-MariaDB-1~jessie'
+        assert row[0] == '10.1.17-MariaDB-1~jessie'
 
 def test_docker_generic_db():
     mongo_container = DockerContainer(image_name="mongo",
