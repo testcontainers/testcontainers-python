@@ -16,7 +16,7 @@ import setuptools
 setuptools.setup(
     name='testcontainers',
     packages=setuptools.find_packages(exclude=['tests']),
-    version='1.1',
+    version='1.0.1',
     description=('Library provides lightweight, throwaway '
                  'instances of common databases, '
                  'Selenium web browsers, or anything else that can '
@@ -41,7 +41,7 @@ setuptools.setup(
     install_requires=[
         'pytest',
         'selenium',
-        'docker-py',
+        'docker-py==1.9.0',
         'progressbar2',
         'wrapt',
         'MySQL-python',
