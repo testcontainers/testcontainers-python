@@ -16,7 +16,7 @@ import setuptools
 setuptools.setup(
     name='testcontainers',
     packages=setuptools.find_packages(exclude=['tests']),
-    version='1.0',
+    version='1.1',
     description=('Library provides lightweight, throwaway '
                  'instances of common databases, '
                  'Selenium web browsers, or anything else that can '

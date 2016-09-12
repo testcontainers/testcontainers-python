@@ -116,12 +116,14 @@ class GenericDbContainer(DockerContainer):
         return "0.0.0.0"
 
     def get_connection_url(self):
-        return "{lang}://{username}:{password}@{host}:{port}/{db}".format(lang=self.db_dialect,
-                                                                          username=self.username,
-                                                                          password=self.password,
-                                                                          host=self.host_ip,
-                                                                          port=self.host_port,
-                                                                          db=self.database)
+        return "{lang}://{username}" \
+               ":{password}@{host}:" \
+               "{port}/{db}".format(lang=self.db_dialect,
+                                    username=self.username,
+                                    password=self.password,
+                                    host=self.host_ip,
+                                    port=self.host_port,
+                                    db=self.database)
 
 
 class GenericSeleniumContainer(DockerContainer):

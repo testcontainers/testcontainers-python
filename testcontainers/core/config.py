@@ -32,7 +32,8 @@ class ContainerConfig(object):
             self.environment[key] = value
             logging.warning("Env variable {} set to {}".format(key, value))
         else:
-            raise ValueError("Can't override {}.It has been initialized".format(key))
+            raise ValueError("Can't override {}. "
+                             "It has been initialized".format(key))
 
     @property
     def image(self):
@@ -41,4 +42,3 @@ class ContainerConfig(object):
     @property
     def host_ip(self):
         return self._host_ip
-

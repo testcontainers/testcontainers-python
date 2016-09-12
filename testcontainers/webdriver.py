@@ -32,12 +32,13 @@ class StandaloneSeleniumContainer(GenericSeleniumContainer):
                  container_port=4444,
                  name=None,
                  version="latest"):
-        super(StandaloneSeleniumContainer, self).__init__(image_name=image,
-                                                          host_port=host_port,
-                                                          container_port=container_port,
-                                                          name=name,
-                                                          version=version,
-                                                          capabilities=capabilities)
+        super(StandaloneSeleniumContainer, self)\
+            .__init__(image_name=image,
+                      host_port=host_port,
+                      container_port=container_port,
+                      name=name,
+                      version=version,
+                      capabilities=capabilities)
 
         self._configure()
 
