@@ -87,3 +87,7 @@ def test_docker_build_with_dockerfile():
     assert len(out) == 1
     assert out[0]['RepoTags'][0] == 'my_container_2:latest'
 
+
+def test_docker_build_from_path():
+    docker = DockerClient()
+    docker.build_from_path(os.path.dirname(os.path.realpath(__file__)), tag="video_service")

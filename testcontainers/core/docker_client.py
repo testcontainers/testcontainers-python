@@ -26,9 +26,10 @@ class DockerClient(object):
         self._cli = Client(base_url)
         self._containers = []
 
-    def run(self, image, bind_ports=None, name=None, links=None, env=None):
+    def run(self, image, bind_ports=None, name=None, links=None, env=None, volumes=None):
         """
         Pulls image if not exists and run
+        :param volumes:
         :param image:
         :param bind_ports:
         :param name:
@@ -39,7 +40,7 @@ class DockerClient(object):
         self.pull_image(image)
         container = self._create_container(image,
                                            bind_ports=bind_ports,
-                                           name=name, env=env)
+                                           name=name, env=env, volumes=volumes)
         self._cli.start(container,
                         publish_all_ports=True,
                         port_bindings=bind_ports,
@@ -128,6 +129,13 @@ class DockerClient(object):
         response = [line for line in self._cli.build(fileobj=f,
                                                      rm=rm,
                                                      tag=tag)]
+        for line in response:
+            logging.warning(line)
+
+    def build_from_path(self, path, tag, rm=True):
+        response = self._cli.build(path=path,
+                                   rm=rm,
+                                   tag=tag)
         for line in response:
             logging.warning(line)
 
