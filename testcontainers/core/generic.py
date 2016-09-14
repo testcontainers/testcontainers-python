@@ -36,7 +36,8 @@ class DockerContainer(object):
                          bind_ports=self._config.port_bindings,
                          env=self._config.environment,
                          links=self._config.container_links,
-                         name=self._config.container_name)
+                         name=self._config.container_name,
+                         volumes=self._config.volumes)
         return self
 
     def stop(self):
