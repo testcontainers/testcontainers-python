@@ -113,7 +113,7 @@ class DockerClient(object):
         for container in self._filter_by_name(name):
             yield container['Id']
 
-    def containers(self, all=True, filters=None):
+    def get_containers(self, all=True, filters=None):
         return self._cli.containers(all=all, filters=filters)
 
     def _filter_by_name(self, name):
@@ -121,7 +121,7 @@ class DockerClient(object):
         :param name:
         :return:
         """
-        return self.containers(
+        return self.get_containers(
             all=True, filters={"name": name}) if name else []
 
     def build(self, dockerfile, tag, rm=True):

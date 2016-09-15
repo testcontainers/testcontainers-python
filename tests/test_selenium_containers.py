@@ -48,3 +48,19 @@ class TestDocker(object):
             driver = container.get_driver()
             driver.get("http://google.com")
             driver.find_element_by_name("q").send_keys("Hello")
+
+    def test_couple_instances_of_selenium(self):
+        chrome1 = StandaloneSeleniumContainer(SeleniumImage.STANDALONE_CHROME, DesiredCapabilities.CHROME)
+        chrome1.host_vnc_port = 5901
+        chrome1.host_port = 4445
+        chrome2 = StandaloneSeleniumContainer(SeleniumImage.STANDALONE_CHROME, DesiredCapabilities.CHROME)
+
+        with chrome1, chrome2:
+            dr1 = chrome1.get_driver()
+            dr_2 = chrome2.get_driver()
+
+            dr1.get("http://google.com")
+            dr1.find_element_by_name("q").send_keys("Hello")
+
+            dr_2.get("http://google.com")
+            dr_2.find_element_by_name("q").send_keys("Hello")

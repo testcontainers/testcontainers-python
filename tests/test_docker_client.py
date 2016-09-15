@@ -1,22 +1,10 @@
-#
-#    Licensed under the Apache License, Version 2.0 (the "License"); you may
-#    not use this file except in compliance with the License. You may obtain
-#    a copy of the License at
-#
-#         http://www.apache.org/licenses/LICENSE-2.0
-#
-#    Unless required by applicable law or agreed to in writing, software
-#    distributed under the License is distributed on an "AS IS" BASIS, WITHOUT
-#    WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the
-#    License for the specific language governing permissions and limitations
-#    under the License.
 import os
 from pprint import pprint
 
 from testcontainers.core.docker_client import DockerClient
 
 
-def test_docker_run_selenium():
+def test_docker_run():
     docker = DockerClient()
     docker.stop_all()
     docker.run('selenium/hub:2.53.0', bind_ports={4444: 4444}, name='selenium-hub')
@@ -25,23 +13,6 @@ def test_docker_run_selenium():
     assert len(containers) >= 2
     docker.stop_all()
     assert len(docker.get_running_containers()) == 0
-
-
-def test_docker_images():
-    docker = DockerClient()
-    img = docker.containers(all=True, filters={"name": "selenium-hub"})
-    assert len(img) >= 0
-
-
-def test_docker_image_exists():
-    docker = DockerClient()
-    docker.pull_image("selenium/node-chrome:latest")
-    assert docker.image_exists("selenium/node-chrome:latest")
-
-
-def test_docker_get_containers():
-    docker = DockerClient()
-    print(docker.get_running_containers())
 
 
 def test_docker_pull():
@@ -53,10 +24,27 @@ def test_docker_pull():
     assert docker.image_exists(name)
 
 
-def test_docker_rm():
+def test_docker_image_exists():
+    docker = DockerClient()
+    docker.pull_image("selenium/node-chrome:latest")
+    assert docker.image_exists("selenium/node-chrome:latest")
+
+
+def test_docker_stop_all():
     docker = DockerClient()
     docker.run(image='selenium/hub:2.53.0', bind_ports={4444: 4444}, name='selenium-hub')
     docker.stop_all()
+
+
+def test_docker_get_containers():
+    docker = DockerClient()
+    img = docker.get_containers(all=True, filters={"name": "selenium-hub"})
+    assert len(img) >= 0
+
+
+def test_docker_get_running_containers():
+    docker = DockerClient()
+    print(docker.get_running_containers())
 
 
 def test_docker_build():

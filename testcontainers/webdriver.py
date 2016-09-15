@@ -32,7 +32,7 @@ class StandaloneSeleniumContainer(GenericSeleniumContainer):
                  container_port=4444,
                  name=None,
                  version="latest"):
-        super(StandaloneSeleniumContainer, self)\
+        super(StandaloneSeleniumContainer, self) \
             .__init__(image_name=image,
                       host_port=host_port,
                       container_port=container_port,
@@ -40,11 +40,13 @@ class StandaloneSeleniumContainer(GenericSeleniumContainer):
                       version=version,
                       capabilities=capabilities)
 
-        self._configure()
-
     def _configure(self):
         self.bind_ports(self.host_port, self.container_port)
         self.bind_ports(self.host_vnc_port, self.container_vnc_port)
+
+    def start(self):
+        self._configure()
+        super(StandaloneSeleniumContainer, self).start()
 
 
 class SeleniumHub(GenericSeleniumContainer):
