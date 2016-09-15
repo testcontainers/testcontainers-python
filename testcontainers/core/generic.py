@@ -151,6 +151,8 @@ class GenericSeleniumContainer(DockerContainer):
         self.host_vnc_port = host_vnc_port
         self.container_vnc_port = container_vnc_port
         self._add_env()
+        self.bind_ports(host_port, container_port)
+        self.bind_ports(host_vnc_port, container_vnc_port)
 
     def _add_env(self):
         # this is workaround due to bug in Selenium images
