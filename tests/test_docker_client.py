@@ -87,3 +87,9 @@ def test_docker_port():
     container = docker.run('selenium/hub:2.53.0', name='selenium-hub')
     print docker.port(container, 4444)
     print "End"
+
+
+def test_docker_inspect():
+    docker = DockerClient()
+    container = docker.run('selenium/hub:2.53.0', name='selenium-hub')
+    pprint(docker.inspect(container))

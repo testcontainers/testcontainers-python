@@ -10,6 +10,7 @@
 #    WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the
 #    License for the specific language governing permissions and limitations
 #    under the License.
+import logging
 
 from testcontainers.core.generic import GenericSeleniumContainer
 
@@ -28,8 +29,9 @@ class SeleniumImage(object):
 class StandaloneSeleniumContainer(GenericSeleniumContainer):
     def __init__(self, image,
                  capabilities,
-                 host_port=4444,
+                 host_port=None,
                  container_port=4444,
+                 host_vnc_port=None,
                  name=None,
                  version="latest"):
         super(StandaloneSeleniumContainer, self) \
@@ -38,15 +40,19 @@ class StandaloneSeleniumContainer(GenericSeleniumContainer):
                       container_port=container_port,
                       name=name,
                       version=version,
-                      capabilities=capabilities)
-
-    def _configure(self):
-        self.bind_ports(self.host_port, self.container_port)
-        self.bind_ports(self.host_vnc_port, self.container_vnc_port)
+                      capabilities=capabilities,
+                      host_vnc_port=host_vnc_port)
 
     def start(self):
-        self._configure()
-        super(StandaloneSeleniumContainer, self).start()
+        super(GenericSeleniumContainer, self).start()
+        self.print_info(self.container_port)
+        self.print_info(self.container_vnc_port)
+        return self
+
+    def print_info(self, port):
+        info = self.get_host_info(port)
+        host_info = ":".join(list(dict(info).values()))
+        logging.warning("Container port mapping {} -> {}".format(host_info, port))
 
 
 class SeleniumHub(GenericSeleniumContainer):
@@ -130,4 +136,4 @@ class SeleniumGrid(object):
         return self.hub.get_driver()
 
     def get_info(self):
-        return self.hub.get_info()
+        return self.hub.inspect()

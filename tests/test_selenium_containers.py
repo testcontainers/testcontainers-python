@@ -51,8 +51,6 @@ class TestDocker(object):
 
     def test_couple_instances_of_selenium(self):
         chrome1 = StandaloneSeleniumContainer(SeleniumImage.STANDALONE_CHROME, DesiredCapabilities.CHROME)
-        chrome1.host_vnc_port = 5901
-        chrome1.host_port = 4445
         chrome2 = StandaloneSeleniumContainer(SeleniumImage.STANDALONE_CHROME, DesiredCapabilities.CHROME)
 
         with chrome1, chrome2:

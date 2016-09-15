@@ -24,7 +24,7 @@ class DockerContainer(object):
         self._config = ContainerConfig(image_name=image_name,
                                        version=version,
                                        container_name=container_name)
-        self.container = None
+        self._container = None
 
     def __enter__(self):
         return self.start()
@@ -33,20 +33,26 @@ class DockerContainer(object):
         self.stop()
 
     def start(self):
-        self.container = self._docker.run(image=self._config.image,
-                                          bind_ports=self._config.port_bindings,
-                                          env=self._config.environment,
-                                          links=self._config.container_links,
-                                          name=self._config.container_name,
-                                          volumes=self._config.volumes)
+        self._container = self._docker.run(image=self._config.image,
+                                           bind_ports=self._config.port_bindings,
+                                           env=self._config.environment,
+                                           links=self._config.container_links,
+                                           name=self._config.container_name,
+                                           volumes=self._config.volumes)
         return self
 
     def stop(self):
-        self._docker.remove_all_spawned()
+        self._docker.stop(self._container)
 
-    @property
-    def host_ip(self):
-        return self._config.host_ip
+    def get_host_info(self, port):
+        info = self._docker.port(self._container, port)
+        return info[0]
+
+    def get_host_port(self, port):
+        return self.get_host_info(port)['HostPort']
+
+    def get_host_ip(self, port):
+        return self.get_host_info(port)['HostIp']
 
     @property
     def container_name(self):
@@ -67,9 +73,8 @@ class DockerContainer(object):
     def link_containers(self, target, current):
         self._config.link_containers(target, current)
 
-    def get_info(self):
-        for container in self._docker._containers:
-            return self._docker.inspect(container)
+    def inspect(self):
+        return self._docker.inspect(self._container)
 
 
 class GenericDbContainer(DockerContainer):
@@ -134,8 +139,8 @@ class GenericSeleniumContainer(DockerContainer):
                  host_port,
                  container_port,
                  name,
+                 host_vnc_port,
                  version="latest",
-                 host_vnc_port=5900,
                  container_vnc_port=5900):
         super(GenericSeleniumContainer, self).__init__(image_name=image_name,
                                                        version=version,
@@ -154,11 +159,10 @@ class GenericSeleniumContainer(DockerContainer):
 
     @wait_container_is_ready()
     def _connect(self):
+        ip = self.get_host_ip(self.container_port)
+        port = self.get_host_port(self.container_port)
         return webdriver.Remote(
-            command_executor=('http://{}:{}/wd/hub'.format(
-                self.host_ip,
-                self.host_port)
-            ),
+            command_executor=('http://{}:{}/wd/hub'.format(ip, port)),
             desired_capabilities=self.capabilities)
 
     def get_driver(self):
