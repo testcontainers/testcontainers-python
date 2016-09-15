@@ -10,6 +10,8 @@
 #    WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the
 #    License for the specific language governing permissions and limitations
 #    under the License.
+import logging
+
 import sqlalchemy
 from selenium import webdriver
 
@@ -39,7 +41,11 @@ class DockerContainer(object):
                                            links=self._config.container_links,
                                            name=self._config.container_name,
                                            volumes=self._config.volumes)
+        self.print_ports()
         return self
+
+    def print_ports(self):
+        logging.warning("Container port mappings {}".format(self.inspect()['NetworkSettings']['Ports']))
 
     def stop(self):
         self._docker.stop(self._container)

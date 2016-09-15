@@ -43,22 +43,11 @@ class StandaloneSeleniumContainer(GenericSeleniumContainer):
                       capabilities=capabilities,
                       host_vnc_port=host_vnc_port)
 
-    def start(self):
-        super(GenericSeleniumContainer, self).start()
-        self.print_info(self.container_port)
-        self.print_info(self.container_vnc_port)
-        return self
-
-    def print_info(self, port):
-        info = self.get_host_info(port)
-        host_info = ":".join(list(dict(info).values()))
-        logging.warning("Container port mapping {} -> {}".format(host_info, port))
-
 
 class SeleniumHub(GenericSeleniumContainer):
     def __init__(self, image,
                  capabilities,
-                 host_port=4444,
+                 host_port=None,
                  container_port=4444,
                  name="selenium-hub",
                  version="latest"):
@@ -83,7 +72,8 @@ class SeleniumNode(GenericSeleniumContainer):
                                            host_port=None,
                                            container_port=None,
                                            name=None,
-                                           version=version)
+                                           version=version,
+                                           host_vnc_port=None)
         self.link_label = "hub"
 
     def link_to_hub(self, hub):
