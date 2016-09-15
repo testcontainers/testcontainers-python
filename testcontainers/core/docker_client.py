@@ -40,11 +40,11 @@ class DockerClient(object):
         self.pull_image(image)
         container = self._create_container(image,
                                            bind_ports=bind_ports,
-                                           name=name, env=env, volumes=volumes)
-        self._cli.start(container,
-                        publish_all_ports=True,
-                        port_bindings=bind_ports,
-                        links=links)
+                                           name=name,
+                                           env=env,
+                                           volumes=volumes,
+                                           links=links)
+        self._cli.start(container)
         self._containers.append(container)
         return container
 
@@ -75,7 +75,8 @@ class DockerClient(object):
                           bind_ports=None,
                           name=None,
                           env=None,
-                          volumes=None):
+                          volumes=None,
+                          links=None):
         """
         Creates new container
         :param image:
@@ -89,7 +90,12 @@ class DockerClient(object):
             self.remove(container, True)
 
         host_config = self._cli.create_host_config(
-            port_bindings=bind_ports, binds=volumes)
+            port_bindings=bind_ports,
+            binds=volumes,
+            publish_all_ports=True,
+            links=links
+        )
+
         return self._cli.create_container(
             image=image,
             ports=self._get_exposed_ports(bind_ports),

@@ -24,6 +24,7 @@ class DockerContainer(object):
         self._config = ContainerConfig(image_name=image_name,
                                        version=version,
                                        container_name=container_name)
+        self.container = None
 
     def __enter__(self):
         return self.start()
@@ -32,12 +33,12 @@ class DockerContainer(object):
         self.stop()
 
     def start(self):
-        self._docker.run(image=self._config.image,
-                         bind_ports=self._config.port_bindings,
-                         env=self._config.environment,
-                         links=self._config.container_links,
-                         name=self._config.container_name,
-                         volumes=self._config.volumes)
+        self.container = self._docker.run(image=self._config.image,
+                                          bind_ports=self._config.port_bindings,
+                                          env=self._config.environment,
+                                          links=self._config.container_links,
+                                          name=self._config.container_name,
+                                          volumes=self._config.volumes)
         return self
 
     def stop(self):

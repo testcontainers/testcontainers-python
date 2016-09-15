@@ -1,3 +1,4 @@
+import json
 import os
 from pprint import pprint
 
@@ -79,3 +80,10 @@ def test_docker_build_with_dockerfile():
 def test_docker_build_from_path():
     docker = DockerClient()
     docker.build_from_path(os.path.dirname(os.path.realpath(__file__)), tag="video_service")
+
+
+def test_docker_port():
+    docker = DockerClient()
+    container = docker.run('selenium/hub:2.53.0', name='selenium-hub')
+    print docker.port(container, 4444)
+    print "End"
