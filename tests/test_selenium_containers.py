@@ -31,6 +31,17 @@ def selenium_container(request):
 
 
 class TestDocker(object):
+    def test_connection_url_standalone(self):
+        chrome = StandaloneSeleniumContainer(SeleniumImage.STANDALONE_CHROME, DesiredCapabilities.CHROME)
+        chrome.bind_ports(4444, 4444)
+        with chrome:
+            assert chrome.get_connection_url() == "http://0.0.0.0:4444/wd/hub"
+
+    def test_connection_url_grid(self):
+        grid = SeleniumGrid(DesiredCapabilities.CHROME)
+        with grid:
+            assert grid.get_connection_url() == "http://0.0.0.0:4444/wd/hub"
+
     def test_selenium_grid(self):
         with SeleniumGrid(DesiredCapabilities.FIREFOX, node_count=3) as firefox:
             webdriver = firefox.get_driver()

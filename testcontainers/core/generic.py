@@ -167,14 +167,17 @@ class GenericSeleniumContainer(DockerContainer):
 
     @wait_container_is_ready()
     def _connect(self):
-        ip = self.get_host_ip(self.container_port)
-        port = self.get_host_port(self.container_port)
         return webdriver.Remote(
-            command_executor=('http://{}:{}/wd/hub'.format(ip, port)),
+            command_executor=(self.get_connection_url()),
             desired_capabilities=self.capabilities)
 
     def get_driver(self):
         return self._connect()
+
+    def get_connection_url(self):
+        ip = self.get_host_ip(self.container_port)
+        port = self.get_host_port(self.container_port)
+        return 'http://{}:{}/wd/hub'.format(ip, port)
 
     def _is_chrome(self):
         return self.capabilities["browserName"] == "chrome"
