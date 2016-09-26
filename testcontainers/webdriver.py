@@ -126,3 +126,6 @@ class SeleniumGrid(object):
 
     def get_info(self):
         return self.hub.inspect()
+
+    def get_connection_url(self):
+        return self.hub.get_connection_url()
