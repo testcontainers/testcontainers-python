@@ -45,7 +45,8 @@ class DockerContainer(object):
         return self
 
     def print_ports(self):
-        logging.warning("Container port mappings {}".format(self.inspect()['NetworkSettings']['Ports']))
+        logging.warning("Container port mappings {}".format(
+            self.inspect()['NetworkSettings']['Ports']))
 
     def stop(self):
         self._docker.stop(self._container)

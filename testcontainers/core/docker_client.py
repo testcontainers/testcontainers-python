@@ -26,7 +26,9 @@ class DockerClient(object):
         self._cli = Client(base_url)
         self._containers = []
 
-    def run(self, image, bind_ports=None, name=None, links=None, env=None, volumes=None):
+    def run(self, image, bind_ports=None,
+            name=None, links=None,
+            env=None, volumes=None):
         """
         Pulls image if not exists and run
         :param volumes:
