@@ -60,18 +60,8 @@ class Container(object):
 class DbContainer(Container):
     def __init__(self,
                  image,
-                 version,
-                 dialect,
-                 username,
-                 password,
-                 port,
-                 db_name):
+                 version):
         super(DbContainer, self).__init__(image, version)
-        self.dialect = dialect
-        self.username = username
-        self.password = password
-        self.port = port
-        self.db_name = db_name
 
     @wait_container_is_ready()
     def _connect(self):
@@ -83,14 +73,7 @@ class DbContainer(Container):
         engine.connect()
 
     def get_connection_url(self):
-        return "{lang}+pymysql://{username}" \
-               ":{password}@{host}:" \
-               "{port}/{db}".format(lang=self.dialect,
-                                    username=self.username,
-                                    password=self.password,
-                                    host=self.get_container_ip_address(),
-                                    port=self.get_exposed_port(self.port),
-                                    db=self.db_name)
+        raise NotImplementedError
 
     def start(self):
         super().start()
@@ -101,13 +84,13 @@ class DbContainer(Container):
 class MySqlContainer(DbContainer):
     def __init__(self, image="mysql", version="latest"):
         super(MySqlContainer, self).__init__(image,
-                                             version,
-                                             dialect="mysql",
-                                             db_name="test",
-                                             port="3306",
-                                             username="test",
-                                             password="test")
+                                             version)
         self.root_password = "test"
+        self.port = 3306
+        self.db_name = "test"
+        self.username = "test"
+        self.password = "test"
+        self.dialect = "mysql+pymysql"
 
     def configure(self):
         self.expose_port("3306/tcp", self.port)
@@ -115,6 +98,16 @@ class MySqlContainer(DbContainer):
         self.add_env("MYSQL_DATABASE", self.db_name)
         self.add_env("MYSQL_USER", self.username)
         self.add_env("MYSQL_PASSWORD", self.password)
+
+    def get_connection_url(self):
+        return "{dialect}//{username}" \
+               ":{password}@{host}:" \
+               "{port}/{db}".format(dialect=self.dialect,
+                                    username=self.username,
+                                    password=self.password,
+                                    host=self.get_container_ip_address(),
+                                    port=self.get_exposed_port(self.port),
+                                    db=self.db_name)
 
 
 # mysql = MySqlContainer().start()
