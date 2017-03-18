@@ -16,7 +16,6 @@ import logging
 from time import sleep
 
 import wrapt
-from testcontainers.core.progress_bar import ConsoleProgressBar
 
 from testcontainers.core import config
 from testcontainers.core.exceptions import TimeoutException
@@ -34,9 +33,8 @@ def wait_container_is_ready():
     @wrapt.decorator
     def wrapper(wrapped, instance, args, kwargs):
         exception = None
-        bar = ConsoleProgressBar().bar
         logging.warning("Waiting for container to start")
-        for _ in bar(range(0, config.max_tries)):
+        for _ in range(0, config.max_tries):
             try:
                 return wrapped(*args, **kwargs)
             except Exception as e:

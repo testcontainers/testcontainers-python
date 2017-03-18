@@ -10,109 +10,24 @@
 #    WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the
 #    License for the specific language governing permissions and limitations
 #    under the License.
-import sqlalchemy
-
-from testcontainers.core.docker_client import DockerClient
-from testcontainers.core.waiting_utils import wait_container_is_ready
-
-
-class Container(object):
-    def __init__(self, image, version):
-        self.env = {}
-        self.ports = {}
-        self._docker = DockerClient()
-        self.image = "{}:{}".format(image, version)
-        self._container = None
-
-    def add_env(self, key, value):
-        self.env[key] = value
-
-    def expose_port(self, container, host):
-        self.ports[container] = host
-
-    def configure(self):
-        raise NotImplementedError
-
-    def start(self):
-        self.configure()
-        self._container = self._docker.run(self.image,
-                                           detach=True,
-                                           environment=self.env,
-                                           ports=self.ports)
-        return self
-
-    def stop(self):
-        self._container.remove(force=True)
-
-    def __enter__(self):
-        return self.start()
-
-    def __exit__(self, exc_type, exc_val, exc_tb):
-        self.stop()
-
-    def get_container_host_ip(self):
-        return "0.0.0.0"
-
-    def get_exposed_port(self, port):
-        return self._docker.port(self._container.id, port)[0]["HostPort"]
-
-
-class DbContainer(Container):
-    def __init__(self,
-                 image,
-                 version):
-        super(DbContainer, self).__init__(image, version)
-
-    @wait_container_is_ready()
-    def _connect(self):
-        """
-        dialect+driver://username:password@host:port/database
-        :return:
-        """
-        engine = sqlalchemy.create_engine(self.get_connection_url())
-        engine.connect()
-
-    def get_connection_url(self):
-        raise NotImplementedError
-
-    def start(self):
-        super().start()
-        self._connect()
-        return self
+from testcontainers.core.generic import DbContainer
 
 
 class MySqlContainer(DbContainer):
     def __init__(self, image="mysql", version="latest"):
         super(MySqlContainer, self).__init__(image,
-                                             version)
+                                             version,
+                                             dialect="mysql+pymysql",
+                                             username="test",
+                                             password="test",
+                                             port=3306,
+                                             db_name="test")
         self.root_password = "test"
-        self.port = 3306
-        self.db_name = "test"
-        self.username = "test"
-        self.password = "test"
-        self.dialect = "mysql+pymysql"
+        self.host_port = 3306
 
-    def configure(self):
+    def _configure(self):
         self.expose_port("3306/tcp", self.port)
         self.add_env("MYSQL_ROOT_PASSWORD", self.root_password)
         self.add_env("MYSQL_DATABASE", self.db_name)
         self.add_env("MYSQL_USER", self.username)
         self.add_env("MYSQL_PASSWORD", self.password)
-
-    def get_connection_url(self):
-        return "{dialect}://{username}" \
-               ":{password}@{host}:" \
-               "{port}/{db}".format(dialect=self.dialect,
-                                    username=self.username,
-                                    password=self.password,
-                                    host=self.get_container_host_ip(),
-                                    port=self.get_exposed_port(self.port),
-                                    db=self.db_name)
-
-# mysql = MySqlContainer().start()
-#
-# print(mysql._container.logs())
-#
-# print(mysql.get_exposed_port(3306))
-#
-# mysql.stop()

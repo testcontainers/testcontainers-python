@@ -11,30 +11,22 @@
 #    License for the specific language governing permissions and limitations
 #    under the License.
 
-from testcontainers.core.generic import GenericDbContainer
+from testcontainers.core.generic import DbContainer
 
 
-class PostgresContainer(GenericDbContainer):
-    def __init__(self, username,
-                 password,
-                 database="test",
-                 host_port=5432,
-                 image_name="postgres",
-                 version="latest"):
-        super(PostgresContainer, self).__init__(image_name=image_name,
+class PostgresContainer(DbContainer):
+    def __init__(self, image="postgres", version="latest"):
+        super(PostgresContainer, self).__init__(image=image,
                                                 version=version,
-                                                username=username,
-                                                password=password,
-                                                database=database,
-                                                host_port=host_port,
-                                                root_password=password,
-                                                name=image_name,
-                                                db_dialect=image_name)
-        self.container_port = 5432
-        self._configure()
+                                                dialect="postgresql+psycopg2",
+                                                username="test",
+                                                password="test",
+                                                db_name="test",
+                                                port=5432)
+        self.host_port = 5432
 
     def _configure(self):
         self.add_env("POSTGRES_USER", self.username)
         self.add_env("POSTGRES_PASSWORD", self.password)
-        self.add_env("POSTGRES_DB", self.database)
-        self.bind_ports(self.host_port, self.container_port)
+        self.add_env("POSTGRES_DB", self.db_name)
+        self.expose_port(self.port, self.host_port)

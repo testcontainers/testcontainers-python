@@ -1,19 +1,16 @@
-from time import sleep
-
 import MySQLdb
-import psycopg2
-import sqlalchemy
 from pymongo import MongoClient
 
-from testcontainers.core.generic import GenericDbContainer, DockerContainer
+import psycopg2
+import sqlalchemy
+from testcontainers.core.generic import DockerContainer
 from testcontainers.core.waiting_utils import wait_container_is_ready
 from testcontainers.mysql import MySqlContainer, MariaDbContainer
-from testcontainers.oracle import OracleDbContainer
 from testcontainers.postgres import PostgresContainer
 
 
 def test_docker_run_mysql():
-    config = MySqlContainer("user", "secret", version="5.7")
+    config = MySqlContainer(version='5.7.17')
     with config as mysql:
         e = sqlalchemy.create_engine(mysql.get_connection_url())
         result = e.execute("select version()")
@@ -22,12 +19,9 @@ def test_docker_run_mysql():
 
 
 def test_docker_run_postgress():
-    postgres_container = PostgresContainer("user", "secret", version="9.5")
+    postgres_container = PostgresContainer(version="9.5")
     with postgres_container as postgres:
-        conn = psycopg2.connect(host=postgres.host_ip,
-                                user=postgres.username,
-                                password=postgres.password,
-                                database=postgres.database)
+        conn = psycopg2.connect(postgres.get_connection_url())
         cur = conn.cursor()
 
         cur.execute("SELECT VERSION()")

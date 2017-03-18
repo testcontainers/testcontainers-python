@@ -11,15 +11,8 @@
 #    License for the specific language governing permissions and limitations
 #    under the License.
 
-import logging
-from io import BytesIO
-from time import sleep
-
 import docker
 from docker.models.containers import Container
-
-from testcontainers.core import config
-from testcontainers.core.progress_bar import ConsoleProgressBar
 
 
 class DockerClient(object):
@@ -28,13 +21,12 @@ class DockerClient(object):
 
     def run(self, image: str,
             command: str = None,
-            environment: dict  = None,
+            environment: dict = None,
             ports: dict = None,
             detach: bool = False,
             stdout: bool = True,
             stderr: bool = False,
             remove: bool = False, **kwargs) -> Container:
-
         return self.client.containers.run(image,
                                           command=command,
                                           stdout=stdout,
@@ -46,4 +38,4 @@ class DockerClient(object):
                                           **kwargs)
 
     def port(self, container_id, port):
-        return self.client.api.port(container_id,port)
+        return self.client.api.port(container_id, port)[0]["HostPort"]

@@ -1,0 +1,41 @@
+{
+    "default": {
+        "requests": {
+            "version": "==2.13.0",
+            "hash": "sha256:1a720e8862a41aa22e339373b526f508ef0c8988baf48b84d3fc891a8e237efb"
+        },
+        "docker": {
+            "version": "==2.1.0",
+            "hash": "sha256:4c0588b6b640983a01c86175c2a42cc0777bcef10c5ae82ad505d3207141b4c8"
+        },
+        "six": {
+            "version": "==1.10.0",
+            "hash": "sha256:0ff78c403d9bccf5a425a6d31a12aa6b47f1c21ca4dc2573a7e2f32a97335eb1"
+        },
+        "docker-pycreds": {
+            "version": "==0.2.1",
+            "hash": "sha256:58d2688f92de5d6f1a6ac4fe25da461232f0e0a4c1212b93b256b046b2d714a9"
+        },
+        "PyMySQL": {
+            "version": "==0.7.10",
+            "hash": "sha256:390e8e9f92348d6d2befb635fb717c89c4340249c063ed0ea449d520c526274e"
+        },
+        "websocket-client": {
+            "version": "==0.40.0",
+            "hash": "sha256:40ac14a0c54e14d22809a5c8d553de5a2ae45de3c60105fae53bcb281b3fe6fb"
+        }
+    },
+    "develop": {},
+    "_meta": {
+        "sources": [
+            {
+                "url": "https://pypi.python.org/simple",
+                "verify_ssl": true
+            }
+        ],
+        "requires": {},
+        "hash": {
+            "sha256": "5f70baa008ddb03ed8162dd0e9d343fff17f0327dedec477c275f2c8debda9cf"
+        }
+    }
+}
