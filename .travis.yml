@@ -1,0 +1,19 @@
+sudo: required
+dist: trusty
+services:
+  - docker
+
+language: python
+python:
+  - "2.7"
+
+install:
+  - pip install tox
+
+script:
+  - tox
+
+notifications:
+  email:
+    recipients:
+      - sergio_89@ukr.net

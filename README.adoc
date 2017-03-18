@@ -6,8 +6,9 @@ Currently available features:
 
 - Selenium Grid containers
 - Selenium Standalone containers
-- MySql db container
-- PostgreSQL db container
+- MySql Db container
+- MariaDb container
+- PostgreSQL Db container
 
 For full documentation read:
 
