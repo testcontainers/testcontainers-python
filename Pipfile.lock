@@ -1,24 +1,40 @@
 {
     "default": {
-        "requests": {
-            "version": "==2.13.0",
-            "hash": "sha256:1a720e8862a41aa22e339373b526f508ef0c8988baf48b84d3fc891a8e237efb"
+        "SQLAlchemy": {
+            "version": "==1.1.6",
+            "hash": "sha256:815924e3218d878ddd195d2f9f5bf3d2bb39fabaddb1ea27dace6ac27d9865e4"
         },
-        "docker": {
-            "version": "==2.1.0",
-            "hash": "sha256:4c0588b6b640983a01c86175c2a42cc0777bcef10c5ae82ad505d3207141b4c8"
+        "wrapt": {
+            "version": "==1.10.10",
+            "hash": "sha256:42160c91b77f1bc64a955890038e02f2f72986c01d462d53cb6cb039b995cdd9"
+        },
+        "psycopg2": {
+            "version": "==2.7.1",
+            "hash": "sha256:f04d56f664108af9571d278c0ed942ecef0dd3e072fe21ac8c7497a51bfcdfba"
         },
         "six": {
             "version": "==1.10.0",
             "hash": "sha256:0ff78c403d9bccf5a425a6d31a12aa6b47f1c21ca4dc2573a7e2f32a97335eb1"
         },
+        "PyMySQL": {
+            "version": "==0.7.10",
+            "hash": "sha256:390e8e9f92348d6d2befb635fb717c89c4340249c063ed0ea449d520c526274e"
+        },
         "docker-pycreds": {
             "version": "==0.2.1",
             "hash": "sha256:58d2688f92de5d6f1a6ac4fe25da461232f0e0a4c1212b93b256b046b2d714a9"
         },
-        "PyMySQL": {
-            "version": "==0.7.10",
-            "hash": "sha256:390e8e9f92348d6d2befb635fb717c89c4340249c063ed0ea449d520c526274e"
+        "requests": {
+            "version": "==2.13.0",
+            "hash": "sha256:1a720e8862a41aa22e339373b526f508ef0c8988baf48b84d3fc891a8e237efb"
+        },
+        "backports.ssl_match_hostname": {
+            "version": "==3.5.0.1",
+            "hash": "sha256:502ad98707319f4a51fa2ca1c677bd659008d27ded9f6380c79e8932e38dcdf2"
+        },
+        "docker": {
+            "version": "==2.1.0",
+            "hash": "sha256:4c0588b6b640983a01c86175c2a42cc0777bcef10c5ae82ad505d3207141b4c8"
         },
         "websocket-client": {
             "version": "==0.40.0",
@@ -35,7 +51,7 @@
         ],
         "requires": {},
         "hash": {
-            "sha256": "5f70baa008ddb03ed8162dd0e9d343fff17f0327dedec477c275f2c8debda9cf"
+            "sha256": "c86e870997b737b250f00776712b9c51218c9caffb6af5bf8bf94e5a1d4380a5"
         }
     }
 }

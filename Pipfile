@@ -5,6 +5,6 @@ verify_ssl = true
 [packages]
 docker = "*"
 wrapt = "*"
+psycopg2 = "*"
 PyMySQL = "*"
 SQLAlchemy = "*"
-psycopg2 = "*"

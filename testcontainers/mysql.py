@@ -31,3 +31,8 @@ class MySqlContainer(DbContainer):
         self.add_env("MYSQL_DATABASE", self.db_name)
         self.add_env("MYSQL_USER", self.username)
         self.add_env("MYSQL_PASSWORD", self.password)
+
+
+class MariaDbContainer(MySqlContainer):
+    def __init__(self, image="mariadb", version="latest"):
+        super(MariaDbContainer, self).__init__(image, version)
