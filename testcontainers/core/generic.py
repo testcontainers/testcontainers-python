@@ -35,7 +35,7 @@ class DockerContainer(object):
         self.stop()
 
     def start(self):
-        self._container = self._docker.run(image=self._config.image,
+        self._container = self._docker.client.run(image=self._config.image,
                                            bind_ports=self._config.port_bindings,
                                            env=self._config.environment,
                                            links=self._config.container_links,
