@@ -16,7 +16,7 @@ class DockerContainer(object):
         self.ports[container] = host
 
     def _configure(self):
-        raise NotImplementedError
+        pass
 
     def start(self):
         self._configure()
