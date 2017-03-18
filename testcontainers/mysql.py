@@ -50,8 +50,8 @@ class Container(object):
     def __exit__(self, exc_type, exc_val, exc_tb):
         self.stop()
 
-    def get_container_ip_address(self):
-        pass
+    def get_container_host_ip(self):
+        return "0.0.0.0"
 
     def get_exposed_port(self, port):
         return self._docker.port(self._container.id, port)[0]["HostPort"]
@@ -100,15 +100,14 @@ class MySqlContainer(DbContainer):
         self.add_env("MYSQL_PASSWORD", self.password)
 
     def get_connection_url(self):
-        return "{dialect}//{username}" \
+        return "{dialect}://{username}" \
                ":{password}@{host}:" \
                "{port}/{db}".format(dialect=self.dialect,
                                     username=self.username,
                                     password=self.password,
-                                    host=self.get_container_ip_address(),
+                                    host=self.get_container_host_ip(),
                                     port=self.get_exposed_port(self.port),
                                     db=self.db_name)
-
 
 # mysql = MySqlContainer().start()
 #
