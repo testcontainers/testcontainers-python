@@ -1,6 +1,6 @@
 pytest
 selenium
-docker-py
+docker
 progressbar2
 wrapt
 MySQL-python

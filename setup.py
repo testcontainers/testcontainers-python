@@ -16,7 +16,7 @@ import setuptools
 setuptools.setup(
     name='testcontainers',
     packages=setuptools.find_packages(exclude=['tests']),
-    version='1.0.2',
+    version='2.0.0',
     description=('Library provides lightweight, throwaway '
                  'instances of common databases, '
                  'Selenium web browsers, or anything else that can '
@@ -24,7 +24,6 @@ setuptools.setup(
     author='Sergey Pirogov',
     author_email='automationremarks@gmail.com',
     url='https://github.com/SergeyPirogov/python-testcontainers',
-    download_url='https://github.com/SergeyPirogov/testcontainers/tarball/1.0',
     keywords=['testing', 'logging', 'docker', 'test automation'],
     classifiers=[
         'License :: OSI Approved :: Apache Software License',
@@ -39,13 +38,11 @@ setuptools.setup(
         'Operating System :: MacOS',
     ],
     install_requires=[
-        'pytest',
         'selenium',
-        'docker-py==1.9.0',
-        'progressbar2',
+        'docker',
         'wrapt',
-        'MySQL-python',
-        'sphinx',
-        'sqlalchemy'
+        'pymysql',
+        'sqlalchemy',
+        'psycopg2'
     ],
 )
