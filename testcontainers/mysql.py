@@ -26,7 +26,7 @@ class MySqlContainer(DbContainer):
         self.host_port = 3306
 
     def _configure(self):
-        self.expose_port("3306/tcp", self.port)
+        self.expose_port(self.port, self.host_port)
         self.add_env("MYSQL_ROOT_PASSWORD", self.root_password)
         self.add_env("MYSQL_DATABASE", self.db_name)
         self.add_env("MYSQL_USER", self.username)
