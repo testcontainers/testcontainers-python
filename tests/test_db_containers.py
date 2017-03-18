@@ -20,14 +20,11 @@ def test_docker_run_mysql():
 def test_docker_run_postgress():
     postgres_container = PostgresContainer(version="9.5")
     with postgres_container as postgres:
-        conn = psycopg2.connect(postgres.get_connection_url())
-        cur = conn.cursor()
+        e = sqlalchemy.create_engine(postgres.get_connection_url())
+        result = e.execute("select version()")
 
-        cur.execute("SELECT VERSION()")
-        row = cur.fetchone()
-        print("server version:", row[0])
-        cur.close()
-        assert len(row) > 0
+        for row in result:
+            print("server version:", row[0])
 
 
 def test_docker_run_mariadb():
