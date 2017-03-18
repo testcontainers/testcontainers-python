@@ -11,7 +11,7 @@ def test_docker_run_mysql():
         e = sqlalchemy.create_engine(mysql.get_connection_url())
         result = e.execute("select version()")
         for row in result:
-            assert row[0] == '5.7.15'
+            assert row[0] == '5.7.17'
 
 
 def test_docker_run_postgress():

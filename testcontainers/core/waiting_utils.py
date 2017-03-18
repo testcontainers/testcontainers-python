@@ -35,6 +35,7 @@ def wait_container_is_ready():
         exception = None
         logging.warning("Waiting for container to start")
         for _ in range(0, config.max_tries):
+            print(".", end="")
             try:
                 return wrapped(*args, **kwargs)
             except Exception as e:
