@@ -31,7 +31,7 @@ def test_docker_run_postgress():
 
 
 def test_docker_run_mariadb():
-    mariadb_container = MariaDbContainer("test", "test")
+    mariadb_container = MariaDbContainer()
     with mariadb_container as mariadb:
         e = sqlalchemy.create_engine(mariadb.get_connection_url())
         result = e.execute("select version()")
