@@ -29,4 +29,3 @@ class PostgresContainer(DbContainer):
         self.add_env("POSTGRES_USER", self.username)
         self.add_env("POSTGRES_PASSWORD", self.password)
         self.add_env("POSTGRES_DB", self.db_name)
-        self.expose_port(self.port, self.host_port)
