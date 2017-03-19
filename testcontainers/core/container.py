@@ -11,9 +11,11 @@ class DockerContainer(object):
 
     def add_env(self, key, value):
         self.env[key] = value
+        return self
 
-    def expose_port(self, container, host):
+    def expose_port(self, container, host=None):
         self.ports[container] = host
+        return self
 
     def _configure(self):
         pass
@@ -23,7 +25,7 @@ class DockerContainer(object):
         self._container = self._docker.run(self.image,
                                            detach=True,
                                            environment=self.env,
-                                           #ports=self.ports,
+                                           ports=self.ports,
                                            publish_all_ports=True)
         return self
 

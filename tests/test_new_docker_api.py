@@ -1,6 +1,9 @@
 import docker
 from docker.models.containers import Container
 from docker.models.images import Image, ImageCollection
+from selenium import webdriver
+
+from testcontainers.core.container import DockerContainer
 
 
 class DockerCli(object):
@@ -37,12 +40,9 @@ class DockerCli(object):
             c.remove(force=True)
 
 
-cli = DockerCli()
+def test_docker():
+    container = DockerContainer("spirogov/video_service", "latest").expose_port(8086, 8086)
 
-container = cli.run("mysql:5.7",
-                    environment=["MYSQL_ROOT_PASSWORD=secret"],
-                    detach=True,
-                    name="mysql")
-
-print(container.logs())
-print(container.id)
+    with container:
+        driver = webdriver.Chrome(executable_path="/home/sergey/.wdm/chromedriver/2.28/chromedriver")
+        driver.get("http://localhost:8086")
