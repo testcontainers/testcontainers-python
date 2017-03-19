@@ -10,6 +10,7 @@ from testcontainers.postgres import PostgresContainer
 
 def test_docker_run_mysql():
     config = MySqlContainer(version='5.7.17')
+    config.expose_port(3306, None)
     with config as mysql:
         e = sqlalchemy.create_engine(mysql.get_connection_url())
         result = e.execute("select version()")

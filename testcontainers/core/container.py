@@ -23,7 +23,8 @@ class DockerContainer(object):
         self._container = self._docker.run(self.image,
                                            detach=True,
                                            environment=self.env,
-                                           ports=self.ports)
+                                           #ports=self.ports,
+                                           publish_all_ports=True)
         return self
 
     def stop(self):
