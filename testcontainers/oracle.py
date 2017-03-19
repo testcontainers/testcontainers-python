@@ -18,5 +18,3 @@ class OracleDbContainer(DbContainer):
 
     def _configure(self):
         self.add_env("ORACLE_ALLOW_REMOTE", "true")
-        self.expose_port(self.port, self.host_port)
-        self.expose_port(self.container_ssh_port, self.host_ssh_port)
