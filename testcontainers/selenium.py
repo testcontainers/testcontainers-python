@@ -27,6 +27,7 @@ def get_image_name(capabilities):
 
 
 class BrowserWebDriverContainer(DockerContainer):
+
     def __init__(self, capabilities, version="latest"):
         self.capabilities = capabilities
         self.image = get_image_name(capabilities)
