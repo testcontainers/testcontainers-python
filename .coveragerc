@@ -1,0 +1,10 @@
+[run]
+branch = True
+
+[report]
+exclude_lines =
+    pass
+    raise NoSuchElementException
+    raise NotImplementedError
+    if 0:
+    def __str__
