@@ -34,7 +34,7 @@ def test_docker_run_mariadb():
         e = sqlalchemy.create_engine(mariadb.get_connection_url())
         result = e.execute("select version()")
         for row in result:
-            assert row[0] == '10.1.21-MariaDB-1~jessie'
+            assert row[0] == '10.1.22-MariaDB-1~jessie'
 
 
 def test_docker_generic_db():
@@ -44,7 +44,7 @@ def test_docker_generic_db():
     with mongo_container:
         @wait_container_is_ready()
         def connect():
-            return MongoClient("mongodb://0.0.0.0:27017")
+            return MongoClient("mongodb://0.0.0.0:{}".format(mongo_container.get_exposed_port(27017)))
 
         db = connect().primer
         result = db.restaurants.insert_one(
