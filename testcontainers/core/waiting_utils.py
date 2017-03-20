@@ -12,21 +12,14 @@
 #    under the License.
 
 
-import logging
 from time import sleep
 
 import blindspin
 import crayons
 import wrapt
-from progressbar import AnimatedMarker
-from progressbar import BouncingBar
-from progressbar import FormatLabel
-from progressbar import ProgressBar
 
 from testcontainers.core import config
 from testcontainers.core.exceptions import TimeoutException
-
-pbar = ProgressBar(widgets=['Waiting for container to start: ', AnimatedMarker()])
 
 
 def wait_container_is_ready():
