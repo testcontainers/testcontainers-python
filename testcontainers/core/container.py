@@ -1,3 +1,7 @@
+import logging
+
+import crayons
+
 from testcontainers.core.docker_client import DockerClient
 
 
@@ -27,6 +31,8 @@ class DockerContainer(object):
                                            environment=self.env,
                                            ports=self.ports,
                                            publish_all_ports=True)
+        print("")
+        print("Container started: ", crayons.yellow(self._container.id,bold=True))
         return self
 
     def stop(self):

@@ -1,7 +1,0 @@
-pytest
-selenium
-docker
-progressbar2
-wrapt
-MySQL-python
-psycopg2

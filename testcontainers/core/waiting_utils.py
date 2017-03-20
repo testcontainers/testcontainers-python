@@ -15,6 +15,8 @@
 import logging
 from time import sleep
 
+import blindspin
+import crayons
 import wrapt
 from progressbar import AnimatedMarker
 from progressbar import BouncingBar
@@ -39,17 +41,19 @@ def wait_container_is_ready():
     @wrapt.decorator
     def wrapper(wrapped, instance, args, kwargs):
         exception = None
-        for _ in pbar(range(0, config.max_tries)):
-            try:
-                return wrapped(*args, **kwargs)
-            except Exception as e:
-                sleep(config.sleep_time)
-                exception = e
-        raise TimeoutException(
-            """Wait time exceeded {0} sec.
-                Method {1}, args {2} , kwargs {3}.
-                 Exception {4}""".format(config.max_tries,
-                                         wrapped.__name__,
-                                         args, kwargs, exception))
+        print(crayons.yellow("Waiting to be ready..."))
+        with blindspin.spinner():
+            for _ in range(0, config.max_tries):
+                try:
+                    return wrapped(*args, **kwargs)
+                except Exception as e:
+                    sleep(config.sleep_time)
+                    exception = e
+            raise TimeoutException(
+                """Wait time exceeded {0} sec.
+                    Method {1}, args {2} , kwargs {3}.
+                     Exception {4}""".format(config.max_tries,
+                                             wrapped.__name__,
+                                             args, kwargs, exception))
 
     return wrapper

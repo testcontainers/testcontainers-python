@@ -43,6 +43,8 @@ setuptools.setup(
         'wrapt',
         'pymysql',
         'sqlalchemy',
-        'psycopg2'
+        'psycopg2',
+        'crayons',
+        'blindspin'
     ],
 )

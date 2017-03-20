@@ -1,3 +1,0 @@
-# docs
-Sphinx==1.4.4
-sphinx_rtd_theme
