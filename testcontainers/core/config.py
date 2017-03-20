@@ -1,44 +1,20 @@
-import logging
+import os
 
-docker_base_url = 'unix://var/run/docker.sock'
-max_tries = 120
-sleep_time = 1
+import yaml
 
 
-class ContainerConfig(object):
-    def __init__(self, image_name, version, container_name):
-        self._host_ip = "localhost"
-        self._version = version
-        self.environment = {}
-        self.port_bindings = {}
-        self.volumes = {}
-        self.container_name = container_name
-        self.container_links = {}
-        self.image_name = image_name
+def get_env(env, default):
+    return os.environ.get(env, default)
 
-    def bind_ports(self, host, container):
-        if host:
-            self.port_bindings[host] = container
 
-    def link_containers(self, target, current):
-        self.container_links[target] = current
-        logging.warning("Container {} linked to {}".format(current, target))
+MAX_TRIES = int(get_env("TC_MAX_TRIES", 120))
+SLEEP_TIME = int(get_env("TC_POOLING_INTERVAL", 1))
 
-    def mount_volume(self, host, container):
-        self.volumes[host] = container
 
-    def add_env(self, key, value):
-        if key not in self.environment.keys():
-            self.environment[key] = value
-            logging.warning("Env variable {} set to {}".format(key, value))
-        else:
-            raise ValueError("Can't override {}. "
-                             "It has been initialized".format(key))
+class Configuration(object):
+    def __init__(self, filename="config.yml"):
+        with open(filename, 'r') as ymlfile:
+            self.cfg = yaml.load(ymlfile)
 
-    @property
-    def image(self):
-        return "{}:{}".format(self.image_name, self._version)
-
-    @property
-    def host_ip(self):
-        return self._host_ip
+    def get(self, section):
+        return self.cfg[section]

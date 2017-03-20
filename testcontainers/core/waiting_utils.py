@@ -36,16 +36,16 @@ def wait_container_is_ready():
         exception = None
         print(crayons.yellow("Waiting to be ready..."))
         with blindspin.spinner():
-            for _ in range(0, config.max_tries):
+            for _ in range(0, config.MAX_TRIES):
                 try:
                     return wrapped(*args, **kwargs)
                 except Exception as e:
-                    sleep(config.sleep_time)
+                    sleep(config.SLEEP_TIME)
                     exception = e
             raise TimeoutException(
                 """Wait time exceeded {0} sec.
                     Method {1}, args {2} , kwargs {3}.
-                     Exception {4}""".format(config.max_tries,
+                     Exception {4}""".format(config.MAX_TRIES,
                                              wrapped.__name__,
                                              args, kwargs, exception))
 
