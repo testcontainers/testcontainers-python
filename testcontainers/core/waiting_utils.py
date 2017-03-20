@@ -16,9 +16,15 @@ import logging
 from time import sleep
 
 import wrapt
+from progressbar import AnimatedMarker
+from progressbar import BouncingBar
+from progressbar import FormatLabel
+from progressbar import ProgressBar
 
 from testcontainers.core import config
 from testcontainers.core.exceptions import TimeoutException
+
+pbar = ProgressBar(widgets=['Waiting for container to start: ', AnimatedMarker()])
 
 
 def wait_container_is_ready():
@@ -33,9 +39,7 @@ def wait_container_is_ready():
     @wrapt.decorator
     def wrapper(wrapped, instance, args, kwargs):
         exception = None
-        logging.warning("Waiting for container to start")
-        for _ in range(0, config.max_tries):
-            print(".", end="")
+        for _ in pbar(range(0, config.max_tries)):
             try:
                 return wrapped(*args, **kwargs)
             except Exception as e:

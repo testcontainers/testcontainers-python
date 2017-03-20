@@ -1,6 +1,5 @@
 import pytest
 from selenium.webdriver import DesiredCapabilities
-
 from testcontainers.selenium import BrowserWebDriverContainer
 
 
