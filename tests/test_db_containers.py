@@ -42,7 +42,8 @@ def test_docker_generic_db():
     with mongo_container:
         @wait_container_is_ready()
         def connect():
-            return MongoClient("mongodb://0.0.0.0:{}".format(mongo_container.get_exposed_port(27017)))
+            return MongoClient("mongodb://{}:{}".format(mongo_container.get_container_host_ip(),
+                                                        mongo_container.get_exposed_port(27017)))
 
         db = connect().primer
         result = db.restaurants.insert_one(

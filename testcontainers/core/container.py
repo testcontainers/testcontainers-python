@@ -2,6 +2,7 @@ import blindspin
 import crayons
 
 from testcontainers.core.docker_client import DockerClient
+from testcontainers.core.utils import is_windows
 
 
 class DockerContainer(object):
@@ -47,7 +48,10 @@ class DockerContainer(object):
         self.stop()
 
     def get_container_host_ip(self) -> str:
-        return "0.0.0.0"
+        if is_windows():
+            return "localhost"
+        else:
+            return "0.0.0.0"
 
     def get_exposed_port(self, port) -> str:
         return self._docker.port(self._container.id, port)
