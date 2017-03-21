@@ -21,7 +21,6 @@ def test_docker_run_postgress():
     with postgres_container as postgres:
         e = sqlalchemy.create_engine(postgres.get_connection_url())
         result = e.execute("select version()")
-
         for row in result:
             print("server version:", row[0])
 
