@@ -8,7 +8,7 @@ from testcontainers.postgres import PostgresContainer
 
 
 def test_docker_run_mysql():
-    config = MySqlContainer(version='5.7.17')
+    config = MySqlContainer('mysql:5.7.17')
     with config as mysql:
         e = sqlalchemy.create_engine(mysql.get_connection_url())
         result = e.execute("select version()")
@@ -17,7 +17,7 @@ def test_docker_run_mysql():
 
 
 def test_docker_run_postgress():
-    postgres_container = PostgresContainer(version="9.5")
+    postgres_container = PostgresContainer("postgres:9.5")
     with postgres_container as postgres:
         e = sqlalchemy.create_engine(postgres.get_connection_url())
         result = e.execute("select version()")
@@ -27,7 +27,7 @@ def test_docker_run_postgress():
 
 
 def test_docker_run_mariadb():
-    mariadb_container = MariaDbContainer()
+    mariadb_container = MariaDbContainer("mariadb:latest")
     with mariadb_container as mariadb:
         e = sqlalchemy.create_engine(mariadb.get_connection_url())
         result = e.execute("select version()")
@@ -36,7 +36,7 @@ def test_docker_run_mariadb():
 
 
 def test_docker_generic_db():
-    mongo_container = DockerContainer("mongo", "latest")
+    mongo_container = DockerContainer("mongo:latest")
     mongo_container.expose_port(27017, 27017)
 
     with mongo_container:

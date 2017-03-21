@@ -17,8 +17,8 @@ from testcontainers.core.container import DockerContainer
 from testcontainers.core.waiting_utils import wait_container_is_ready
 
 IMAGES = {
-    "firefox": "selenium/standalone-firefox-debug",
-    "chrome": "selenium/standalone-chrome-debug"
+    "firefox": "selenium/standalone-firefox-debug:latest",
+    "chrome": "selenium/standalone-chrome-debug:latest"
 }
 
 
@@ -27,13 +27,13 @@ def get_image_name(capabilities):
 
 
 class BrowserWebDriverContainer(DockerContainer):
-
-    def __init__(self, capabilities, version="latest"):
+    def __init__(self, capabilities, image=None):
         self.capabilities = capabilities
-        self.image = get_image_name(capabilities)
+        if not image:
+            self.image = get_image_name(capabilities)
         self.host_port = 4444
         self.host_vnc_port = 5900
-        super(BrowserWebDriverContainer, self).__init__(image=self.image, version=version)
+        super(BrowserWebDriverContainer, self).__init__(image=self.image)
 
     def _configure(self):
         self.add_env("no_proxy", "localhost")
@@ -47,10 +47,16 @@ class BrowserWebDriverContainer(DockerContainer):
             command_executor=(self.get_connection_url()),
             desired_capabilities=self.capabilities)
 
-    def get_driver(self) -> WebDriver:
-        return self._connect()
+    def get_driver(self) ->
 
-    def get_connection_url(self) -> str:
-        ip = self.get_container_host_ip()
-        port = self.get_exposed_port(self.host_port)
-        return 'http://{}:{}/wd/hub'.format(ip, port)
+    WebDriver:
+    return self._connect()
+
+
+def get_connection_url(self) ->
+
+
+str:
+ip = self.get_container_host_ip()
+port = self.get_exposed_port(self.host_port)
+return 'http://{}:{}/wd/hub'.format(ip, port)

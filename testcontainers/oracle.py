@@ -2,9 +2,8 @@ from testcontainers.core.generic import DbContainer
 
 
 class OracleDbContainer(DbContainer):
-    def __init__(self, image="wnameless/oracle-xe-11g", version="latest"):
+    def __init__(self, image="wnameless/oracle-xe-11g:latest"):
         super(OracleDbContainer, self).__init__(image=image,
-                                                version=version,
                                                 username="system",
                                                 password="oracle",
                                                 db_name="xe",

@@ -15,9 +15,8 @@ from testcontainers.core.generic import DbContainer
 
 
 class PostgresContainer(DbContainer):
-    def __init__(self, image="postgres", version="latest"):
+    def __init__(self, image="postgres:latest"):
         super(PostgresContainer, self).__init__(image=image,
-                                                version=version,
                                                 dialect="postgresql+psycopg2",
                                                 username="test",
                                                 password="test",

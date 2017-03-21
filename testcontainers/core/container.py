@@ -1,16 +1,14 @@
-import logging
-
 import crayons
 
 from testcontainers.core.docker_client import DockerClient
 
 
 class DockerContainer(object):
-    def __init__(self, image, version):
+    def __init__(self, image):
         self.env = {}
         self.ports = {}
         self._docker = DockerClient()
-        self.image = "{}:{}".format(image, version)
+        self.image = image
         self._container = None
 
     def add_env(self, key, value):

@@ -14,9 +14,8 @@ from testcontainers.core.generic import DbContainer
 
 
 class MySqlContainer(DbContainer):
-    def __init__(self, image="mysql", version="latest"):
+    def __init__(self, image="mysql:latest"):
         super(MySqlContainer, self).__init__(image,
-                                             version,
                                              dialect="mysql+pymysql",
                                              username="test",
                                              password="test",
@@ -33,5 +32,5 @@ class MySqlContainer(DbContainer):
 
 
 class MariaDbContainer(MySqlContainer):
-    def __init__(self, image="mariadb", version="latest"):
-        super(MariaDbContainer, self).__init__(image, version)
+    def __init__(self, image="mariadb:latest"):
+        super(MariaDbContainer, self).__init__(image)

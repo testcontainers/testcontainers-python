@@ -17,13 +17,12 @@ from testcontainers.core.waiting_utils import wait_container_is_ready
 
 
 class DbContainer(DockerContainer):
-    def __init__(self, image, version, dialect,
+    def __init__(self, image, dialect,
                  username,
                  password,
                  port,
                  db_name):
-        super(DbContainer, self).__init__(image,
-                                          version)
+        super(DbContainer, self).__init__(image)
         self.dialect = dialect
         self.username = username
         self.password = password
