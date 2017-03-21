@@ -27,7 +27,7 @@ class DockerContainer(object):
     def start(self):
         self._configure()
         print("")
-        print(crayons.yellow("Pulling an image {}".format(self.image)))
+        print("{} {}".format(crayons.yellow("Pulling image"), crayons.red(self.image)))
         with blindspin.spinner():
             self._container = self._docker.run(self.image,
                                                detach=True,
