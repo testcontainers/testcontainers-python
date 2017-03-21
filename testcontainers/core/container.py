@@ -1,3 +1,4 @@
+import blindspin
 import crayons
 
 from testcontainers.core.docker_client import DockerClient
@@ -24,13 +25,16 @@ class DockerContainer(object):
 
     def start(self):
         self._configure()
-        self._container = self._docker.run(self.image,
-                                           detach=True,
-                                           environment=self.env,
-                                           ports=self.ports,
-                                           publish_all_ports=True)
         print("")
-        print("Container started: ", crayons.yellow(self._container.id,bold=True))
+        print(crayons.yellow("Pulling an image {}".format(self.image)))
+        with blindspin.spinner():
+            self._container = self._docker.run(self.image,
+                                               detach=True,
+                                               environment=self.env,
+                                               ports=self.ports,
+                                               publish_all_ports=True)
+        print("")
+        print("Container started: ", crayons.yellow(self._container.id, bold=True))
         return self
 
     def stop(self):

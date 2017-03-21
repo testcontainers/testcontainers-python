@@ -38,8 +38,6 @@ class BrowserWebDriverContainer(DockerContainer):
     def _configure(self):
         self.add_env("no_proxy", "localhost")
         self.add_env("HUB_ENV_no_proxy", "localhost")
-        self.expose_port(4444, self.host_port)
-        self.expose_port(5900, self.host_vnc_port)
 
     @wait_container_is_ready()
     def _connect(self):
@@ -49,7 +47,6 @@ class BrowserWebDriverContainer(DockerContainer):
 
     def get_driver(self) -> WebDriver:
         return self._connect()
-
 
     def get_connection_url(self) -> str:
         ip = self.get_container_host_ip()
