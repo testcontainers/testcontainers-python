@@ -1,5 +1,7 @@
 [run]
 branch = True
+omit =
+    oracle.py
 
 [report]
 exclude_lines =
