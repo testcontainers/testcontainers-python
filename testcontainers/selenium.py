@@ -47,16 +47,11 @@ class BrowserWebDriverContainer(DockerContainer):
             command_executor=(self.get_connection_url()),
             desired_capabilities=self.capabilities)
 
-    def get_driver(self) ->
-
-    WebDriver:
-    return self._connect()
+    def get_driver(self) -> WebDriver:
+        return self._connect()
 
 
-def get_connection_url(self) ->
-
-
-str:
-ip = self.get_container_host_ip()
-port = self.get_exposed_port(self.host_port)
-return 'http://{}:{}/wd/hub'.format(ip, port)
+    def get_connection_url(self) -> str:
+        ip = self.get_container_host_ip()
+        port = self.get_exposed_port(self.host_port)
+        return 'http://{}:{}/wd/hub'.format(ip, port)
