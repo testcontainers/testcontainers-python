@@ -45,6 +45,7 @@ setuptools.setup(
         'sqlalchemy',
         'psycopg2',
         'crayons',
-        'blindspin'
+        'blindspin',
+        'pymysql'
     ],
 )
