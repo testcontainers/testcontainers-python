@@ -9,13 +9,15 @@ from testcontainers.core.generic import GenericContainer
 
 from importlib import reload
 
+
 def setup_module(m):
     os.environ["MYSQL_USER"] = "demo"
     os.environ["MYSQL_DATABASE"] = "custom_db"
 
 
 def test_docker_custom_image():
-    container = GenericContainer("spirogov/video_service:latest").bind_ports(8086, 8086)
+    container = GenericContainer("spirogov/video_service:latest")
+    container.bind_ports(8086, 8086)
 
     with container:
         driver = webdriver.Chrome(ChromeDriverManager().install())
@@ -29,7 +31,6 @@ def test_docker_env_variables():
 
     db = mysql.MySqlContainer()
     db.bind_ports(3306, 32785)
-    print(db.MYSQL_USER, db.MYSQL_DATABASE)
     with db:
         url = db.get_connection_url()
         assert url == 'mysql+pymysql://demo:test@0.0.0.0:32785/custom_db'

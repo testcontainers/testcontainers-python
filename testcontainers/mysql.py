@@ -32,11 +32,11 @@ class MySqlContainer(DbContainer):
         self.add_env("MYSQL_PASSWORD", self.MYSQL_PASSWORD)
 
     def get_connection_url(self):
-        return super().create_connection_url(dialect="mysql+pymysql",
-                                             username=self.MYSQL_USER,
-                                             password=self.MYSQL_PASSWORD,
-                                             db_name=self.MYSQL_DATABASE,
-                                             port=self.port_to_expose)
+        return super()._create_connection_url(dialect="mysql+pymysql",
+                                              username=self.MYSQL_USER,
+                                              password=self.MYSQL_PASSWORD,
+                                              db_name=self.MYSQL_DATABASE,
+                                              port=self.port_to_expose)
 
 
 class MariaDbContainer(MySqlContainer):
