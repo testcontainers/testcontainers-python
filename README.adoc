@@ -3,6 +3,8 @@
 
 = testcontainers-python
 
+![testcontainer](http://robertwdempsey.com/wp-content/uploads/2015/10/docker-python.png)
+
 Python port for testcontainers-java that allows using docker containers for functional and/or integration testing.
 
 Testcontainers-python provides capabilities to spin up a docker containers for test purposes would that be a database, Selenium web browser or any other cotainer.
