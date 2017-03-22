@@ -10,12 +10,12 @@ Testcontainers-python provides capabilities to spin up a docker containers for t
 
 Currently available features:
 
-- Selenium Grid containers
-- Selenium Standalone containers
-- MySql Db container
-- MariaDb container
-- PostgreSQL Db container
-- Generic docker containers
+* Selenium Grid containers
+* Selenium Standalone containers
+* MySql Db container
+* MariaDb container
+* PostgreSQL Db container
+* Generic docker containers
 
 For full documentation read:
 
