@@ -1,8 +1,8 @@
-= testcontainers-python
+testcontainers-python
 
 ![testcontainer](http://robertwdempsey.com/wp-content/uploads/2015/10/docker-python.png)
 
-[![PyPI](https://img.shields.io/pypi/v/testcontainers-python.svg?style=flat-square)](https://pypi.python.org/pypi/testcontainers)
+[![PyPI](https://img.shields.io/pypi/v/testcontainers-python.svg?style=flat-square)](https://pypi.python.org/pypi/testcontainers-python)
 
 Python port for testcontainers-java that allows using docker containers for functional and/or integration testing.
 
