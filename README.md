@@ -2,9 +2,7 @@
 
 ![testcontainer](http://robertwdempsey.com/wp-content/uploads/2015/10/docker-python.png)
 
-[![Build Status](https://travis-ci.org/SergeyPirogov/testcontainers-python.svg?branch=master)](https://travis-ci.org/SergeyPirogov/testcontainers-python)
-
-[![PyPI](https://img.shields.io/pypi/v/testcontainers.svg?style=flat-square)](https://pypi.python.org/pypi/testcontainers)
+[![Build Status](https://travis-ci.org/SergeyPirogov/testcontainers-python.svg?branch=master)](https://travis-ci.org/SergeyPirogov/testcontainers-python) [![PyPI](https://img.shields.io/pypi/v/testcontainers.svg?style=flat-square)](https://pypi.python.org/pypi/testcontainers)
 
 
 
