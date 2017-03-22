@@ -1,6 +1,8 @@
-= python-testcontainers
+= testcontainers-python
 
-python-testcontainers provides capabilities to spin up a docker containers for test purposes would that be a database, Selenium web browser or any other cotainer.
+Python port for testcontainers-java that allows using docker containers for functional and/or integration testing.
+
+Testcontainers-python provides capabilities to spin up a docker containers for test purposes would that be a database, Selenium web browser or any other cotainer.
 
 Currently available features:
 
@@ -9,6 +11,7 @@ Currently available features:
 - MySql Db container
 - MariaDb container
 - PostgreSQL Db container
+- Generic docker containers
 
 For full documentation read:
 
