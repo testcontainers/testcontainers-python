@@ -55,3 +55,8 @@ class DbContainer(DockerContainer):
 
     def _configure(self):
         raise NotImplementedError
+
+
+class GenericContainer(DockerContainer):
+    def __init__(self, image):
+        super(GenericContainer, self).__init__(image)

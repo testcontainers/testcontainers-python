@@ -1,11 +1,11 @@
 from selenium import webdriver
 from webdriver_manager.chrome import ChromeDriverManager
 
-from testcontainers.core.container import DockerContainer
+from testcontainers.core.generic import GenericContainer
 
 
 def test_docker_custom_image():
-    container = DockerContainer("spirogov/video_service:latest").expose_port(8086, 8086)
+    container = GenericContainer("spirogov/video_service:latest").expose_port(8086, 8086)
 
     with container:
         driver = webdriver.Chrome(ChromeDriverManager().install())

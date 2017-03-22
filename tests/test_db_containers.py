@@ -2,6 +2,7 @@ import sqlalchemy
 from pymongo import MongoClient
 
 from testcontainers.core.container import DockerContainer
+from testcontainers.core.generic import GenericContainer
 from testcontainers.core.waiting_utils import wait_container_is_ready
 from testcontainers.mysql import MySqlContainer, MariaDbContainer
 from testcontainers.postgres import PostgresContainer
@@ -35,7 +36,7 @@ def test_docker_run_mariadb():
 
 
 def test_docker_generic_db():
-    mongo_container = DockerContainer("mongo:latest")
+    mongo_container = GenericContainer("mongo:latest")
     mongo_container.expose_port(27017, 27017)
 
     with mongo_container:
