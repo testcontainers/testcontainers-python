@@ -10,25 +10,31 @@
 #    WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the
 #    License for the specific language governing permissions and limitations
 #    under the License.
+from os import environ
+
 from testcontainers.core.generic import DbContainer
 
 
 class MySqlContainer(DbContainer):
+
+    MYSQL_ROOT_PASSWORD = environ.get("MYSQL_ROOT_PASSWORD", "test")
+    MYSQL_DATABASE = environ.get("MYSQL_DATABASE", "test")
+    MYSQL_USER = environ.get("MYSQL_USER", "test")
+    MYSQL_PASSWORD = environ.get("MYSQL_PASSWORD", "test")
+
     def __init__(self, image="mysql:latest"):
         super(MySqlContainer, self).__init__(image,
                                              dialect="mysql+pymysql",
-                                             username="test",
-                                             password="test",
+                                             username=self.MYSQL_ROOT_PASSWORD,
+                                             password=self.MYSQL_PASSWORD,
                                              port=3306,
-                                             db_name="test")
-        self.root_password = "test"
-        self.host_port = 3306
+                                             db_name=self.MYSQL_DATABASE)
 
     def _configure(self):
-        self.add_env("MYSQL_ROOT_PASSWORD", self.root_password)
-        self.add_env("MYSQL_DATABASE", self.db_name)
-        self.add_env("MYSQL_USER", self.username)
-        self.add_env("MYSQL_PASSWORD", self.password)
+        self.add_env("MYSQL_ROOT_PASSWORD", self.MYSQL_ROOT_PASSWORD)
+        self.add_env("MYSQL_DATABASE", self.MYSQL_DATABASE)
+        self.add_env("MYSQL_USER", self.MYSQL_USER)
+        self.add_env("MYSQL_PASSWORD", self.MYSQL_PASSWORD)
 
 
 class MariaDbContainer(MySqlContainer):
