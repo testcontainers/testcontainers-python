@@ -1,3 +1,6 @@
+![testcontainer](http://robertwdempsey.com/wp-content/uploads/2015/10/docker-python.png)
+
+
 = testcontainers-python
 
 Python port for testcontainers-java that allows using docker containers for functional and/or integration testing.
