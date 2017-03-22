@@ -20,7 +20,7 @@ class DockerContainer(object):
         self.env[key] = value
         return self
 
-    def expose_port(self, container, host=None):
+    def bind_ports(self, container, host=None):
         self.ports[container] = host
         return self
 

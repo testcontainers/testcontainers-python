@@ -37,7 +37,7 @@ def test_docker_run_mariadb():
 
 def test_docker_generic_db():
     mongo_container = GenericContainer("mongo:latest")
-    mongo_container.expose_port(27017, 27017)
+    mongo_container.bind_ports(27017, 27017)
 
     with mongo_container:
         @wait_container_is_ready()

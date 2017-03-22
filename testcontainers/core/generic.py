@@ -17,17 +17,8 @@ from testcontainers.core.waiting_utils import wait_container_is_ready
 
 
 class DbContainer(DockerContainer):
-    def __init__(self, image, dialect,
-                 username,
-                 password,
-                 port,
-                 db_name):
+    def __init__(self, image):
         super(DbContainer, self).__init__(image)
-        self.dialect = dialect
-        self.username = username
-        self.password = password
-        self.port = port
-        self.db_name = db_name
 
     @wait_container_is_ready()
     def _connect(self):
@@ -39,14 +30,17 @@ class DbContainer(DockerContainer):
         engine.connect()
 
     def get_connection_url(self):
+        raise NotImplementedError
+
+    def create_connection_url(self, dialect, username, password, port, db_name):
         return "{dialect}://{username}" \
                ":{password}@{host}:" \
-               "{port}/{db}".format(dialect=self.dialect,
-                                    username=self.username,
-                                    password=self.password,
+               "{port}/{db}".format(dialect=dialect,
+                                    username=username,
+                                    password=password,
                                     host=self.get_container_host_ip(),
-                                    port=self.get_exposed_port(self.port),
-                                    db=self.db_name)
+                                    port=self.get_exposed_port(port),
+                                    db=db_name)
 
     def start(self):
         super().start()
