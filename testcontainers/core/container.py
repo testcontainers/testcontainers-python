@@ -1,7 +1,9 @@
 import blindspin
 import crayons
+from docker.models.containers import Container
 
 from testcontainers.core.docker_client import DockerClient
+from testcontainers.core.exceptions import ContainerStartException
 from testcontainers.core.utils import is_windows
 
 
@@ -12,6 +14,7 @@ class DockerContainer(object):
         self._docker = DockerClient()
         self.image = image
         self._container = None
+        self._command = None
 
     def add_env(self, key, value):
         self.env[key] = value
@@ -29,17 +32,18 @@ class DockerContainer(object):
         print("")
         print("{} {}".format(crayons.yellow("Pulling image"), crayons.red(self.image)))
         with blindspin.spinner():
-            self._container = self._docker.run(self.image,
-                                               detach=True,
-                                               environment=self.env,
-                                               ports=self.ports,
-                                               publish_all_ports=True)
+            self._container = self.get_docker_client().run(self.image,
+                                                           command=self._command,
+                                                           detach=True,
+                                                           environment=self.env,
+                                                           ports=self.ports,
+                                                           publish_all_ports=True)
         print("")
-        print("Container started: ", crayons.yellow(self._container.id, bold=True))
+        print("Container started: ", crayons.yellow(self._container.short_id, bold=True))
         return self
 
     def stop(self):
-        self._container.remove(force=True)
+        self.get_wrapped_contaner().remove(force=True)
 
     def __enter__(self):
         return self.start()
@@ -54,4 +58,18 @@ class DockerContainer(object):
             return "0.0.0.0"
 
     def get_exposed_port(self, port) -> str:
-        return self._docker.port(self._container.id, port)
+        return self.get_docker_client().port(self._container.id, port)
+
+    def with_command(self, command):
+        self._command = command
+
+    def get_wrapped_contaner(self) -> Container:
+        return self._container
+
+    def get_docker_client(self) -> DockerClient:
+        return self._docker
+
+    def exec(self, command):
+        if not self._container:
+            raise ContainerStartException("Container should be started before")
+        return self.get_wrapped_contaner().exec_run(command)
