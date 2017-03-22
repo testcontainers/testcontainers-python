@@ -40,14 +40,11 @@ Allows to spin up docker database images such as MySQL, PostgreSQL, MariaDB and 
 MySQL example
 -------------
 
-    def test_docker_run_mysql():
         config = MySqlContainer('mysql:5.7.17')
         with config as mysql:
             e = sqlalchemy.create_engine(mysql.get_connection_url())
             result = e.execute("select version()")
-            for row in result:
-                assert row[0] == '5.7.17'
-
+            
 It will spin up MySQL version 5.7. Then you can connect to database using ``get_connection_url()`` method which returns sqlalchemy compatible url in format ``dialect+driver://username:password@host:port/database``.
 
 PostgresSQL
@@ -55,14 +52,11 @@ PostgresSQL
 
 Example of PostgresSQL database usage:
 
-    def test_docker_run_postgress():
         postgres_container = PostgresContainer("postgres:9.5")
         with postgres_container as postgres:
             e = sqlalchemy.create_engine(postgres.get_connection_url())
             result = e.execute("select version()")
-            for row in result:
-                print("server version:", row[0])
-
+            
 Connection set by using raw python ``psycopg2`` driver for Postgres.
 
 MariaDB
@@ -70,13 +64,10 @@ MariaDB
 
 Maria DB is a fork of MySQL database, so the only difference with MySQL is the name of Docker container.
 
-    def test_docker_run_mariadb():
         mariadb_container = MariaDbContainer("mariadb:latest")
         with mariadb_container as mariadb:
             e = sqlalchemy.create_engine(mariadb.get_connection_url())
             result = e.execute("select version()")
-            for row in result:
-                assert row[0] == '10.1.22-MariaDB-1~jessie'
                 
 Oracle XE
 ---------
@@ -104,7 +95,6 @@ Generally you are able to run any database container, but you need to configure 
 
 Mongo example:
 
-    def test_docker_generic_db():
         mongo_container = DockerContainer("mongo:latest")
         mongo_container.expose_port(27017, 27017)
 
