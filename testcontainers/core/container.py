@@ -40,6 +40,7 @@ class DockerContainer(object):
                                                            ports=self.ports,
                                                            publish_all_ports=True,
                                                            name=self._name)
+                                                           publish_all_ports=True)
         print("")
         print("Container started: ", crayons.yellow(self._container.short_id, bold=True))
         return self
