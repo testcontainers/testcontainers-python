@@ -32,7 +32,7 @@ def test_docker_env_variables():
     reload(mysql)
 
     db = mysql.MySqlContainer()
-    db.bind_ports(3306, 32785)
+    db.with_bind_ports(3306, 32785)
     with db:
         url = db.get_connection_url()
         assert url == 'mysql+pymysql://demo:test@0.0.0.0:32785/custom_db'
