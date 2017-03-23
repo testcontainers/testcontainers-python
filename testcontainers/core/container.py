@@ -15,6 +15,7 @@ class DockerContainer(object):
         self.image = image
         self._container = None
         self._command = None
+        self._name = None
 
     def add_env(self, key, value):
         self.env[key] = value
@@ -37,7 +38,8 @@ class DockerContainer(object):
                                                            detach=True,
                                                            environment=self.env,
                                                            ports=self.ports,
-                                                           publish_all_ports=True)
+                                                           publish_all_ports=True,
+                                                           name=self._name)
         print("")
         print("Container started: ", crayons.yellow(self._container.short_id, bold=True))
         return self
@@ -62,6 +64,11 @@ class DockerContainer(object):
 
     def with_command(self, command):
         self._command = command
+        return self
+
+    def with_name(self, name):
+        self._name = name
+        return self
 
     def get_wrapped_contaner(self) -> Container:
         return self._container
