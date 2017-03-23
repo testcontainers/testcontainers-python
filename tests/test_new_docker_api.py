@@ -18,6 +18,7 @@ def setup_module(m):
 def test_docker_custom_image():
     container = GenericContainer("spirogov/video_service:latest")
     container.bind_ports(8086, 8086)
+    container.with_name("video_service")
 
     with container:
         driver = webdriver.Chrome(ChromeDriverManager().install())
