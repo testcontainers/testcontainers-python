@@ -31,9 +31,10 @@ class BrowserWebDriverContainer(DockerContainer):
         self.capabilities = capabilities
         if not image:
             self.image = get_image_name(capabilities)
-        self.host_port = 4444
-        self.host_vnc_port = 5900
+        self.port_to_expose = 4444
+        self.vnc_port_to_expose = 5900
         super(BrowserWebDriverContainer, self).__init__(image=self.image)
+        self.with_exposed_ports(self.port_to_expose, self.vnc_port_to_expose)
 
     def _configure(self):
         self.add_env("no_proxy", "localhost")
@@ -50,5 +51,5 @@ class BrowserWebDriverContainer(DockerContainer):
 
     def get_connection_url(self) -> str:
         ip = self.get_container_host_ip()
-        port = self.get_exposed_port(self.host_port)
+        port = self.get_exposed_port(self.port_to_expose)
         return 'http://{}:{}/wd/hub'.format(ip, port)

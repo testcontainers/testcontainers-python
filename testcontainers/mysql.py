@@ -24,6 +24,7 @@ class MySqlContainer(DbContainer):
     def __init__(self, image="mysql:latest"):
         super(MySqlContainer, self).__init__(image)
         self.port_to_expose = 3306
+        self.with_exposed_ports(self.port_to_expose)
 
     def _configure(self):
         self.add_env("MYSQL_ROOT_PASSWORD", self.MYSQL_ROOT_PASSWORD)

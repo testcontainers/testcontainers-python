@@ -23,6 +23,7 @@ class PostgresContainer(DbContainer):
     def __init__(self, image="postgres:latest"):
         super(PostgresContainer, self).__init__(image=image)
         self.port_to_expose = 5432
+        self.with_exposed_ports(self.port_to_expose)
 
     def _configure(self):
         self.add_env("POSTGRES_USER", self.POSTGRES_USER)

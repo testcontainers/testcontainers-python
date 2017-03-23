@@ -17,8 +17,9 @@ def setup_module(m):
 
 def test_docker_custom_image():
     container = GenericContainer("spirogov/video_service:latest")
-    container.with_bind_ports(8086, 8086)
-    #container.with_name("video_service")
+    #container.with_bind_ports(8086, 8086)
+    container.with_exposed_ports(8086, 80)
+    # container.with_name("video_service")
     container.with_volume_mapping("/Users/sepi/auto_env", "/root/video", mode='rw')
 
     with container:

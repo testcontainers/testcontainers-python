@@ -26,6 +26,11 @@ class DockerContainer(object):
         self.ports[container] = host
         return self
 
+    def with_exposed_ports(self, *ports) -> 'DockerContainer':
+        for port in list(ports):
+            self.ports[port] = None
+        return self
+
     def _configure(self):
         pass
 
@@ -39,7 +44,6 @@ class DockerContainer(object):
                                                            detach=True,
                                                            environment=self.env,
                                                            ports=self.ports,
-                                                           publish_all_ports=True,
                                                            name=self._name,
                                                            volumes=self.volumes)
         print("")
