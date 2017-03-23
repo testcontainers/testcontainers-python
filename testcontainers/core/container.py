@@ -11,8 +11,9 @@ class DockerContainer(object):
     def __init__(self, image):
         self.env = {}
         self.ports = {}
-        self._docker = DockerClient()
+        self.volumes = {}
         self.image = image
+        self._docker = DockerClient()
         self._container = None
         self._command = None
         self._name = None
@@ -21,7 +22,7 @@ class DockerContainer(object):
         self.env[key] = value
         return self
 
-    def bind_ports(self, container, host=None):
+    def with_bind_ports(self, container, host=None):
         self.ports[container] = host
         return self
 
@@ -39,7 +40,8 @@ class DockerContainer(object):
                                                            environment=self.env,
                                                            ports=self.ports,
                                                            publish_all_ports=True,
-                                                           name=self._name)
+                                                           name=self._name,
+                                                           volumes=self.volumes)
         print("")
         print("Container started: ", crayons.yellow(self._container.short_id, bold=True))
         return self
@@ -69,6 +71,11 @@ class DockerContainer(object):
     def with_name(self, name):
         self._name = name
         return self
+
+    def with_volume_mapping(self, host, container, mode='ro'):
+        # '/home/user1/': {'bind': '/mnt/vol2', 'mode': 'rw'}
+        mapping = {'bind': container, 'mode': mode}
+        self.volumes[host] = mapping
 
     def get_wrapped_contaner(self) -> Container:
         return self._container
