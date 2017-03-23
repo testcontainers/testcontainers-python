@@ -30,8 +30,8 @@ class PostgresContainer(DbContainer):
         self.add_env("POSTGRES_DB", self.POSTGRES_DB)
 
     def get_connection_url(self):
-        super()._create_connection_url(dialect="postgresql+psycopg2",
-                                       username=self.POSTGRES_USER,
-                                       password=self.POSTGRES_PASSWORD,
-                                       db_name=self.POSTGRES_DB,
-                                       port=self.port_to_expose)
+        return super()._create_connection_url(dialect="postgresql+psycopg2",
+                                              username=self.POSTGRES_USER,
+                                              password=self.POSTGRES_PASSWORD,
+                                              db_name=self.POSTGRES_DB,
+                                              port=self.port_to_expose)
