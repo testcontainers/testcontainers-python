@@ -66,7 +66,6 @@ Submit release to PYPI
 
 Steps::
 
-    python setup.py bdist_wheel register
-    python setup.py bdist_wheel upload
+    twine dist/* upload
 
 
