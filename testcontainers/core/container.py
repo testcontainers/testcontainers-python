@@ -18,11 +18,11 @@ class DockerContainer(object):
         self._command = None
         self._name = None
 
-    def add_env(self, key, value):
+    def add_env(self, key: str, value: str) -> 'DockerContainer':
         self.env[key] = value
         return self
 
-    def with_bind_ports(self, container, host=None):
+    def with_bind_ports(self, container: int, host: int = None) -> 'DockerContainer':
         self.ports[container] = host
         return self
 
@@ -31,11 +31,7 @@ class DockerContainer(object):
             self.ports[port] = None
         return self
 
-    def _configure(self):
-        pass
-
     def start(self):
-        self._configure()
         print("")
         print("{} {}".format(crayons.yellow("Pulling image"), crayons.red(self.image)))
         with blindspin.spinner():
@@ -68,18 +64,19 @@ class DockerContainer(object):
     def get_exposed_port(self, port) -> str:
         return self.get_docker_client().port(self._container.id, port)
 
-    def with_command(self, command):
+    def with_command(self, command: str) -> 'DockerContainer':
         self._command = command
         return self
 
-    def with_name(self, name):
+    def with_name(self, name: str) -> 'DockerContainer':
         self._name = name
         return self
 
-    def with_volume_mapping(self, host, container, mode='ro'):
+    def with_volume_mapping(self, host: str, container: str, mode: str = 'ro') -> 'DockerContainer':
         # '/home/user1/': {'bind': '/mnt/vol2', 'mode': 'rw'}
         mapping = {'bind': container, 'mode': mode}
         self.volumes[host] = mapping
+        return self
 
     def get_wrapped_contaner(self) -> Container:
         return self._container
