@@ -27,10 +27,10 @@ class MySqlContainer(DbContainer):
         self.with_exposed_ports(self.port_to_expose)
 
     def _configure(self):
-        self.add_env("MYSQL_ROOT_PASSWORD", self.MYSQL_ROOT_PASSWORD)
-        self.add_env("MYSQL_DATABASE", self.MYSQL_DATABASE)
-        self.add_env("MYSQL_USER", self.MYSQL_USER)
-        self.add_env("MYSQL_PASSWORD", self.MYSQL_PASSWORD)
+        self.with_env("MYSQL_ROOT_PASSWORD", self.MYSQL_ROOT_PASSWORD)
+        self.with_env("MYSQL_DATABASE", self.MYSQL_DATABASE)
+        self.with_env("MYSQL_USER", self.MYSQL_USER)
+        self.with_env("MYSQL_PASSWORD", self.MYSQL_PASSWORD)
 
     def get_connection_url(self):
         return super()._create_connection_url(dialect="mysql+pymysql",

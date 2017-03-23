@@ -37,8 +37,8 @@ class BrowserWebDriverContainer(DockerContainer):
         self.with_exposed_ports(self.port_to_expose, self.vnc_port_to_expose)
 
     def _configure(self):
-        self.add_env("no_proxy", "localhost")
-        self.add_env("HUB_ENV_no_proxy", "localhost")
+        self.with_env("no_proxy", "localhost")
+        self.with_env("HUB_ENV_no_proxy", "localhost")
 
     @wait_container_is_ready()
     def _connect(self):

@@ -26,9 +26,9 @@ class PostgresContainer(DbContainer):
         self.with_exposed_ports(self.port_to_expose)
 
     def _configure(self):
-        self.add_env("POSTGRES_USER", self.POSTGRES_USER)
-        self.add_env("POSTGRES_PASSWORD", self.POSTGRES_PASSWORD)
-        self.add_env("POSTGRES_DB", self.POSTGRES_DB)
+        self.with_env("POSTGRES_USER", self.POSTGRES_USER)
+        self.with_env("POSTGRES_PASSWORD", self.POSTGRES_PASSWORD)
+        self.with_env("POSTGRES_DB", self.POSTGRES_DB)
 
     def get_connection_url(self):
         return super()._create_connection_url(dialect="postgresql+psycopg2",

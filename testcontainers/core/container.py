@@ -18,7 +18,7 @@ class DockerContainer(object):
         self._command = None
         self._name = None
 
-    def add_env(self, key: str, value: str) -> 'DockerContainer':
+    def with_env(self, key: str, value: str) -> 'DockerContainer':
         self.env[key] = value
         return self
 
@@ -46,8 +46,8 @@ class DockerContainer(object):
         print("Container started: ", crayons.yellow(self._container.short_id, bold=True))
         return self
 
-    def stop(self):
-        self.get_wrapped_contaner().remove(force=True)
+    def stop(self, force=True):
+        self.get_wrapped_contaner().remove(force=force)
 
     def __enter__(self):
         return self.start()

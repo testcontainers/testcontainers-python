@@ -9,7 +9,7 @@ from testcontainers.postgres import PostgresContainer
 
 
 def test_docker_run_mysql():
-    config = MySqlContainer('mysql:5.7.17').with_bind_ports(3306, 3306)
+    config = MySqlContainer('mysql:5.7.17')
     with config as mysql:
         e = sqlalchemy.create_engine(mysql.get_connection_url())
         result = e.execute("select version()")
@@ -37,7 +37,7 @@ def test_docker_run_mariadb():
 
 def test_docker_generic_db():
     mongo_container = GenericContainer("mongo:latest")
-    mongo_container.bind_ports(27017, 27017)
+    mongo_container.with_bind_ports(27017, 27017)
 
     with mongo_container:
         @wait_container_is_ready()

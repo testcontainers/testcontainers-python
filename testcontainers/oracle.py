@@ -16,4 +16,4 @@ class OracleDbContainer(DbContainer):
         self.dialect = "oracle"
 
     def _configure(self):
-        self.add_env("ORACLE_ALLOW_REMOTE", "true")
+        self.with_env("ORACLE_ALLOW_REMOTE", "true")
