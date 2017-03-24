@@ -3,8 +3,8 @@ Selenium containers
 
 Allows to spin up Selenium Grid and Selenium standalone containers
 
-Selenium Standalone example:
-----------------------------
+Selenium Standalone:
+-------------------
 
 Using BrowserWebDriverContainer you can spin up standalone containers either with Chrome or Firefox browser.
 
