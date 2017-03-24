@@ -4,6 +4,7 @@
    contain the root `toctree` directive.
 
 Welcome to python-testcontainers's documentation!
+=================================================
 
 Overview
 --------
@@ -17,6 +18,20 @@ Currently available features:
 - MySql db container
 - PostgreSQL db container
 - Generic Docker containers
+
+Installation
+------------
+
+The testcontainers module is available from PyPi at:
+
+https://pypi.python.org/pypi/testcontainers
+and can be installed using pip.
+
+::
+
+   pip install testcontainers
+
+
 
 Documentation
 -------------
