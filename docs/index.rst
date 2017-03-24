@@ -10,7 +10,6 @@ Welcome to python-testcontainers's documentation!
 
 Currently available features:
 
-- Selenium Grid containers
 - Selenim Standalone containers
 - MySql db container
 - PostgreSQL db container
