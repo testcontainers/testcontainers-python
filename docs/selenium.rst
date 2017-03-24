@@ -1,10 +1,14 @@
-Selenium containers
-===================
+* Selenium containers
 
 Allows to spin up Selenium Grid and Selenium standalone containers
 
 Selenium Standalone example:
 ----------------------------
+
+Using BrowserWebDriverContainer you can spin up standalone containers either with Chrome or Firefox browser.
+
+Example with Chrome:
+
 ::
 
     import pytest
