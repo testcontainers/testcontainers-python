@@ -50,3 +50,8 @@ def wait_container_is_ready():
                                              args, kwargs, exception))
 
     return wrapper
+
+
+@wait_container_is_ready()
+def wait_for(condition):
+    return condition()

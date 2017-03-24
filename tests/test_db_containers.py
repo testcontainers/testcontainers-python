@@ -1,9 +1,8 @@
 import sqlalchemy
 from pymongo import MongoClient
 
-from testcontainers.core.container import DockerContainer
 from testcontainers.core.generic import GenericContainer
-from testcontainers.core.waiting_utils import wait_container_is_ready
+from testcontainers.core.waiting_utils import  wait_for
 from testcontainers.mysql import MySqlContainer, MariaDbContainer
 from testcontainers.postgres import PostgresContainer
 
@@ -40,12 +39,11 @@ def test_docker_generic_db():
     mongo_container.with_bind_ports(27017, 27017)
 
     with mongo_container:
-        @wait_container_is_ready()
         def connect():
             return MongoClient("mongodb://{}:{}".format(mongo_container.get_container_host_ip(),
                                                         mongo_container.get_exposed_port(27017)))
 
-        db = connect().primer
+        db = wait_for(connect).primer
         result = db.restaurants.insert_one(
             {
                 "address": {
