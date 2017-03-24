@@ -11,25 +11,27 @@ class DockerContainer(object):
     def __init__(self, image):
         self.env = {}
         self.ports = {}
-        self._docker = DockerClient()
+        self.volumes = {}
         self.image = image
+        self._docker = DockerClient()
         self._container = None
         self._command = None
         self._name = None
 
-    def add_env(self, key, value):
+    def with_env(self, key: str, value: str) -> 'DockerContainer':
         self.env[key] = value
         return self
 
-    def bind_ports(self, container, host=None):
+    def with_bind_ports(self, container: int, host: int = None) -> 'DockerContainer':
         self.ports[container] = host
         return self
 
-    def _configure(self):
-        pass
+    def with_exposed_ports(self, *ports) -> 'DockerContainer':
+        for port in list(ports):
+            self.ports[port] = None
+        return self
 
     def start(self):
-        self._configure()
         print("")
         print("{} {}".format(crayons.yellow("Pulling image"), crayons.red(self.image)))
         with blindspin.spinner():
@@ -38,15 +40,14 @@ class DockerContainer(object):
                                                            detach=True,
                                                            environment=self.env,
                                                            ports=self.ports,
-                                                           publish_all_ports=True,
-                                                           name=self._name)
-                                                           publish_all_ports=True)
+                                                           name=self._name,
+                                                           volumes=self.volumes)
         print("")
         print("Container started: ", crayons.yellow(self._container.short_id, bold=True))
         return self
 
-    def stop(self):
-        self.get_wrapped_contaner().remove(force=True)
+    def stop(self, force=True):
+        self.get_wrapped_contaner().remove(force=force)
 
     def __enter__(self):
         return self.start()
@@ -63,12 +64,18 @@ class DockerContainer(object):
     def get_exposed_port(self, port) -> str:
         return self.get_docker_client().port(self._container.id, port)
 
-    def with_command(self, command):
+    def with_command(self, command: str) -> 'DockerContainer':
         self._command = command
         return self
 
-    def with_name(self, name):
+    def with_name(self, name: str) -> 'DockerContainer':
         self._name = name
+        return self
+
+    def with_volume_mapping(self, host: str, container: str, mode: str = 'ro') -> 'DockerContainer':
+        # '/home/user1/': {'bind': '/mnt/vol2', 'mode': 'rw'}
+        mapping = {'bind': container, 'mode': mode}
+        self.volumes[host] = mapping
         return self
 
     def get_wrapped_contaner(self) -> Container:

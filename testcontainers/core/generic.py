@@ -43,6 +43,7 @@ class DbContainer(DockerContainer):
                                     db=db_name)
 
     def start(self):
+        self._configure()
         super().start()
         self._connect()
         return self
