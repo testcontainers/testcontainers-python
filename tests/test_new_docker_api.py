@@ -22,7 +22,7 @@ def test_docker_custom_image():
     with container:
         driver = webdriver.Chrome(ChromeDriverManager().install())
         driver.implicitly_wait(10)
-        driver.get("http://localhost:8086")
+        driver.get("http://localhost:{}".format(container.get_exposed_port(8086)))
         driver.find_element_by_css_selector("#inputEmail3").send_keys("admin")
 
 
