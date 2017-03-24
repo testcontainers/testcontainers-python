@@ -42,7 +42,7 @@ Usage modes
 .. toctree::
    :maxdepth: 1
 
-   database
-   selenium
-   generic
+   database containers <database>
+   selenium containers <selenium>
+   generic containers <generic> 
 
