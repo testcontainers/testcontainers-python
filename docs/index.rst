@@ -6,9 +6,6 @@
 Welcome to python-testcontainers's documentation!
 =================================================
 
-Overview
---------
-
 **python-testcontainers** provides capabilities to spin up a docker containers for test purposes would that be a database, Selenium web browser or any other cotainer.
 
 Currently available features:
@@ -32,13 +29,20 @@ and can be installed using pip.
    pip install testcontainers
 
 
-
-Documentation
+Compatibility
 -------------
+
+Tested with Docker for Ubuntu, Mac and Windows.
+
+Was not tested with Docker-machine and Docker Toolbox.
+
+Usage modes
+-----------
 
 .. toctree::
    :maxdepth: 1
 
-   quick-start
-   selenium
-   database
+   database containers
+   selenium containers
+   generic container
+
