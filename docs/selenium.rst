@@ -1,4 +1,5 @@
-* Selenium containers
+Selenium containers
+===================
 
 Allows to spin up Selenium Grid and Selenium standalone containers
 
