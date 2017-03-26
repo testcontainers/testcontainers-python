@@ -48,4 +48,6 @@ MySQL example
             
 It will spin up MySQL version 5.7. Then you can connect to database using ``get_connection_url()`` method which returns sqlalchemy compatible url in format ``dialect+driver://username:password@host:port/database``.
 
+[![asciicast](https://asciinema.org/a/e7p6w4z6nbluipv1n15dgmo9w.png)](https://asciinema.org/a/e7p6w4z6nbluipv1n15dgmo9w)
+
 # Detailed [documentation](http://testcontainers-python.readthedocs.io/en/latest/)
