@@ -3,4 +3,4 @@ from testcontainers.mysql import MySqlContainer
 from testcontainers.postgres import PostgresContainer
 from testcontainers.oracle import OracleDbContainer
 from testcontainers.core.generic import GenericContainer
-from testcontainers.core.waiting_utils import wait_container_is_ready
+from testcontainers.core.waiting_utils import wait_container_is_ready, wait_for

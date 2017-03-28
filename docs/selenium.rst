@@ -3,8 +3,13 @@ Selenium containers
 
 Allows to spin up Selenium Grid and Selenium standalone containers
 
-Selenium Standalone example:
-----------------------------
+Selenium Standalone:
+-------------------
+
+Using BrowserWebDriverContainer you can spin up standalone containers either with Chrome or Firefox browser.
+
+Example with Chrome:
+
 ::
 
     import pytest
@@ -12,8 +17,8 @@ Selenium Standalone example:
     from testcontainers.selenium import BrowserWebDriverContainer
 
 
-    def test_webdriver_container_container(caps):
-        chrome = BrowserWebDriverContainer(esiredCapabilities.CHROME)
+    def test_webdriver_container_container():
+        chrome = BrowserWebDriverContainer(DesiredCapabilities.CHROME)
 
         with chrome:
             webdriver = chrome.get_driver()
@@ -29,8 +34,8 @@ You can easily change browser by passing appropriate capabilities.
     from testcontainers.selenium import BrowserWebDriverContainer
 
 
-    def test_webdriver_container_container(caps):
-        chrome = BrowserWebDriverContainer(esiredCapabilities.FIREFOX)
+    def test_webdriver_container_container():
+        chrome = BrowserWebDriverContainer(DesiredCapabilities.FIREFOX)
 
         with chrome:
             webdriver = chrome.get_driver()

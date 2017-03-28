@@ -13,8 +13,6 @@ MySQL example
         with config as mysql:
             e = sqlalchemy.create_engine(mysql.get_connection_url())
             result = e.execute("select version()")
-            for row in result:
-                assert row[0] == '5.7.17'
 
 It will spin up MySQL version 5.7. Then you can connect to database with credentials passed in constructor or just
 
@@ -32,8 +30,6 @@ Example of PostgresSQL database usage:
         with postgres_container as postgres:
             e = sqlalchemy.create_engine(postgres.get_connection_url())
             result = e.execute("select version()")
-            for row in result:
-                print("server version:", row[0])
 
 Connection set by using raw python ``psycopg2`` driver for Postgres.
 
@@ -49,8 +45,6 @@ Maria DB is a fork of MySQL database, so the only difference with MySQL is the n
         with mariadb_container as mariadb:
             e = sqlalchemy.create_engine(mariadb.get_connection_url())
             result = e.execute("select version()")
-            for row in result:
-                assert row[0] == '10.1.22-MariaDB-1~jessie'
 
 Oracle XE
 ---------
@@ -74,43 +68,3 @@ Connection detail for Oracle DB.
     sid: xe
     username: system
     password: oracle
-
-Generic Database containers
----------------------------
-
-Generally you are able to run any database container, but you need to configure it yourself.
-
-Mongo example:
-
-::
-
-    def test_docker_generic_db():
-        mongo_container = DockerContainer("mongo:latest")
-        mongo_container.expose_port(27017, 27017)
-
-        with mongo_container:
-            @wait_container_is_ready()
-            def connect():
-                return MongoClient("mongodb://{}:{}".format(mongo_container.get_container_host_ip(),
-                                                        mongo_container.get_exposed_port(27017)))
-
-            db = connect().primer
-            result = db.restaurants.insert_one(
-                {
-                    "address": {
-                        "street": "2 Avenue",
-                        "zipcode": "10075",
-                        "building": "1480",
-                        "coord": [-73.9557413, 40.7720266]
-                    },
-                    "borough": "Manhattan",
-                    "cuisine": "Italian",
-                    "name": "Vella",
-                    "restaurant_id": "41704620"
-                }
-            )
-            print(result.inserted_id)
-            cursor = db.restaurants.find({"borough": "Manhattan"})
-            for document in cursor:
-                print(document)
-
