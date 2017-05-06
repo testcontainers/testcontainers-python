@@ -44,4 +44,4 @@ Usage modes
    Database containers <database>
    Selenium containers <selenium>
    Generic containers <generic> 
-
+   Docker Compose <compose>
