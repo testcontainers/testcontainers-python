@@ -1,76 +1,141 @@
 {
-    "default": {
-        "crayons": "==0.1.2",
-        "SQLAlchemy": "==1.1.6",
-        "requests": "==2.13.0",
-        "blindspin": "==2.0.1",
-        "pytest-cov": "==2.4.0",
-        "PyYAML": "==3.12",
-        "packaging": "==16.8",
-        "webdriver-manager": "==1.4.5",
-        "colorama": "==0.3.7",
-        "coverage": "==4.3.4",
-        "pyparsing": "==2.2.0",
-        "resumable-urlretrieve": "==0.1.5",
-        "docker-pycreds": "==0.2.1",
-        "configparser": "==3.5.0",
-        "virtualenv": "==15.1.0",
-        "wrapt": "==1.10.10",
-        "pipenv": "==3.5.4",
-        "pythonz-bd": "==1.11.4",
-        "psycopg2": "==2.7.1",
-        "virtualenv-clone": "==0.2.6",
-        "pew": "==0.1.26",
-        "selenium": "==3.3.1",
-        "PyMySQL": "==0.7.10",
-        "six": "==1.10.0",
-        "asciinema": "==1.3.0",
-        "pytest": "==3.0.7",
-        "py": "==1.4.33",
-        "docker": "==2.1.0",
-        "pymongo": "==3.4.0",
-        "websocket-client": "==0.40.0"
-    },
-    "develop": {
-        "crayons": "==0.1.2",
-        "pew": "==0.1.26",
-        "blindspin": "==2.0.1",
-        "selenium": "==3.3.1",
-        "PyYAML": "==3.12",
-        "packaging": "==16.8",
-        "webdriver-manager": "==1.4.5",
-        "SQLAlchemy": "==1.1.6",
-        "colorama": "==0.3.7",
-        "coverage": "==4.3.4",
-        "pyparsing": "==2.2.0",
-        "docker": "==2.1.0",
-        "configparser": "==3.5.0",
-        "virtualenv": "==15.1.0",
-        "resumable-urlretrieve": "==0.1.5",
-        "pipenv": "==3.5.4",
-        "asciinema": "==1.3.0",
-        "psycopg2": "==2.7.1",
-        "virtualenv-clone": "==0.2.6",
-        "py": "==1.4.33",
-        "pytest-cov": "==2.4.0",
-        "PyMySQL": "==0.7.10",
-        "docker-pycreds": "==0.2.1",
-        "six": "==1.10.0",
-        "pythonz-bd": "==1.11.4",
-        "pytest": "==3.0.7",
-        "requests": "==2.13.0",
-        "pymongo": "==3.4.0",
-        "wrapt": "==1.10.10",
-        "websocket-client": "==0.40.0"
-    },
     "_meta": {
+        "hash": {
+            "sha256": "ae2a6ec33aed75586d3700219f43f3474d94f651ea4607c27118f8f15747a23b"
+        },
+        "requires": {},
         "sources": [
             {
                 "url": "https://pypi.python.org/simple",
                 "verify_ssl": true
             }
-        ],
-        "requires": {},
-        "Pipfile-sha256": "16c9a98abe3d4d47cdd84c149d63fec22aae181137cb4dac71db008fc657b2ae"
-    }
+        ]
+    },
+    "default": {
+        "PyMySQL": {
+            "hash": "sha256:390e8e9f92348d6d2befb635fb717c89c4340249c063ed0ea449d520c526274e",
+            "version": "==0.7.10"
+        },
+        "SQLAlchemy": {
+            "hash": "sha256:9308b2886285dec57aa9e569a0519220e83515e15c6e3eda803c07deb7c1cbad",
+            "version": "==1.1.7"
+        },
+        "appdirs": {
+            "hash": "sha256:d8b24664561d0d34ddfaec54636d502d7cea6e29c3eaf68f3df6180863e2166e",
+            "version": "==1.4.3"
+        },
+        "backports.ssl_match_hostname": {
+            "hash": "sha256:502ad98707319f4a51fa2ca1c677bd659008d27ded9f6380c79e8932e38dcdf2",
+            "version": "==3.5.0.1"
+        },
+        "blindspin": {
+            "hash": "sha256:b30ef7a26ef1637c1d047667b279e8c15dc2a78fcfaad6b3027d7217e752bdba",
+            "version": "==2.0.1"
+        },
+        "colorama": {
+            "hash": "sha256:a4c0f5bc358a62849653471e309dcc991223cf86abafbec17cd8f41327279e89",
+            "version": "==0.3.7"
+        },
+        "configparser": {
+            "hash": "sha256:5308b47021bc2340965c371f0f058cc6971a04502638d4244225c49d80db273a",
+            "version": "==3.5.0"
+        },
+        "coverage": {
+            "hash": "sha256:adf04843188418b012dd1974e397a7ac3faa1855cbcd69083e3af4da6de9dd81",
+            "version": "==4.3.4"
+        },
+        "crayons": {
+            "hash": "sha256:5e17691605e564d63482067eb6327d01a584bbaf870beffd4456a3391bd8809d",
+            "version": "==0.1.2"
+        },
+        "docker": {
+            "hash": "sha256:e41807eacc75ca4f642a35527fb2bab72c4c5d2e37c1984773a859ad3abb531c",
+            "version": "==2.2.0"
+        },
+        "docker-pycreds": {
+            "hash": "sha256:58d2688f92de5d6f1a6ac4fe25da461232f0e0a4c1212b93b256b046b2d714a9",
+            "version": "==0.2.1"
+        },
+        "packaging": {
+            "hash": "sha256:99276dc6e3a7851f32027a68f1095cd3f77c148091b092ea867a351811cfe388",
+            "version": "==16.8"
+        },
+        "pew": {
+            "hash": "sha256:259ac7a4603fe41b1fa950f30b2e4ccf4a23f7c89be2c34e0a4cec176c3ec581",
+            "version": "==0.1.26"
+        },
+        "pip": {
+            "hash": "sha256:690b762c0a8460c303c089d5d0be034fb15a5ea2b75bdf565f40421f542fefb0",
+            "version": "==9.0.1"
+        },
+        "pipenv": {
+            "hash": "sha256:60a1da23d311a955d4d2fbcab35800b965c4414ac9238455df8a8f21c7af72b3",
+            "version": "==3.5.4"
+        },
+        "psycopg2": {
+            "hash": "sha256:f04d56f664108af9571d278c0ed942ecef0dd3e072fe21ac8c7497a51bfcdfba",
+            "version": "==2.7.1"
+        },
+        "py": {
+            "hash": "sha256:81b5e37db3cc1052de438375605fb5d3b3e97f950f415f9143f04697c684d7eb",
+            "version": "==1.4.33"
+        },
+        "pymongo": {
+            "hash": "sha256:3223bbe13b723f9e5ede7d69535b6aee795ac802dfd881d6e2f29dce3432f5b0",
+            "version": "==3.4.0"
+        },
+        "pyparsing": {
+            "hash": "sha256:fee43f17a9c4087e7ed1605bd6df994c6173c1e977d7ade7b651292fab2bd010",
+            "version": "==2.2.0"
+        },
+        "pytest": {
+            "hash": "sha256:66f332ae62593b874a648b10a8cb106bfdacd2c6288ed7dec3713c3a808a6017",
+            "version": "==3.0.7"
+        },
+        "pytest-cov": {
+            "hash": "sha256:10e37e876f49ddec80d6c83a54b657157f1387ebc0f7755285f8c156130014a1",
+            "version": "==2.4.0"
+        },
+        "pythonz-bd": {
+            "hash": "sha256:6dacd9aed6018014c75acfa9c994d755715c73bc786bdc6c6186d3cf184bacf0",
+            "version": "==1.11.4"
+        },
+        "requests": {
+            "hash": "sha256:1a720e8862a41aa22e339373b526f508ef0c8988baf48b84d3fc891a8e237efb",
+            "version": "==2.13.0"
+        },
+        "selenium": {
+            "hash": "sha256:1ca1c6afef1fd66e8094c495224950d5d56279d5b22227e5c5b9c65b32206161",
+            "version": "==3.3.1"
+        },
+        "setuptools": {
+            "hash": "sha256:e436d8c9dcf67ea8902bfa7cce1ef698f36bf303f13b4f62a5668891ecd380dd",
+            "version": "==34.3.3"
+        },
+        "six": {
+            "hash": "sha256:0ff78c403d9bccf5a425a6d31a12aa6b47f1c21ca4dc2573a7e2f32a97335eb1",
+            "version": "==1.10.0"
+        },
+        "virtualenv": {
+            "hash": "sha256:39d88b533b422825d644087a21e78c45cf5af0ef7a99a1fc9fbb7b481e5c85b0",
+            "version": "==15.1.0"
+        },
+        "virtualenv-clone": {
+            "hash": "sha256:6b3be5cab59e455f08c9eda573d23006b7d6fb41fae974ddaa2b275c93cc4405",
+            "version": "==0.2.6"
+        },
+        "webdriver-manager": {
+            "hash": "sha256:215cee4acb4da48de9c44bee5cab401915c76f6cbe8cd322bf3d0c5687cac194",
+            "version": "==1.4.5"
+        },
+        "websocket-client": {
+            "hash": "sha256:40ac14a0c54e14d22809a5c8d553de5a2ae45de3c60105fae53bcb281b3fe6fb",
+            "version": "==0.40.0"
+        },
+        "wrapt": {
+            "hash": "sha256:42160c91b77f1bc64a955890038e02f2f72986c01d462d53cb6cb039b995cdd9",
+            "version": "==1.10.10"
+        }
+    },
+    "develop": {}
 }

@@ -22,3 +22,7 @@ class TimeoutException(Exception):
 
 class NoSuchBrowserException(Exception):
     pass
+
+
+class NoSuchPortExposed(Exception):
+    pass
