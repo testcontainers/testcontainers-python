@@ -38,7 +38,7 @@ setuptools.setup(
         'Operating System :: MacOS',
     ],
     install_requires=[
-        'selenium',
+        'selenium==2.53.1',
         'docker',
         'wrapt',
         'pymysql',
