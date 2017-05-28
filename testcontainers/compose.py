@@ -1,7 +1,9 @@
 import subprocess
 
 import blindspin
+import requests
 
+from testcontainers import wait_container_is_ready
 from testcontainers.core.exceptions import NoSuchPortExposed
 
 
@@ -36,3 +38,8 @@ class DockerCompose(object):
         if len(result) == 1:
             raise NoSuchPortExposed("Port {} was not exposed for service {}".format(port, service))
         return result
+
+    @wait_container_is_ready()
+    def wait_for(self, url):
+        requests.get(url)
+        return self

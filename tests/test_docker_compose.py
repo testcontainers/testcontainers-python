@@ -1,6 +1,7 @@
 import os
 
 import pytest
+from selenium import webdriver
 
 from testcontainers.compose import DockerCompose
 from testcontainers.core.exceptions import NoSuchPortExposed
@@ -27,3 +28,9 @@ def test_can_throw_exception_if_no_port_exposed():
         compose.get_service_host("hub", 5555)
 
     compose.stop()
+
+
+def test_compose_wait_for_container_ready():
+    compose = DockerCompose(os.path.dirname(__file__))
+    with compose:
+        compose.wait_for("http://localhost:4444/wd/hub")
