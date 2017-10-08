@@ -38,14 +38,14 @@ setuptools.setup(
         'Operating System :: MacOS',
     ],
     install_requires=[
-        'selenium==2.53.1',
         'docker',
         'wrapt',
-        'pymysql',
-        'sqlalchemy',
-        'psycopg2',
         'crayons',
         'blindspin',
-        'pymysql'
     ],
+    extras_require={
+        'mysql': ['sqlalchemy', 'pymysql'],
+        'postgresql': ['sqlalchemy', 'psycopg2'],
+        'selenium': ['selenium==2.53.1'],
+    }
 )

@@ -21,11 +21,15 @@ Installation
 The testcontainers module is available from PyPi at:
 
 https://pypi.python.org/pypi/testcontainers
-and can be installed using pip.
+and can be installed using pip, depending on which containers you need:
 
 ::
 
-   pip install testcontainers
+   pip install testcontainers[mysql]
+   pip install testcontainers[postgresql]
+   pip install testcontainers[selenium]
+   # or with multiple
+   pip install testcontainers[mysql,postgresql,selenium]
 
 
 Compatibility
