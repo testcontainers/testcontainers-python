@@ -31,7 +31,7 @@ def test_docker_run_mariadb():
         e = sqlalchemy.create_engine(mariadb.get_connection_url())
         result = e.execute("select version()")
         for row in result:
-            assert row[0] == '10.1.22-MariaDB-1~jessie'
+            assert row[0] == '10.2.9-MariaDB-10.2.9+maria~jessie'
 
 
 def test_docker_generic_db():

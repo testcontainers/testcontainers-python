@@ -5,16 +5,16 @@
         },
         "host-environment-markers": {
             "implementation_name": "cpython",
-            "implementation_version": "0",
+            "implementation_version": "3.5.2",
             "os_name": "posix",
             "platform_machine": "x86_64",
             "platform_python_implementation": "CPython",
             "platform_release": "4.10.0-35-generic",
             "platform_system": "Linux",
             "platform_version": "#39~16.04.1-Ubuntu SMP Wed Sep 13 09:02:42 UTC 2017",
-            "python_full_version": "2.7.12",
-            "python_version": "2.7",
-            "sys_platform": "linux2"
+            "python_full_version": "3.5.2",
+            "python_version": "3.5",
+            "sys_platform": "linux"
         },
         "pipfile-spec": 6,
         "requires": {},
