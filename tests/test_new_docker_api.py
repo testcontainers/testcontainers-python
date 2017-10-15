@@ -1,8 +1,5 @@
 import os
 
-from selenium import webdriver
-from webdriver_manager.chrome import ChromeDriverManager
-
 from testcontainers import mysql
 
 from testcontainers.core.generic import GenericContainer
@@ -16,14 +13,13 @@ def setup_module(m):
 
 
 def test_docker_custom_image():
-    container = GenericContainer("spirogov/video_service:latest")
-    container.with_exposed_ports(8086)
+    container = GenericContainer("mysql:5.7.17")
+    container.with_exposed_ports(3306)
+    container.with_env("MYSQL_ROOT_PASSWORD", "root")
 
     with container:
-        driver = webdriver.Chrome(ChromeDriverManager().install())
-        driver.implicitly_wait(10)
-        driver.get("http://localhost:{}".format(container.get_exposed_port(8086)))
-        driver.find_element_by_css_selector("#inputEmail3").send_keys("admin")
+        port = container.get_exposed_port(3306)
+        assert int(port) > 0
 
 
 def test_docker_env_variables():
