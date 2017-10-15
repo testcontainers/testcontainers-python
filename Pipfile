@@ -2,17 +2,23 @@
 url = "https://pypi.python.org/simple"
 verify_ssl = true
 
+["dev-packages"]
+
+codecov = "*"
+
 [packages]
+
 crayons = "*"
 wrapt = "*"
 pipenv = "*"
 blindspin = "*"
-psycopg2 = "*"
-pytest-cov = "*"
-webdriver-manager = "*"
+"psycopg2" = "*"
+"pytest-cov" = "*"
+"webdriver-manager" = "*"
 pytest = "*"
 docker = "*"
 pymongo = "*"
 selenium = "*"
-SQLAlchemy = "*"
-PyMySQL = "*"
+sqlalchemy = "*"
+pymysql = "*"
+
