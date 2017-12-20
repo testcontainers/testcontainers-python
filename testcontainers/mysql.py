@@ -17,20 +17,25 @@ from testcontainers.core.generic import DbContainer
 
 class MySqlContainer(DbContainer):
     MYSQL_USER = environ.get("MYSQL_USER", "test")
-
-    if MYSQL_USER != 'root':
-        MYSQL_ROOT_PASSWORD = environ.get("MYSQL_ROOT_PASSWORD", "test")
-        MYSQL_PASSWORD = environ.get("MYSQL_PASSWORD", "test")
-    else:
-        MYSQL_ROOT_PASSWORD = environ.get("MYSQL_ROOT_PASSWORD", environ.get("MYSQL_PASSWORD", "test"))
-        MYSQL_PASSWORD = MYSQL_ROOT_PASSWORD
-
+    MYSQL_ROOT_PASSWORD = environ.get("MYSQL_ROOT_PASSWORD", "test")
+    MYSQL_PASSWORD = environ.get("MYSQL_PASSWORD", "test")
     MYSQL_DATABASE = environ.get("MYSQL_DATABASE", "test")
 
-    def __init__(self, image="mysql:latest"):
+    def __init__(self, image="mysql:latest", **kwargs):
         super(MySqlContainer, self).__init__(image)
         self.port_to_expose = 3306
         self.with_exposed_ports(self.port_to_expose)
+        if 'MYSQL_USER' in kwargs:
+            self.MYSQL_USER = kwargs['MYSQL_USER']
+        if 'MYSQL_ROOT_PASSWORD' in kwargs:
+            self.MYSQL_ROOT_PASSWORD = kwargs['MYSQL_ROOT_PASSWORD']
+        if 'MYSQL_PASSWORD' in kwargs:
+            self.MYSQL_PASSWORD = kwargs['MYSQL_PASSWORD']
+        if 'MYSQL_DATABASE' in kwargs:
+            self.MYSQL_DATABASE = kwargs['MYSQL_DATABASE']
+
+        if self.MYSQL_USER == 'root':
+            self.MYSQL_ROOT_PASSWORD = self.MYSQL_PASSWORD
 
     def _configure(self):
         self.with_env("MYSQL_ROOT_PASSWORD", self.MYSQL_ROOT_PASSWORD)
