@@ -16,10 +16,16 @@ from testcontainers.core.generic import DbContainer
 
 
 class MySqlContainer(DbContainer):
-    MYSQL_ROOT_PASSWORD = environ.get("MYSQL_ROOT_PASSWORD", "test")
-    MYSQL_DATABASE = environ.get("MYSQL_DATABASE", "test")
     MYSQL_USER = environ.get("MYSQL_USER", "test")
-    MYSQL_PASSWORD = environ.get("MYSQL_PASSWORD", "test")
+
+    if MYSQL_USER != 'root':
+        MYSQL_ROOT_PASSWORD = environ.get("MYSQL_ROOT_PASSWORD", "test")
+        MYSQL_PASSWORD = environ.get("MYSQL_PASSWORD", "test")
+    else:
+        MYSQL_ROOT_PASSWORD = environ.get("MYSQL_ROOT_PASSWORD", environ.get("MYSQL_PASSWORD", "test"))
+        MYSQL_PASSWORD = MYSQL_ROOT_PASSWORD
+
+    MYSQL_DATABASE = environ.get("MYSQL_DATABASE", "test")
 
     def __init__(self, image="mysql:latest"):
         super(MySqlContainer, self).__init__(image)
@@ -29,8 +35,10 @@ class MySqlContainer(DbContainer):
     def _configure(self):
         self.with_env("MYSQL_ROOT_PASSWORD", self.MYSQL_ROOT_PASSWORD)
         self.with_env("MYSQL_DATABASE", self.MYSQL_DATABASE)
-        self.with_env("MYSQL_USER", self.MYSQL_USER)
-        self.with_env("MYSQL_PASSWORD", self.MYSQL_PASSWORD)
+
+        if self.MYSQL_USER != "root":
+            self.with_env("MYSQL_USER", self.MYSQL_USER)
+            self.with_env("MYSQL_PASSWORD", self.MYSQL_PASSWORD)
 
     def get_connection_url(self):
         return super()._create_connection_url(dialect="mysql+pymysql",
