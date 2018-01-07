@@ -46,8 +46,8 @@ class DockerContainer(object):
         print("Container started: ", crayons.yellow(self._container.short_id, bold=True))
         return self
 
-    def stop(self, force=True):
-        self.get_wrapped_contaner().remove(force=force)
+    def stop(self, force=True, delete_volume=True):
+        self.get_wrapped_contaner().remove(force=force, v=delete_volume)
 
     def __enter__(self):
         return self.start()
