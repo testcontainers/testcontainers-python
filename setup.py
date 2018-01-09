@@ -23,7 +23,7 @@ setuptools.setup(
                  'run in a Docker containers'),
     author='Sergey Pirogov',
     author_email='automationremarks@gmail.com',
-    url='https://github.com/SergeyPirogov/python-testcontainers',
+    url='https://github.com/SergeyPirogov/testcontainers-python',
     keywords=['testing', 'logging', 'docker', 'test automation'],
     classifiers=[
         'License :: OSI Approved :: Apache Software License',
