@@ -1,3 +1,5 @@
+from time import sleep
+
 import pytest
 from selenium.webdriver import DesiredCapabilities
 from testcontainers.selenium import BrowserWebDriverContainer
@@ -11,3 +13,4 @@ def test_webdriver_container_container(caps):
         webdriver = chrome.get_driver()
         webdriver.get("http://google.com")
         webdriver.find_element_by_name("q").send_keys("Hello")
+        sleep(1)
