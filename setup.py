@@ -44,6 +44,7 @@ setuptools.setup(
         'blindspin',
     ],
     extras_require={
+        'docker-compose': ['docker-compose'],
         'mysql': ['sqlalchemy', 'pymysql'],
         'postgresql': ['sqlalchemy', 'psycopg2'],
         'selenium': ['selenium==2.53.1'],
