@@ -22,7 +22,8 @@ class DockerContainer(object):
         self.env[key] = value
         return self
 
-    def with_bind_ports(self, container: int, host: int = None) -> 'DockerContainer':
+    def with_bind_ports(self, container: int,
+                        host: int = None) -> 'DockerContainer':
         self.ports[container] = host
         return self
 
@@ -33,17 +34,20 @@ class DockerContainer(object):
 
     def start(self):
         print("")
-        print("{} {}".format(crayons.yellow("Pulling image"), crayons.red(self.image)))
+        print("{} {}".format(crayons.yellow("Pulling image"),
+                             crayons.red(self.image)))
         with blindspin.spinner():
-            self._container = self.get_docker_client().run(self.image,
-                                                           command=self._command,
-                                                           detach=True,
-                                                           environment=self.env,
-                                                           ports=self.ports,
-                                                           name=self._name,
-                                                           volumes=self.volumes)
+            docker_client = self.get_docker_client()
+            self._container = docker_client.run(self.image,
+                                                command=self._command,
+                                                detach=True,
+                                                environment=self.env,
+                                                ports=self.ports,
+                                                name=self._name,
+                                                volumes=self.volumes)
         print("")
-        print("Container started: ", crayons.yellow(self._container.short_id, bold=True))
+        print("Container started: ",
+              crayons.yellow(self._container.short_id, bold=True))
         return self
 
     def stop(self, force=True, delete_volume=True):
@@ -72,7 +76,8 @@ class DockerContainer(object):
         self._name = name
         return self
 
-    def with_volume_mapping(self, host: str, container: str, mode: str = 'ro') -> 'DockerContainer':
+    def with_volume_mapping(self, host: str, container: str,
+                            mode: str = 'ro') -> 'DockerContainer':
         # '/home/user1/': {'bind': '/mnt/vol2', 'mode': 'rw'}
         mapping = {'bind': container, 'mode': mode}
         self.volumes[host] = mapping
