@@ -4,7 +4,7 @@ from docker.models.containers import Container
 
 from testcontainers.core.docker_client import DockerClient
 from testcontainers.core.exceptions import ContainerStartException
-from testcontainers.core.utils import is_windows
+from testcontainers.core.utils import is_windows, inside_container
 
 
 class DockerContainer(object):
@@ -59,14 +59,31 @@ class DockerContainer(object):
     def __exit__(self, exc_type, exc_val, exc_tb):
         self.stop()
 
+    def __del__(self):
+        """
+        Try to remove the container in all circumstances
+        """
+        if self._container is not None:
+            try:
+                self.stop()
+            except:
+                pass
+
     def get_container_host_ip(self) -> str:
-        if is_windows():
+        # if testcontainers itself runs in docker, get the newly spawned container's IP address
+        # from the dockder "bridge" network
+        if inside_container():
+            return self.get_docker_client().bridge_ip(self._container.id)
+        elif is_windows():
             return "localhost"
         else:
             return "0.0.0.0"
 
     def get_exposed_port(self, port) -> str:
-        return self.get_docker_client().port(self._container.id, port)
+        if inside_container():
+            return port
+        else:
+            return self.get_docker_client().port(self._container.id, port)
 
     def with_command(self, command: str) -> 'DockerContainer':
         self._command = command
