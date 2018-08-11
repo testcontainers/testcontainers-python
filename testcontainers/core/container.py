@@ -66,12 +66,12 @@ class DockerContainer(object):
         if self._container is not None:
             try:
                 self.stop()
-            except:
+            except:  # noqa: E722
                 pass
 
     def get_container_host_ip(self) -> str:
-        # if testcontainers itself runs in docker, get the newly spawned container's IP address
-        # from the dockder "bridge" network
+        # if testcontainers itself runs in docker, get the newly spawned
+        # container's IP address from the dockder "bridge" network
         if inside_container():
             return self.get_docker_client().bridge_ip(self._container.id)
         elif is_windows():
