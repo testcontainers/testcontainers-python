@@ -38,3 +38,7 @@ class DockerClient(object):
 
     def port(self, container_id, port):
         return self.client.api.port(container_id, port)[0]["HostPort"]
+
+    def bridge_ip(self, container_id):
+        container = self.client.api.containers(filters={'id': container_id})[0]
+        return container['NetworkSettings']['Networks']['bridge']['IPAddress']
