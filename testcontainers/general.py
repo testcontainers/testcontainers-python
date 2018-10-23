@@ -14,7 +14,7 @@ from testcontainers.core.container import DockerContainer
 from testcontainers.core.waiting_utils import wait_container_is_ready
 
 
-class RedisContainer(DockerContainer):
+class TestContainer(DockerContainer):
     def __init__(self, image, port_to_expose=None):
         super(RedisContainer, self).__init__(image)
         if port_to_expose:
