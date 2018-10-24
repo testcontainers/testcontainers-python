@@ -12,8 +12,6 @@
 #    under the License.
 from testcontainers.core.container import DockerContainer
 from testcontainers.core.waiting_utils import wait_container_is_ready
-import urllib
-
 
 class RedisContainer(DockerContainer):
     def __init__(self, image="redis:latest", port_to_expose=6379):
@@ -21,14 +19,3 @@ class RedisContainer(DockerContainer):
         self.port_to_expose = port_to_expose
         self.with_exposed_ports(self.port_to_expose)
 
-    @wait_container_is_ready()
-    def _connect(self):
-        port = self.get_exposed_port(self.port_to_expose)
-        res = urllib.request.urlopen('http://127.0.0.1:{}'.format(port))
-        if res.status != 200:
-            raise Exception()
-
-    def start(self):
-        super().start()
-        self._connect()
-        return self
