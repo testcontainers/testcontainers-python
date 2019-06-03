@@ -13,6 +13,7 @@ Currently available features:
 - Selenim Standalone containers
 - MySql db container
 - PostgreSQL db container
+- Google Cloud PubSub emulator container
 - Generic Docker containers
 
 Installation
@@ -28,8 +29,9 @@ and can be installed using pip, depending on which containers you need:
    pip install testcontainers[mysql]
    pip install testcontainers[postgresql]
    pip install testcontainers[selenium]
+   pip install testcontainers[google-cloud-pubsub]
    # or with multiple
-   pip install testcontainers[mysql,postgresql,selenium]
+   pip install testcontainers[mysql,postgresql,selenium,google-cloud-pubsub]
 
 
 Compatibility
@@ -47,5 +49,6 @@ Usage modes
 
    Database containers <database>
    Selenium containers <selenium>
-   Generic containers <generic> 
+   Generic containers <generic>
    Docker Compose <compose>
+   Google Cloud Emulators <google-cloud-emulators>
