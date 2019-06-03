@@ -1,7 +1,7 @@
 Release process
 ===============
 
-Run tests on target brunch
+Run tests on target branch
 --------------------------
 
 Steps::
@@ -67,5 +67,3 @@ Submit release to PYPI
 Steps::
 
     twine dist/* upload
-
-

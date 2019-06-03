@@ -22,4 +22,4 @@ pymongo = "*"
 selenium = "*"
 sqlalchemy = "*"
 pymysql = "*"
-
+google-cloud-pubsub = "*"

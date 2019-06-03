@@ -48,5 +48,6 @@ setuptools.setup(
         'mysql': ['sqlalchemy', 'pymysql'],
         'postgresql': ['sqlalchemy', 'psycopg2'],
         'selenium': ['selenium==2.53.1'],
+        'google-cloud-pubsub': ['google-cloud-pubsub'],
     }
 )
