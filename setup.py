@@ -13,17 +13,20 @@
 
 import setuptools
 
+with open('README.md') as fp:
+    long_description = fp.read()
+
 setuptools.setup(
     name='testcontainers',
     packages=setuptools.find_packages(exclude=['tests']),
-    version='2.3',
+    version='2.4',
     description=('Library provides lightweight, throwaway '
                  'instances of common databases, '
                  'Selenium web browsers, or anything else that can '
-                 'run in a Docker containers'),
+                 'run in a Docker container'),
     author='Sergey Pirogov',
     author_email='automationremarks@gmail.com',
-    url='https://github.com/SergeyPirogov/testcontainers-python',
+    url='https://github.com/testcontainers/testcontainers-python',
     keywords=['testing', 'logging', 'docker', 'test automation'],
     classifiers=[
         'License :: OSI Approved :: Apache Software License',
@@ -49,5 +52,7 @@ setuptools.setup(
         'postgresql': ['sqlalchemy', 'psycopg2'],
         'selenium': ['selenium==2.53.1'],
         'google-cloud-pubsub': ['google-cloud-pubsub'],
-    }
+    },
+    long_description_content_type="text/markdown",
+    long_description=long_description,
 )
