@@ -1,8 +1,6 @@
 # testcontainers-python
 
-![testcontainer](http://robertwdempsey.com/wp-content/uploads/2015/10/docker-python.png)
-
-[![Build Status](https://travis-ci.org/SergeyPirogov/testcontainers-python.svg?branch=master)](https://travis-ci.org/SergeyPirogov/testcontainers-python) [![PyPI](https://img.shields.io/pypi/v/testcontainers.svg?style=flat-square)](https://pypi.python.org/pypi/testcontainers)
+[![Build Status](https://travis-ci.org/testcontainers/testcontainers-python.svg?branch=master)](https://travis-ci.org/testcontainers/testcontainers-python) [![PyPI](https://img.shields.io/pypi/v/testcontainers.svg?style=flat-square)](https://pypi.python.org/pypi/testcontainers)
 [![Documentation Status](https://readthedocs.org/projects/testcontainers-python/badge/?version=latest)](http://testcontainers-python.readthedocs.io/en/latest/?badge=latest)
 
 Python port for testcontainers-java that allows using docker containers for functional and/or integration testing.
@@ -49,9 +47,7 @@ MySQL example
         with config as mysql:
             e = sqlalchemy.create_engine(mysql.get_connection_url())
             result = e.execute("select version()")
-            
-It will spin up MySQL version 5.7. Then you can connect to database using ``get_connection_url()`` method which returns sqlalchemy compatible url in format ``dialect+driver://username:password@host:port/database``.
 
-[![asciicast](https://asciinema.org/a/e7p6w4z6nbluipv1n15dgmo9w.png)](https://asciinema.org/a/e7p6w4z6nbluipv1n15dgmo9w)
+It will spin up MySQL version 5.7. Then you can connect to database using ``get_connection_url()`` method which returns sqlalchemy compatible url in format ``dialect+driver://username:password@host:port/database``.
 
 # Detailed [documentation](http://testcontainers-python.readthedocs.io/en/latest/)
