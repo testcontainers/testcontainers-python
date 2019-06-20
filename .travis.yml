@@ -29,3 +29,11 @@ notifications:
   email:
     recipients:
       - sergio_89@ukr.net
+
+deploy:
+  provider: pypi
+  user: SergeyPirogov
+  password:
+    secure: encrypted-password
+  # Required if building on more than one python version because each build will try to deploy
+  skip_existing: true
