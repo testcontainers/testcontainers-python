@@ -37,3 +37,5 @@ deploy:
     secure: encrypted-password
   # Required if building on more than one python version because each build will try to deploy
   skip_existing: true
+  on:
+    tags: true
