@@ -19,7 +19,7 @@ with open('README.md') as fp:
 setuptools.setup(
     name='testcontainers',
     packages=setuptools.find_packages(exclude=['tests']),
-    version='2.4',
+    version='2.5',
     description=('Library provides lightweight, throwaway '
                  'instances of common databases, '
                  'Selenium web browsers, or anything else that can '
