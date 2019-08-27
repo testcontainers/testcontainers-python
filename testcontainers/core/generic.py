@@ -54,5 +54,5 @@ class DbContainer(DockerContainer):
 
 
 class GenericContainer(DockerContainer):
-    def __init__(self, image):
-        super(GenericContainer, self).__init__(image)
+    def __init__(self, image, **kwargs):
+        super(GenericContainer, self).__init__(**{**kwargs, 'image':image})

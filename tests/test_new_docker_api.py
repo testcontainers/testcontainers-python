@@ -40,6 +40,7 @@ def test_docker_parameters_using_kwargs():
 
     container_second = GenericContainer("nginx:latest", working_dir='/code')
 
+    print(container_second._kwargs)
     with container_first:
         container_second.with_kwargs(volumes_from=[container_first._container.short_id])
         with container_second:
@@ -73,8 +74,8 @@ def test_add_map_entry():
 def test_add_map_entry_override_non_mapping_value():
     code_dir = Path(__file__).parent
     container = DockerContainer("nginx:latest", something='initial-value-is-not-a-map')
-    container._with_map_entry('something', 'is', 'arbitary')
-    container._with_map_entry('something', 'also', 'arbitary')
+    container._with_map_entry('something', 'is', 'arbitrary')
+    container._with_map_entry('something', 'also', 'arbitrary')
     container.with_bind_ports(8080, 80)
     container.with_exposed_ports(8000)
     container.with_env('test', 'value')
