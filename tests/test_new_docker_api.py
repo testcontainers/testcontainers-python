@@ -1,4 +1,5 @@
 import os
+from pathlib import Path
 
 from testcontainers import mysql
 
@@ -30,3 +31,17 @@ def test_docker_env_variables():
     with db:
         url = db.get_connection_url()
         assert url == 'mysql+pymysql://demo:test@0.0.0.0:32785/custom_db'
+
+def test_docker_kargs():
+    code_dir = Path(__file__).parent
+    container_first = GenericContainer("nginx:latest")
+    container_first.with_volume_mapping(code_dir, '/code')
+
+    container_second = GenericContainer("nginx:latest")
+
+    with container_first:
+        container_second.with_kargs(volumes_from=[container_first._container.short_id])
+        with container_second:
+            files_first = container_first.exec('ls /code').output.decode('utf-8').strip()
+            files_second = container_second.exec('ls /code').output.decode('utf-8').strip()
+            assert files_first == files_second

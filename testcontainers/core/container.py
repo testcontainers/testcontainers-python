@@ -8,7 +8,7 @@ from testcontainers.core.utils import is_windows, inside_container
 
 
 class DockerContainer(object):
-    def __init__(self, image):
+    def __init__(self, image, **kargs):
         self.env = {}
         self.ports = {}
         self.volumes = {}
@@ -17,6 +17,7 @@ class DockerContainer(object):
         self._container = None
         self._command = None
         self._name = None
+        self._kargs = kargs
 
     def with_env(self, key: str, value: str) -> 'DockerContainer':
         self.env[key] = value
@@ -32,6 +33,10 @@ class DockerContainer(object):
             self.ports[port] = None
         return self
 
+    def with_kargs(self, **kargs) -> 'DockerContainer':
+        self._kargs = kargs
+        return self
+
     def start(self):
         print("")
         print("{} {}".format(crayons.yellow("Pulling image"),
@@ -44,7 +49,9 @@ class DockerContainer(object):
                                                 environment=self.env,
                                                 ports=self.ports,
                                                 name=self._name,
-                                                volumes=self.volumes)
+                                                volumes=self.volumes,
+                                                **self._kargs
+                                                )
         print("")
         print("Container started: ",
               crayons.yellow(self._container.short_id, bold=True))
