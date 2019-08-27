@@ -66,10 +66,10 @@ def test_container_environments():
 def test_add_map_entry():
     code_dir = Path(__file__).parent
     container = DockerContainer("nginx:latest")
-    container._with_map_entry('something', 'is', 'arbitary')
-    container._with_map_entry('something', 'also', 'arbitary')
+    container._with_map_entry('something', 'is', 'arbitrary')
+    container._with_map_entry('something', 'also', 'arbitrary')
 
-    assert container._kwargs['something'] == {'also': 'arbitary', 'is': 'arbitary'}
+    assert container._kwargs['something'] == {'also': 'arbitrary', 'is': 'arbitrary'}
 
 def test_add_map_entry_override_non_mapping_value():
     code_dir = Path(__file__).parent
@@ -81,7 +81,7 @@ def test_add_map_entry_override_non_mapping_value():
     container.with_env('test', 'value')
     container.with_volume_mapping(code_dir, '/code')
 
-    assert container._kwargs['something'] == {'also': 'arbitary', 'is': 'arbitary'}
+    assert container._kwargs['something'] == {'also': 'arbitrary', 'is': 'arbitrary'}
     assert container._kwargs['ports'] == {8000: None, 8080: 80}
     assert container._kwargs['environment'] == {'test': 'value'}
     assert container._kwargs['volumes'] == {code_dir: {'bind': '/code', 'mode': 'ro'}}
