@@ -49,7 +49,7 @@ setuptools.setup(
     extras_require={
         'docker-compose': ['docker-compose'],
         'mysql': ['sqlalchemy', 'pymysql'],
-        'postgresql': ['sqlalchemy', 'psycopg2'],
+        'postgresql': ['sqlalchemy', 'psycopg2-binary'],
         'selenium': ['selenium==2.53.1'],
         'google-cloud-pubsub': ['google-cloud-pubsub'],
     },
