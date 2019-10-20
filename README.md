@@ -13,6 +13,7 @@ Currently available features:
 * Selenium Standalone containers
 * MySql Db container
 * MariaDb container
+* OracleDb container
 * PostgreSQL Db container
 * Generic docker containers
 
@@ -28,6 +29,7 @@ The **testcontainers** module is available from PyPI at:
 and can be installed using ``pip``, depending on which containers you need:
 
     pip install testcontainers[mysql]
+    pip install testcontainers[oracle]
     pip install testcontainers[postgresql]
     pip install testcontainers[selenium]
     # or with multiple

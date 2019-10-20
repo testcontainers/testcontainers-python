@@ -54,17 +54,12 @@ Oracle XE
     oracle = OracleDbContainer()
 
     with oracle:
-        e = sqlalchemy.create_engine(mysql.get_connection_url())
+        e = sqlalchemy.create_engine(oracle.get_connection_url())
         result = e.execute("select 1 from dual")
 
-It uses **https://hub.docker.com/r/wnameless/oracle-xe-11g/** docker image.
+It uses **https://hub.docker.com/r/wnameless/oracle-xe-11g-r2/** docker image.
 
-Connection detail for Oracle DB.
+Necessary to use it:
 
-::
-
-    hostname: localhost
-    port: 49161
-    sid: xe
-    username: system
-    password: oracle
+- ``cx_Oracle``
+- `Oracle client libraries <https://cx-oracle.readthedocs.io/en/latest/user_guide/installation.html>`_
