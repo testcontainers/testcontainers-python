@@ -68,3 +68,12 @@ Connection detail for Oracle DB.
     sid: xe
     username: system
     password: oracle
+
+Elasticsearch
+-------------
+
+::
+
+    es = ElasticSearchContainer()
+    with es:
+        es.get_url()  # gives you the http URL to connect to Elasticsearch

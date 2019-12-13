@@ -16,24 +16,23 @@ import urllib
 
 
 class ElasticsearchContainer(DockerContainer):
-    def __init__(self, image="elasticsearch:latest", port_to_expose=9200):
+    def __init__(self, image="elasticsearch:7.5.0", port_to_expose=9200):
         super(ElasticsearchContainer, self).__init__(image)
         self.port_to_expose = port_to_expose
         self.with_exposed_ports(self.port_to_expose)
-        cmd_dict = {
-            'transport.host': '127.0.0.1',
-            'http.host': '0.0.0.0',
-            'discovery.zen.minimum_master_nodes': '1'
-        }
-        command = ' '.join(['-E{0}={1}'.format(k, v) for k, v in cmd_dict.items()])
-        self.with_command(command)
+        self.with_env('transport.host', '127.0.0.1')
+        self.with_env('http.host', '0.0.0.0')
+        self.with_env('discovery.zen.minimum_master_nodes', '1')
 
     @wait_container_is_ready()
     def _connect(self):
-        port = self.get_exposed_port(self.port_to_expose)
-        res = urllib.request.urlopen('http://127.0.0.1:{}'.format(port))
+        res = urllib.request.urlopen(self.get_url())
         if res.status != 200:
             raise Exception()
+
+    def get_url(self):
+        port = self.get_exposed_port(self.port_to_expose)
+        return 'http://127.0.0.1:{}'.format(port)
 
     def start(self):
         super().start()

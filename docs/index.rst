@@ -14,6 +14,7 @@ Currently available features:
 - MySql db container
 - PostgreSQL db container
 - Google Cloud PubSub emulator container
+- Elasticsearch container
 - Generic Docker containers
 
 Installation
