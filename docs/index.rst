@@ -15,6 +15,7 @@ Currently available features:
 - Oracle db container
 - PostgreSQL db container
 - Google Cloud PubSub emulator container
+- Elasticsearch container
 - Generic Docker containers
 
 Installation

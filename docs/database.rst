@@ -63,3 +63,21 @@ Necessary to use it:
 
 - ``cx_Oracle``
 - `Oracle client libraries <https://cx-oracle.readthedocs.io/en/latest/user_guide/installation.html>`_
+=======
+::
+
+    hostname: localhost
+    port: 49161
+    sid: xe
+    username: system
+    password: oracle
+
+Elasticsearch
+-------------
+
+::
+
+    es = ElasticSearchContainer()
+    with es:
+        es.get_url()  # gives you the http URL to connect to Elasticsearch
+
