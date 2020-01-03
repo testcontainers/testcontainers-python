@@ -53,6 +53,7 @@ setuptools.setup(
         'postgresql': ['sqlalchemy', 'psycopg2-binary'],
         'selenium': ['selenium==2.53.1'],
         'google-cloud-pubsub': ['google-cloud-pubsub'],
+        'mongo': ['pymongo']
     },
     long_description_content_type="text/markdown",
     long_description=long_description,

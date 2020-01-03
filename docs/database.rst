@@ -1,7 +1,7 @@
 Database containers
 ===================
 
-Allows to spin up docker database images such as MySQL, PostgreSQL, MariaDB and Oracle XE.
+Allows to spin up docker database images such as MySQL, PostgreSQL, MariaDB, Oracle XE and MongoDb.
 
 MySQL example
 -------------
@@ -81,3 +81,35 @@ Elasticsearch
     with es:
         es.get_url()  # gives you the http URL to connect to Elasticsearch
 
+MongoDb
+-----------
+
+Example of MongoDb database usage:
+
+::
+
+    def test_docker_run_mongodb():
+        mongo_container = MongoDbContainer("mongo:latest")
+        with mongo_container as mongo:
+            db = mongo.get_connection_client().test
+            result = db.restaurants.insert_one(
+                {
+                    "address": {
+                        "street": "2 Avenue",
+                        "zipcode": "10075",
+                        "building": "1480",
+                        "coord": [-73.9557413, 40.7720266]
+                    },
+                    "borough": "Manhattan",
+                    "cuisine": "Italian",
+                    "name": "Vella",
+                    "restaurant_id": "41704620"
+                }
+            )
+            print(result.inserted_id)
+            cursor = db.restaurants.find({"borough": "Manhattan"})
+            for document in cursor:
+                print(document)
+
+Connection is made using pymongo package and MongoClient class.
+Alternatively, you can use get_connection_url method to use the driver that better fits for your use case.
