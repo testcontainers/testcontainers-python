@@ -55,24 +55,22 @@ def test_docker_run_mongodb():
     mongo_container = MongoDbContainer("mongo:latest")
     with mongo_container as mongo:
         db = mongo.get_connection_client().test
-        result = db.restaurants.insert_one(
-            {
-                "address": {
-                    "street": "2 Avenue",
-                    "zipcode": "10075",
-                    "building": "1480",
-                    "coord": [-73.9557413, 40.7720266]
-                },
-                "borough": "Manhattan",
-                "cuisine": "Italian",
-                "name": "Vella",
-                "restaurant_id": "41704620"
-            }
-        )
+        doc = {
+            "address": {
+                "street": "2 Avenue",
+                "zipcode": "10075",
+                "building": "1480",
+                "coord": [-73.9557413, 40.7720266]
+            },
+            "borough": "Manhattan",
+            "cuisine": "Italian",
+            "name": "Vella",
+            "restaurant_id": "41704620"
+        }
+        result = db.restaurants.insert_one(doc)
         print(result.inserted_id)
         cursor = db.restaurants.find({"borough": "Manhattan"})
-        for document in cursor:
-            print(document)
+        assert cursor.next()['restaurant_id'] == doc['restaurant_id']
 
 
 def test_docker_generic_db():
