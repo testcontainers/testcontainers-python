@@ -68,7 +68,6 @@ def test_docker_run_mongodb():
             "restaurant_id": "41704620"
         }
         result = db.restaurants.insert_one(doc)
-        print(result.inserted_id)
         cursor = db.restaurants.find({"borough": "Manhattan"})
         assert cursor.next()['restaurant_id'] == doc['restaurant_id']
 
