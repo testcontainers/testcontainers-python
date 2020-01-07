@@ -35,9 +35,9 @@ class MongoDbContainer(DockerContainer):
         self.with_env("MONGO_DB", self.MONGO_DB)
 
     def get_connection_url(self):
-        return "mongodb://{}:{}".format(self.get_container_host_ip(), self.get_exposed_port(27017))
+        return "mongodb://{}:{}".format(self.get_container_host_ip(), self.get_exposed_port(self.port_to_expose))
 
     def get_connection_client(self):
         return MongoClient("mongodb://{}:{}".format(self.get_container_host_ip(),
-                                                    self.get_exposed_port(27017)))
+                                                    self.get_exposed_port(self.port_to_expose)))
 
