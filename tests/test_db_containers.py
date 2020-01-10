@@ -7,6 +7,7 @@ from testcontainers.core.waiting_utils import wait_for
 from testcontainers.mysql import MySqlContainer, MariaDbContainer
 from testcontainers.oracle import OracleDbContainer
 from testcontainers.postgres import PostgresContainer
+from testcontainers.mongodb import MongoDbContainer
 
 
 def test_docker_run_mysql():
@@ -48,6 +49,27 @@ def test_docker_run_oracle():
                     'TNS for Linux: Version 11.2.0.2.0 - Production',
                     'NLSRTL Version 11.2.0.2.0 - Production'}
         assert {row[0] for row in result} == versions
+
+
+def test_docker_run_mongodb():
+    mongo_container = MongoDbContainer("mongo:latest")
+    with mongo_container as mongo:
+        db = mongo.get_connection_client().test
+        doc = {
+            "address": {
+                "street": "2 Avenue",
+                "zipcode": "10075",
+                "building": "1480",
+                "coord": [-73.9557413, 40.7720266]
+            },
+            "borough": "Manhattan",
+            "cuisine": "Italian",
+            "name": "Vella",
+            "restaurant_id": "41704620"
+        }
+        result = db.restaurants.insert_one(doc)
+        cursor = db.restaurants.find({"borough": "Manhattan"})
+        assert cursor.next()['restaurant_id'] == doc['restaurant_id']
 
 
 def test_docker_generic_db():

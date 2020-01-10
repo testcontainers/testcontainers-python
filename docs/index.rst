@@ -16,6 +16,7 @@ Currently available features:
 - PostgreSQL db container
 - Google Cloud PubSub emulator container
 - Elasticsearch container
+- MongoDb container
 - Generic Docker containers
 
 Installation
@@ -33,6 +34,7 @@ and can be installed using pip, depending on which containers you need:
    pip install testcontainers[postgresql]
    pip install testcontainers[selenium]
    pip install testcontainers[google-cloud-pubsub]
+   pip install testcontainers[mongodb]
    # or with multiple
    pip install testcontainers[mysql,postgresql,selenium,google-cloud-pubsub]
 
