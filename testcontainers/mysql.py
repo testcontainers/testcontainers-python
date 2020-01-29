@@ -21,9 +21,9 @@ class MySqlContainer(DbContainer):
     MYSQL_PASSWORD = environ.get("MYSQL_PASSWORD", "test")
     MYSQL_DATABASE = environ.get("MYSQL_DATABASE", "test")
 
-    def __init__(self, image="mysql:latest", **kwargs):
+    def __init__(self, image="mysql:latest", port=3306, **kwargs):
         super(MySqlContainer, self).__init__(image)
-        self.port_to_expose = 3306
+        self.port_to_expose = port
         self.with_exposed_ports(self.port_to_expose)
         if 'MYSQL_USER' in kwargs:
             self.MYSQL_USER = kwargs['MYSQL_USER']
