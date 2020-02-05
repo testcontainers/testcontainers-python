@@ -31,8 +31,9 @@ class ElasticsearchContainer(DockerContainer):
             raise Exception()
 
     def get_url(self):
+        host = self.get_container_host_ip()
         port = self.get_exposed_port(self.port_to_expose)
-        return 'http://127.0.0.1:{}'.format(port)
+        return 'http://{}:{}'.format(host, port)
 
     def start(self):
         super().start()
