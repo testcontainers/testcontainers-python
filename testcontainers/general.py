@@ -18,5 +18,5 @@ class TestContainer(DockerContainer):
     def __init__(self, image, port_to_expose=None):
         super(RedisContainer, self).__init__(image)
         if port_to_expose:
-		self.port_to_expose = port_to_expose
-	        self.with_exposed_ports(self.port_to_expose)
+            self.port_to_expose = port_to_expose
+            self.with_exposed_ports(self.port_to_expose)
