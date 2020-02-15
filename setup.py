@@ -57,4 +57,5 @@ setuptools.setup(
     },
     long_description_content_type="text/markdown",
     long_description=long_description,
+    python_requires='>=3.4'
 )
