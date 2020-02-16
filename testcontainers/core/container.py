@@ -8,50 +8,48 @@ from testcontainers.core.utils import is_windows, inside_container
 
 
 class DockerContainer(object):
-    def __init__(self, image, **kargs):
-        self.env = {}
-        self.ports = {}
-        self.volumes = {}
-        self.image = image
+    def __init__(self, image, **kwargs):
         self._docker = DockerClient()
         self._container = None
-        self._command = None
-        self._name = None
-        self._kargs = kargs
+        self._kwargs = {
+            'detach': True,
+            'environment': {}, 
+            'ports': {}, 
+            'volumes': {}, 
+            'image': image,
+            **kwargs,
+            }
+
+    def _with_map_entry(self, map_key, key, value) -> 'DockerContainer':
+        if not self._kwargs.get(map_key, None) or not isinstance(self._kwargs.get(map_key), dict):
+            self._kwargs[map_key] = {}
+
+        self._kwargs[map_key][key] = value
+        return self
 
     def with_env(self, key: str, value: str) -> 'DockerContainer':
-        self.env[key] = value
-        return self
+        return self._with_map_entry('environment', key, value)
 
     def with_bind_ports(self, container: int,
                         host: int = None) -> 'DockerContainer':
-        self.ports[container] = host
-        return self
+        return self._with_map_entry('ports', container, host)
 
     def with_exposed_ports(self, *ports) -> 'DockerContainer':
         for port in list(ports):
-            self.ports[port] = None
+            self._with_map_entry('ports', port, None)
         return self
 
-    def with_kargs(self, **kargs) -> 'DockerContainer':
-        self._kargs = kargs
+    def with_kwargs(self, **kwargs) -> 'DockerContainer':
+        self._kwargs = {**self._kwargs, **kwargs}
         return self
 
     def start(self):
         print("")
         print("{} {}".format(crayons.yellow("Pulling image"),
-                             crayons.red(self.image)))
+                             crayons.red(self._kwargs['image'])))
         with blindspin.spinner():
             docker_client = self.get_docker_client()
-            self._container = docker_client.run(self.image,
-                                                command=self._command,
-                                                detach=True,
-                                                environment=self.env,
-                                                ports=self.ports,
-                                                name=self._name,
-                                                volumes=self.volumes,
-                                                **self._kargs
-                                                )
+            self._container = docker_client.run(**self._kwargs)
         print("")
         print("Container started: ",
               crayons.yellow(self._container.short_id, bold=True))
@@ -93,19 +91,16 @@ class DockerContainer(object):
             return self.get_docker_client().port(self._container.id, port)
 
     def with_command(self, command: str) -> 'DockerContainer':
-        self._command = command
-        return self
+        return self.with_kwargs(command=command)
 
     def with_name(self, name: str) -> 'DockerContainer':
-        self._name = name
-        return self
+        return self.with_kwargs(name=name)
 
     def with_volume_mapping(self, host: str, container: str,
                             mode: str = 'ro') -> 'DockerContainer':
         # '/home/user1/': {'bind': '/mnt/vol2', 'mode': 'rw'}
         mapping = {'bind': container, 'mode': mode}
-        self.volumes[host] = mapping
-        return self
+        return self._with_map_entry('volumes', host, mapping)
 
     def get_wrapped_contaner(self) -> Container:
         return self._container
