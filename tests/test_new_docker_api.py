@@ -32,6 +32,7 @@ def test_docker_env_variables():
         url = db.get_connection_url()
         assert url == 'mysql+pymysql://demo:test@0.0.0.0:32785/custom_db'
 
+
 def test_docker_kargs():
     code_dir = Path(__file__).parent
     container_first = GenericContainer("nginx:latest")

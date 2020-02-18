@@ -1,7 +1,6 @@
 import os
 
 import pytest
-from selenium import webdriver
 
 from testcontainers.compose import DockerCompose
 from testcontainers.core.exceptions import NoSuchPortExposed

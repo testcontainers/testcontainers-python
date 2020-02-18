@@ -24,7 +24,7 @@ class MongoDbContainer(DockerContainer):
 
     def __init__(self, image="mongodb:latest"):
         super(MongoDbContainer, self).__init__(image=image)
-        self.command="mongo"
+        self.command = "mongo"
         self.port_to_expose = 27017
         self.with_exposed_ports(self.port_to_expose)
 
@@ -35,9 +35,9 @@ class MongoDbContainer(DockerContainer):
         self.with_env("MONGO_DB", self.MONGO_DB)
 
     def get_connection_url(self):
-        return "mongodb://{}:{}".format(self.get_container_host_ip(), self.get_exposed_port(self.port_to_expose))
+        port = self.get_exposed_port(self.port_to_expose)
+        return "mongodb://{}:{}".format(self.get_container_host_ip(), port)
 
     def get_connection_client(self):
         return MongoClient("mongodb://{}:{}".format(self.get_container_host_ip(),
                                                     self.get_exposed_port(self.port_to_expose)))
-

@@ -4,6 +4,7 @@ verify_ssl = true
 
 ["dev-packages"]
 codecov = "*"
+flake8 = "*"
 
 [packages]
 crayons = "*"

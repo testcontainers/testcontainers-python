@@ -151,6 +151,3 @@ texinfo_documents = [
      author, 'testcontainers', 'One line description of project.',
      'Miscellaneous'),
 ]
-
-
-

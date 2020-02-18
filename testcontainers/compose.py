@@ -20,7 +20,8 @@ class DockerCompose(object):
 
     def start(self):
         with blindspin.spinner():
-            subprocess.call(["docker-compose", "-f", self.compose_file_name, "up", "-d"], cwd=self.filepath)
+            subprocess.call(["docker-compose", "-f", self.compose_file_name, "up", "-d"],
+                            cwd=self.filepath)
 
     def stop(self):
         with blindspin.spinner():
