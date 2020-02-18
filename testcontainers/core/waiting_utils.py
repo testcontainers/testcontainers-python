@@ -12,7 +12,8 @@
 #    under the License.
 
 
-from time import sleep
+import re
+import time
 
 import blindspin
 import crayons
@@ -40,7 +41,7 @@ def wait_container_is_ready():
                 try:
                     return wrapped(*args, **kwargs)
                 except Exception as e:
-                    sleep(config.SLEEP_TIME)
+                    time.sleep(config.SLEEP_TIME)
                     exception = e
             raise TimeoutException(
                 """Wait time exceeded {0} sec.
@@ -55,3 +56,37 @@ def wait_container_is_ready():
 @wait_container_is_ready()
 def wait_for(condition):
     return condition()
+
+
+def wait_for_logs(container, predicate, timeout=None, interval=1):
+    """
+    Wait for the container to emit logs satisfying the predicate.
+
+    Parameters
+    ----------
+    container : DockerContainer
+        Container whose logs to wait for.
+    predicate : callable or str
+        Predicate that should be satisfied by the logs. If a string, the it is used as the pattern
+        for a multiline regular expression search.
+    timeout : float or None
+        Number of seconds to wait for the predicate to be satisfied. Defaults to wait indefinitely.
+    interval : float
+        Interval at which to poll the logs.
+
+    Returns
+    -------
+    duration : float
+        Number of seconds until the predicate was satisfied.
+    """
+    if isinstance(predicate, str):
+        predicate = re.compile(predicate, re.MULTILINE).search
+    start = time.time()
+    while True:
+        duration = time.time() - start
+        if predicate(container._container.logs().decode()):
+            return duration
+        if timeout and duration > timeout:
+            raise TimeoutError("container did not emit logs satisfying predicate in %.3f seconds"
+                               % timeout)
+        time.sleep(interval)

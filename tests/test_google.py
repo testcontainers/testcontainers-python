@@ -1,10 +1,11 @@
 from testcontainers.google import PubSubContainer
+from testcontainers.core.waiting_utils import wait_for_logs
 from queue import Queue
 
 
 def test_pubsub_container():
     with PubSubContainer() as pubsub:
-        import time; time.sleep(5)
+        wait_for_logs(pubsub, r"Server started, listening on \d+", timeout=10)
         # Create a new topic
         publisher = pubsub.get_publisher_client()
         topic_path = publisher.topic_path(pubsub.project, "my-topic")
