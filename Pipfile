@@ -4,6 +4,8 @@ verify_ssl = true
 
 ["dev-packages"]
 codecov = "*"
+pip = ">=9.0"
+setuptools = ">=24.2.0"
 
 [packages]
 crayons = "*"
