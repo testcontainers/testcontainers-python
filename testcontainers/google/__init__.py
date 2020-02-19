@@ -1,1 +1,1 @@
-from .pubsub import PubSubContainer
+from .pubsub import PubSubContainer  # noqa

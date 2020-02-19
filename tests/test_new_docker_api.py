@@ -30,7 +30,8 @@ def test_docker_env_variables():
     db.with_bind_ports(3306, 32785)
     with db:
         url = db.get_connection_url()
-        assert url == 'mysql+pymysql://demo:test@0.0.0.0:32785/custom_db'
+        assert url == 'mysql+pymysql://demo:test@localhost:32785/custom_db'
+
 
 def test_docker_kargs():
     code_dir = Path(__file__).parent
