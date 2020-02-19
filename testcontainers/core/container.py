@@ -4,7 +4,7 @@ from docker.models.containers import Container
 
 from testcontainers.core.docker_client import DockerClient
 from testcontainers.core.exceptions import ContainerStartException
-from testcontainers.core.utils import is_windows, inside_container
+from testcontainers.core.utils import inside_container
 
 
 class DockerContainer(object):
@@ -81,10 +81,7 @@ class DockerContainer(object):
         # container's IP address from the dockder "bridge" network
         if inside_container():
             return self.get_docker_client().bridge_ip(self._container.id)
-        elif is_windows():
-            return "localhost"
-        else:
-            return "0.0.0.0"
+        return "localhost"
 
     def get_exposed_port(self, port) -> str:
         if inside_container():
