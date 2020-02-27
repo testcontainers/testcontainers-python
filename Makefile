@@ -33,4 +33,4 @@ tests : ${TESTS}
 
 ${TESTS} : tests/% : image/%
 	${RUN} -v /var/run/docker.sock:/var/run/docker.sock testcontainers-python:$* bash -c \
-		"flake8 && pytest -v ${ARGS}"
+		"flake8 && pytest -s -v ${ARGS}"
