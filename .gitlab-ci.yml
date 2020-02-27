@@ -1,0 +1,5 @@
+tests/3.8:
+  image: "python:3.8"
+  script:
+    - pip install -r requirements/3.8.txt
+    - pytest tests -v
