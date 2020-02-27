@@ -1,3 +1,10 @@
+variables:
+    DOCKER_DRIVER: overlay2
+    DOCKER_TLS_CERTDIR: ""
+
+services:
+- docker:19.03.0-dind
+
 tests/3.8:
   image: "python:3.8"
   script:
