@@ -8,9 +8,14 @@ from testcontainers.core.exceptions import NoSuchPortExposed
 
 
 class DockerCompose(object):
-    def __init__(self, filepath, compose_file_name="docker-compose.yml"):
+    def __init__(
+            self,
+            filepath,
+            compose_file_name="docker-compose.yml",
+            pull=False):
         self.filepath = filepath
         self.compose_file_name = compose_file_name
+        self.pull = pull
 
     def __enter__(self):
         self.start()
@@ -21,6 +26,9 @@ class DockerCompose(object):
 
     def start(self):
         with blindspin.spinner():
+            if self.pull:
+                subprocess.call(["docker-compose", "-f", self.compose_file_name, "pull"],
+                                cwd=self.filepath)
             subprocess.call(["docker-compose", "-f", self.compose_file_name, "up", "-d"],
                             cwd=self.filepath)
 
