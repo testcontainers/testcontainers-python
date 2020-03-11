@@ -54,7 +54,8 @@ setuptools.setup(
         'postgresql': ['sqlalchemy', 'psycopg2-binary'],
         'selenium': ['selenium'],
         'google-cloud-pubsub': ['google-cloud-pubsub'],
-        'mongo': ['pymongo']
+        'mongo': ['pymongo'],
+        'redis': ['redis']
     },
     long_description_content_type="text/markdown",
     long_description=long_description,
