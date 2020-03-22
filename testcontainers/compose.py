@@ -3,8 +3,8 @@ import subprocess
 import blindspin
 import requests
 
-from testcontainers.core.waiting_utils import wait_container_is_ready
 from testcontainers.core.exceptions import NoSuchPortExposed
+from testcontainers.core.waiting_utils import wait_container_is_ready
 
 
 class DockerCompose(object):
@@ -12,10 +12,12 @@ class DockerCompose(object):
             self,
             filepath,
             compose_file_name="docker-compose.yml",
-            pull=False):
+            pull=False,
+            build=False):
         self.filepath = filepath
         self.compose_file_name = compose_file_name
         self.pull = pull
+        self.build = build
 
     def __enter__(self):
         self.start()
@@ -26,11 +28,15 @@ class DockerCompose(object):
 
     def start(self):
         with blindspin.spinner():
+            cmd = ["docker-compose", "-f", self.compose_file_name]
             if self.pull:
-                subprocess.call(["docker-compose", "-f", self.compose_file_name, "pull"],
-                                cwd=self.filepath)
-            subprocess.call(["docker-compose", "-f", self.compose_file_name, "up", "-d"],
-                            cwd=self.filepath)
+                subprocess.call(cmd + ["pull"], cwd=self.filepath)
+
+            cmd += ["up", "-d"]
+            if self.build:
+                cmd += ["--build"]
+
+            subprocess.call(cmd, cwd=self.filepath)
 
     def stop(self):
         with blindspin.spinner():
