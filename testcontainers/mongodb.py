@@ -15,6 +15,7 @@ import os
 from pymongo import MongoClient
 
 from testcontainers.core.generic import DockerContainer
+from testcontainers.core.waiting_utils import wait_container_is_ready
 
 
 class MongoDbContainer(DockerContainer):
@@ -41,3 +42,14 @@ class MongoDbContainer(DockerContainer):
     def get_connection_client(self):
         return MongoClient("mongodb://{}:{}".format(self.get_container_host_ip(),
                                                     self.get_exposed_port(self.port_to_expose)))
+
+    @wait_container_is_ready()
+    def _connect(self):
+        client = self.get_connection_client()
+        # will raise pymongo.errors.ServerSelectionTimeoutError if no connection is established
+        client.admin.command('ismaster')
+
+    def start(self):
+        super().start()
+        self._connect()
+        return self
