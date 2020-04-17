@@ -102,6 +102,7 @@ def test_docker_generic_db():
         for document in cursor:
             print(document)
 
+
 @pytest.mark.skip(reason="needs ms sql client libraries unavailable on Travis")
 def test_docker_run_mssql():
     config = SqlServerContainer()
