@@ -103,12 +103,10 @@ def test_docker_generic_db():
             print(document)
 
 
-@pytest.mark.skip(reason="needs ms sql client libraries unavailable on Travis")
 def test_docker_run_mssql():
     config = SqlServerContainer()
     with config as mssql:
         e = sqlalchemy.create_engine(mssql.get_connection_url())
         result = e.execute('select @@servicename')
         for row in result:
-            print(row[0])
             assert row[0] == 'MSSQLSERVER'
