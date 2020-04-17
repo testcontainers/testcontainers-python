@@ -55,7 +55,8 @@ setuptools.setup(
         'selenium': ['selenium'],
         'google-cloud-pubsub': ['google-cloud-pubsub'],
         'mongo': ['pymongo'],
-        'redis': ['redis']
+        'redis': ['redis'],
+        'mssqlserver': ['pymssql']
     },
     long_description_content_type="text/markdown",
     long_description=long_description,

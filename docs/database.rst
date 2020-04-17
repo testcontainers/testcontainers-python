@@ -63,7 +63,7 @@ Necessary to use it:
 
 - ``cx_Oracle``
 - `Oracle client libraries <https://cx-oracle.readthedocs.io/en/latest/user_guide/installation.html>`_
-=======
+
 ::
 
     hostname: localhost
@@ -113,3 +113,16 @@ Example of MongoDb database usage:
 
 Connection is made using pymongo package and MongoClient class.
 Alternatively, you can use get_connection_url method to use the driver that better fits for your use case.
+
+Microsoft SQL Server
+--------------------
+
+::
+
+    mssql = SqlServerContainer()
+
+    with mssql:
+        e = sqlalchemy.create_engine(mssql.get_connection_url())
+        result = e.execute("select @@VERSION")
+
+It uses the Microsoft-provided Docker image and requires the pymssql driver.

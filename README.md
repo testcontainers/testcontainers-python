@@ -15,6 +15,7 @@ Currently available features:
 * MariaDb container
 * OracleDb container
 * PostgreSQL Db container
+* Microsoft SQL Server container
 * Generic docker containers
 
 ### Quick start
