@@ -125,4 +125,5 @@ Microsoft SQL Server
         e = sqlalchemy.create_engine(mssql.get_connection_url())
         result = e.execute("select @@VERSION")
 
-It uses the Microsoft-provided Docker image and requires the pymssql driver.
+It uses the Microsoft-provided Docker image and requires `ODBC Driver 17 for SQL Server
+<https://docs.microsoft.com/en-us/sql/connect/odbc/linux-mac/installing-the-microsoft-odbc-driver-for-sql-server>`_.
