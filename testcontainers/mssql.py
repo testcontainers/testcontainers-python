@@ -34,9 +34,9 @@ class SqlServerContainer(DbContainer):
 
     def get_connection_url(self):
         standard_url = super()._create_connection_url(dialect="mssql+pyodbc",
-                                              username=self.SQLSERVER_USER,
-                                              password=self.SQLSERVER_PASSWORD,
-                                              db_name=self.SQLSERVER_DBNAME,
-                                              port=self.port_to_expose)
+                                                      username=self.SQLSERVER_USER,
+                                                      password=self.SQLSERVER_PASSWORD,
+                                                      db_name=self.SQLSERVER_DBNAME,
+                                                      port=self.port_to_expose)
 
-        return standard_url + f"?driver={self.SQLSERVER_DRIVER}"
+        return standard_url + "?driver=" + self.SQLSERVER_DRIVER
