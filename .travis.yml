@@ -7,6 +7,9 @@ services:
 
 addons:
     chrome: "stable"
+    apt:
+      packages:
+        - unixodbc-dev # required for pyodbc
 
 language: python
 python:

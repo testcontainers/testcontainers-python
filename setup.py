@@ -56,7 +56,7 @@ setuptools.setup(
         'google-cloud-pubsub': ['google-cloud-pubsub'],
         'mongo': ['pymongo'],
         'redis': ['redis'],
-        'mssqlserver': ['pymssql']
+        'mssqlserver': ['pyodbc']
     },
     long_description_content_type="text/markdown",
     long_description=long_description,
