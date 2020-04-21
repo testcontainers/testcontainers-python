@@ -110,3 +110,10 @@ def test_docker_run_mssql():
         result = e.execute('select @@servicename')
         for row in result:
             assert row[0] == 'MSSQLSERVER'
+
+    config = SqlServerContainer(password="1Secure*Password2")
+    with config as mssql:
+        e = sqlalchemy.create_engine(mssql.get_connection_url())
+        result = e.execute('select @@servicename')
+        for row in result:
+            assert row[0] == 'MSSQLSERVER'
