@@ -26,6 +26,7 @@ class SqlServerContainer(DbContainer):
         self.with_env("SQLSERVER_DBNAME", self.SQLSERVER_DBNAME)
         self.with_env("ACCEPT_EULA", self.ACCEPT_EULA)
         self.with_env("MSSQL_PID", self.MSSQL_PID)
+        self.with_env("SQLSERVER_DRIVER", self.SQLSERVER_DRIVER)
 
     def get_connection_url(self):
         standard_url = super()._create_connection_url(dialect="mssql+pyodbc",
