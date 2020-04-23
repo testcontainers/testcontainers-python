@@ -1,3 +1,4 @@
+import os
 import blindspin
 import crayons
 from docker.models.containers import Container
@@ -77,17 +78,28 @@ class DockerContainer(object):
                 pass
 
     def get_container_host_ip(self) -> str:
-        # if testcontainers itself runs in docker, get the newly spawned
-        # container's IP address from the dockder "bridge" network
-        if inside_container():
-            return self.get_docker_client().bridge_ip(self._container.id)
+        # if os env TC_HOST is set, use it
+        if os.environ.get('TC_HOST') is not None:
+            return os.environ.get('TC_HOST')
+
+        # infer from docker host
+        url = self.get_docker_client().host()
+
+        if 'http' in url.scheme or 'tcp' in url.scheme:
+            return url.hostname
+        if 'unix' in url.scheme or 'npipe' in url.scheme:
+            # if testcontainers itself runs in docker, get the newly spawned
+            # container's IP address from the dockder "bridge" network
+            if inside_container():
+                return self.get_docker_client().bridge_ip(self._container.id)
         return "localhost"
 
     def get_exposed_port(self, port) -> str:
-        if inside_container():
-            return port
-        else:
-            return self.get_docker_client().port(self._container.id, port)
+        url = self.get_docker_client().host()
+        if 'unix' in url.scheme or 'npipe' in url.scheme:
+            if inside_container():
+                return port
+        return self.get_docker_client().port(self._container.id, port)
 
     def with_command(self, command: str) -> 'DockerContainer':
         self._command = command
