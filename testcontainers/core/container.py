@@ -78,6 +78,7 @@ class DockerContainer(object):
                 pass
 
     def get_container_host_ip(self) -> str:
+        # https://github.com/testcontainers/testcontainers-go/blob/dd76d1e39c654433a3d80429690d07abcec04424/docker.go#L644
         # if os env TC_HOST is set, use it
         if os.environ.get('TC_HOST') is not None:
             return os.environ.get('TC_HOST')
