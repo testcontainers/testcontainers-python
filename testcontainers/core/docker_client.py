@@ -10,6 +10,7 @@
 #    WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the
 #    License for the specific language governing permissions and limitations
 #    under the License.
+import urllib
 import docker
 from docker.models.containers import Container
 
@@ -41,4 +42,11 @@ class DockerClient(object):
 
     def bridge_ip(self, container_id):
         container = self.client.api.containers(filters={'id': container_id})[0]
+        print(container['NetworkSettings']['Networks']['bridge'])
         return container['NetworkSettings']['Networks']['bridge']['IPAddress']
+
+    def host(self):
+        try:
+            return urllib.parse.urlparse(self.client.api.base_url)
+        except ValueError:
+            return None
