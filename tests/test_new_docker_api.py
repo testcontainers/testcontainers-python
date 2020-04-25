@@ -1,10 +1,11 @@
 import os
+import re
 from pathlib import Path
 
 from testcontainers import mysql
 
 from testcontainers.core.generic import GenericContainer
-
+from testcontainers.core.utils import inside_container
 from importlib import reload
 
 
@@ -30,7 +31,11 @@ def test_docker_env_variables():
     db.with_bind_ports(3306, 32785)
     with db:
         url = db.get_connection_url()
-        assert url == 'mysql+pymysql://demo:test@0.0.0.0:32785/custom_db'
+        if inside_container():
+            assert re.match(r'mysql\+pymysql://demo:test@(\d+\.){3}\d+:3306/custom_db', url)
+        else:
+            assert url == 'mysql+pymysql://demo:test@localhost:32785/custom_db'
+
 
 def test_docker_kargs():
     code_dir = Path(__file__).parent

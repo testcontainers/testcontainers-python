@@ -4,7 +4,7 @@ from docker.models.containers import Container
 
 from testcontainers.core.docker_client import DockerClient
 from testcontainers.core.exceptions import ContainerStartException
-from testcontainers.core.utils import is_windows, inside_container
+from testcontainers.core.utils import inside_container
 
 
 class DockerContainer(object):
@@ -58,7 +58,7 @@ class DockerContainer(object):
         return self
 
     def stop(self, force=True, delete_volume=True):
-        self.get_wrapped_contaner().remove(force=force, v=delete_volume)
+        self.get_wrapped_container().remove(force=force, v=delete_volume)
 
     def __enter__(self):
         return self.start()
@@ -81,10 +81,7 @@ class DockerContainer(object):
         # container's IP address from the dockder "bridge" network
         if inside_container():
             return self.get_docker_client().bridge_ip(self._container.id)
-        elif is_windows():
-            return "localhost"
-        else:
-            return "0.0.0.0"
+        return "localhost"
 
     def get_exposed_port(self, port) -> str:
         if inside_container():
@@ -107,7 +104,7 @@ class DockerContainer(object):
         self.volumes[host] = mapping
         return self
 
-    def get_wrapped_contaner(self) -> Container:
+    def get_wrapped_container(self) -> Container:
         return self._container
 
     def get_docker_client(self) -> DockerClient:
@@ -116,4 +113,4 @@ class DockerContainer(object):
     def exec(self, command):
         if not self._container:
             raise ContainerStartException("Container should be started before")
-        return self.get_wrapped_contaner().exec_run(command)
+        return self.get_wrapped_container().exec_run(command)
