@@ -31,10 +31,8 @@ def test_docker_env_variables():
     db.with_bind_ports(3306, 32785)
     with db:
         url = db.get_connection_url()
-        if inside_container():
-            assert re.match(r'mysql\+pymysql://demo:test@(\d+\.){3}\d+:3306/custom_db', url)
-        else:
-            assert url == 'mysql+pymysql://demo:test@localhost:32785/custom_db'
+        pattern = r'mysql\+pymysql:\/\/demo:test@[\w,.]+:(3306|32785)\/custom_db'
+        assert re.match(pattern, url)
 
 
 def test_docker_kargs():
