@@ -5,7 +5,6 @@ from pathlib import Path
 from testcontainers import mysql
 
 from testcontainers.core.generic import GenericContainer
-from testcontainers.core.utils import inside_container
 from importlib import reload
 
 

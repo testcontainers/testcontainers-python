@@ -1,4 +1,3 @@
-import os
 import blindspin
 import crayons
 from docker.models.containers import Container
