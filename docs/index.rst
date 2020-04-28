@@ -17,6 +17,7 @@ Currently available features:
 - Google Cloud PubSub emulator container
 - Elasticsearch container
 - MongoDb container
+- MS SQL Server container
 - Generic Docker containers
 
 Installation
@@ -35,6 +36,7 @@ and can be installed using pip, depending on which containers you need:
    pip install testcontainers[selenium]
    pip install testcontainers[google-cloud-pubsub]
    pip install testcontainers[mongodb]
+   pip install testcontainers[mssqlserver]
    # or with multiple
    pip install testcontainers[mysql,postgresql,selenium,google-cloud-pubsub]
 
