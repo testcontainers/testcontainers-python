@@ -30,7 +30,7 @@ Code
 
 ::
 
-    compose = DockerCompose("/home/project")
+    compose = DockerCompose("/home/project", pull=True)
     with compose:
         host = compose.get_service_host("hub", 4444)
         port = compose.get_service_port("hub", 4444)

@@ -10,8 +10,12 @@
 #    WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the
 #    License for the specific language governing permissions and limitations
 #    under the License.
+import os
+import urllib
 import docker
 from docker.models.containers import Container
+from testcontainers.core.utils import inside_container
+from testcontainers.core.utils import default_gateway_ip
 
 
 class DockerClient(object):
@@ -42,3 +46,27 @@ class DockerClient(object):
     def bridge_ip(self, container_id):
         container = self.client.api.containers(filters={'id': container_id})[0]
         return container['NetworkSettings']['Networks']['bridge']['IPAddress']
+
+    def gateway_ip(self, container_id):
+        container = self.client.api.containers(filters={'id': container_id})[0]
+        return container['NetworkSettings']['Networks']['bridge']['Gateway']
+
+    def host(self):
+        # https://github.com/testcontainers/testcontainers-go/blob/dd76d1e39c654433a3d80429690d07abcec04424/docker.go#L644
+        # if os env TC_HOST is set, use it
+        host = os.environ.get('TC_HOST')
+        if host:
+            return host
+        try:
+            url = urllib.parse.urlparse(self.client.api.base_url)
+
+        except ValueError:
+            return None
+        if 'http' in url.scheme or 'tcp' in url.scheme:
+            return url.hostname
+        if 'unix' in url.scheme or 'npipe' in url.scheme:
+            if inside_container():
+                ip_address = default_gateway_ip()
+                if ip_address:
+                    return ip_address
+        return "localhost"

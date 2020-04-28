@@ -1,4 +1,4 @@
--e file:.[docker-compose,mysql,oracle,postgresql,selenium,google-cloud-pubsub,mongo]
+-e file:.[docker-compose,mysql,oracle,postgresql,selenium,google-cloud-pubsub,mongo,redis]
 codecov
 flake8
 pytest

@@ -58,7 +58,7 @@ class DockerContainer(object):
         return self
 
     def stop(self, force=True, delete_volume=True):
-        self.get_wrapped_contaner().remove(force=force, v=delete_volume)
+        self.get_wrapped_container().remove(force=force, v=delete_volume)
 
     def __enter__(self):
         return self.start()
@@ -77,17 +77,33 @@ class DockerContainer(object):
                 pass
 
     def get_container_host_ip(self) -> str:
-        # if testcontainers itself runs in docker, get the newly spawned
-        # container's IP address from the dockder "bridge" network
+        # infer from docker host
+        host = self.get_docker_client().host()
+        if not host:
+            return "localhost"
+
+        # check testcontainers itself runs inside docker container
         if inside_container():
-            return self.get_docker_client().bridge_ip(self._container.id)
-        return "localhost"
+            # If newly spawned container's gateway IP address from the docker
+            # "bridge" network is equal to detected host address, we should use
+            # container IP address, otherwise fall back to detected host
+            # address. Even it's inside container, we need to double check,
+            # because docker host might be set to docker:dind, usually in CI/CD environment
+            gateway_ip = self.get_docker_client().gateway_ip(self._container.id)
+
+            if gateway_ip == host:
+                return self.get_docker_client().bridge_ip(self._container.id)
+        return host
 
     def get_exposed_port(self, port) -> str:
+        mapped_port = self.get_docker_client().port(self._container.id, port)
         if inside_container():
-            return port
-        else:
-            return self.get_docker_client().port(self._container.id, port)
+            gateway_ip = self.get_docker_client().gateway_ip(self._container.id)
+            host = self.get_docker_client().host()
+
+            if gateway_ip == host:
+                return port
+        return mapped_port
 
     def with_command(self, command: str) -> 'DockerContainer':
         self._command = command
@@ -104,7 +120,7 @@ class DockerContainer(object):
         self.volumes[host] = mapping
         return self
 
-    def get_wrapped_contaner(self) -> Container:
+    def get_wrapped_container(self) -> Container:
         return self._container
 
     def get_docker_client(self) -> DockerClient:
@@ -113,4 +129,4 @@ class DockerContainer(object):
     def exec(self, command):
         if not self._container:
             raise ContainerStartException("Container should be started before")
-        return self.get_wrapped_contaner().exec_run(command)
+        return self.get_wrapped_container().exec_run(command)
