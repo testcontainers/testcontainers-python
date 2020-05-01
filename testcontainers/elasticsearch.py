@@ -50,4 +50,5 @@ class ElasticSearchContainer(DockerContainer):
         self._connect()
         return self
 
+
 ElasticsearchContainer = ElasticSearchContainer

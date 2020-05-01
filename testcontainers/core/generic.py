@@ -31,8 +31,10 @@ class DbContainer(DockerContainer):
 
     def _create_connection_url(self, dialect, username, password, port, db_name):
         host = self.get_container_host_ip()
-        port = port=self.get_exposed_port(port)
-        return f"{dialect}://{username}:{password}@{host}:{port}/{db_name}"
+        port = self.get_exposed_port(port)
+        return "{dialect}://{username}:{password}@{host}:{port}/{db}".format(
+            dialect=dialect, username=username, password=password, host=host, port=port, db=db_name
+        )
 
     def start(self):
         self._configure()
