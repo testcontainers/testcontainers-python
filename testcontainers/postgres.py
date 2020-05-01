@@ -16,6 +16,18 @@ from testcontainers.core.generic import DbContainer
 
 
 class PostgresContainer(DbContainer):
+    """
+    Postgres database container.
+
+    Example
+    -------
+    The example spins up a Postgres database and connects to it using the :code:`psycopg` driver.
+    ::
+
+        with PostgresContainer("postgres:9.5") as postgres:
+            e = sqlalchemy.create_engine(postgres.get_connection_url())
+            result = e.execute("select version()")
+    """
     POSTGRES_USER = os.environ.get("POSTGRES_USER", "test")
     POSTGRES_PASSWORD = os.environ.get("POSTGRES_PASSWORD", "test")
     POSTGRES_DB = os.environ.get("POSTGRES_DB", "test")

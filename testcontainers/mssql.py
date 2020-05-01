@@ -4,6 +4,22 @@ from testcontainers.core.generic import DbContainer
 
 
 class SqlServerContainer(DbContainer):
+    """
+    Microsoft Sql Server database container.
+
+    Example
+    -------
+    ::
+
+        with SqlServerContainer() as mssql:
+            e = sqlalchemy.create_engine(mssql.get_connection_url())
+            result = e.execute("select @@VERSION")
+
+    Notes
+    -----
+    Requires `ODBC Driver 17 for SQL Server <https://docs.microsoft.com/en-us/sql/connect/odbc/
+    linux-mac/installing-the-microsoft-odbc-driver-for-sql-server>`_.
+    """
     SQLSERVER_PASSWORD = environ.get("SQLSERVER_PASSWORD", "1Secure*Password1")
 
     def __init__(self, image="mcr.microsoft.com/mssql/server:2019-latest", user="SA", password=None,

@@ -15,9 +15,19 @@ from testcontainers.core.waiting_utils import wait_container_is_ready
 import urllib
 
 
-class ElasticsearchContainer(DockerContainer):
+class ElasticSearchContainer(DockerContainer):
+    """
+    ElasticSearch container.
+
+    Example
+    -------
+    ::
+
+        with ElasticSearchContainer() as es:
+            connection_url = es.get_url()
+    """
     def __init__(self, image="elasticsearch:7.5.0", port_to_expose=9200):
-        super(ElasticsearchContainer, self).__init__(image)
+        super(ElasticSearchContainer, self).__init__(image)
         self.port_to_expose = port_to_expose
         self.with_exposed_ports(self.port_to_expose)
         self.with_env('transport.host', '127.0.0.1')
@@ -39,3 +49,5 @@ class ElasticsearchContainer(DockerContainer):
         super().start()
         self._connect()
         return self
+
+ElasticsearchContainer = ElasticSearchContainer
