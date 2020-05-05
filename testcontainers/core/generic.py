@@ -10,7 +10,6 @@
 #    WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the
 #    License for the specific language governing permissions and limitations
 #    under the License.
-import sqlalchemy
 
 from testcontainers.core.container import DockerContainer
 from testcontainers.core.waiting_utils import wait_container_is_ready
@@ -23,6 +22,7 @@ class DbContainer(DockerContainer):
 
     @wait_container_is_ready()
     def _connect(self):
+        import sqlalchemy
         engine = sqlalchemy.create_engine(self.get_connection_url())
         engine.connect()
 
