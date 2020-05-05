@@ -12,8 +12,6 @@
 #    under the License.
 import os
 
-from pymongo import MongoClient
-
 from testcontainers.core.generic import DockerContainer
 
 
@@ -68,5 +66,6 @@ class MongoDbContainer(DockerContainer):
         return "mongodb://{}:{}".format(self.get_container_host_ip(), port)
 
     def get_connection_client(self):
+        from pymongo import MongoClient
         return MongoClient("mongodb://{}:{}".format(self.get_container_host_ip(),
                                                     self.get_exposed_port(self.port_to_expose)))

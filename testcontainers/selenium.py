@@ -17,9 +17,6 @@ Selenium containers
 Allows to spin up selenium containers for testing with browsers.
 """
 
-from selenium import webdriver
-from selenium.webdriver.remote.webdriver import WebDriver
-
 from testcontainers.core.container import DockerContainer
 from testcontainers.core.waiting_utils import wait_container_is_ready
 
@@ -65,11 +62,12 @@ class BrowserWebDriverContainer(DockerContainer):
 
     @wait_container_is_ready()
     def _connect(self):
+        from selenium import webdriver
         return webdriver.Remote(
             command_executor=(self.get_connection_url()),
             desired_capabilities=self.capabilities)
 
-    def get_driver(self) -> WebDriver:
+    def get_driver(self):
         return self._connect()
 
     def get_connection_url(self) -> str:
