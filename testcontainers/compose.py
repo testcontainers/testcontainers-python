@@ -1,3 +1,10 @@
+"""
+Docker compose support
+======================
+
+Allows to spin up services configured via :code:`docker-compose.yml`.
+"""
+
 import subprocess
 
 import blindspin
@@ -8,6 +15,42 @@ from testcontainers.core.exceptions import NoSuchPortExposed
 
 
 class DockerCompose(object):
+    """
+    Docker compose containers.
+
+    Example
+    -------
+    ::
+
+        with DockerCompose("/home/project", pull=True) as compose:
+            host = compose.get_service_host("hub", 4444)
+            port = compose.get_service_port("hub", 4444)
+            driver = webdriver.Remote(
+                command_executor=("http://{}:{}/wd/hub".format(host,port)),
+                desired_capabilities=CHROME,
+            )
+            driver.get("http://automation-remarks.com")
+
+
+    .. code-block:: yaml
+
+        hub:
+        image: selenium/hub
+        ports:
+        - "4444:4444"
+        firefox:
+        image: selenium/node-firefox
+        links:
+            - hub
+        expose:
+            - "5555"
+        chrome:
+        image: selenium/node-chrome
+        links:
+            - hub
+        expose:
+            - "5555"
+    """
     def __init__(
             self,
             filepath,

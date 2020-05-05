@@ -13,13 +13,13 @@
 
 import setuptools
 
-with open('README.md') as fp:
+with open('README.rst') as fp:
     long_description = fp.read()
 
 setuptools.setup(
     name='testcontainers',
     packages=setuptools.find_packages(exclude=['tests']),
-    version='3.0.0',
+    version='3.0.1',
     description='Library provides lightweight, throwaway instances of common databases, Selenium '
                 'web browsers, or anything else that can run in a Docker container',
     author='Sergey Pirogov',
@@ -46,6 +46,7 @@ setuptools.setup(
         'wrapt',
         'crayons',
         'blindspin',
+        'deprecation',
     ],
     extras_require={
         'docker-compose': ['docker-compose'],
@@ -58,7 +59,7 @@ setuptools.setup(
         'redis': ['redis'],
         'mssqlserver': ['pyodbc']
     },
-    long_description_content_type="text/markdown",
+    long_description_content_type="text/x-rst",
     long_description=long_description,
     python_requires='~=3.5',
 )

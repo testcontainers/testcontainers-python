@@ -10,6 +10,13 @@
 #    WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the
 #    License for the specific language governing permissions and limitations
 #    under the License.
+"""
+Selenium containers
+===================
+
+Allows to spin up selenium containers for testing with browsers.
+"""
+
 from selenium import webdriver
 from selenium.webdriver.remote.webdriver import WebDriver
 
@@ -27,6 +34,22 @@ def get_image_name(capabilities):
 
 
 class BrowserWebDriverContainer(DockerContainer):
+    """
+    Selenium browser container for Chrome or Firefox.
+
+    Example
+    -------
+    ::
+
+        from selenium.webdriver import DesiredCapabilities
+
+        with BrowserWebDriverContainer(DesiredCapabilities.CHROME) as chrome:
+            webdriver = chrome.get_driver()
+            webdriver.get("http://google.com")
+            webdriver.find_element_by_name("q").send_keys("Hello")
+
+    You can easily change browser by passing :code:`DesiredCapabilities.FIREFOX` instead.
+    """
     def __init__(self, capabilities, image=None):
         self.capabilities = capabilities
         if not image:
