@@ -56,6 +56,10 @@ class DockerCompose(object):
             filepath,
             compose_file_name="docker-compose.yml",
             pull=False):
+
+        # Set to a list of file names for later use
+        compose_file_name = [compose_file_name] if isinstance(compose_file_name, str) else compose_file_name
+
         self.filepath = filepath
         self.compose_file_name = compose_file_name
         self.pull = pull
@@ -68,16 +72,19 @@ class DockerCompose(object):
         self.stop()
 
     def start(self):
+        file_arguments = self._generate_file_arguments()
+
         with blindspin.spinner():
             if self.pull:
-                subprocess.call(["docker-compose", "-f", self.compose_file_name, "pull"],
+                subprocess.call(["docker-compose"] + file_arguments + ["pull"],
                                 cwd=self.filepath)
-            subprocess.call(["docker-compose", "-f", self.compose_file_name, "up", "-d"],
+            subprocess.call(["docker-compose"] + file_arguments + ["up", "-d"],
                             cwd=self.filepath)
 
     def stop(self):
+        file_arguments = self._generate_file_arguments()
         with blindspin.spinner():
-            subprocess.call(["docker-compose", "-f", self.compose_file_name, "down", "-v"],
+            subprocess.call(["docker-compose"] + file_arguments ["down", "-v"],
                             cwd=self.filepath)
 
     def get_service_port(self, service_name, port):
@@ -85,6 +92,12 @@ class DockerCompose(object):
 
     def get_service_host(self, service_name, port):
         return self._get_service_info(service_name, port)[0]
+
+    def _generate_file_arguments(self):
+        result = []
+        for item in self.compose_file_name:
+            result += ["-f", item]
+        return result
 
     def _get_service_info(self, service, port):
         cmd_as_list = ["docker-compose", "port", service, str(port)]
