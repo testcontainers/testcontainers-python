@@ -84,7 +84,7 @@ class DockerCompose(object):
     def stop(self):
         file_arguments = self._generate_file_arguments()
         with blindspin.spinner():
-            subprocess.call(["docker-compose"] + file_arguments ["down", "-v"],
+            subprocess.call(["docker-compose"] + file_arguments + ["down", "-v"],
                             cwd=self.filepath)
 
     def get_service_port(self, service_name, port):
