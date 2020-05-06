@@ -58,7 +58,8 @@ class DockerCompose(object):
             pull=False):
 
         # Set to a list of file names for later use
-        compose_file_name = [compose_file_name] if isinstance(compose_file_name, str) else compose_file_name
+        if isinstance(compose_file_name, str):
+            compose_file_name = [compose_file_name]
 
         self.filepath = filepath
         self.compose_file_name = compose_file_name
