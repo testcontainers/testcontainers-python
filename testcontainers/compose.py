@@ -30,6 +30,9 @@ class DockerCompose(object):
                 desired_capabilities=CHROME,
             )
             driver.get("http://automation-remarks.com")
+            stdout, stderr = compose.get_logs()
+            if stderr:
+                print("Errors\n:{}".format(stderr))
 
 
     .. code-block:: yaml
@@ -79,6 +82,16 @@ class DockerCompose(object):
         with blindspin.spinner():
             subprocess.call(["docker-compose", "-f", self.compose_file_name, "down", "-v"],
                             cwd=self.filepath)
+
+    def get_logs(self):
+        with blindspin.spinner():
+            process = subprocess.Popen(
+                ["docker-compose", "-f", self.compose_file_name, "logs"],
+                cwd=self.filepath,
+                stdout=subprocess.PIPE,
+                stderr=subprocess.PIPE)
+            out, err = process.communicate()
+            return out, err
 
     def get_service_port(self, service_name, port):
         return self._get_service_info(service_name, port)[1]
