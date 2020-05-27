@@ -20,6 +20,7 @@ import crayons
 import wrapt
 
 from testcontainers.core import config
+from testcontainers.core.container import DockerContainer
 from testcontainers.core.exceptions import TimeoutException
 
 
@@ -89,4 +90,41 @@ def wait_for_logs(container, predicate, timeout=None, interval=1):
         if timeout and duration > timeout:
             raise TimeoutError("container did not emit logs satisfying predicate in %.3f seconds"
                                % timeout)
+        time.sleep(interval)
+
+
+def wait_for_port(container: DockerContainer, port: int, cmd: str = None, timeout=None, interval=1):
+    """
+    Wait for the container port to be available.
+
+    Parameters
+    ----------
+    container : DockerContainer
+        Container whose port to wait for.
+    port : int
+        Port to check against.
+    cmd : str or None
+        A custom command to run to check for port
+    timeout : float or None
+        Number of seconds to wait for the port to be open. Defaults to wait indefinitely.
+    interval : float
+        Interval at which to poll the port.
+
+    Returns
+    -------
+    duration : float
+        Number of seconds until the check passed.
+
+    """
+    start = time.time()
+    while True:
+        duration = time.time() - start
+        if not cmd:
+            cmd = f"nc -vz -w 1 localhost {port}"
+        res = container._container.exec_run(cmd)
+        if res[0] == 0:
+            return duration
+        if timeout and duration > timeout:
+            raise TimeoutError("container did not start listening on port %d in %.3f seconds"
+                               % (port, timeout))
         time.sleep(interval)
