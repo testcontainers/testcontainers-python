@@ -16,6 +16,22 @@ from testcontainers.core.generic import DbContainer
 
 
 class MySqlContainer(DbContainer):
+    """
+    MySql database container.
+
+    Example
+    -------
+    The example will spin up a MySql database to which you can connect with the credentials passed
+    in the constructor. Alternatively, you may use the :code:`get_connection_url()` method which
+    returns a sqlalchemy-compatible url in format
+    :code:`dialect+driver://username:password@host:port/database`.
+    ::
+
+        with MySqlContainer('mysql:5.7.17') as mysql:
+            e = sqlalchemy.create_engine(mysql.get_connection_url())
+            result = e.execute("select version()")
+            version, = result.fetchone()
+    """
     MYSQL_USER = environ.get("MYSQL_USER", "test")
     MYSQL_ROOT_PASSWORD = environ.get("MYSQL_ROOT_PASSWORD", "test")
     MYSQL_PASSWORD = environ.get("MYSQL_PASSWORD", "test")
@@ -54,5 +70,16 @@ class MySqlContainer(DbContainer):
 
 
 class MariaDbContainer(MySqlContainer):
-    def __init__(self, image="mariadb:latest"):
-        super(MariaDbContainer, self).__init__(image)
+    """
+    Maria database container, a commercially-supported fork of MySql.
+
+    Example
+    -------
+    ::
+
+        with MariaDbContainer("mariadb:latest") as mariadb:
+            e = sqlalchemy.create_engine(mariadb.get_connection_url())
+            result = e.execute("select version()")
+    """
+    def __init__(self, image="mariadb:latest", **kwargs):
+        super(MariaDbContainer, self).__init__(image, **kwargs)
