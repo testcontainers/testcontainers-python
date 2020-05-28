@@ -17,7 +17,9 @@ import time
 
 import blindspin
 import crayons
+import requests
 import wrapt
+from requests import RequestException
 
 from testcontainers.core import config
 from testcontainers.core.container import DockerContainer
@@ -93,7 +95,7 @@ def wait_for_logs(container, predicate, timeout=None, interval=1):
         time.sleep(interval)
 
 
-def wait_for_port(container: DockerContainer, port: int, cmd: str = None, timeout=None, interval=1):
+def wait_for_port(container: DockerContainer, port: int, timeout=None, interval=1):
     """
     Wait for the container port to be available.
 
@@ -103,8 +105,6 @@ def wait_for_port(container: DockerContainer, port: int, cmd: str = None, timeou
         Container whose port to wait for.
     port : int
         Port to check against.
-    cmd : str or None
-        A custom command to run to check for port
     timeout : float or None
         Number of seconds to wait for the port to be open. Defaults to wait indefinitely.
     interval : float
@@ -119,12 +119,75 @@ def wait_for_port(container: DockerContainer, port: int, cmd: str = None, timeou
     start = time.time()
     while True:
         duration = time.time() - start
-        if not cmd:
-            cmd = f"nc -vz -w 1 localhost {port}"
+
+        # build command
+        parts = ["/bin/sh", "-c", "\"true", "&&", "(",
+                 "cat", "/proc/net/tcp*", "|", "awk", "'{print $2}'", "|", "grep", "-i", "':0*%x'" % port,
+                 "||", "nc", "-vz", "-w", "1", "localhost", "%d" % port,
+                 "||", "/bin/bash", "-c", "'</dev/tcp/localhost/%d'" % port, ")\""]
+
+        cmd = ' '.join(parts)
+
         res = container._container.exec_run(cmd)
-        if res[0] == 0:
+
+        if res.exit_code == 0:
             return duration
         if timeout and duration > timeout:
             raise TimeoutError("container did not start listening on port %d in %.3f seconds"
                                % (port, timeout))
         time.sleep(interval)
+
+
+def wait_for_http_code(container: DockerContainer, status_code: int, port: int = 80, path: str = '/',
+                       scheme: str = 'http', timeout=None, interval=1, request_kwargs: dict = None):
+    """
+    Wait for a specific http status code.
+
+    Parameters
+    ----------
+    container : DockerContainer
+        Container which is queried for a specific status code.
+    status_code : int
+        Status code to wait for.
+    port : int
+        Port to query request on.
+    path : str
+        Path to use for request. Default is '/'
+    scheme : str
+        Scheme to use in request query. Default is 'http'
+    timeout : float or None
+        Number of seconds to wait for the port to be open. Defaults to wait indefinitely.
+    interval : float
+        Interval at which to poll the port.
+    request_kwargs: dict
+        kwargs to pass into the request, e.g.: {'verify': False}
+
+    Returns
+    -------
+    duration : float
+        Number of seconds until the check passed.
+    """
+    if request_kwargs is None:
+        request_kwargs = {'timeout': 1.0}
+    elif 'timeout' not in request_kwargs:
+        request_kwargs['timeout'] = 1.0
+
+    start = time.time()
+    # wait for port to open before continuing with http check
+    wait_for_port(container, port, timeout, interval)
+    while True:
+        duration = time.time() - start
+        dest = "%s://%s:%d%s" % (scheme,
+                                 container.get_container_host_ip(),
+                                 int(container.get_exposed_port(port)),
+                                 path)
+        res = None
+        try:
+            res = requests.get(dest, **request_kwargs)
+        except RequestException:
+            pass
+        if res and res.status_code == status_code:
+            return duration
+        if timeout and duration > timeout:
+            raise TimeoutError("container did not respond with %d listening on port %d in %.3f seconds"
+                               % (status_code, port, timeout))
