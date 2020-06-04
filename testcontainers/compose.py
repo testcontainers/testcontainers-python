@@ -87,7 +87,7 @@ class DockerCompose(object):
         return self._get_service_info(service_name, port)[0]
 
     def _get_service_info(self, service, port):
-        cmd_as_list = ["docker-compose", "port", service, str(port)]
+        cmd_as_list = ["docker-compose", "-f", self.compose_file_name, "port", service, str(port)]
         output = subprocess.check_output(cmd_as_list,
                                          cwd=self.filepath).decode("utf-8")
         result = str(output).rstrip().split(":")
