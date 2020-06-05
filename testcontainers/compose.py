@@ -32,7 +32,7 @@ class DockerCompose(object):
             driver.get("http://automation-remarks.com")
             stdout, stderr = compose.get_logs()
             if stderr:
-                print("Errors\n:{}".format(stderr))
+                print("Errors\\n:{}".format(stderr))
 
 
     .. code-block:: yaml
