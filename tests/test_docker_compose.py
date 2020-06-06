@@ -31,3 +31,17 @@ def test_compose_wait_for_container_ready():
     with DockerCompose("tests") as compose:
         docker = DockerClient()
         compose.wait_for("http://%s:4444/wd/hub" % docker.host())
+
+
+def test_can_parse_multiple_compose_files():
+    with DockerCompose(filepath="tests",
+                       compose_file_name=["docker-compose.yml", "docker-compose-2.yml"]) as compose:
+        host = compose.get_service_host("mysql", 3306)
+        port = compose.get_service_host("mysql", 3306)
+        assert host == "0.0.0.0"
+        assert port == "3306"
+
+        host = compose.get_service_host("hub", 4444)
+        port = compose.get_service_port("hub", 4444)
+        assert host == "0.0.0.0"
+        assert port == "3306"

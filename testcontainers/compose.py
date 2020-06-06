@@ -22,7 +22,9 @@ class DockerCompose(object):
     -------
     ::
 
-        with DockerCompose("/home/project", pull=True) as compose:
+        with DockerCompose("/home/project",
+                           compose_file_name=["docker-compose-1.yml", "docker-compose-2.yml"],
+                           pull=True) as compose:
             host = compose.get_service_host("hub", 4444)
             port = compose.get_service_port("hub", 4444)
             driver = webdriver.Remote(
