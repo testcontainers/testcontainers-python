@@ -80,7 +80,7 @@ class DockerCompose(object):
             if self.pull:
                 pull_cmd = self.docker_compose_command() + ['pull']
                 subprocess.call(pull_cmd, cwd=self.filepath)
-            up_cmd = self.docker_compose_command() + ['up']
+            up_cmd = self.docker_compose_command() + ['up', '-d']
             subprocess.call(up_cmd, cwd=self.filepath)
 
     def stop(self):
