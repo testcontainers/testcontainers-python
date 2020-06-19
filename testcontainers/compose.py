@@ -85,13 +85,12 @@ class DockerCompose(object):
 
     def get_logs(self):
         with blindspin.spinner():
-            process = subprocess.Popen(
+            result = subprocess.run(
                 ["docker-compose", "-f", self.compose_file_name, "logs"],
                 cwd=self.filepath,
-                stdout=subprocess.PIPE,
-                stderr=subprocess.PIPE)
-            out, err = process.communicate()
-            return out, err
+                capture_output=True
+            )
+            return result.stdout, result.stderr
 
     def get_service_port(self, service_name, port):
         return self._get_service_info(service_name, port)[1]
