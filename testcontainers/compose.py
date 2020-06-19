@@ -60,7 +60,7 @@ class DockerCompose(object):
             pull=False):
         self.filepath = filepath
         self.compose_file_names =\
-            compose_file_name if type(compose_file_name) is list else [compose_file_name]
+            compose_file_name if isinstance(compose_file_name, (list, tuple)) else [compose_file_name]
         self.pull = pull
 
     def __enter__(self):
