@@ -22,7 +22,9 @@ class DockerCompose(object):
     -------
     ::
 
-        with DockerCompose("/home/project", pull=True) as compose:
+        with DockerCompose("/home/project",
+                           compose_file_name=["docker-compose-1.yml", "docker-compose-2.yml"],
+                           pull=True) as compose:
             host = compose.get_service_host("hub", 4444)
             port = compose.get_service_port("hub", 4444)
             driver = webdriver.Remote(
@@ -60,7 +62,9 @@ class DockerCompose(object):
             compose_file_name="docker-compose.yml",
             pull=False):
         self.filepath = filepath
-        self.compose_file_name = compose_file_name
+        self.compose_file_names = compose_file_name if isinstance(
+            compose_file_name, (list, tuple)
+        ) else [compose_file_name]
         self.pull = pull
 
     def __enter__(self):
@@ -70,23 +74,30 @@ class DockerCompose(object):
     def __exit__(self, exc_type, exc_val, exc_tb):
         self.stop()
 
+    def docker_compose_command(self):
+        docker_compose_cmd = ['docker-compose']
+        for file in self.compose_file_names:
+            docker_compose_cmd += ['-f', file]
+        return docker_compose_cmd
+
     def start(self):
         with blindspin.spinner():
             if self.pull:
-                subprocess.call(["docker-compose", "-f", self.compose_file_name, "pull"],
-                                cwd=self.filepath)
-            subprocess.call(["docker-compose", "-f", self.compose_file_name, "up", "-d"],
-                            cwd=self.filepath)
+                pull_cmd = self.docker_compose_command() + ['pull']
+                subprocess.call(pull_cmd, cwd=self.filepath)
+            up_cmd = self.docker_compose_command() + ['up', '-d']
+            subprocess.call(up_cmd, cwd=self.filepath)
 
     def stop(self):
         with blindspin.spinner():
-            subprocess.call(["docker-compose", "-f", self.compose_file_name, "down", "-v"],
-                            cwd=self.filepath)
+            down_cmd = self.docker_compose_command() + ['down', '-v']
+            subprocess.call(down_cmd, cwd=self.filepath)
 
     def get_logs(self):
+        logs_cmd = self.docker_compose_command() + ["logs"]
         with blindspin.spinner():
             result = subprocess.run(
-                ["docker-compose", "-f", self.compose_file_name, "logs"],
+                logs_cmd,
                 cwd=self.filepath,
                 stdout=subprocess.PIPE,
                 stderr=subprocess.PIPE,
@@ -100,9 +111,8 @@ class DockerCompose(object):
         return self._get_service_info(service_name, port)[0]
 
     def _get_service_info(self, service, port):
-        cmd_as_list = ["docker-compose", "-f", self.compose_file_name, "port", service, str(port)]
-        output = subprocess.check_output(cmd_as_list,
-                                         cwd=self.filepath).decode("utf-8")
+        port_cmd = self.docker_compose_command() + ["port", service, str(port)]
+        output = subprocess.check_output(port_cmd, cwd=self.filepath).decode("utf-8")
         result = str(output).rstrip().split(":")
         if len(result) == 1:
             raise NoSuchPortExposed("Port {} was not exposed for service {}"
