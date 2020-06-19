@@ -53,4 +53,3 @@ def test_can_get_logs():
         compose.wait_for("http://%s:4444/wd/hub" % docker.host())
         stdout, stderr = compose.get_logs()
         assert stdout, 'There should be something on stdout'
-
