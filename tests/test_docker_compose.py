@@ -45,3 +45,12 @@ def test_can_parse_multiple_compose_files():
         port = compose.get_service_port("hub", 4444)
         assert host == "0.0.0.0"
         assert port == "4444"
+
+
+def test_can_get_logs():
+    with DockerCompose("tests") as compose:
+        docker = DockerClient()
+        compose.wait_for("http://%s:4444/wd/hub" % docker.host())
+        stdout, stderr = compose.get_logs()
+        assert stdout, 'There should be something on stdout'
+
