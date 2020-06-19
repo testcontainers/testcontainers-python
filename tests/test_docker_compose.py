@@ -31,3 +31,11 @@ def test_compose_wait_for_container_ready():
     with DockerCompose("tests") as compose:
         docker = DockerClient()
         compose.wait_for("http://%s:4444/wd/hub" % docker.host())
+
+
+def test_can_get_logs():
+    with DockerCompose("tests") as compose:
+        docker = DockerClient()
+        compose.wait_for("http://%s:4444/wd/hub" % docker.host())
+        stdout, stderr = compose.get_logs()
+        assert stdout, 'There should be something on stdout'
