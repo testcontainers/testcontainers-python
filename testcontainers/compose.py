@@ -94,9 +94,10 @@ class DockerCompose(object):
             subprocess.call(down_cmd, cwd=self.filepath)
 
     def get_logs(self):
+        logs_cmd = self.docker_compose_command() + ["logs"]
         with blindspin.spinner():
             result = subprocess.run(
-                ["docker-compose", "-f", self.compose_file_name, "logs"],
+                logs_cmd,
                 cwd=self.filepath,
                 stdout=subprocess.PIPE,
                 stderr=subprocess.PIPE,
