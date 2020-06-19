@@ -88,7 +88,8 @@ class DockerCompose(object):
             result = subprocess.run(
                 ["docker-compose", "-f", self.compose_file_name, "logs"],
                 cwd=self.filepath,
-                capture_output=True
+                stdout=subprocess.PIPE,
+                stderr=subprocess.PIPE,
             )
             return result.stdout, result.stderr
 
