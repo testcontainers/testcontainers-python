@@ -55,17 +55,21 @@ class MongoDbContainer(DockerContainer):
         self.port_to_expose = 27017
         self.with_exposed_ports(self.port_to_expose)
 
-    def _configure(self):
+    def start(self):
+        self._configure()
+        super().start()
+        return self
 
+    def _configure(self):
         self.with_env("MONGO_INITDB_ROOT_USERNAME", self.MONGO_INITDB_ROOT_USERNAME)
         self.with_env("MONGO_INITDB_ROOT_PASSWORD", self.MONGO_INITDB_ROOT_PASSWORD)
         self.with_env("MONGO_DB", self.MONGO_DB)
 
     def get_connection_url(self):
         port = self.get_exposed_port(self.port_to_expose)
-        return "mongodb://{}:{}".format(self.get_container_host_ip(), port)
+        return "mongodb://{}:{}@{}:{}".format(self.MONGO_INITDB_ROOT_USERNAME, self.MONGO_INITDB_ROOT_PASSWORD,
+                                              self.get_container_host_ip(), port)
 
     def get_connection_client(self):
         from pymongo import MongoClient
-        return MongoClient("mongodb://{}:{}".format(self.get_container_host_ip(),
-                                                    self.get_exposed_port(self.port_to_expose)))
+        return MongoClient(self.get_connection_url())
