@@ -1,14 +1,15 @@
 import pytest
 import sqlalchemy
 from pymongo import MongoClient
+from pymongo.errors import OperationFailure
 
 from testcontainers.core.generic import GenericContainer
 from testcontainers.core.waiting_utils import wait_for
+from testcontainers.mongodb import MongoDbContainer
 from testcontainers.mssql import SqlServerContainer
 from testcontainers.mysql import MySqlContainer, MariaDbContainer
 from testcontainers.oracle import OracleDbContainer
 from testcontainers.postgres import PostgresContainer
-from testcontainers.mongodb import MongoDbContainer
 
 
 def test_docker_run_mysql():
@@ -71,6 +72,15 @@ def test_docker_run_mongodb():
         db.restaurants.insert_one(doc)
         cursor = db.restaurants.find({"borough": "Manhattan"})
         assert cursor.next()['restaurant_id'] == doc['restaurant_id']
+
+
+def test_docker_run_mongodb_connect_without_credentials():
+    mongo_container = MongoDbContainer()
+    with mongo_container as mongo:
+        db = MongoClient("mongodb://{}:{}".format(mongo.get_container_host_ip(),
+                                                  mongo.get_exposed_port(mongo.port_to_expose))).test
+        with pytest.raises(OperationFailure):
+            db.restaurants.insert_one({})
 
 
 def test_docker_generic_db():

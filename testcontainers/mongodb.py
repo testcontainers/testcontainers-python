@@ -49,7 +49,7 @@ class MongoDbContainer(DockerContainer):
     MONGO_INITDB_ROOT_PASSWORD = os.environ.get("MONGO_INITDB_ROOT_PASSWORD", "test")
     MONGO_DB = os.environ.get("MONGO_DB", "test")
 
-    def __init__(self, image="mongodb:latest"):
+    def __init__(self, image="mongo:latest"):
         super(MongoDbContainer, self).__init__(image=image)
         self.command = "mongo"
         self.port_to_expose = 27017
