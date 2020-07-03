@@ -77,8 +77,9 @@ def test_docker_run_mongodb():
 def test_docker_run_mongodb_connect_without_credentials():
     mongo_container = MongoDbContainer()
     with mongo_container as mongo:
-        db = MongoClient("mongodb://{}:{}".format(mongo.get_container_host_ip(),
-                                                  mongo.get_exposed_port(mongo.port_to_expose))).test
+        connection_url = "mongodb://{}:{}".format(mongo.get_container_host_ip(),
+                                                  mongo.get_exposed_port(mongo.port_to_expose))
+        db = MongoClient(connection_url).test
         with pytest.raises(OperationFailure):
             db.restaurants.insert_one({})
 
