@@ -47,7 +47,7 @@ class LocalStackContainer(DockerContainer):
     def get_endpoint_override(self):
         host = self.get_container_host_ip()
         port = self.get_exposed_port(LocalStackContainer.EDGE_PORT)
-        return f'http://{host}:{port}'
+        return 'http://{}:{}'.format(host, port)
 
     def start(self):
         super().start()
