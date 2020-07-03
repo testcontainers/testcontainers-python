@@ -17,8 +17,8 @@ from deprecation import deprecated
 
 
 class DbContainer(DockerContainer):
-    def __init__(self, image):
-        super(DbContainer, self).__init__(image)
+    def __init__(self, image, **kwargs):
+        super(DbContainer, self).__init__(image, **kwargs)
 
     @wait_container_is_ready()
     def _connect(self):
