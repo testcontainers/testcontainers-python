@@ -29,12 +29,15 @@ class DbContainer(DockerContainer):
     def get_connection_url(self):
         raise NotImplementedError
 
-    def _create_connection_url(self, dialect, username, password, port, db_name):
+    def _create_connection_url(self, dialect, username, password, port, db_name=None):
         host = self.get_container_host_ip()
         port = self.get_exposed_port(port)
-        return "{dialect}://{username}:{password}@{host}:{port}/{db}".format(
-            dialect=dialect, username=username, password=password, host=host, port=port, db=db_name
+        url = "{dialect}://{username}:{password}@{host}:{port}".format(
+            dialect=dialect, username=username, password=password, host=host, port=port
         )
+        if db_name:
+            url += '/' + db_name
+        return url
 
     def start(self):
         self._configure()
