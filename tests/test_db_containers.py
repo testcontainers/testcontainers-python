@@ -4,6 +4,7 @@ from pymongo import MongoClient
 
 from testcontainers.core.generic import GenericContainer
 from testcontainers.core.waiting_utils import wait_for
+from testcontainers.mssql import SqlServerContainer
 from testcontainers.mysql import MySqlContainer, MariaDbContainer
 from testcontainers.oracle import OracleDbContainer
 from testcontainers.postgres import PostgresContainer
@@ -100,3 +101,19 @@ def test_docker_generic_db():
         cursor = db.restaurants.find({"borough": "Manhattan"})
         for document in cursor:
             print(document)
+
+
+def test_docker_run_mssql():
+    config = SqlServerContainer()
+    with config as mssql:
+        e = sqlalchemy.create_engine(mssql.get_connection_url())
+        result = e.execute('select @@servicename')
+        for row in result:
+            assert row[0] == 'MSSQLSERVER'
+
+    config = SqlServerContainer(password="1Secure*Password2")
+    with config as mssql:
+        e = sqlalchemy.create_engine(mssql.get_connection_url())
+        result = e.execute('select @@servicename')
+        for row in result:
+            assert row[0] == 'MSSQLSERVER'

@@ -10,10 +10,12 @@
 #    WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the
 #    License for the specific language governing permissions and limitations
 #    under the License.
+from deprecation import deprecated
 from testcontainers.core.container import DockerContainer
 
 
 class TestContainer(DockerContainer):
+    @deprecated(details="use plain DockerContainer instead")
     def __init__(self, image, port_to_expose=None):
         super(TestContainer, self).__init__(image)
         if port_to_expose:
