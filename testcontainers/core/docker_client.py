@@ -62,7 +62,7 @@ class DockerClient(object):
 
         except ValueError:
             return None
-        if 'unix' in url.scheme or 'http+docker' == url.scheme:
+        if 'unix' in url.scheme or 'npipe' in url.scheme or 'http+docker' == url.scheme:
             if inside_container():
                 ip_address = default_gateway_ip()
                 if ip_address:
