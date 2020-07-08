@@ -24,7 +24,7 @@ class LocalStackContainer(DockerContainer):
         localstack = LocalStackContainer(image="localstack/localstack:0.11.3")
         localstack.with_services("dynamodb", "lambda")
         localstack.start()
-        dynamo_endpoint = localstack.get_service_endpoint()
+        dynamo_endpoint = localstack.get_endpoint_override()
         dynamo_client = boto3.client("dynamodb", endpoint_url=dynamo_endpoint)
         scan_result = dynamo_client.scan(TableName='foo')
         # Do something with the scan result
@@ -35,7 +35,6 @@ class LocalStackContainer(DockerContainer):
     def __init__(self, image=IMAGE):
         super(LocalStackContainer, self).__init__(image)
         self.with_exposed_ports(LocalStackContainer.EDGE_PORT)
-        self.with_volume_mapping('/var/run/docker.sock', '/var/run/docker.sock')
 
     def with_services(self, *services):
         """
@@ -49,10 +48,10 @@ class LocalStackContainer(DockerContainer):
         port = self.get_exposed_port(LocalStackContainer.EDGE_PORT)
         return 'http://{}:{}'.format(host, port)
 
-    def start(self):
+    def start(self, timeout=60):
         super().start()
-        self._get_ready_log()
+        self._get_ready_log(timeout)
         return self
 
-    def _get_ready_log(self, timeout=30):
+    def _get_ready_log(self, timeout):
         wait_for_logs(self, 'Ready\\.', timeout=timeout)
