@@ -54,4 +54,4 @@ class LocalStackContainer(DockerContainer):
         return self
 
     def _get_ready_log(self, timeout):
-        wait_for_logs(self, 'Ready\\.', timeout=timeout)
+        wait_for_logs(self, r'Ready\.\n', timeout=timeout)
