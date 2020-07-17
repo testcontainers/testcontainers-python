@@ -51,6 +51,15 @@ The snippet above will spin up a MySql database in a container. The :code:`get_c
 
 More extensive documentation can be found at `Read The Docs <http://testcontainers-python.readthedocs.io/>`_.
 
+Usage within Docker (i.e. in a CI)
+----------------------------------
+
+When trying to launch a testcontainer from within a Docker container two things have to be provided:
+
+1. The container has to provide a docker client installation. Either use a container that has docker pre-installed (e.g. https://hub.docker.com/_/docker) or install the client from within the dockerfile specification.
+2. Also, the container has to have access to a docker build daemon. For this mount the file /var/run/docker.sock in your docker run command.
+
+
 Setting up a development environment
 ------------------------------------
 
