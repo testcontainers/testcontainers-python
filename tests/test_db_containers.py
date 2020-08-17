@@ -88,7 +88,7 @@ def test_docker_run_mongodb_connect_without_credentials():
 def test_docker_run_neo4j_v35():
     neo4j_container = Neo4jContainer("neo4j:3.5")
     with neo4j_container as neo4j:
-        with neo4j.new_neo4j_driver() as driver:
+        with neo4j.get_driver() as driver:
             with driver.session() as session:
                 result = session.run(
                     """
@@ -105,7 +105,7 @@ def test_docker_run_neo4j_v35():
 def test_docker_run_neo4j_v41():
     neo4j_container = Neo4jContainer("neo4j:4.1")
     with neo4j_container as neo4j:
-        with neo4j.new_neo4j_driver() as driver:
+        with neo4j.get_driver() as driver:
             with driver.session() as session:
                 result = session.run(
                     """

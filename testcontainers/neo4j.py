@@ -65,18 +65,18 @@ class Neo4jContainer(DbContainer):
 
         # Then we actually check that the container really is listening
         while time.time() < deadline:
-            with self.new_neo4j_driver() as driver:
+            with self.get_driver() as driver:
                 # Drivers may or may not be lazy
                 # force them to do a round trip to confirm neo4j is working
                 with driver.session() as session:
                     session.run("RETURN 1").single()
                     return
 
-        raise TimeoutError(
+        raise TimeoutException(
             "Neo4j did not start within %.3f seconds" % Neo4jContainer.NEO4J_STARTUP_TIMEOUT_SECONDS
         )
 
-    def new_neo4j_driver(self, **kwargs):
+    def get_driver(self, **kwargs):
         return GraphDatabase.driver(
             self.get_connection_url(),
             auth=(Neo4jContainer.NEO4J_USER, Neo4jContainer.NEO4J_ADMIN_PASSWORD),
