@@ -24,7 +24,7 @@ cx-oracle==8.0.0          # via testcontainers
 deprecation==2.1.0        # via testcontainers
 distro==1.5.0             # via docker-compose
 docker-compose==1.26.2    # via testcontainers
-docker[ssh]==4.3.0        # via docker-compose, testcontainers
+docker[ssh]==4.2.0        # via docker-compose, testcontainers
 dockerpty==0.4.1          # via docker-compose
 docopt==0.6.2             # via docker-compose
 docutils==0.16            # via sphinx
