@@ -57,7 +57,8 @@ setuptools.setup(
         'google-cloud-pubsub': ['google-cloud-pubsub'],
         'mongo': ['pymongo'],
         'redis': ['redis'],
-        'mssqlserver': ['pyodbc']
+        'mssqlserver': ['pyodbc'],
+        'neo4j': ['neo4j']
     },
     long_description_content_type="text/x-rst",
     long_description=long_description,

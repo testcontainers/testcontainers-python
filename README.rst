@@ -16,6 +16,7 @@ Currently available features:
 * Selenium Standalone containers
 * MySql Db container
 * MariaDb container
+* Neo4j container
 * OracleDb container
 * PostgreSQL Db container
 * Microsoft SQL Server container
