@@ -49,9 +49,7 @@ class Neo4jContainer(DbContainer):
 
     NEO4J_USER = "neo4j"
 
-    # using neo4j:Latest will get 4.0 which doesn't yet have full python driver support yet
-    # so default to 3.5
-    def __init__(self, image="neo4j:3.5", **kwargs):
+    def __init__(self, image="neo4j:latest", **kwargs):
         super(Neo4jContainer, self).__init__(image)
         self.bolt_port = Neo4jContainer.DEFAULT_BOLT_PORT
         self.with_exposed_ports(self.bolt_port)

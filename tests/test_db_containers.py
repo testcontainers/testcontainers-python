@@ -102,8 +102,8 @@ def test_docker_run_neo4j_v35():
                 assert record["version"].startswith("3.5")
 
 
-def test_docker_run_neo4j_v41():
-    neo4j_container = Neo4jContainer("neo4j:4.1")
+def test_docker_run_neo4j_latest():
+    neo4j_container = Neo4jContainer()
     with neo4j_container as neo4j:
         with neo4j.get_driver() as driver:
             with driver.session() as session:
@@ -116,7 +116,7 @@ def test_docker_run_neo4j_v41():
                     """)
                 record = result.single()
                 print("server version:", record["name"], record["version"], record["edition"])
-                assert record["version"].startswith("4.1")
+                assert record["name"].startswith("Neo4j")
 
 
 def test_docker_generic_db():
