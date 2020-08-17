@@ -17,11 +17,26 @@ import re
 import time
 from neo4j import GraphDatabase
 
+from testcontainers.core.exceptions import TimeoutException
 from testcontainers.core.generic import DbContainer
 from testcontainers.core.waiting_utils import wait_container_is_ready, wait_for_logs
 
 
 class Neo4jContainer(DbContainer):
+    """
+    Neo4j Graph Database (Standalone) database container.
+
+    Example
+    -------
+    ::
+        with Neo4jContainer() as neo4j:
+            with neo4j.get_driver() as driver:
+                with driver.session() as session:
+                    result = session.run("MATCH (n) RETURN n LIMIT 1")
+                    record = result.single()
+
+    """
+
     # The official image requires a change of password on startup.
     NEO4J_ADMIN_PASSWORD = os.environ.get("NEO4J_ADMIN_PASSWORD", "password")
 
