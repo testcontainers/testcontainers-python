@@ -8,6 +8,7 @@ from testcontainers.core.waiting_utils import wait_for
 from testcontainers.mongodb import MongoDbContainer
 from testcontainers.mssql import SqlServerContainer
 from testcontainers.mysql import MySqlContainer, MariaDbContainer
+from testcontainers.neo4j import Neo4jContainer
 from testcontainers.oracle import OracleDbContainer
 from testcontainers.postgres import PostgresContainer
 
@@ -82,6 +83,40 @@ def test_docker_run_mongodb_connect_without_credentials():
         db = MongoClient(connection_url).test
         with pytest.raises(OperationFailure):
             db.restaurants.insert_one({})
+
+
+def test_docker_run_neo4j_v35():
+    neo4j_container = Neo4jContainer("neo4j:3.5")
+    with neo4j_container as neo4j:
+        with neo4j.new_neo4j_driver() as driver:
+            with driver.session() as session:
+                result = session.run(
+                    """
+                    CALL dbms.components()
+                    YIELD name, versions, edition
+                    UNWIND versions as version
+                    RETURN name, version, edition
+                    """)
+                record = result.single()
+                print("server version:", record["name"], record["version"], record["edition"])
+                assert record["version"].startswith("3.5")
+
+
+def test_docker_run_neo4j_v41():
+    neo4j_container = Neo4jContainer("neo4j:4.1")
+    with neo4j_container as neo4j:
+        with neo4j.new_neo4j_driver() as driver:
+            with driver.session() as session:
+                result = session.run(
+                    """
+                    CALL dbms.components()
+                    YIELD name, versions, edition
+                    UNWIND versions as version
+                    RETURN name, version, edition
+                    """)
+                record = result.single()
+                print("server version:", record["name"], record["version"], record["edition"])
+                assert record["version"].startswith("4.1")
 
 
 def test_docker_generic_db():
