@@ -56,7 +56,7 @@ Usage within Docker (i.e. in a CI)
 
 When trying to launch a testcontainer from within a Docker container two things have to be provided:
 
-1. The container has to provide a docker client installation. Either use a container that has docker pre-installed (e.g. https://hub.docker.com/_/docker) or install the client from within the dockerfile specification.
+1. The container has to provide a docker client installation. Either use an image that has docker pre-installed (e.g. the [official docker images](https://hub.docker.com/_/docker)) or install the client from within the `Dockerfile` specification.
 2. Also, the container has to have access to a docker build daemon. For this mount the file /var/run/docker.sock in your docker run command.
 
 
