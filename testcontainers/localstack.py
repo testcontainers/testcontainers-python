@@ -30,7 +30,7 @@ class LocalStackContainer(DockerContainer):
         # Do something with the scan result
     """
     EDGE_PORT = 4566
-    IMAGE = 'localstack/localstack:0.11.3'
+    IMAGE = 'localstack/localstack:0.11.4'
 
     def __init__(self, image=IMAGE):
         super(LocalStackContainer, self).__init__(image)
@@ -38,20 +38,22 @@ class LocalStackContainer(DockerContainer):
 
     def with_services(self, *services):
         """
-        Restrict what services to run.
-        If you don't call this, everything will be launched by default.
+        Restrict what services to run. By default all localstack services are launched.
+        :return: the DockerContainer to allow chaining of 'with_*' calls.
         """
-        self.with_env('SERVICES', ','.join(services))
+        return self.with_env('SERVICES', ','.join(services))
 
-    def get_endpoint_override(self):
+    def get_endpoint_url(self):
+        """
+        Use this to call localstack instead of real AWS services.
+        ex: boto3.client('lambda', endpoint_url=localstack.get_endpoint_url())
+        :return: the endpoint where localstack is reachable.
+        """
         host = self.get_container_host_ip()
         port = self.get_exposed_port(LocalStackContainer.EDGE_PORT)
         return 'http://{}:{}'.format(host, port)
 
     def start(self, timeout=60):
         super().start()
-        self._get_ready_log(timeout)
-        return self
-
-    def _get_ready_log(self, timeout):
         wait_for_logs(self, r'Ready\.\n', timeout=timeout)
+        return self
