@@ -43,10 +43,10 @@ class LocalStackContainer(DockerContainer):
         """
         return self.with_env('SERVICES', ','.join(services))
 
-    def get_endpoint_url(self):
+    def get_url(self):
         """
         Use this to call localstack instead of real AWS services.
-        ex: boto3.client('lambda', endpoint_url=localstack.get_endpoint_url())
+        ex: boto3.client('lambda', endpoint_url=localstack.get_url())
         :return: the endpoint where localstack is reachable.
         """
         host = self.get_container_host_ip()

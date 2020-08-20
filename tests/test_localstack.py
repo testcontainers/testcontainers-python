@@ -7,7 +7,7 @@ from testcontainers.localstack import LocalStackContainer
 def test_docker_run_localstack():
     config = LocalStackContainer()
     with config as localstack:
-        resp = urllib.request.urlopen('{}/health'.format(localstack.get_endpoint_url()))
+        resp = urllib.request.urlopen('{}/health'.format(localstack.get_url()))
         services = json.loads(resp.read().decode())['services']
 
         # Check that all services are running
