@@ -19,7 +19,7 @@ with open('README.rst') as fp:
 setuptools.setup(
     name='testcontainers',
     packages=setuptools.find_packages(exclude=['tests']),
-    version='3.0.3',
+    version='3.1.0',
     description='Library provides lightweight, throwaway instances of common databases, Selenium '
                 'web browsers, or anything else that can run in a Docker container',
     author='Sergey Pirogov',
