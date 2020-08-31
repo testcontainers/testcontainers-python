@@ -21,6 +21,7 @@ Currently available features:
 * PostgreSQL Db container
 * Microsoft SQL Server container
 * Generic docker containers
+* LocalStack
 
 Installation
 ------------
