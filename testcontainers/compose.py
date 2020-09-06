@@ -7,7 +7,6 @@ Allows to spin up services configured via :code:`docker-compose.yml`.
 
 import subprocess
 
-import blindspin
 import requests
 
 from testcontainers.core.waiting_utils import wait_container_is_ready
@@ -81,28 +80,25 @@ class DockerCompose(object):
         return docker_compose_cmd
 
     def start(self):
-        with blindspin.spinner():
-            if self.pull:
-                pull_cmd = self.docker_compose_command() + ['pull']
-                subprocess.call(pull_cmd, cwd=self.filepath)
-            up_cmd = self.docker_compose_command() + ['up', '-d']
-            subprocess.call(up_cmd, cwd=self.filepath)
+        if self.pull:
+            pull_cmd = self.docker_compose_command() + ['pull']
+            subprocess.call(pull_cmd, cwd=self.filepath)
+        up_cmd = self.docker_compose_command() + ['up', '-d']
+        subprocess.call(up_cmd, cwd=self.filepath)
 
     def stop(self):
-        with blindspin.spinner():
-            down_cmd = self.docker_compose_command() + ['down', '-v']
-            subprocess.call(down_cmd, cwd=self.filepath)
+        down_cmd = self.docker_compose_command() + ['down', '-v']
+        subprocess.call(down_cmd, cwd=self.filepath)
 
     def get_logs(self):
         logs_cmd = self.docker_compose_command() + ["logs"]
-        with blindspin.spinner():
-            result = subprocess.run(
-                logs_cmd,
-                cwd=self.filepath,
-                stdout=subprocess.PIPE,
-                stderr=subprocess.PIPE,
-            )
-            return result.stdout, result.stderr
+        result = subprocess.run(
+            logs_cmd,
+            cwd=self.filepath,
+            stdout=subprocess.PIPE,
+            stderr=subprocess.PIPE,
+        )
+        return result.stdout, result.stderr
 
     def get_service_port(self, service_name, port):
         return self._get_service_info(service_name, port)[1]

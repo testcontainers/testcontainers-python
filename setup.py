@@ -44,8 +44,6 @@ setuptools.setup(
     install_requires=[
         'docker',
         'wrapt',
-        'crayons',
-        'blindspin',
         'deprecation',
     ],
     extras_require={

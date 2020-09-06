@@ -15,13 +15,13 @@
 import re
 import time
 
-import blindspin
-import crayons
 import wrapt
 
 from testcontainers.core import config
 from testcontainers.core.exceptions import TimeoutException
+from testcontainers.core.utils import setup_logger
 
+logger = setup_logger(__name__)
 
 def wait_container_is_ready():
     """
@@ -35,20 +35,19 @@ def wait_container_is_ready():
     @wrapt.decorator
     def wrapper(wrapped, instance, args, kwargs):
         exception = None
-        print(crayons.yellow("Waiting to be ready..."))
-        with blindspin.spinner():
-            for _ in range(0, config.MAX_TRIES):
-                try:
-                    return wrapped(*args, **kwargs)
-                except Exception as e:
-                    time.sleep(config.SLEEP_TIME)
-                    exception = e
-            raise TimeoutException(
-                """Wait time exceeded {0} sec.
-                    Method {1}, args {2} , kwargs {3}.
-                     Exception {4}""".format(config.MAX_TRIES,
-                                             wrapped.__name__,
-                                             args, kwargs, exception))
+        logger.info("Waiting to be ready...")
+        for _ in range(0, config.MAX_TRIES):
+            try:
+                return wrapped(*args, **kwargs)
+            except Exception as e:
+                time.sleep(config.SLEEP_TIME)
+                exception = e
+        raise TimeoutException(
+            """Wait time exceeded {0} sec.
+                Method {1}, args {2} , kwargs {3}.
+                    Exception {4}""".format(config.MAX_TRIES,
+                                            wrapped.__name__,
+                                            args, kwargs, exception))
 
     return wrapper
 
