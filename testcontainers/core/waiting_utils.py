@@ -23,6 +23,7 @@ from testcontainers.core.utils import setup_logger
 
 logger = setup_logger(__name__)
 
+
 def wait_container_is_ready():
     """
     Wait until container is ready.

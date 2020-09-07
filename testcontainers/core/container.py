@@ -6,6 +6,7 @@ from testcontainers.core.utils import setup_logger, inside_container
 
 logger = setup_logger(__name__)
 
+
 class DockerContainer(object):
     def __init__(self, image, **kargs):
         self.env = {}
