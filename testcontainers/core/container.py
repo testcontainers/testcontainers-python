@@ -38,8 +38,7 @@ class DockerContainer(object):
         return self
 
     def start(self):
-        logger.info("")
-        logger.info("{} {}".format("Pulling image", self.image))
+        logger.info("Pulling image %s", self.image)
         docker_client = self.get_docker_client()
         self._container = docker_client.run(self.image,
                                             command=self._command,
@@ -50,8 +49,7 @@ class DockerContainer(object):
                                             volumes=self.volumes,
                                             **self._kargs
                                             )
-        logger.info("")
-        logger.info("Container started: {}".format(self._container.short_id))
+        logger.info("Container started: %s", self._container.short_id)
         return self
 
     def stop(self, force=True, delete_volume=True):
