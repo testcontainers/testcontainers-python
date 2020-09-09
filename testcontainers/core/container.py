@@ -1,9 +1,4 @@
-<<<<<<< HEAD
-=======
-import blindspin
-import crayons
 from deprecation import deprecated
->>>>>>> Mark redundant classes and methods as deprecated.
 from docker.models.containers import Container
 
 from testcontainers.core.docker_client import DockerClient
