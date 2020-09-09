@@ -39,7 +39,7 @@ class DockerContainer(object):
             self.ports[port] = None
         return self
 
-    @deprecated(details='use `with_kwargs` instead')
+    @deprecated(details='Use `with_kwargs`.')
     def with_kargs(self, **kargs) -> 'DockerContainer':
         return self.with_kwargs(**kargs)
 
