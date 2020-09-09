@@ -1,10 +1,10 @@
-import blindspin
-import crayons
 from docker.models.containers import Container
 
 from testcontainers.core.docker_client import DockerClient
 from testcontainers.core.exceptions import ContainerStartException
-from testcontainers.core.utils import inside_container
+from testcontainers.core.utils import setup_logger, inside_container
+
+logger = setup_logger(__name__)
 
 
 class DockerContainer(object):
@@ -38,23 +38,18 @@ class DockerContainer(object):
         return self
 
     def start(self):
-        print("")
-        print("{} {}".format(crayons.yellow("Pulling image"),
-                             crayons.red(self.image)))
-        with blindspin.spinner():
-            docker_client = self.get_docker_client()
-            self._container = docker_client.run(self.image,
-                                                command=self._command,
-                                                detach=True,
-                                                environment=self.env,
-                                                ports=self.ports,
-                                                name=self._name,
-                                                volumes=self.volumes,
-                                                **self._kargs
-                                                )
-        print("")
-        print("Container started: ",
-              crayons.yellow(self._container.short_id, bold=True))
+        logger.info("Pulling image %s", self.image)
+        docker_client = self.get_docker_client()
+        self._container = docker_client.run(self.image,
+                                            command=self._command,
+                                            detach=True,
+                                            environment=self.env,
+                                            ports=self.ports,
+                                            name=self._name,
+                                            volumes=self.volumes,
+                                            **self._kargs
+                                            )
+        logger.info("Container started: %s", self._container.short_id)
         return self
 
     def stop(self, force=True, delete_volume=True):
