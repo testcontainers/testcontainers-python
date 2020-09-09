@@ -1,3 +1,9 @@
+<<<<<<< HEAD
+=======
+import blindspin
+import crayons
+from deprecation import deprecated
+>>>>>>> Mark redundant classes and methods as deprecated.
 from docker.models.containers import Container
 
 from testcontainers.core.docker_client import DockerClient
@@ -8,7 +14,7 @@ logger = setup_logger(__name__)
 
 
 class DockerContainer(object):
-    def __init__(self, image, **kargs):
+    def __init__(self, image, **kwargs):
         self.env = {}
         self.ports = {}
         self.volumes = {}
@@ -17,7 +23,7 @@ class DockerContainer(object):
         self._container = None
         self._command = None
         self._name = None
-        self._kargs = kargs
+        self._kwargs = kwargs
 
     def with_env(self, key: str, value: str) -> 'DockerContainer':
         self.env[key] = value
@@ -33,8 +39,12 @@ class DockerContainer(object):
             self.ports[port] = None
         return self
 
+    @deprecated(details='use `with_kwargs` instead')
     def with_kargs(self, **kargs) -> 'DockerContainer':
-        self._kargs = kargs
+        return self.with_kwargs(**kargs)
+
+    def with_kwargs(self, **kwargs) -> 'DockerContainer':
+        self._kwargs = kwargs
         return self
 
     def start(self):
@@ -47,7 +57,7 @@ class DockerContainer(object):
                                             ports=self.ports,
                                             name=self._name,
                                             volumes=self.volumes,
-                                            **self._kargs
+                                            **self._kwargs
                                             )
         logger.info("Container started: %s", self._container.short_id)
         return self

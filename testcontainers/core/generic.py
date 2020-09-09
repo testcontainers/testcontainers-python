@@ -51,7 +51,7 @@ class DbContainer(DockerContainer):
         raise NotImplementedError
 
 
+@deprecated(details="Use `DockerContainer`.")
 class GenericContainer(DockerContainer):
-    @deprecated(details="use plain DockerContainer instead")
     def __init__(self, image):
         super(GenericContainer, self).__init__(image)

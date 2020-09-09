@@ -34,7 +34,7 @@ def test_docker_env_variables():
         assert re.match(pattern, url)
 
 
-def test_docker_kargs():
+def test_docker_kwargs():
     code_dir = Path(__file__).parent
     container_first = GenericContainer("nginx:latest")
     container_first.with_volume_mapping(code_dir, '/code')
@@ -42,7 +42,7 @@ def test_docker_kargs():
     container_second = GenericContainer("nginx:latest")
 
     with container_first:
-        container_second.with_kargs(volumes_from=[container_first._container.short_id])
+        container_second.with_kwargs(volumes_from=[container_first._container.short_id])
         with container_second:
             files_first = container_first.exec('ls /code').output.decode('utf-8').strip()
             files_second = container_second.exec('ls /code').output.decode('utf-8').strip()

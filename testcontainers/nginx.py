@@ -10,10 +10,12 @@
 #    WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the
 #    License for the specific language governing permissions and limitations
 #    under the License.
-from testcontainers.core.generic import GenericContainer
+from deprecation import deprecated
+from testcontainers.core.container import DockerContainer
 
 
-class NginxContainer(GenericContainer):
+@deprecated(details="Use `DockerContainer` with 'nginx:latest' image and expose port 80.")
+class NginxContainer(DockerContainer):
     def __init__(self, image="nginx:latest", port_to_expose=80):
         super(NginxContainer, self).__init__(image)
         self.port_to_expose = port_to_expose
