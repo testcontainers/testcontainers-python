@@ -4,7 +4,7 @@ from pathlib import Path
 
 from testcontainers import mysql
 
-from testcontainers.core.generic import GenericContainer
+from testcontainers.core.container import DockerContainer
 from importlib import reload
 
 
@@ -14,7 +14,7 @@ def setup_module(m):
 
 
 def test_docker_custom_image():
-    container = GenericContainer("mysql:5.7.17")
+    container = DockerContainer("mysql:5.7.17")
     container.with_exposed_ports(3306)
     container.with_env("MYSQL_ROOT_PASSWORD", "root")
 
@@ -36,10 +36,10 @@ def test_docker_env_variables():
 
 def test_docker_kwargs():
     code_dir = Path(__file__).parent
-    container_first = GenericContainer("nginx:latest")
+    container_first = DockerContainer("nginx:latest")
     container_first.with_volume_mapping(code_dir, '/code')
 
-    container_second = GenericContainer("nginx:latest")
+    container_second = DockerContainer("nginx:latest")
 
     with container_first:
         container_second.with_kwargs(volumes_from=[container_first._container.short_id])
