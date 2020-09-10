@@ -3,11 +3,11 @@ import sqlalchemy
 from pymongo import MongoClient
 from pymongo.errors import OperationFailure
 
-from testcontainers.core.generic import GenericContainer
+from testcontainers.core.container import DockerContainer
 from testcontainers.core.waiting_utils import wait_for
 from testcontainers.mongodb import MongoDbContainer
 from testcontainers.mssql import SqlServerContainer
-from testcontainers.mysql import MySqlContainer, MariaDbContainer
+from testcontainers.mysql import MySqlContainer
 from testcontainers.neo4j import Neo4jContainer
 from testcontainers.oracle import OracleDbContainer
 from testcontainers.postgres import PostgresContainer
@@ -32,7 +32,7 @@ def test_docker_run_postgress():
 
 
 def test_docker_run_mariadb():
-    mariadb_container = MariaDbContainer("mariadb:10.2.9")
+    mariadb_container = MySqlContainer("mariadb:10.2.9")
     with mariadb_container as mariadb:
         e = sqlalchemy.create_engine(mariadb.get_connection_url())
         result = e.execute("select version()")
@@ -76,8 +76,7 @@ def test_docker_run_mongodb():
 
 
 def test_docker_run_mongodb_connect_without_credentials():
-    mongo_container = MongoDbContainer()
-    with mongo_container as mongo:
+    with MongoDbContainer() as mongo:
         connection_url = "mongodb://{}:{}".format(mongo.get_container_host_ip(),
                                                   mongo.get_exposed_port(mongo.port_to_expose))
         db = MongoClient(connection_url).test
@@ -120,7 +119,7 @@ def test_docker_run_neo4j_latest():
 
 
 def test_docker_generic_db():
-    mongo_container = GenericContainer("mongo:latest")
+    mongo_container = DockerContainer("mongo:latest")
     mongo_container.with_bind_ports(27017, 27017)
 
     with mongo_container:
