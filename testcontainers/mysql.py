@@ -70,7 +70,6 @@ class MySqlContainer(DbContainer):
                                               port=self.port_to_expose)
 
 
-@deprecated(details="Use `MySqlContainer` with 'mariadb:latest' image.")
 class MariaDbContainer(MySqlContainer):
     """
     Maria database container, a commercially-supported fork of MySql.
@@ -83,5 +82,6 @@ class MariaDbContainer(MySqlContainer):
             e = sqlalchemy.create_engine(mariadb.get_connection_url())
             result = e.execute("select version()")
     """
+    @deprecated(details="Use `MySqlContainer` with 'mariadb:latest' image.")
     def __init__(self, image="mariadb:latest", **kwargs):
         super(MariaDbContainer, self).__init__(image, **kwargs)

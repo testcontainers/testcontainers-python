@@ -14,8 +14,8 @@ from deprecation import deprecated
 from testcontainers.core.container import DockerContainer
 
 
-@deprecated(details="Use `DockerContainer`.")
 class TestContainer(DockerContainer):
+    @deprecated(details="Use `DockerContainer`.")
     def __init__(self, image, port_to_expose=None):
         super(TestContainer, self).__init__(image)
         if port_to_expose:
