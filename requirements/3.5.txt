@@ -86,6 +86,7 @@ urllib3==1.25.10          # via requests, selenium
 websocket-client==0.57.0  # via docker, docker-compose
 wrapt==1.12.1             # via testcontainers
 zipp==1.2.0               # via importlib-metadata
+cassandra-driver==3.24.0  # via testcontainers
 
 # The following packages are considered to be unsafe in a requirements file:
 # setuptools

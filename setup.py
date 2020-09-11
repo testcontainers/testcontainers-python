@@ -56,7 +56,8 @@ setuptools.setup(
         'mongo': ['pymongo'],
         'redis': ['redis'],
         'mssqlserver': ['pyodbc'],
-        'neo4j': ['neo4j']
+        'neo4j': ['neo4j'],
+        'cassandra': ['cassandra-driver']
     },
     long_description_content_type="text/x-rst",
     long_description=long_description,
