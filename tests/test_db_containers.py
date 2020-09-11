@@ -1,8 +1,10 @@
 import pytest
 import sqlalchemy
+from cassandra.cluster import Cluster
 from pymongo import MongoClient
 from pymongo.errors import OperationFailure
 
+from testcontainers.cassandra import CassandraContainer
 from testcontainers.core.container import DockerContainer
 from testcontainers.core.waiting_utils import wait_for
 from testcontainers.mongodb import MongoDbContainer
@@ -20,6 +22,15 @@ def test_docker_run_mysql():
         result = e.execute("select version()")
         for row in result:
             assert row[0] == '5.7.17'
+
+
+def test_docker_run_cassandra():
+    with CassandraContainer('cassandra:3.11.3') as cassandra:
+        cluster = Cluster([cassandra.get_container_host_ip()], cassandra.get_port())
+        with cluster.connect() as session:
+            row = session.execute("SELECT release_version FROM system.local").one()
+            assert row.release_version == '3.11.3'
+        cluster.shutdown()
 
 
 def test_docker_run_postgress():

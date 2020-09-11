@@ -22,6 +22,7 @@ Currently available features:
 * Microsoft SQL Server container
 * Generic docker containers
 * LocalStack
+* Cassandra
 
 Installation
 ------------
