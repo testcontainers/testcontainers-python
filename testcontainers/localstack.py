@@ -24,7 +24,7 @@ class LocalStackContainer(DockerContainer):
         localstack = LocalStackContainer(image="localstack/localstack:0.11.3")
         localstack.with_services("dynamodb", "lambda")
         localstack.start()
-        dynamo_endpoint = localstack.get_endpoint_override()
+        dynamo_endpoint = localstack.get_url()
         dynamo_client = boto3.client("dynamodb", endpoint_url=dynamo_endpoint)
         scan_result = dynamo_client.scan(TableName='foo')
         # Do something with the scan result
