@@ -85,6 +85,7 @@ urllib3==1.25.10          # via requests, selenium
 websocket-client==0.57.0  # via docker, docker-compose
 wrapt==1.12.1             # via testcontainers
 zipp==3.1.0               # via importlib-metadata
+hvac==0.10.5              # via testcontainers
 
 # The following packages are considered to be unsafe in a requirements file:
 # setuptools
