@@ -32,9 +32,13 @@ class PostgresContainer(DbContainer):
     POSTGRES_PASSWORD = os.environ.get("POSTGRES_PASSWORD", "test")
     POSTGRES_DB = os.environ.get("POSTGRES_DB", "test")
 
-    def __init__(self, image="postgres:latest"):
+    def __init__(self, image="postgres:latest", user="test", password="test", port=5432, dbname="test"):
         super(PostgresContainer, self).__init__(image=image)
-        self.port_to_expose = 5432
+        self.POSTGRES_USER = user or self.POSTGRES_USER
+        self.POSTGRES_PASSWORD = password or self.POSTGRES_PASSWORD
+        self.POSTGRES_DB = dbname or self.POSTGRES_DB
+        self.port_to_expose = port
+
         self.with_exposed_ports(self.port_to_expose)
 
     def _configure(self):
