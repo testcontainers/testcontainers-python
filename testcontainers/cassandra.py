@@ -24,11 +24,11 @@ class CassandraContainer(DockerContainer):
     ('cassandra') and password ('cassandra').
     ::
 
-        with CassandraContainer('cassandra:3.11.3') as cassandra:
+        with CassandraContainer('cassandra:3.11.8') as cassandra:
             cluster = Cluster([cassandra.get_container_host_ip()], cassandra.get_port())
             with cluster.connect() as session:
                 row = session.execute("SELECT release_version FROM system.local").one()
-                assert row.release_version == '3.11.3'
+                assert row.release_version == '3.11.8'
             cluster.shutdown()
     """
 
@@ -36,6 +36,11 @@ class CassandraContainer(DockerContainer):
         super(CassandraContainer, self).__init__(image, **kwargs)
         self.port_to_expose = 9042
         self.with_exposed_ports(self.port_to_expose)
+
+    def with_max_heap_size(self, gigabytes):
+        self.with_env("MAX_HEAP_SIZE", str(gigabytes) + "G")
+        self.with_env("HEAP_NEWSIZE", str(gigabytes * 2) + "00M")
+        return self
 
     @wait_container_is_ready()
     def _connect(self):
