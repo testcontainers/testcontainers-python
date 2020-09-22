@@ -32,7 +32,8 @@ def test_docker_run_postgress():
 
 
 def test_docker_run_greenplum():
-    postgres_container = PostgresContainer("datagrip/greenplum:6.8", user="guest", password="guest", dbname="guest")
+    postgres_container = PostgresContainer("datagrip/greenplum:6.8",
+                                           user="guest", password="guest", dbname="guest")
     with postgres_container as postgres:
         e = sqlalchemy.create_engine(postgres.get_connection_url())
         result = e.execute("select version()")
