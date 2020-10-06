@@ -31,6 +31,16 @@ def test_docker_run_postgress():
             print("server version:", row[0])
 
 
+def test_docker_run_greenplum():
+    postgres_container = PostgresContainer("datagrip/greenplum:6.8",
+                                           user="guest", password="guest", dbname="guest")
+    with postgres_container as postgres:
+        e = sqlalchemy.create_engine(postgres.get_connection_url())
+        result = e.execute("select version()")
+        for row in result:
+            print("server version:", row[0])
+
+
 def test_docker_run_mariadb():
     mariadb_container = MySqlContainer("mariadb:10.2.9")
     with mariadb_container as mariadb:
