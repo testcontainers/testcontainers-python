@@ -1,5 +1,6 @@
 name: testcontainers-python
-on: [push]
+on:
+  - push
 
 jobs:
   build:
@@ -37,10 +38,3 @@ jobs:
           sphinx-build -nW docs docs/_build/html
           py.test -sv --cov-config .coveragerc --cov-report html:skip-covered --cov-report term:skip-covered --cov=testcontainers --tb=short tests/
           codecov
-  deploy:
-    needs: build
-    if: needs.build.result == 'success'
-    runs-on: ubuntu-16.04
-    steps:
-      - name: Deploy to PyPi
-        run: echo deploying
