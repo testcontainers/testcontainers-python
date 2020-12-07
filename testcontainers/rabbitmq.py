@@ -24,7 +24,7 @@ class RabbitmqContainer(DockerContainer):
         super(RabbitmqContainer, self).__init__(image=image)
         self.port_to_expose = 5672
         self.with_exposed_ports(self.port_to_expose)
-        self.queues=list()
+        self.queues = list()
 
     def _configure(self):
         self.with_env('RABBITMQ_DEFAULT_USER', 'guest')
@@ -41,7 +41,7 @@ class RabbitmqContainer(DockerContainer):
     def declare_queue(self, queue):
         a = list()
         for q in queue:
-            a.append(self.declera_queue(q))
+            a.append(self.declare_queue(q))
         return a
 
     @wait_container_is_ready()
