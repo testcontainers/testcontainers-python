@@ -4,7 +4,7 @@ from testcontainers.core.waiting_utils import wait_for_logs
 from testcontainers.rabbitmq import RabbitmqContainer
 
 def test_declare_queue():
-    rabbitmq_container = RabbitmqContainer("rabbitmq:3-management")
+    rabbitmq_container = RabbitmqContainer("rabbitmq:lastest")
     queue_name = "test"
     with rabbitmq_container as rabbit:
         wait_for_logs(rabbit, RabbitmqContainer.SERVICE_STARTED, timeout=30, interval=1)
@@ -13,7 +13,7 @@ def test_declare_queue():
 
 
 def test_connection():
-    rabbitmq_container = RabbitmqContainer("rabbitmq:3-management")
+    rabbitmq_container = RabbitmqContainer("rabbitmq:lastest")
     with rabbitmq_container as rabbit:
         wait_for_logs(rabbit, RabbitmqContainer.SERVICE_STARTED, timeout=30, interval=1)
         _, exposed_port = rabbit.get_connection()
