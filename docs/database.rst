@@ -1,83 +1,13 @@
 Database containers
 ===================
 
-Allows to spin up docker database images such as MySQL, PostgreSQL, MariaDB and Oracle XE.
+Allows to spin up database images such as MySQL, PostgreSQL, MariaDB, Oracle XE, MongoDb or Neo4j.
 
-MySQL example
--------------
-
-::
-
-    def test_docker_run_mysql():
-        config = MySqlContainer('mysql:5.7.17')
-        with config as mysql:
-            e = sqlalchemy.create_engine(mysql.get_connection_url())
-            result = e.execute("select version()")
-
-It will spin up MySQL version 5.7. Then you can connect to database with credentials passed in constructor or just
-
-call ``get_connection_url()`` method which returns sqlalchemy compatible url in format ``dialect+driver://username:password@host:port/database``.
-
-PostgresSQL
------------
-
-Example of PostgresSQL database usage:
-
-::
-
-    def test_docker_run_postgress():
-        postgres_container = PostgresContainer("postgres:9.5")
-        with postgres_container as postgres:
-            e = sqlalchemy.create_engine(postgres.get_connection_url())
-            result = e.execute("select version()")
-
-Connection set by using raw python ``psycopg2`` driver for Postgres.
-
-MariaDB
--------
-
-Maria DB is a fork of MySQL database, so the only difference with MySQL is the name of Docker container.
-
-::
-
-    def test_docker_run_mariadb():
-        mariadb_container = MariaDbContainer("mariadb:latest")
-        with mariadb_container as mariadb:
-            e = sqlalchemy.create_engine(mariadb.get_connection_url())
-            result = e.execute("select version()")
-
-Oracle XE
----------
-
-::
-
-    oracle = OracleDbContainer()
-
-    with oracle:
-        e = sqlalchemy.create_engine(oracle.get_connection_url())
-        result = e.execute("select 1 from dual")
-
-It uses **https://hub.docker.com/r/wnameless/oracle-xe-11g-r2/** docker image.
-
-Necessary to use it:
-
-- ``cx_Oracle``
-- `Oracle client libraries <https://cx-oracle.readthedocs.io/en/latest/user_guide/installation.html>`_
-=======
-::
-
-    hostname: localhost
-    port: 49161
-    sid: xe
-    username: system
-    password: oracle
-
-Elasticsearch
--------------
-
-::
-
-    es = ElasticSearchContainer()
-    with es:
-        es.get_url()  # gives you the http URL to connect to Elasticsearch
-
+.. autoclass:: testcontainers.mysql.MySqlContainer
+.. autoclass:: testcontainers.mysql.MariaDbContainer
+.. autoclass:: testcontainers.postgres.PostgresContainer
+.. autoclass:: testcontainers.oracle.OracleDbContainer
+.. autoclass:: testcontainers.elasticsearch.ElasticSearchContainer
+.. autoclass:: testcontainers.mongodb.MongoDbContainer
+.. autoclass:: testcontainers.mssql.SqlServerContainer
+.. autoclass:: testcontainers.neo4j.Neo4jContainer

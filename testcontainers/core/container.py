@@ -1,14 +1,15 @@
-import blindspin
-import crayons
+from deprecation import deprecated
 from docker.models.containers import Container
 
 from testcontainers.core.docker_client import DockerClient
 from testcontainers.core.exceptions import ContainerStartException
-from testcontainers.core.utils import is_windows, inside_container
+from testcontainers.core.utils import setup_logger, inside_container
+
+logger = setup_logger(__name__)
 
 
 class DockerContainer(object):
-    def __init__(self, image, **kargs):
+    def __init__(self, image, **kwargs):
         self.env = {}
         self.ports = {}
         self.volumes = {}
@@ -17,7 +18,7 @@ class DockerContainer(object):
         self._container = None
         self._command = None
         self._name = None
-        self._kargs = kargs
+        self._kwargs = kwargs
 
     def with_env(self, key: str, value: str) -> 'DockerContainer':
         self.env[key] = value
@@ -33,32 +34,31 @@ class DockerContainer(object):
             self.ports[port] = None
         return self
 
+    @deprecated(details='Use `with_kwargs`.')
     def with_kargs(self, **kargs) -> 'DockerContainer':
-        self._kargs = kargs
+        return self.with_kwargs(**kargs)
+
+    def with_kwargs(self, **kwargs) -> 'DockerContainer':
+        self._kwargs = kwargs
         return self
 
     def start(self):
-        print("")
-        print("{} {}".format(crayons.yellow("Pulling image"),
-                             crayons.red(self.image)))
-        with blindspin.spinner():
-            docker_client = self.get_docker_client()
-            self._container = docker_client.run(self.image,
-                                                command=self._command,
-                                                detach=True,
-                                                environment=self.env,
-                                                ports=self.ports,
-                                                name=self._name,
-                                                volumes=self.volumes,
-                                                **self._kargs
-                                                )
-        print("")
-        print("Container started: ",
-              crayons.yellow(self._container.short_id, bold=True))
+        logger.info("Pulling image %s", self.image)
+        docker_client = self.get_docker_client()
+        self._container = docker_client.run(self.image,
+                                            command=self._command,
+                                            detach=True,
+                                            environment=self.env,
+                                            ports=self.ports,
+                                            name=self._name,
+                                            volumes=self.volumes,
+                                            **self._kwargs
+                                            )
+        logger.info("Container started: %s", self._container.short_id)
         return self
 
     def stop(self, force=True, delete_volume=True):
-        self.get_wrapped_contaner().remove(force=force, v=delete_volume)
+        self.get_wrapped_container().remove(force=force, v=delete_volume)
 
     def __enter__(self):
         return self.start()
@@ -77,20 +77,34 @@ class DockerContainer(object):
                 pass
 
     def get_container_host_ip(self) -> str:
-        # if testcontainers itself runs in docker, get the newly spawned
-        # container's IP address from the dockder "bridge" network
-        if inside_container():
-            return self.get_docker_client().bridge_ip(self._container.id)
-        elif is_windows():
+        # infer from docker host
+        host = self.get_docker_client().host()
+        if not host:
             return "localhost"
-        else:
-            return "0.0.0.0"
+
+        # check testcontainers itself runs inside docker container
+        if inside_container():
+            # If newly spawned container's gateway IP address from the docker
+            # "bridge" network is equal to detected host address, we should use
+            # container IP address, otherwise fall back to detected host
+            # address. Even it's inside container, we need to double check,
+            # because docker host might be set to docker:dind, usually in CI/CD environment
+            gateway_ip = self.get_docker_client().gateway_ip(self._container.id)
+
+            if gateway_ip == host:
+                return self.get_docker_client().bridge_ip(self._container.id)
+            return gateway_ip
+        return host
 
     def get_exposed_port(self, port) -> str:
+        mapped_port = self.get_docker_client().port(self._container.id, port)
         if inside_container():
-            return port
-        else:
-            return self.get_docker_client().port(self._container.id, port)
+            gateway_ip = self.get_docker_client().gateway_ip(self._container.id)
+            host = self.get_docker_client().host()
+
+            if gateway_ip == host:
+                return port
+        return mapped_port
 
     def with_command(self, command: str) -> 'DockerContainer':
         self._command = command
@@ -107,7 +121,7 @@ class DockerContainer(object):
         self.volumes[host] = mapping
         return self
 
-    def get_wrapped_contaner(self) -> Container:
+    def get_wrapped_container(self) -> Container:
         return self._container
 
     def get_docker_client(self) -> DockerClient:
@@ -116,4 +130,4 @@ class DockerContainer(object):
     def exec(self, command):
         if not self._container:
             raise ContainerStartException("Container should be started before")
-        return self.get_wrapped_contaner().exec_run(command)
+        return self.get_wrapped_container().exec_run(command)

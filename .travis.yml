@@ -1,28 +1,36 @@
 sudo: required
-dist: trusty
+dist: xenial
 
 services:
   - docker
+  - xvfb
 
 addons:
     chrome: "stable"
+    apt:
+      packages:
+        - unixodbc-dev # required for pyodbc
 
 language: python
 python:
   - "3.5"
   - "3.6"
-
-before_install:
-  - export DISPLAY=:99.0
-  - sh -e /etc/init.d/xvfb start
-  - "/sbin/start-stop-daemon --start --quiet --pidfile /tmp/custom_xvfb_99.pid --make-pidfile --background --exec /usr/bin/Xvfb -- :99 -ac -screen 0 1280x1024x16"
+  - "3.7"
+  - "3.8"
 
 install:
-  - pip install pipenv
+  - pip install -r requirements/$TRAVIS_PYTHON_VERSION.txt
+
+before_script: # add the mssql driver for xenial
+  - curl https://packages.microsoft.com/keys/microsoft.asc | sudo apt-key add -
+  - curl https://packages.microsoft.com/config/ubuntu/16.04/prod.list | sudo tee /etc/apt/sources.list.d/mssql-release.list
+  - sudo apt-get -qq update
+  - sudo ACCEPT_EULA=Y apt-get -y install msodbcsql17
 
 script:
-  - pipenv install --dev
-  - pipenv run py.test -sv --cov-config .coveragerc --cov-report html:skip-covered --cov-report term:skip-covered --cov=testcontainers --tb=short tests/
+  - flake8
+  - sphinx-build -nW docs docs/_build/html
+  - py.test -sv --cov-config .coveragerc --cov-report html:skip-covered --cov-report term:skip-covered --cov=testcontainers --tb=short tests/
   - codecov
 
 notifications:

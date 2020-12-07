@@ -10,38 +10,36 @@
 #    WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the
 #    License for the specific language governing permissions and limitations
 #    under the License.
-import sqlalchemy
 
 from testcontainers.core.container import DockerContainer
 from testcontainers.core.waiting_utils import wait_container_is_ready
+from deprecation import deprecated
 
 
 class DbContainer(DockerContainer):
-    def __init__(self, image):
-        super(DbContainer, self).__init__(image)
+    def __init__(self, image, **kwargs):
+        super(DbContainer, self).__init__(image, **kwargs)
 
     @wait_container_is_ready()
     def _connect(self):
-        """
-        dialect+driver://username:password@host:port/database
-        :return:
-        """
+        import sqlalchemy
         engine = sqlalchemy.create_engine(self.get_connection_url())
         engine.connect()
 
     def get_connection_url(self):
         raise NotImplementedError
 
-    def _create_connection_url(self, dialect, username, password, port,
-                               db_name):
-        return "{dialect}://{username}" \
-               ":{password}@{host}:" \
-               "{port}/{db}".format(dialect=dialect,
-                                    username=username,
-                                    password=password,
-                                    host=self.get_container_host_ip(),
-                                    port=self.get_exposed_port(port),
-                                    db=db_name)
+    def _create_connection_url(self, dialect, username, password, port, db_name=None):
+        if self._container is None:
+            raise RuntimeError("container has not been started")
+        host = self.get_container_host_ip()
+        port = self.get_exposed_port(port)
+        url = "{dialect}://{username}:{password}@{host}:{port}".format(
+            dialect=dialect, username=username, password=password, host=host, port=port
+        )
+        if db_name:
+            url += '/' + db_name
+        return url
 
     def start(self):
         self._configure()
@@ -54,5 +52,6 @@ class DbContainer(DockerContainer):
 
 
 class GenericContainer(DockerContainer):
+    @deprecated(details="Use `DockerContainer`.")
     def __init__(self, image):
         super(GenericContainer, self).__init__(image)
