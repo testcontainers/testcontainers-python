@@ -56,7 +56,7 @@ setuptools.setup(
         'mongo': ['pymongo'],
         'redis': ['redis'],
         'mssqlserver': ['pyodbc'],
-        'neo4j': ['neo4j']
+        'neo4j': ['neo4j'],
         'rabbitmq': ['pika']
     },
     long_description_content_type="text/x-rst",
