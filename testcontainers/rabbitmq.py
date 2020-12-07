@@ -19,6 +19,7 @@ import pika
 class RabbitmqContainer(DockerContainer):
     RABBITMQ_DEFAULT_USER = os.environ.get("RABBITMQ_DEFAULT_USER", "guest")
     RABBITMQ_DEFAULT_PASS = os.environ.get("RABBITMQ_DEFAULT_PASS", "guest")
+    SERVICE_STARTED = r"Server startup complete;"
 
     def __init__(self, image="rabbitmq:latest"):
         super(RabbitmqContainer, self).__init__(image=image)
@@ -36,6 +37,10 @@ class RabbitmqContainer(DockerContainer):
         parameters = pika.ConnectionParameters(self.get_container_host_ip(), self.port_to_expose,
                                                '/', credentials)
         return parameters
+
+    @wait_container_is_ready()
+    def get_connection(self):
+        return self.get_container_host_ip(), self.port_to_expose
 
     @wait_container_is_ready()
     def declare_queue(self, queue):
