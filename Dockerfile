@@ -1,9 +1,9 @@
-FROM python:3.6
+ARG version=3.8
+FROM python:${version}
 
-COPY ./Pipfile* /workspace/
 WORKDIR /workspace
-
-RUN pip install pipenv && \
-    pipenv install --system --dev --deploy
-
-COPY . /workspace
+ARG version=3.8
+COPY requirements/${version}.txt requirements.txt
+COPY setup.py README.md ./
+RUN pip install -r requirements.txt
+COPY . .

@@ -1,10 +1,10 @@
 import os
+import re
 from pathlib import Path
 
 from testcontainers import mysql
 
-from testcontainers.core.generic import GenericContainer
-
+from testcontainers.core.container import DockerContainer
 from importlib import reload
 
 
@@ -14,7 +14,7 @@ def setup_module(m):
 
 
 def test_docker_custom_image():
-    container = GenericContainer("mysql:5.7.17")
+    container = DockerContainer("mysql:5.7.17")
     container.with_exposed_ports(3306)
     container.with_env("MYSQL_ROOT_PASSWORD", "root")
 
@@ -30,17 +30,19 @@ def test_docker_env_variables():
     db.with_bind_ports(3306, 32785)
     with db:
         url = db.get_connection_url()
-        assert url == 'mysql+pymysql://demo:test@0.0.0.0:32785/custom_db'
+        pattern = r'mysql\+pymysql:\/\/demo:test@[\w,.]+:(3306|32785)\/custom_db'
+        assert re.match(pattern, url)
 
-def test_docker_kargs():
+
+def test_docker_kwargs():
     code_dir = Path(__file__).parent
-    container_first = GenericContainer("nginx:latest")
+    container_first = DockerContainer("nginx:latest")
     container_first.with_volume_mapping(code_dir, '/code')
 
-    container_second = GenericContainer("nginx:latest")
+    container_second = DockerContainer("nginx:latest")
 
     with container_first:
-        container_second.with_kargs(volumes_from=[container_first._container.short_id])
+        container_second.with_kwargs(volumes_from=[container_first._container.short_id])
         with container_second:
             files_first = container_first.exec('ls /code').output.decode('utf-8').strip()
             files_second = container_second.exec('ls /code').output.decode('utf-8').strip()

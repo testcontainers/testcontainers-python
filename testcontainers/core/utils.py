@@ -1,9 +1,20 @@
 import os
 import sys
+import subprocess
+import logging
 
 LINUX = "linux"
 MAC = "mac"
 WIN = "win"
+
+
+def setup_logger(name):
+    logger = logging.getLogger(name)
+    logger.setLevel(logging.INFO)
+    handler = logging.StreamHandler()
+    handler.setLevel(logging.INFO)
+    logger.addHandler(handler)
+    return logger
 
 
 def os_name():
@@ -35,3 +46,21 @@ def inside_container():
     https://github.com/docker/docker/blob/a9fa38b1edf30b23cae3eade0be48b3d4b1de14b/daemon/initlayer/setup_unix.go#L25
     """
     return os.path.exists('/.dockerenv')
+
+
+def default_gateway_ip():
+    """
+    Returns gateway IP address of the host that testcontainer process is
+    running on
+
+    https://github.com/testcontainers/testcontainers-java/blob/3ad8d80e2484864e554744a4800a81f6b7982168/core/src/main/java/org/testcontainers/dockerclient/DockerClientConfigUtils.java#L27
+    """
+    cmd = ["sh", "-c", "ip route|awk '/default/ { print $3 }'"]
+    try:
+        process = subprocess.Popen(cmd, stdout=subprocess.PIPE,
+                                   stderr=subprocess.PIPE)
+        ip_address = process.communicate()[0]
+        if ip_address and process.returncode == 0:
+            return ip_address.decode('utf-8').strip().strip('\n')
+    except subprocess.SubprocessError:
+        return None

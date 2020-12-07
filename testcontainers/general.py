@@ -10,13 +10,14 @@
 #    WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the
 #    License for the specific language governing permissions and limitations
 #    under the License.
+from deprecation import deprecated
 from testcontainers.core.container import DockerContainer
-from testcontainers.core.waiting_utils import wait_container_is_ready
 
 
 class TestContainer(DockerContainer):
+    @deprecated(details="Use `DockerContainer`.")
     def __init__(self, image, port_to_expose=None):
-        super(RedisContainer, self).__init__(image)
+        super(TestContainer, self).__init__(image)
         if port_to_expose:
-		self.port_to_expose = port_to_expose
-	        self.with_exposed_ports(self.port_to_expose)
+            self.port_to_expose = port_to_expose
+            self.with_exposed_ports(self.port_to_expose)
