@@ -3,6 +3,7 @@ import time
 from testcontainers.core.waiting_utils import wait_for_logs
 from testcontainers.rabbitmq import RabbitmqContainer
 
+
 def test_declare_queue():
     rabbitmq_container = RabbitmqContainer("rabbitmq:lastest")
     queue_name = "test"
