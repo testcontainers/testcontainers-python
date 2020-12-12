@@ -14,6 +14,8 @@ jobs:
 
       - name: Setup python ${{ env.python-version }}
         uses: actions/setup-python@v2
+        with:
+          python-version: ${{ env.python-version }}
 
       - name: Cache Python dependencies
         uses: actions/cache@v2
