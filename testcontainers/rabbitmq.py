@@ -57,20 +57,20 @@ class RabbitmqContainer(DockerContainer):
     @wait_container_is_ready()
     def declare_binding(self, src, dest):
         cmd = "rabbitmqadmin declare binding source={} destination= {}".format(src, dest)
-        self.exec(cmd)
+        return self.exec(cmd)
 
     @wait_container_is_ready()
     def declare_exchange(self, name, type):
         cmd = "rabbitmqadmin declare exchange name={} type={}".format(name, type)
-        self.exec(cmd)
+        return self.exec(cmd)
 
     @wait_container_is_ready()
     def declare_vhost(self, vhost):
         cmd = "rabbitmqadmin declare exchange vhost={} type={}".format(vhost)
-        self.exec(cmd)
+        return self.exec(cmd)
 
     @wait_container_is_ready()
     def declare_parameter(self, component, name, value):
         cmd = "rabbitmqadmin declare parameter component={} name={} value={}".format(component, name, value)
-        self.exec(cmd)
+        return self.exec(cmd)
 
