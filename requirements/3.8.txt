@@ -37,6 +37,7 @@ imagesize==1.2.0          # via sphinx
 iniconfig==1.0.1          # via pytest
 jinja2==2.11.2            # via sphinx
 jsonschema==3.2.0         # via docker-compose
+kafka-python==2.0.2       # via testcontainers
 markupsafe==1.1.1         # via jinja2
 mccabe==0.6.1             # via flake8
 more-itertools==8.4.0     # via pytest
