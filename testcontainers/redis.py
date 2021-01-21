@@ -17,10 +17,11 @@ from testcontainers.core.waiting_utils import wait_container_is_ready
 
 
 class RedisContainer(DockerContainer):
-    def __init__(self, image="redis:latest", port_to_expose=6379):
+    def __init__(self, image="redis:latest", port_to_expose=6379, decode_responses=False):
         super(RedisContainer, self).__init__(image)
         self.port_to_expose = port_to_expose
         self.with_exposed_ports(self.port_to_expose)
+        self.decode_responses = decode_responses
 
     @wait_container_is_ready()
     def _connect(self):
@@ -29,7 +30,7 @@ class RedisContainer(DockerContainer):
             raise Exception
 
     def get_client(self):
-        return redis.Redis(host=self.get_container_host_ip(), port=self.get_exposed_port(6379))
+        return redis.Redis(host=self.get_container_host_ip(), port=self.get_exposed_port(6379), decode_responses=self.decode_responses)
 
     def start(self):
         super().start()
