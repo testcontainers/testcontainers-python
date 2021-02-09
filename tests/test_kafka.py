@@ -29,6 +29,3 @@ def produce_and_consume_kafka_message(container):
     consumer.seek_to_beginning()
     assert consumer.end_offsets([tp])[tp] == 1, \
         "Expected exactly one test message to be present on test topic !"
-    for msg in consumer:
-        assert msg.value == b"verification message"
-        break
