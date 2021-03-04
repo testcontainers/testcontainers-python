@@ -10,6 +10,7 @@
 #    WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the
 #    License for the specific language governing permissions and limitations
 #    under the License.
+
 import redis as redis
 
 from testcontainers.core.container import DockerContainer
@@ -17,11 +18,10 @@ from testcontainers.core.waiting_utils import wait_container_is_ready
 
 
 class RedisContainer(DockerContainer):
-    def __init__(self, image="redis:latest", port_to_expose=6379, decode_responses=False):
+    def __init__(self, image="redis:latest", port_to_expose=6379):
         super(RedisContainer, self).__init__(image)
         self.port_to_expose = port_to_expose
         self.with_exposed_ports(self.port_to_expose)
-        self.decode_responses = decode_responses
 
     @wait_container_is_ready()
     def _connect(self):
@@ -29,8 +29,23 @@ class RedisContainer(DockerContainer):
         if not client.ping():
             raise Exception
 
-    def get_client(self):
-        return redis.Redis(host=self.get_container_host_ip(), port=self.get_exposed_port(6379), decode_responses=self.decode_responses)
+    def get_client(self, **kwargs):
+        """get redis client
+
+        Parameters
+        ----------
+        kwargs -- parameters for redis client (redis.Redis)
+            currently only support 'decode_responses=True or False'
+
+        Returns
+        -------
+          redis.Redis
+        """
+        return redis.Redis(
+            host=self.get_container_host_ip(),
+            port=self.get_exposed_port(6379),
+            decode_responses=kwargs.get('decode_responses', False)
+        )
 
     def start(self):
         super().start()
