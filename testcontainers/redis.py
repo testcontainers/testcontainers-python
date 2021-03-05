@@ -34,17 +34,18 @@ class RedisContainer(DockerContainer):
 
         Parameters
         ----------
-        kwargs -- parameters for redis client (redis.Redis)
-            currently only support 'decode_responses=True or False'
+        kwargs: dict
+            Keyword arguments passed to `redis.Redis`.
 
         Returns
         -------
-          redis.Redis
+        client: redis.Redis
+            Redis client to connect to the container.
         """
         return redis.Redis(
             host=self.get_container_host_ip(),
             port=self.get_exposed_port(6379),
-            decode_responses=kwargs.get('decode_responses', False)
+            **kwargs,
         )
 
     def start(self):
