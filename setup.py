@@ -16,10 +16,17 @@ import setuptools
 with open('README.rst') as fp:
     long_description = fp.read()
 
+# Load the version number
+try:
+    with open('VERSION') as fp:
+        version = fp.read().strip()
+except FileNotFoundError:
+    version = 'dev'
+
 setuptools.setup(
     name='testcontainers',
     packages=setuptools.find_packages(exclude=['tests']),
-    version='3.2.0',
+    version=version,
     description='Library provides lightweight, throwaway instances of common databases, Selenium '
                 'web browsers, or anything else that can run in a Docker container',
     author='Sergey Pirogov',
