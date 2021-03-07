@@ -10,6 +10,7 @@
 #    WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the
 #    License for the specific language governing permissions and limitations
 #    under the License.
+from deprecation import deprecated
 from testcontainers.core.container import DockerContainer
 from testcontainers.core.waiting_utils import wait_container_is_ready
 import urllib
@@ -51,4 +52,5 @@ class ElasticSearchContainer(DockerContainer):
         return self
 
 
-ElasticsearchContainer = ElasticSearchContainer
+ElasticsearchContainer = deprecated(details='Use `ElasticSearchContainer` with a capital S instead '
+                                    'of `ElasticsearchContainer`.')(ElasticSearchContainer)

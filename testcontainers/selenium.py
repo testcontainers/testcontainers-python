@@ -49,8 +49,7 @@ class BrowserWebDriverContainer(DockerContainer):
     """
     def __init__(self, capabilities, image=None):
         self.capabilities = capabilities
-        if not image:
-            self.image = get_image_name(capabilities)
+        self.image = image or get_image_name(capabilities)
         self.port_to_expose = 4444
         self.vnc_port_to_expose = 5900
         super(BrowserWebDriverContainer, self).__init__(image=self.image)

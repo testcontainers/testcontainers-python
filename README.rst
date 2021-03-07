@@ -16,10 +16,12 @@ Currently available features:
 * Selenium Standalone containers
 * MySql Db container
 * MariaDb container
+* Neo4j container
 * OracleDb container
 * PostgreSQL Db container
 * Microsoft SQL Server container
 * Generic docker containers
+* LocalStack
 
 Installation
 ------------
@@ -51,10 +53,19 @@ The snippet above will spin up a MySql database in a container. The :code:`get_c
 
 More extensive documentation can be found at `Read The Docs <http://testcontainers-python.readthedocs.io/>`_.
 
+Usage within Docker (i.e. in a CI)
+----------------------------------
+
+When trying to launch a testcontainer from within a Docker container two things have to be provided:
+
+1. The container has to provide a docker client installation. Either use an image that has docker pre-installed (e.g. the [official docker images](https://hub.docker.com/_/docker)) or install the client from within the `Dockerfile` specification.
+2. The container has to have access to the docker daemon which can be achieved by mounting `/var/run/docker.sock` or setting the `DOCKER_HOST` environment variable as part of your `docker run` command.
+
+
 Setting up a development environment
 ------------------------------------
 
-We recommend you use a `virtual environment <https://virtualenv.pypa.io/en/stable/>`_ for development. Note that a python version :code:`>=3.5` is required. After setting up your virtual environment, you can install all dependencies and test the installation by running the following snippet.
+We recommend you use a `virtual environment <https://virtualenv.pypa.io/en/stable/>`_ for development. Note that a python version :code:`>=3.6` is required. After setting up your virtual environment, you can install all dependencies and test the installation by running the following snippet.
 
 .. code-block:: bash
 

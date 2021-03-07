@@ -16,10 +16,17 @@ import setuptools
 with open('README.rst') as fp:
     long_description = fp.read()
 
+# Load the version number
+try:
+    with open('VERSION') as fp:
+        version = fp.read().strip()
+except FileNotFoundError:
+    version = 'dev'
+
 setuptools.setup(
     name='testcontainers',
     packages=setuptools.find_packages(exclude=['tests']),
-    version='3.0.3',
+    version=version,
     description='Library provides lightweight, throwaway instances of common databases, Selenium '
                 'web browsers, or anything else that can run in a Docker container',
     author='Sergey Pirogov',
@@ -31,7 +38,6 @@ setuptools.setup(
         'Intended Audience :: Information Technology',
         'Intended Audience :: Developers',
         'Programming Language :: Python :: 3',
-        'Programming Language :: Python :: 3.5',
         'Programming Language :: Python :: 3.6',
         'Programming Language :: Python :: 3.7',
         'Programming Language :: Python :: 3.8',
@@ -44,8 +50,6 @@ setuptools.setup(
     install_requires=[
         'docker',
         'wrapt',
-        'crayons',
-        'blindspin',
         'deprecation',
     ],
     extras_require={
@@ -57,7 +61,8 @@ setuptools.setup(
         'google-cloud-pubsub': ['google-cloud-pubsub'],
         'mongo': ['pymongo'],
         'redis': ['redis'],
-        'mssqlserver': ['pyodbc']
+        'mssqlserver': ['pyodbc'],
+        'neo4j': ['neo4j']
     },
     long_description_content_type="text/x-rst",
     long_description=long_description,
