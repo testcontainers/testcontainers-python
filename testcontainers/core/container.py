@@ -1,14 +1,15 @@
-import blindspin
-import crayons
+from deprecation import deprecated
 from docker.models.containers import Container
 
 from testcontainers.core.docker_client import DockerClient
 from testcontainers.core.exceptions import ContainerStartException
-from testcontainers.core.utils import inside_container
+from testcontainers.core.utils import setup_logger, inside_container
+
+logger = setup_logger(__name__)
 
 
 class DockerContainer(object):
-    def __init__(self, image, **kargs):
+    def __init__(self, image, **kwargs):
         self.env = {}
         self.ports = {}
         self.volumes = {}
@@ -17,7 +18,7 @@ class DockerContainer(object):
         self._container = None
         self._command = None
         self._name = None
-        self._kargs = kargs
+        self._kwargs = kwargs
 
     def with_env(self, key: str, value: str) -> 'DockerContainer':
         self.env[key] = value
@@ -33,28 +34,27 @@ class DockerContainer(object):
             self.ports[port] = None
         return self
 
+    @deprecated(details='Use `with_kwargs`.')
     def with_kargs(self, **kargs) -> 'DockerContainer':
-        self._kargs = kargs
+        return self.with_kwargs(**kargs)
+
+    def with_kwargs(self, **kwargs) -> 'DockerContainer':
+        self._kwargs = kwargs
         return self
 
     def start(self):
-        print("")
-        print("{} {}".format(crayons.yellow("Pulling image"),
-                             crayons.red(self.image)))
-        with blindspin.spinner():
-            docker_client = self.get_docker_client()
-            self._container = docker_client.run(self.image,
-                                                command=self._command,
-                                                detach=True,
-                                                environment=self.env,
-                                                ports=self.ports,
-                                                name=self._name,
-                                                volumes=self.volumes,
-                                                **self._kargs
-                                                )
-        print("")
-        print("Container started: ",
-              crayons.yellow(self._container.short_id, bold=True))
+        logger.info("Pulling image %s", self.image)
+        docker_client = self.get_docker_client()
+        self._container = docker_client.run(self.image,
+                                            command=self._command,
+                                            detach=True,
+                                            environment=self.env,
+                                            ports=self.ports,
+                                            name=self._name,
+                                            volumes=self.volumes,
+                                            **self._kwargs
+                                            )
+        logger.info("Container started: %s", self._container.short_id)
         return self
 
     def stop(self, force=True, delete_volume=True):
