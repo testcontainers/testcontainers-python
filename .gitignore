@@ -63,3 +63,4 @@ docs/_build/
 .idea/
 .venv/
 .testrepository/
+/venv/

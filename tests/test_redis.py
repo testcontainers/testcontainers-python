@@ -6,6 +6,7 @@ from testcontainers.redis import RedisContainer
 def test_docker_run_redis():
     config = RedisContainer()
     with config as redis:
+        time.sleep(5)
         client = redis.get_client()
         p = client.pubsub()
         p.subscribe('test')
