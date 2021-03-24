@@ -10,6 +10,7 @@
 #    WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the
 #    License for the specific language governing permissions and limitations
 #    under the License.
+
 import redis as redis
 
 from testcontainers.core.container import DockerContainer
@@ -28,8 +29,24 @@ class RedisContainer(DockerContainer):
         if not client.ping():
             raise Exception
 
-    def get_client(self):
-        return redis.Redis(host=self.get_container_host_ip(), port=self.get_exposed_port(6379))
+    def get_client(self, **kwargs):
+        """get redis client
+
+        Parameters
+        ----------
+        kwargs: dict
+            Keyword arguments passed to `redis.Redis`.
+
+        Returns
+        -------
+        client: redis.Redis
+            Redis client to connect to the container.
+        """
+        return redis.Redis(
+            host=self.get_container_host_ip(),
+            port=self.get_exposed_port(6379),
+            **kwargs,
+        )
 
     def start(self):
         super().start()

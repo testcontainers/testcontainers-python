@@ -4,88 +4,223 @@
 #
 #    pip-compile --output-file=requirements/3.6.txt requirements.in
 #
--e file:.                 # via -r requirements.in
-alabaster==0.7.12         # via sphinx
-attrs==19.3.0             # via jsonschema, pytest
-babel==2.8.0              # via sphinx
-bcrypt==3.2.0             # via paramiko
-cached-property==1.5.1    # via docker-compose
-cachetools==4.1.1         # via google-auth
-certifi==2020.6.20        # via requests
-cffi==1.14.2              # via bcrypt, cryptography, pynacl
-chardet==3.0.4            # via requests
-codecov==2.1.8            # via -r requirements.in
-coverage==5.2.1           # via codecov, pytest-cov
-cryptography==3.0         # via paramiko
-cx-oracle==8.0.0          # via testcontainers
-deprecation==2.1.0        # via testcontainers
-distro==1.5.0             # via docker-compose
-docker-compose==1.26.2    # via testcontainers
-docker[ssh]==4.2.2        # via -r requirements.in, docker-compose, testcontainers
-dockerpty==0.4.1          # via docker-compose
-docopt==0.6.2             # via docker-compose
-docutils==0.16            # via sphinx
-flake8==3.8.3             # via -r requirements.in
-google-api-core[grpc]==1.22.1  # via google-cloud-pubsub
-google-auth==1.20.1       # via google-api-core
-google-cloud-pubsub==1.7.0  # via testcontainers
-googleapis-common-protos[grpc]==1.52.0  # via google-api-core, grpc-google-iam-v1
-grpc-google-iam-v1==0.12.3  # via google-cloud-pubsub
-grpcio==1.31.0            # via google-api-core, googleapis-common-protos, grpc-google-iam-v1
-idna==2.10                # via requests
-imagesize==1.2.0          # via sphinx
-importlib-metadata==1.7.0  # via flake8, jsonschema, pluggy, pytest
-iniconfig==1.0.1          # via pytest
-jinja2==2.11.2            # via sphinx
-jsonschema==3.2.0         # via docker-compose
+-e file:.
+    # via -r requirements.in
+alabaster==0.7.12
+    # via sphinx
+attrs==19.3.0
+    # via
+    #   jsonschema
+    #   pytest
+babel==2.8.0
+    # via sphinx
+bcrypt==3.2.0
+    # via paramiko
+cached-property==1.5.1
+    # via docker-compose
+cachetools==4.1.1
+    # via google-auth
+certifi==2020.6.20
+    # via requests
+cffi==1.14.2
+    # via
+    #   bcrypt
+    #   cryptography
+    #   pynacl
+chardet==3.0.4
+    # via requests
+codecov==2.1.8
+    # via -r requirements.in
+coverage==5.2.1
+    # via
+    #   codecov
+    #   pytest-cov
+cryptography==3.0
+    # via paramiko
+cx-oracle==8.0.0
+    # via testcontainers
+deprecation==2.1.0
+    # via testcontainers
+distro==1.5.0
+    # via docker-compose
+docker-compose==1.26.2
+    # via testcontainers
+docker[ssh]==4.2.2
+    # via
+    #   -r requirements.in
+    #   docker-compose
+    #   testcontainers
+dockerpty==0.4.1
+    # via docker-compose
+docopt==0.6.2
+    # via docker-compose
+docutils==0.16
+    # via sphinx
+flake8==3.8.3
+    # via -r requirements.in
+google-api-core[grpc]==1.22.1
+    # via google-cloud-pubsub
+google-auth==1.20.1
+    # via google-api-core
+google-cloud-pubsub==1.7.0
+    # via testcontainers
+googleapis-common-protos[grpc]==1.52.0
+    # via
+    #   google-api-core
+    #   grpc-google-iam-v1
+grpc-google-iam-v1==0.12.3
+    # via google-cloud-pubsub
+grpcio==1.31.0
+    # via
+    #   google-api-core
+    #   googleapis-common-protos
+    #   grpc-google-iam-v1
+idna==2.10
+    # via requests
+imagesize==1.2.0
+    # via sphinx
+importlib-metadata==1.7.0
+    # via
+    #   flake8
+    #   jsonschema
+    #   pluggy
+    #   pytest
+iniconfig==1.0.1
+    # via pytest
+jinja2==2.11.2
+    # via sphinx
+jsonschema==3.2.0
+    # via docker-compose
 kafka-python==2.0.2       # via testcontainers
-markupsafe==1.1.1         # via jinja2
-mccabe==0.6.1             # via flake8
-more-itertools==8.4.0     # via pytest
-neo4j==4.1.0              # via testcontainers
-packaging==20.4           # via deprecation, pytest, sphinx
-paramiko==2.7.1           # via docker
-pluggy==0.13.1            # via pytest
-protobuf==3.13.0          # via google-api-core, googleapis-common-protos
-psycopg2-binary==2.8.5    # via testcontainers
-py==1.9.0                 # via pytest
-pyasn1-modules==0.2.8     # via google-auth
-pyasn1==0.4.8             # via pyasn1-modules, rsa
-pycodestyle==2.6.0        # via flake8
-pycparser==2.20           # via cffi
-pyflakes==2.2.0           # via flake8
-pygments==2.6.1           # via sphinx
-pymongo==3.11.0           # via testcontainers
-pymysql==0.10.0           # via testcontainers
-pynacl==1.4.0             # via paramiko
-pyodbc==4.0.30            # via testcontainers
-pyparsing==2.4.7          # via packaging
-pyrsistent==0.16.0        # via jsonschema
-pytest-cov==2.10.1        # via -r requirements.in
-pytest==6.0.1             # via -r requirements.in, pytest-cov
-python-dotenv==0.14.0     # via docker-compose
-pytz==2020.1              # via babel, google-api-core, neo4j
-pyyaml==5.3.1             # via docker-compose
-redis==3.5.3              # via testcontainers
-requests==2.24.0          # via codecov, docker, docker-compose, google-api-core, sphinx
-rsa==4.6                  # via google-auth
-selenium==3.141.0         # via testcontainers
-six==1.15.0               # via bcrypt, cryptography, docker, docker-compose, dockerpty, google-api-core, google-auth, grpcio, jsonschema, packaging, protobuf, pynacl, pyrsistent, websocket-client
-snowballstemmer==2.0.0    # via sphinx
-sphinx==3.2.1             # via -r requirements.in
-sphinxcontrib-applehelp==1.0.2  # via sphinx
-sphinxcontrib-devhelp==1.0.2  # via sphinx
-sphinxcontrib-htmlhelp==1.0.3  # via sphinx
-sphinxcontrib-jsmath==1.0.1  # via sphinx
-sphinxcontrib-qthelp==1.0.3  # via sphinx
-sphinxcontrib-serializinghtml==1.1.4  # via sphinx
-sqlalchemy==1.3.18        # via testcontainers
-texttable==1.6.2          # via docker-compose
-toml==0.10.1              # via pytest
-urllib3==1.25.10          # via requests, selenium
-websocket-client==0.57.0  # via docker, docker-compose
-wrapt==1.12.1             # via testcontainers
-zipp==3.1.0               # via importlib-metadata
+markupsafe==1.1.1
+    # via jinja2
+mccabe==0.6.1
+    # via flake8
+more-itertools==8.4.0
+    # via pytest
+neo4j==4.1.0
+    # via testcontainers
+packaging==20.4
+    # via
+    #   deprecation
+    #   pytest
+    #   sphinx
+paramiko==2.7.1
+    # via docker
+pluggy==0.13.1
+    # via pytest
+protobuf==3.13.0
+    # via
+    #   google-api-core
+    #   googleapis-common-protos
+psycopg2-binary==2.8.5
+    # via testcontainers
+py==1.9.0
+    # via pytest
+pyasn1-modules==0.2.8
+    # via google-auth
+pyasn1==0.4.8
+    # via
+    #   pyasn1-modules
+    #   rsa
+pycodestyle==2.6.0
+    # via flake8
+pycparser==2.20
+    # via cffi
+pyflakes==2.2.0
+    # via flake8
+pygments==2.6.1
+    # via sphinx
+pymongo==3.11.0
+    # via testcontainers
+pymysql==0.10.0
+    # via testcontainers
+pynacl==1.4.0
+    # via paramiko
+pyodbc==4.0.30
+    # via testcontainers
+pyparsing==2.4.7
+    # via packaging
+pyrsistent==0.16.0
+    # via jsonschema
+pytest-cov==2.10.1
+    # via -r requirements.in
+pytest==6.0.1
+    # via
+    #   -r requirements.in
+    #   pytest-cov
+python-dotenv==0.14.0
+    # via docker-compose
+pytz==2020.1
+    # via
+    #   babel
+    #   google-api-core
+    #   neo4j
+pyyaml==5.3.1
+    # via docker-compose
+redis==3.5.3
+    # via testcontainers
+requests==2.24.0
+    # via
+    #   codecov
+    #   docker
+    #   docker-compose
+    #   google-api-core
+    #   sphinx
+rsa==4.6
+    # via google-auth
+selenium==3.141.0
+    # via testcontainers
+six==1.15.0
+    # via
+    #   bcrypt
+    #   cryptography
+    #   docker
+    #   docker-compose
+    #   dockerpty
+    #   google-api-core
+    #   google-auth
+    #   grpcio
+    #   jsonschema
+    #   packaging
+    #   protobuf
+    #   pynacl
+    #   pyrsistent
+    #   websocket-client
+snowballstemmer==2.0.0
+    # via sphinx
+sphinx==3.2.1
+    # via -r requirements.in
+sphinxcontrib-applehelp==1.0.2
+    # via sphinx
+sphinxcontrib-devhelp==1.0.2
+    # via sphinx
+sphinxcontrib-htmlhelp==1.0.3
+    # via sphinx
+sphinxcontrib-jsmath==1.0.1
+    # via sphinx
+sphinxcontrib-qthelp==1.0.3
+    # via sphinx
+sphinxcontrib-serializinghtml==1.1.4
+    # via sphinx
+sqlalchemy==1.3.18
+    # via testcontainers
+texttable==1.6.2
+    # via docker-compose
+toml==0.10.1
+    # via pytest
+urllib3==1.25.10
+    # via
+    #   requests
+    #   selenium
+websocket-client==0.57.0
+    # via
+    #   docker
+    #   docker-compose
+wrapt==1.12.1
+    # via testcontainers
+zipp==3.1.0
+    # via importlib-metadata
 
 # The following packages are considered to be unsafe in a requirements file:
 # setuptools
