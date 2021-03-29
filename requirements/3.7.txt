@@ -91,6 +91,7 @@ jinja2==2.11.2
     # via sphinx
 jsonschema==3.2.0
     # via docker-compose
+kafka-python==2.0.2       # via testcontainers
 markupsafe==1.1.1
     # via jinja2
 mccabe==0.6.1
