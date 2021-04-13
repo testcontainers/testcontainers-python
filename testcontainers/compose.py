@@ -5,9 +5,8 @@ Docker compose support
 Allows to spin up services configured via :code:`docker-compose.yml`.
 """
 
-import subprocess
-
 import requests
+import subprocess
 
 from testcontainers.core.waiting_utils import wait_container_is_ready
 from testcontainers.core.exceptions import NoSuchPortExposed
@@ -55,16 +54,19 @@ class DockerCompose(object):
         expose:
             - "5555"
     """
+
     def __init__(
             self,
             filepath,
             compose_file_name="docker-compose.yml",
-            pull=False):
+            pull=False,
+            env_file=None):
         self.filepath = filepath
         self.compose_file_names = compose_file_name if isinstance(
             compose_file_name, (list, tuple)
         ) else [compose_file_name]
         self.pull = pull
+        self.env_file = env_file
 
     def __enter__(self):
         self.start()
@@ -77,12 +79,15 @@ class DockerCompose(object):
         docker_compose_cmd = ['docker-compose']
         for file in self.compose_file_names:
             docker_compose_cmd += ['-f', file]
+        if self.env_file:
+            docker_compose_cmd += ['--env-file', self.env_file]
         return docker_compose_cmd
 
     def start(self):
         if self.pull:
             pull_cmd = self.docker_compose_command() + ['pull']
             subprocess.call(pull_cmd, cwd=self.filepath)
+
         up_cmd = self.docker_compose_command() + ['up', '-d']
         subprocess.call(up_cmd, cwd=self.filepath)
 
