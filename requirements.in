@@ -4,4 +4,3 @@ flake8
 pytest
 pytest-cov
 sphinx
-docker<4.3.0

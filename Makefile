@@ -2,7 +2,12 @@ PYTHON_VERSIONS = 3.6 3.7 3.8
 REQUIREMENTS = $(addprefix requirements/,${PYTHON_VERSIONS:=.txt})
 TESTS = $(addprefix tests/,${PYTHON_VERSIONS})
 IMAGES = $(addprefix image/,${PYTHON_VERSIONS})
-RUN = docker run --rm -it
+ARCH = $(shell arch)
+ifeq (${ARCH}, arm64)
+	RUN = docker run --rm -it --platform linux/amd64
+else
+	RUN = docker run --rm -it
+endif
 .PHONY : docs
 
 # Default target
@@ -17,7 +22,7 @@ requirements : ${REQUIREMENTS}
 ${REQUIREMENTS} : requirements/%.txt : requirements.in setup.py
 	mkdir -p $(dir $@)
 	${RUN} -w /workspace -v `pwd`:/workspace python:$* bash -c \
-		"pip install pip-tools && pip-compile -v -o $@ $<"
+		"pip install pip-tools && pip-compile -v --upgrade -o $@ $<"
 
 
 # Targets to build docker images
