@@ -20,6 +20,7 @@ Currently available features:
 * OracleDb container
 * PostgreSQL Db container
 * Microsoft SQL Server container
+* Kafka container
 * Generic docker containers
 * LocalStack
 
