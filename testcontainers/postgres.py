@@ -46,9 +46,10 @@ class PostgresContainer(DbContainer):
         self.with_env("POSTGRES_PASSWORD", self.POSTGRES_PASSWORD)
         self.with_env("POSTGRES_DB", self.POSTGRES_DB)
 
-    def get_connection_url(self):
+    def get_connection_url(self, host="localhost"):
         return super()._create_connection_url(dialect="postgresql+psycopg2",
                                               username=self.POSTGRES_USER,
                                               password=self.POSTGRES_PASSWORD,
                                               db_name=self.POSTGRES_DB,
+                                              host=host,
                                               port=self.port_to_expose)
