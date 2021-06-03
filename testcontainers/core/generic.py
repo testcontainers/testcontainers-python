@@ -29,7 +29,8 @@ class DbContainer(DockerContainer):
     def get_connection_url(self):
         raise NotImplementedError
 
-    def _create_connection_url(self, dialect, username, password, host=None, port=None, db_name=None):
+    def _create_connection_url(self, dialect, username, password,
+                               host=None, port=None, db_name=None):
         if self._container is None:
             raise RuntimeError("container has not been started")
         if not host:
