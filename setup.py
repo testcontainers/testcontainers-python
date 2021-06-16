@@ -63,7 +63,8 @@ setuptools.setup(
         'redis': ['redis'],
         'mssqlserver': ['pyodbc'],
         'neo4j': ['neo4j'],
-        'kafka': ['kafka-python']
+        'kafka': ['kafka-python'],
+        'minio': ['minio']
     },
     long_description_content_type="text/x-rst",
     long_description=long_description,

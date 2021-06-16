@@ -21,7 +21,9 @@ cached-property==1.5.1
 cachetools==4.1.1
     # via google-auth
 certifi==2020.6.20
-    # via requests
+    # via
+    #   minio
+    #   requests
 cffi==1.14.2
     # via
     #   bcrypt
@@ -90,6 +92,8 @@ markupsafe==1.1.1
     # via jinja2
 mccabe==0.6.1
     # via flake8
+minio==7.0.4
+    # via testcontainers
 more-itertools==8.4.0
     # via pytest
 neo4j==4.1.0
@@ -205,6 +209,7 @@ toml==0.10.1
     # via pytest
 urllib3==1.25.10
     # via
+    #   minio
     #   requests
     #   selenium
 websocket-client==0.57.0
