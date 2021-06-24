@@ -22,7 +22,7 @@ def test_docker_run_mysql():
             assert row[0] == '5.7.17'
 
 
-def test_docker_run_postgress():
+def test_docker_run_postgres():
     postgres_container = PostgresContainer("postgres:9.5")
     with postgres_container as postgres:
         e = sqlalchemy.create_engine(postgres.get_connection_url())

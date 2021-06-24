@@ -84,7 +84,9 @@ def wait_for_logs(container, predicate, timeout=None, interval=1):
     start = time.time()
     while True:
         duration = time.time() - start
-        if predicate(container._container.logs().decode()):
+        stdout = container.get_logs()[0].decode()
+        stderr = container.get_logs()[1].decode()
+        if predicate(stdout) or predicate(stderr):
             return duration
         if timeout and duration > timeout:
             raise TimeoutError("container did not emit logs satisfying predicate in %.3f seconds"
