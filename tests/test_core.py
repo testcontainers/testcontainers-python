@@ -20,4 +20,3 @@ def test_can_get_logs():
         wait_for_logs(container, "Hello from Docker!")
         stdout, stderr = container.get_logs()
         assert stdout, 'There should be something on stdout'
-        

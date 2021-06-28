@@ -136,4 +136,3 @@ class DockerContainer(object):
         if not self._container:
             raise ContainerStartException("Container should be started before")
         return self.get_wrapped_container().exec_run(command)
-
