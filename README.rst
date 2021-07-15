@@ -74,6 +74,10 @@ We recommend you use a `virtual environment <https://virtualenv.pypa.io/en/stabl
     pip install -r requirements/$(python -c 'import sys; print("%d.%d" % sys.version_info[:2])').txt
     pytest -s
 
+Note, the anonymous tier of Docker Hub rate limits downloads to 100 container image requests per six hours, and running all of the tests in the tests directory for the first time appears to exceed the limit.
+
+Also, the SQL Server tests will fail unless you have Microsoft ODBC Driver 17 for SQL Server installed, available from https://docs.microsoft.com/en-us/sql/connect/odbc/download-odbc-driver-for-sql-server.
+
 Adding requirements
 ^^^^^^^^^^^^^^^^^^^
 
