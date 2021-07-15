@@ -10,6 +10,8 @@ testcontainers-python
 
 Python port for testcontainers-java that allows using docker containers for functional and integration testing. Testcontainers-python provides capabilities to spin up docker containers (such as a database, Selenium web browser, or any other container) for testing.
 
+This fork of testcontainers-python fixes bugs in upstream's Windows support, and it also works on Linux and MacOS.
+
 Currently available features:
 
 * Selenium Grid containers
