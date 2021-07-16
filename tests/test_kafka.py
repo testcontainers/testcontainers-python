@@ -2,14 +2,18 @@ from kafka import KafkaConsumer, KafkaProducer, TopicPartition
 
 from testcontainers.kafka import KafkaContainer
 
+import time
+
 
 def test_kafka_producer_consumer():
     with KafkaContainer() as container:
+        time.sleep(5)
         produce_and_consume_kafka_message(container)
 
 
 def test_kafka_producer_consumer_custom_port():
     with KafkaContainer(port_to_expose=9888) as container:
+        time.sleep(5)
         assert container.port_to_expose == 9888
         produce_and_consume_kafka_message(container)
 

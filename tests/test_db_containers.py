@@ -130,7 +130,7 @@ def test_docker_run_neo4j_latest():
 
 def test_docker_generic_db():
     mongo_container = DockerContainer("mongo:latest")
-    mongo_container.with_bind_ports(27017, 27017)
+    mongo_container.with_exposed_ports(27017)
 
     with mongo_container:
         def connect():

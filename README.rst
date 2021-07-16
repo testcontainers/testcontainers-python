@@ -76,7 +76,9 @@ We recommend you use a `virtual environment <https://virtualenv.pypa.io/en/stabl
 
 Note, the anonymous tier of Docker Hub rate limits downloads to 100 container image requests per six hours, and running all of the tests in the tests directory for the first time appears to exceed the limit.
 
-Also, the SQL Server tests will fail unless you have Microsoft ODBC Driver 17 for SQL Server installed, available from https://docs.microsoft.com/en-us/sql/connect/odbc/download-odbc-driver-for-sql-server.
+The SQL Server tests will fail unless you have Microsoft ODBC Driver 17 for SQL Server installed, available from https://docs.microsoft.com/en-us/sql/connect/odbc/download-odbc-driver-for-sql-server.
+
+There is an apparent bug in Docker Desktop for Windows, described at https://github.com/docker/docker-py/issues/2792, that causes the DockerContainer.getExposedPort() method to fail if it is called immediately after starting the container. Some of the test cases implement a 5 second time timeout to avoid hitting this bug.
 
 Adding requirements
 ^^^^^^^^^^^^^^^^^^^

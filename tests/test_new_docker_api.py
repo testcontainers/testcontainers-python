@@ -1,6 +1,7 @@
 import os
 import re
 from pathlib import Path
+import time
 
 from testcontainers import mysql
 
@@ -19,6 +20,7 @@ def test_docker_custom_image():
     container.with_env("MYSQL_ROOT_PASSWORD", "root")
 
     with container:
+        time.sleep(5)
         port = container.get_exposed_port(3306)
         assert int(port) > 0
 
