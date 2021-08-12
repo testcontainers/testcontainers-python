@@ -11,6 +11,7 @@ from testcontainers.mysql import MySqlContainer
 from testcontainers.neo4j import Neo4jContainer
 from testcontainers.oracle import OracleDbContainer
 from testcontainers.postgres import PostgresContainer
+from testcontainers.trino import TrinoContainer
 
 
 def test_docker_run_mysql():
@@ -62,6 +63,15 @@ def test_docker_run_oracle():
                     'TNS for Linux: Version 11.2.0.2.0 - Production',
                     'NLSRTL Version 11.2.0.2.0 - Production'}
         assert {row[0] for row in result} == versions
+
+
+def test_docker_run_trino():
+    trino_container = TrinoContainer("trinodb/trino:360")
+    with trino_container as trino:
+        e = sqlalchemy.create_engine(trino.get_connection_url())
+        result = e.execute("select version()")
+        for row in result:
+            assert row[0] == '360'
 
 
 def test_docker_run_mongodb():

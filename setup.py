@@ -57,6 +57,7 @@ setuptools.setup(
         'mysql': ['sqlalchemy', 'pymysql'],
         'oracle': ['sqlalchemy', 'cx_Oracle'],
         'postgresql': ['sqlalchemy', 'psycopg2-binary'],
+        'trino': ['sqlalchemy', 'pyhive[trino]'],
         'selenium': ['selenium'],
         'google-cloud-pubsub': ['google-cloud-pubsub'],
         'mongo': ['pymongo'],

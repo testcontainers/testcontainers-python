@@ -43,13 +43,13 @@ deprecation==2.1.0
     # via testcontainers
 distro==1.5.0
     # via docker-compose
-docker-compose==1.26.2
-    # via testcontainers
 docker[ssh]==4.2.2
     # via
     #   -r requirements.in
     #   docker-compose
     #   testcontainers
+docker-compose==1.26.2
+    # via testcontainers
 dockerpty==0.4.1
     # via docker-compose
 docopt==0.6.2
@@ -58,6 +58,8 @@ docutils==0.16
     # via sphinx
 flake8==3.8.3
     # via -r requirements.in
+future==0.18.2
+    # via pyhive
 google-api-core[grpc]==1.22.1
     # via google-cloud-pubsub
 google-auth==1.20.1
@@ -79,13 +81,20 @@ idna==2.10
     # via requests
 imagesize==1.2.0
     # via sphinx
+importlib-metadata==4.6.3
+    # via
+    #   flake8
+    #   jsonschema
+    #   pluggy
+    #   pytest
 iniconfig==1.0.1
     # via pytest
 jinja2==2.11.2
     # via sphinx
 jsonschema==3.2.0
     # via docker-compose
-kafka-python==2.0.2       # via testcontainers
+kafka-python==2.0.2
+    # via testcontainers
 markupsafe==1.1.1
     # via jinja2
 mccabe==0.6.1
@@ -111,12 +120,12 @@ psycopg2-binary==2.8.5
     # via testcontainers
 py==1.9.0
     # via pytest
-pyasn1-modules==0.2.8
-    # via google-auth
 pyasn1==0.4.8
     # via
     #   pyasn1-modules
     #   rsa
+pyasn1-modules==0.2.8
+    # via google-auth
 pycodestyle==2.6.0
     # via flake8
 pycparser==2.20
@@ -125,6 +134,8 @@ pyflakes==2.2.0
     # via flake8
 pygments==2.6.1
     # via sphinx
+pyhive[trino]==0.6.4
+    # via testcontainers
 pymongo==3.11.0
     # via testcontainers
 pymysql==0.10.0
@@ -137,12 +148,14 @@ pyparsing==2.4.7
     # via packaging
 pyrsistent==0.16.0
     # via jsonschema
-pytest-cov==2.10.1
-    # via -r requirements.in
 pytest==6.0.1
     # via
     #   -r requirements.in
     #   pytest-cov
+pytest-cov==2.10.1
+    # via -r requirements.in
+python-dateutil==2.8.2
+    # via pyhive
 python-dotenv==0.14.0
     # via docker-compose
 pytz==2020.1
@@ -160,6 +173,7 @@ requests==2.24.0
     #   docker
     #   docker-compose
     #   google-api-core
+    #   pyhive
     #   sphinx
 rsa==4.6
     # via google-auth
@@ -180,6 +194,7 @@ six==1.15.0
     #   protobuf
     #   pynacl
     #   pyrsistent
+    #   python-dateutil
     #   websocket-client
 snowballstemmer==2.0.0
     # via sphinx
@@ -203,6 +218,8 @@ texttable==1.6.2
     # via docker-compose
 toml==0.10.1
     # via pytest
+typing-extensions==3.10.0.0
+    # via importlib-metadata
 urllib3==1.25.10
     # via
     #   requests
@@ -213,6 +230,8 @@ websocket-client==0.57.0
     #   docker-compose
 wrapt==1.12.1
     # via testcontainers
+zipp==3.5.0
+    # via importlib-metadata
 
 # The following packages are considered to be unsafe in a requirements file:
 # setuptools

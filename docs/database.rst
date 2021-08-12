@@ -9,5 +9,6 @@ Allows to spin up database images such as MySQL, PostgreSQL, MariaDB, Oracle XE,
 .. autoclass:: testcontainers.oracle.OracleDbContainer
 .. autoclass:: testcontainers.elasticsearch.ElasticSearchContainer
 .. autoclass:: testcontainers.mongodb.MongoDbContainer
+.. autoclass:: testcontainers.trino.TrinoContainer
 .. autoclass:: testcontainers.mssql.SqlServerContainer
 .. autoclass:: testcontainers.neo4j.Neo4jContainer
