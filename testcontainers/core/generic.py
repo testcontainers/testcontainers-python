@@ -13,7 +13,10 @@
 
 from testcontainers.core.container import DockerContainer
 from testcontainers.core.waiting_utils import wait_container_is_ready
+from testcontainers.core.utils import setup_logger
 from deprecation import deprecated
+
+logger = setup_logger(__name__)
 
 
 class DbContainer(DockerContainer):
@@ -41,6 +44,7 @@ class DbContainer(DockerContainer):
         )
         if db_name:
             url += '/' + db_name
+        logger.info("Connection url: %s", url)
         return url
 
     def start(self):
