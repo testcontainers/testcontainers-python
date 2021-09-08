@@ -1,3 +1,5 @@
+import os
+
 from deprecation import deprecated
 from docker.models.containers import Container
 
@@ -81,6 +83,10 @@ class DockerContainer(object):
         host = self.get_docker_client().host()
         if not host:
             return "localhost"
+
+        host = os.environ.get('TC_HOST')
+        if host:
+            return host
 
         # check testcontainers itself runs inside docker container
         if inside_container():
