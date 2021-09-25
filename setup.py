@@ -57,6 +57,7 @@ setuptools.setup(
         'mysql': ['sqlalchemy', 'pymysql'],
         'oracle': ['sqlalchemy', 'cx_Oracle'],
         'postgresql': ['sqlalchemy', 'psycopg2-binary'],
+        'postgresql-pg8000': ['sqlalchemy', 'pg8000'],
         'selenium': ['selenium'],
         'google-cloud-pubsub': ['google-cloud-pubsub < 2'],
         'mongo': ['pymongo'],
