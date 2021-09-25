@@ -21,10 +21,15 @@ class PostgresContainer(DbContainer):
 
     Example
     -------
-    The example spins up a Postgres database and connects to it using the :code:`psycopg` driver.
+    The example spins up a Postgres database and connects to it using the (default) :code:`psycopg` driver.
     ::
 
         with PostgresContainer("postgres:9.5") as postgres:
+            e = sqlalchemy.create_engine(postgres.get_connection_url())
+            result = e.execute("select version()")
+    
+    :: 
+        with PostgresContainer("postgres:9.5", driver="pg8000") as postgres:
             e = sqlalchemy.create_engine(postgres.get_connection_url())
             result = e.execute("select version()")
     """
@@ -32,12 +37,13 @@ class PostgresContainer(DbContainer):
     POSTGRES_PASSWORD = os.environ.get("POSTGRES_PASSWORD", "test")
     POSTGRES_DB = os.environ.get("POSTGRES_DB", "test")
 
-    def __init__(self, image="postgres:latest", port=5432, user=None, password=None, dbname=None):
+    def __init__(self, image="postgres:latest", port=5432, user=None, password=None, dbname=None, driver="psycopg2"):
         super(PostgresContainer, self).__init__(image=image)
         self.POSTGRES_USER = user or self.POSTGRES_USER
         self.POSTGRES_PASSWORD = password or self.POSTGRES_PASSWORD
         self.POSTGRES_DB = dbname or self.POSTGRES_DB
         self.port_to_expose = port
+        self.driver = driver
 
         self.with_exposed_ports(self.port_to_expose)
 
@@ -47,7 +53,7 @@ class PostgresContainer(DbContainer):
         self.with_env("POSTGRES_DB", self.POSTGRES_DB)
 
     def get_connection_url(self, host=None):
-        return super()._create_connection_url(dialect="postgresql+psycopg2",
+        return super()._create_connection_url(dialect="postgresql+{}".format(self.driver),
                                               username=self.POSTGRES_USER,
                                               password=self.POSTGRES_PASSWORD,
                                               db_name=self.POSTGRES_DB,
