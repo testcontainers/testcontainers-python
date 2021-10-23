@@ -11,10 +11,10 @@
 #    License for the specific language governing permissions and limitations
 #    under the License.
 
-from ..core.generic import GenericContainer
+from ..core.container import DockerContainer
 
 
-class PubSubContainer(GenericContainer):
+class PubSubContainer(DockerContainer):
     """
     PubSub container for testing managed message queues.
 

@@ -17,8 +17,8 @@ from deprecation import deprecated
 
 
 class DbContainer(DockerContainer):
-    def __init__(self, image):
-        super(DbContainer, self).__init__(image)
+    def __init__(self, image, **kwargs):
+        super(DbContainer, self).__init__(image, **kwargs)
 
     @wait_container_is_ready()
     def _connect(self):
@@ -29,12 +29,19 @@ class DbContainer(DockerContainer):
     def get_connection_url(self):
         raise NotImplementedError
 
-    def _create_connection_url(self, dialect, username, password, port, db_name):
-        host = self.get_container_host_ip()
+    def _create_connection_url(self, dialect, username, password,
+                               host=None, port=None, db_name=None):
+        if self._container is None:
+            raise RuntimeError("container has not been started")
+        if not host:
+            host = self.get_container_host_ip()
         port = self.get_exposed_port(port)
-        return "{dialect}://{username}:{password}@{host}:{port}/{db}".format(
-            dialect=dialect, username=username, password=password, host=host, port=port, db=db_name
+        url = "{dialect}://{username}:{password}@{host}:{port}".format(
+            dialect=dialect, username=username, password=password, host=host, port=port
         )
+        if db_name:
+            url += '/' + db_name
+        return url
 
     def start(self):
         self._configure()
@@ -47,6 +54,6 @@ class DbContainer(DockerContainer):
 
 
 class GenericContainer(DockerContainer):
-    @deprecated(details="use plain DockerContainer instead")
+    @deprecated(details="Use `DockerContainer`.")
     def __init__(self, image):
         super(GenericContainer, self).__init__(image)
