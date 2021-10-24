@@ -2,6 +2,7 @@ import os
 import sys
 import subprocess
 import logging
+import socket
 
 LINUX = "linux"
 MAC = "mac"
@@ -47,6 +48,17 @@ def inside_container():
     """
     return os.path.exists('/.dockerenv')
 
+def docker_internal_host():
+    """
+    Returns resolved ip address if docker host supports host.docker.internal
+    
+    https://github.com/moby/moby/pull/40007
+    https://github.com/moby/libnetwork/pull/2348
+    """
+    try:
+        return socket.gethostbyname('host.docker.internal')
+    except socket.gaierror:
+        return None
 
 def default_gateway_ip():
     """
