@@ -52,9 +52,9 @@ class DockerClient(object):
         try:
             container = self.client.api.containers(filters={'id': container_id})[0]
             return container['NetworkSettings']['Networks']['bridge']['Gateway']
-        except:
+        except Exception:
             return default_gateway_ip()
-    
+
     def resolve_host(self, container_id, default="localhost"):
         # get address for host.docker.internal if supports
         host = docker_internal_host()
