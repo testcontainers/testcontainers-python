@@ -15,6 +15,7 @@ import urllib
 import docker
 from docker.models.containers import Container
 from testcontainers.core.utils import inside_container
+from testcontainers.core.utils import docker_internal_host
 from testcontainers.core.utils import default_gateway_ip
 
 
@@ -48,25 +49,44 @@ class DockerClient(object):
         return container['NetworkSettings']['Networks']['bridge']['IPAddress']
 
     def gateway_ip(self, container_id):
-        container = self.client.api.containers(filters={'id': container_id})[0]
-        return container['NetworkSettings']['Networks']['bridge']['Gateway']
+        try:
+            container = self.client.api.containers(filters={'id': container_id})[0]
+            return container['NetworkSettings']['Networks']['bridge']['Gateway']
+        except:
+            return default_gateway_ip()
+    
+    def resolve_host(self, container_id, default="localhost"):
+        # get address for host.docker.internal if supports
+        host = docker_internal_host()
 
-    def host(self):
+        try:
+            if not host:
+                return self.gateway_ip(container_id)
+            if host == self.gateway_ip(container_id):
+                return self.bridge_ip(container_id)
+            return host
+        except Exception:
+            return default
+
+    def host(self, container_id):
         # https://github.com/testcontainers/testcontainers-go/blob/dd76d1e39c654433a3d80429690d07abcec04424/docker.go#L644
         # if os env TC_HOST is set, use it
         host = os.environ.get('TC_HOST')
         if host:
             return host
+
         try:
             url = urllib.parse.urlparse(self.client.api.base_url)
-
         except ValueError:
             return None
+
         if 'http' in url.scheme or 'tcp' in url.scheme:
+            # check testcontainers itself runs inside docker container
+            if url.hostname == "localhost" and inside_container():
+                return self.resolve_host(container_id)
             return url.hostname
         if 'unix' in url.scheme or 'npipe' in url.scheme:
+            # check testcontainers itself runs inside docker container
             if inside_container():
-                ip_address = default_gateway_ip()
-                if ip_address:
-                    return ip_address
-        return "localhost"
+                return self.resolve_host(container_id)
+            return "localhost"

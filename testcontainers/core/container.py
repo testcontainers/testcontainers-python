@@ -78,32 +78,23 @@ class DockerContainer(object):
 
     def get_container_host_ip(self) -> str:
         # infer from docker host
-        host = self.get_docker_client().host()
+        host = self.get_docker_client().host(self._container.id)
         if not host:
             return "localhost"
 
-        # check testcontainers itself runs inside docker container
-        if inside_container():
-            # If newly spawned container's gateway IP address from the docker
-            # "bridge" network is equal to detected host address, we should use
-            # container IP address, otherwise fall back to detected host
-            # address. Even it's inside container, we need to double check,
-            # because docker host might be set to docker:dind, usually in CI/CD environment
-            gateway_ip = self.get_docker_client().gateway_ip(self._container.id)
-
-            if gateway_ip == host:
-                return self.get_docker_client().bridge_ip(self._container.id)
-            return gateway_ip
         return host
 
     def get_exposed_port(self, port) -> str:
         mapped_port = self.get_docker_client().port(self._container.id, port)
-        if inside_container():
-            gateway_ip = self.get_docker_client().gateway_ip(self._container.id)
-            host = self.get_docker_client().host()
 
-            if gateway_ip == host:
+        if inside_container():
+            bridge_ip = self.get_docker_client().bridge_ip(self._container.id)
+            host = self.get_docker_client().host(self._container.id)
+
+            # use exposed port if host detection returns bridge ip
+            if bridge_ip == host:
                 return port
+
         return mapped_port
 
     def with_command(self, command: str) -> 'DockerContainer':
