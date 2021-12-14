@@ -14,6 +14,7 @@
 
 import re
 import time
+import traceback
 
 import wrapt
 
@@ -37,10 +38,11 @@ def wait_container_is_ready():
     def wrapper(wrapped, instance, args, kwargs):
         exception = None
         logger.info("Waiting to be ready...")
-        for _ in range(0, config.MAX_TRIES):
+        for _ in range(config.MAX_TRIES):
             try:
                 return wrapped(*args, **kwargs)
             except Exception as e:
+                logger.info('container is not yet ready: %s', traceback.format_exc())
                 time.sleep(config.SLEEP_TIME)
                 exception = e
         raise TimeoutException(
