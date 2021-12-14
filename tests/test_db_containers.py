@@ -14,7 +14,8 @@ from testcontainers.oracle import OracleDbContainer
 from testcontainers.postgres import PostgresContainer
 
 
-@pytest.mark.skipif(platform.machine() in ('arm64', 'aarch64'))
+@pytest.mark.skipif(platform.machine() in ('arm64', 'aarch64'),
+                    reason=f'mysql container not available for {platform.machine()}')
 def test_docker_run_mysql():
     config = MySqlContainer('mysql:5.7.17')
     with config as mysql:
