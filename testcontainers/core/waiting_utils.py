@@ -26,7 +26,7 @@ logger = setup_logger(__name__)
 
 
 # Get a tuple of transient exceptions for which we'll retry. Other exceptions will be raised.
-TRANSIENT_EXCEPTIONS = (TimeoutError, ConnectionResetError)
+TRANSIENT_EXCEPTIONS = (TimeoutError, ConnectionResetError, BrokenPipeError)
 
 
 def wait_container_is_ready(*transient_exceptions):
