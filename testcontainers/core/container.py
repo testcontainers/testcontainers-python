@@ -4,7 +4,7 @@ from docker.models.containers import Container
 
 from testcontainers.core.docker_client import DockerClient
 from testcontainers.core.exceptions import ContainerStartException
-from testcontainers.core.utils import setup_logger, inside_container
+from testcontainers.core.utils import setup_logger, inside_container, is_arm
 
 logger = setup_logger(__name__)
 
@@ -43,11 +43,15 @@ class DockerContainer(object):
         self._kwargs = kwargs
         return self
 
+    def maybe_emulate_amd64(self) -> 'DockerContainer':
+        if is_arm():
+            return self.with_kwargs(platform='linux/amd64')
+        return self
+
     def start(self):
         logger.info("Pulling image %s", self.image)
         docker_client = self.get_docker_client()
         kwargs = dict(self._kwargs)
-        kwargs.setdefault('platform', config.PLATFORM)
         self._container = docker_client.run(self.image,
                                             command=self._command,
                                             detach=True,

@@ -24,12 +24,10 @@ def test_docker_custom_image():
 
 
 def test_docker_env_variables():
-    reload(mysql)
-
-    db = mysql.MySqlContainer()
-    db.with_bind_ports(3306, 32785)
-    with db:
-        url = db.get_connection_url()
+    container = mysql.MySqlContainer("mariadb:10.6.5")\
+        .with_bind_ports(3306, 32785).maybe_emulate_amd64()
+    with container:
+        url = container.get_connection_url()
         pattern = r'mysql\+pymysql:\/\/demo:test@[\w,.]+:(3306|32785)\/custom_db'
         assert re.match(pattern, url)
 

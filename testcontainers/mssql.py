@@ -23,7 +23,8 @@ class SqlServerContainer(DbContainer):
     SQLSERVER_PASSWORD = environ.get("SQLSERVER_PASSWORD", "1Secure*Password1")
 
     def __init__(self, image="mcr.microsoft.com/mssql/server:2019-latest", user="SA", password=None,
-                 port=1433, dbname="tempdb", driver="ODBC Driver 17 for SQL Server"):
+                 port=1433, dbname="tempdb", driver="ODBC Driver 17 for SQL Server",
+                 dialect='mssql+pyodbc'):
         super(SqlServerContainer, self).__init__(image)
 
         self.SQLSERVER_PASSWORD = password or self.SQLSERVER_PASSWORD
@@ -31,6 +32,7 @@ class SqlServerContainer(DbContainer):
         self.SQLSERVER_USER = user
         self.SQLSERVER_DBNAME = dbname
         self.SQLSERVER_DRIVER = driver
+        self.dialect = dialect
 
         self.with_exposed_ports(self.port_to_expose)
         self.ACCEPT_EULA = 'Y'
@@ -45,10 +47,11 @@ class SqlServerContainer(DbContainer):
         self.with_env("SQLSERVER_DRIVER", self.SQLSERVER_DRIVER)
 
     def get_connection_url(self):
-        standard_url = super()._create_connection_url(dialect="mssql+pyodbc",
+        standard_url = super()._create_connection_url(dialect=self.dialect,
                                                       username=self.SQLSERVER_USER,
                                                       password=self.SQLSERVER_PASSWORD,
                                                       db_name=self.SQLSERVER_DBNAME,
                                                       port=self.port_to_expose)
-
-        return standard_url + "?driver=" + self.SQLSERVER_DRIVER
+        if self.dialect == 'mssql+pyodbc':
+            standard_url = standard_url + "?driver=" + self.SQLSERVER_DRIVER
+        return standard_url

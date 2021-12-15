@@ -1,4 +1,5 @@
 import os
+import platform
 import sys
 import subprocess
 import logging
@@ -37,6 +38,10 @@ def is_linux():
 
 def is_windows():
     return WIN == os_name()
+
+
+def is_arm():
+    return platform.machine() in ('arm64', 'aarch64')
 
 
 def inside_container():
