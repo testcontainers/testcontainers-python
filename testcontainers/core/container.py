@@ -1,4 +1,3 @@
-from testcontainers.core import config
 from deprecation import deprecated
 from docker.models.containers import Container
 
@@ -51,7 +50,6 @@ class DockerContainer(object):
     def start(self):
         logger.info("Pulling image %s", self.image)
         docker_client = self.get_docker_client()
-        kwargs = dict(self._kwargs)
         self._container = docker_client.run(self.image,
                                             command=self._command,
                                             detach=True,
@@ -59,7 +57,7 @@ class DockerContainer(object):
                                             ports=self.ports,
                                             name=self._name,
                                             volumes=self.volumes,
-                                            **kwargs
+                                            **self._kwargs
                                             )
         logger.info("Container started: %s", self._container.short_id)
         return self

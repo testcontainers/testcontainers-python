@@ -3,9 +3,7 @@ import re
 from pathlib import Path
 
 from testcontainers import mysql
-
 from testcontainers.core.container import DockerContainer
-from importlib import reload
 
 
 def setup_module(m):
