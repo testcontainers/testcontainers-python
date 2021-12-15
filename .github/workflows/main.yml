@@ -51,5 +51,5 @@ jobs:
         run: |
           flake8
           sphinx-build -nW docs docs/_build/html
-          py.test -sv --cov-config .coveragerc --cov-report html:skip-covered --cov-report term:skip-covered --cov=testcontainers --tb=short tests/
+          py.test -svx --cov-config .coveragerc --cov-report html:skip-covered --cov-report term:skip-covered --cov=testcontainers --tb=short tests/
           codecov
