@@ -140,13 +140,14 @@ def test_docker_generic_db():
 def test_docker_run_mssql():
     # Using the azure sql edge image ensures this works irrespective of architecture.
     image = 'mcr.microsoft.com/azure-sql-edge'
-    with SqlServerContainer(image, dialect='mssql+pymssql') as mssql:
+    dialect = 'mssql+pymssql' if is_arm() else 'mssql+pyodbc'
+    with SqlServerContainer(image, dialect=dialect) as mssql:
         e = sqlalchemy.create_engine(mssql.get_connection_url())
         result = e.execute('select @@servicename')
         for row in result:
             assert row[0] == 'MSSQLSERVER'
 
-    with SqlServerContainer(image, password="1Secure*Password2", dialect='mssql+pymssql') as mssql:
+    with SqlServerContainer(image, password="1Secure*Password2", dialect=dialect) as mssql:
         e = sqlalchemy.create_engine(mssql.get_connection_url())
         result = e.execute('select @@servicename')
         for row in result:
