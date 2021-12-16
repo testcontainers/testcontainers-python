@@ -1,13 +1,9 @@
-PYTHON_VERSIONS = 3.6 3.7 3.8
+PYTHON_VERSIONS = 3.6 3.7 3.8 3.9
 REQUIREMENTS = $(addprefix requirements/,${PYTHON_VERSIONS:=.txt})
 TESTS = $(addprefix tests/,${PYTHON_VERSIONS})
 IMAGES = $(addprefix image/,${PYTHON_VERSIONS})
-ARCH = $(shell arch)
-ifeq (${ARCH}, arm64)
-	RUN = docker run --rm -it --platform linux/amd64
-else
-	RUN = docker run --rm -it
-endif
+RUN = docker run --rm -it
+
 .PHONY : docs
 
 # Default target
@@ -38,8 +34,8 @@ ${IMAGES} : image/% : requirements/%.txt
 tests : ${TESTS}
 
 ${TESTS} : tests/% : image/%
-	${RUN} -v /var/run/docker.sock:/var/run/docker.sock testcontainers-python:$* bash -c \
-		"flake8 && pytest -v ${ARGS}"
+	${RUN} -v /var/run/docker.sock:/var/run/docker.sock testcontainers-python:$* \
+		bash -c "flake8 && pytest -v ${ARGS}"
 
 # Target to build the documentation
 
