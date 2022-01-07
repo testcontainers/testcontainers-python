@@ -60,12 +60,14 @@ class DockerCompose(object):
             filepath,
             compose_file_name="docker-compose.yml",
             pull=False,
+            build=False,
             env_file=None):
         self.filepath = filepath
         self.compose_file_names = compose_file_name if isinstance(
             compose_file_name, (list, tuple)
         ) else [compose_file_name]
         self.pull = pull
+        self.build = build
         self.env_file = env_file
 
     def __enter__(self):
@@ -88,7 +90,7 @@ class DockerCompose(object):
             pull_cmd = self.docker_compose_command() + ['pull']
             subprocess.call(pull_cmd, cwd=self.filepath)
 
-        up_cmd = self.docker_compose_command() + ['up', '-d']
+        up_cmd = self.docker_compose_command() + ['up', '-d'] + ["--build"] if self.build else []
         subprocess.call(up_cmd, cwd=self.filepath)
 
     def stop(self):
