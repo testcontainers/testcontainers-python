@@ -28,7 +28,6 @@ class RabbitMqContainer(DockerContainer):
     RABBITMQ_DEFAULT_USER = os.environ.get("RABBITMQ_DEFAULT_USER", "guest")
     RABBITMQ_DEFAULT_PASS = os.environ.get("RABBITMQ_DEFAULT_PASS", "guest")
 
-
     def __init__(
         self,
         image: str = "rabbitmq:latest",
@@ -73,7 +72,8 @@ class RabbitMqContainer(DockerContainer):
         For more details see:
         https://pika.readthedocs.io/en/latest/modules/parameters.html
         """
-        credentials = pika.PlainCredentials(username=self.RABBITMQ_DEFAULT_USER, password=self.RABBITMQ_DEFAULT_PASS)
+        credentials = pika.PlainCredentials(username=self.RABBITMQ_DEFAULT_USER,
+                                            password=self.RABBITMQ_DEFAULT_PASS)
 
         return pika.ConnectionParameters(
             host=self.get_container_host_ip(),

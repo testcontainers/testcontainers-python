@@ -10,12 +10,13 @@ EXCHANGE = "test-exchange"
 ROUTING_KEY = "test-route-key"
 MESSAGE = {"hello": "world"}
 
+
 @pytest.mark.parametrize(
     "port,username,password",
     [
-        (None, None, None), # use the defaults
-        (5673, None, None), # test with custom port
-        (None, "my_test_user", "my_secret_password"), # test with custom credentials
+        (None, None, None),  # use the defaults
+        (5673, None, None),  # test with custom port
+        (None, "my_test_user", "my_secret_password"),  # test with custom credentials
     ]
 )
 def test_docker_run_rabbitmq(
@@ -35,9 +36,9 @@ def test_docker_run_rabbitmq(
     rabbitmq_container = RabbitMqContainer("rabbitmq:latest", **kwargs)
     with rabbitmq_container as rabbitmq:
         # connect to rabbitmq:
-        connection_params = rabbitmq.get_connection_params()        
+        connection_params = rabbitmq.get_connection_params()
         connection = pika.BlockingConnection(connection_params)
-        
+
         # create exchange and queue:
         channel = connection.channel()
         channel.exchange_declare(exchange=EXCHANGE, exchange_type="topic")
@@ -46,9 +47,8 @@ def test_docker_run_rabbitmq(
 
         # pulish message:
         encoded_message = json.dumps(MESSAGE)
-        channel.basic_publish(EXCHANGE, ROUTING_KEY, body=encoded_message)    
+        channel.basic_publish(EXCHANGE, ROUTING_KEY, body=encoded_message)
 
         _, _, body = channel.basic_get(queue=QUEUE)
         received_message = json.loads(body.decode())
         assert received_message == MESSAGE
-
