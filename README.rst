@@ -19,6 +19,7 @@ Currently available features:
 * Neo4j container
 * OracleDb container
 * PostgreSQL Db container
+* ClickHouse container
 * Microsoft SQL Server container
 * Generic docker containers
 * LocalStack
