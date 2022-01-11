@@ -43,8 +43,9 @@ class KafkaContainer(DockerContainer):
             raise KafkaError("Unable to connect with kafka container!")
 
     def tc_start(self):
+        host = self.get_container_host_ip()
         port = self.get_exposed_port(self.port_to_expose)
-        listeners = 'PLAINTEXT://localhost:{},BROKER://$(hostname -i):9092'.format(port)
+        listeners = 'PLAINTEXT://{}:{},BROKER://$(hostname -i):9092'.format(host, port)
         data = (
             dedent(
                 """
