@@ -76,4 +76,4 @@ We recommend you use a `virtual environment <https://virtualenv.pypa.io/en/stabl
 Adding requirements
 ^^^^^^^^^^^^^^^^^^^
 
-We use :code:`pip-tools` to resolve and manage dependencies. If you need to add a dependency to testcontainers or one of the extras, modify the :code:`setup.py` as well as the :code:`requirements.ini` accordingly and then run :code:`pip install pip-tools` followed by :code:`make requirements` to update the requirements files.
+We use :code:`pip-tools` to resolve and manage dependencies. If you need to add a dependency to testcontainers or one of the extras, modify the :code:`setup.py` as well as the :code:`requirements.in` accordingly and then run :code:`pip install pip-tools` followed by :code:`make requirements` to update the requirements files.
