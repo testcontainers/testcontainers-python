@@ -11,9 +11,53 @@
 #    License for the specific language governing permissions and limitations
 #    under the License.
 
-from testcontainers.core.container import DockerContainer
-from testcontainers.core.waiting_utils import wait_container_is_ready
+from testcontainers.core.container import DockerContainer, AsyncDockerContainer
+from testcontainers.core.waiting_utils import wait_container_is_ready, async_wait_container_is_ready
 from deprecation import deprecated
+
+
+class AsyncDbContainer(AsyncDockerContainer):
+    def __init__(self, image, **kwargs):
+        super(AsyncDbContainer, self).__init__(image, **kwargs)
+
+        self._engine = None
+
+    @async_wait_container_is_ready()
+    async def _connect(self):
+        from sqlalchemy.ext.asyncio import create_async_engine
+
+        self._engine = create_async_engine(self.get_connection_url())
+        await self._engine.connect()
+
+    def get_connection_url(self):
+        raise NotImplementedError
+
+    def _create_connection_url(self, dialect, username, password,
+                               host=None, port=None, db_name=None):
+        if self._container is None:
+            raise RuntimeError("container has not been started")
+        if not host:
+            host = self.get_container_host_ip()
+        port = self.get_exposed_port(port)
+        url = "{dialect}://{username}:{password}@{host}:{port}".format(
+            dialect=dialect, username=username, password=password, host=host, port=port
+        )
+        if db_name:
+            url += '/' + db_name
+        return url
+
+    async def start(self):
+        self._configure()
+        await super().start()
+        await self._connect()
+        return self
+
+    async def stop(self, force=True, delete_volume=True):
+        await self._engine.dispose()
+        await super().stop()
+
+    def _configure(self):
+        raise NotImplementedError
 
 
 class DbContainer(DockerContainer):

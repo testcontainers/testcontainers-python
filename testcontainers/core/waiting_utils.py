@@ -11,7 +11,7 @@
 #    License for the specific language governing permissions and limitations
 #    under the License.
 
-
+import asyncio
 import re
 import time
 
@@ -22,6 +22,35 @@ from testcontainers.core.exceptions import TimeoutException
 from testcontainers.core.utils import setup_logger
 
 logger = setup_logger(__name__)
+
+
+def async_wait_container_is_ready():
+    """
+    Wait until container is ready. (using asyncio)
+    Function that spawn container should be decorated by this method
+    Max wait is configured by config. Default is 120 sec.
+    Polling interval is 1 sec.
+    :return:
+    """
+
+    @wrapt.decorator
+    async def wrapper(wrapped, instance, args, kwargs):
+        exception = None
+        logger.info("Waiting to be ready...")
+        for _ in range(0, config.MAX_TRIES):
+            try:
+                return await wrapped(*args, **kwargs)
+            except Exception as e:
+                await asyncio.sleep(config.SLEEP_TIME)
+                exception = e
+        raise TimeoutException(
+            """Wait time exceeded {0} sec.
+                Method {1}, args {2} , kwargs {3}.
+                    Exception {4}""".format(config.MAX_TRIES,
+                                            wrapped.__name__,
+                                            args, kwargs, exception))
+
+    return wrapper
 
 
 def wait_container_is_ready():
@@ -56,6 +85,11 @@ def wait_container_is_ready():
 @wait_container_is_ready()
 def wait_for(condition):
     return condition()
+
+
+@async_wait_container_is_ready()
+async def await_for(condition):
+    return await condition()
 
 
 def wait_for_logs(container, predicate, timeout=None, interval=1):
