@@ -2,6 +2,8 @@ import pytest
 import sqlalchemy
 from pymongo import MongoClient
 from pymongo.errors import OperationFailure
+from sqlalchemy.ext.asyncio.engine import create_async_engine
+from sqlalchemy import text
 
 from testcontainers.core.container import DockerContainer
 from testcontainers.core.waiting_utils import wait_for
@@ -10,7 +12,7 @@ from testcontainers.mssql import SqlServerContainer
 from testcontainers.mysql import MySqlContainer
 from testcontainers.neo4j import Neo4jContainer
 from testcontainers.oracle import OracleDbContainer
-from testcontainers.postgres import PostgresContainer
+from testcontainers.postgres import PostgresContainer, AsyncPostgresContainer
 
 
 def test_docker_run_mysql():
@@ -29,6 +31,17 @@ def test_docker_run_postgress():
         result = e.execute("select version()")
         for row in result:
             print("server version:", row[0])
+
+
+@pytest.mark.asyncio
+async def test_docker_run_postgres():
+    postgres_container = AsyncPostgresContainer("postgres:9.5")
+    async with postgres_container as postgres:
+        e = create_async_engine(postgres.get_connection_url())
+        async with e.begin() as conn:
+            result = await conn.execute(text("select version()"))
+            for row in result:
+                print("server version:", row[0])
 
 
 def test_docker_run_greenplum():
