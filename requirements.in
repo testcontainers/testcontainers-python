@@ -2,6 +2,7 @@
 codecov>=2.1.0
 flake8
 pytest
+pytest-asyncio
 pytest-cov
 sphinx
 docker<4.3.0

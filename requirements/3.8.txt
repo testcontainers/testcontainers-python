@@ -108,6 +108,7 @@ protobuf==3.13.0
     #   google-api-core
     #   googleapis-common-protos
 psycopg2-binary==2.8.5
+asyncpg==0.25.0
     # via testcontainers
 py==1.9.0
     # via pytest
@@ -143,6 +144,10 @@ pytest==6.0.1
     # via
     #   -r requirements.in
     #   pytest-cov
+pytest-asyncio==0.16.0
+    # via
+    #   -r requirements.in
+    #   pytest-asyncio
 python-dotenv==0.14.0
     # via docker-compose
 pytz==2020.1
@@ -197,8 +202,9 @@ sphinxcontrib-qthelp==1.0.3
     # via sphinx
 sphinxcontrib-serializinghtml==1.1.4
     # via sphinx
-sqlalchemy==1.3.18
+sqlalchemy==1.4.28
     # via testcontainers
+    # via pytest-asyncio
 texttable==1.6.2
     # via docker-compose
 toml==0.10.1
