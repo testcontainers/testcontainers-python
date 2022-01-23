@@ -63,3 +63,7 @@ docs/_build/
 .idea/
 .venv/
 .testrepository/
+
+# vscode:
+.devcontainer/
+.vscode/
