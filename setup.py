@@ -68,5 +68,5 @@ setuptools.setup(
     },
     long_description_content_type="text/x-rst",
     long_description=long_description,
-    python_requires='>=3.5',
+    python_requires='>=3.6',
 )
