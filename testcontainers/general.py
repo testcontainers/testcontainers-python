@@ -17,7 +17,7 @@ from testcontainers.core.container import DockerContainer
 @deprecated(details="Use `DockerContainer`.")
 class TestContainer(DockerContainer):
     def __init__(self, image, port_to_expose=None):
-        super(TestContainer, self).__init__(image)
+        super().__init__(image)
         if port_to_expose:
             self.port_to_expose = port_to_expose
             self.with_exposed_ports(self.port_to_expose)

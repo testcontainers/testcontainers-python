@@ -76,4 +76,4 @@ class MariaDbContainer(MySqlContainer):
             result = e.execute("select version()")
     """
     def __init__(self, image="mariadb:latest", **kwargs):
-        super(MariaDbContainer, self).__init__(image, **kwargs)
+        super().__init__(image, **kwargs)
