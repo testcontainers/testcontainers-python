@@ -1,15 +1,12 @@
 from kafka import KafkaConsumer, KafkaProducer, TopicPartition
 from testcontainers.kafka import KafkaContainer
-import pytest
 
 
-@pytest.mark.xfail
 def test_kafka_producer_consumer():
     with KafkaContainer() as container:
         produce_and_consume_kafka_message(container)
 
 
-@pytest.mark.xfail
 def test_kafka_producer_consumer_custom_port():
     with KafkaContainer(port_to_expose=9888) as container:
         assert container.port_to_expose == 9888
