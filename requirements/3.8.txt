@@ -68,7 +68,9 @@ docopt==0.6.2
     # via docker-compose
 docutils==0.17.1
     # via sphinx
-flake8==4.0.1
+entrypoints==0.3
+    # via flake8
+flake8==3.7.9
     # via -r requirements.in
 google-api-core[grpc]==2.7.1
     # via google-cloud-pubsub
@@ -147,11 +149,11 @@ pyasn1==0.4.8
     #   rsa
 pyasn1-modules==0.2.8
     # via google-auth
-pycodestyle==2.8.0
+pycodestyle==2.5.0
     # via flake8
 pycparser==2.21
     # via cffi
-pyflakes==2.4.0
+pyflakes==2.1.1
     # via flake8
 pygments==2.11.2
     # via sphinx
