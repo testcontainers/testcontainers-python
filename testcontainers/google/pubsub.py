@@ -44,7 +44,8 @@ class PubSubContainer(DockerContainer):
         self.port = port
         self.with_bind_ports(self.port, self.port)
         self.with_command(
-            "gcloud beta emulators pubsub start --project={project} --host-port=0.0.0.0:{port}".format(
+            "gcloud beta emulators pubsub start "
+            "--project={project} --host-port=0.0.0.0:{port}".format(
                 project=self.project, port=self.port
             ))
         # Endpoint environment variable
