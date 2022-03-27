@@ -13,7 +13,6 @@
 
 import os
 
-import re
 import time
 from neo4j import GraphDatabase
 
@@ -71,10 +70,13 @@ class Neo4jContainer(DbContainer):
     @wait_container_is_ready()
     def _connect(self):
         deadline = time.time() + Neo4jContainer.NEO4J_STARTUP_TIMEOUT_SECONDS
-        regex = re.compile("Remote interface available at", re.MULTILINE).search
 
         # First we wait for Neo4j to say it's listening
-        wait_for_logs(self, regex, Neo4jContainer.NEO4J_STARTUP_TIMEOUT_SECONDS)
+        wait_for_logs(
+            self,
+            "Remote interface available at",
+            Neo4jContainer.NEO4J_STARTUP_TIMEOUT_SECONDS / 4,
+        )
 
         # Then we actually check that the container really is listening
         while time.time() < deadline:
