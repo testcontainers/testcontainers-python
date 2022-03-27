@@ -19,6 +19,8 @@ Allows to spin up selenium containers for testing with browsers.
 
 from testcontainers.core.container import DockerContainer
 from testcontainers.core.waiting_utils import wait_container_is_ready
+import urllib3
+
 
 IMAGES = {
     "firefox": "selenium/standalone-firefox-debug:latest",
@@ -59,7 +61,7 @@ class BrowserWebDriverContainer(DockerContainer):
         self.with_env("no_proxy", "localhost")
         self.with_env("HUB_ENV_no_proxy", "localhost")
 
-    @wait_container_is_ready()
+    @wait_container_is_ready(urllib3.exceptions.HTTPError)
     def _connect(self):
         from selenium import webdriver
         return webdriver.Remote(

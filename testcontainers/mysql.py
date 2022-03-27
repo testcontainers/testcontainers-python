@@ -33,23 +33,15 @@ class MySqlContainer(DbContainer):
             result = e.execute("select version()")
             version, = result.fetchone()
     """
-    MYSQL_USER = environ.get("MYSQL_USER", "test")
-    MYSQL_ROOT_PASSWORD = environ.get("MYSQL_ROOT_PASSWORD", "test")
-    MYSQL_PASSWORD = environ.get("MYSQL_PASSWORD", "test")
-    MYSQL_DATABASE = environ.get("MYSQL_DATABASE", "test")
-
     def __init__(self, image="mysql:latest", **kwargs):
         super(MySqlContainer, self).__init__(image)
         self.port_to_expose = 3306
         self.with_exposed_ports(self.port_to_expose)
-        if 'MYSQL_USER' in kwargs:
-            self.MYSQL_USER = kwargs['MYSQL_USER']
-        if 'MYSQL_ROOT_PASSWORD' in kwargs:
-            self.MYSQL_ROOT_PASSWORD = kwargs['MYSQL_ROOT_PASSWORD']
-        if 'MYSQL_PASSWORD' in kwargs:
-            self.MYSQL_PASSWORD = kwargs['MYSQL_PASSWORD']
-        if 'MYSQL_DATABASE' in kwargs:
-            self.MYSQL_DATABASE = kwargs['MYSQL_DATABASE']
+        self.MYSQL_USER = kwargs.get('MYSQL_USER', environ.get('MYSQL_USER', 'test'))
+        self.MYSQL_ROOT_PASSWORD = kwargs.get('MYSQL_ROOT_PASSWORD',
+                                              environ.get('MYSQL_ROOT_PASSWORD', 'test'))
+        self.MYSQL_PASSWORD = kwargs.get('MYSQL_PASSWORD', environ.get('MYSQL_PASSWORD', 'test'))
+        self.MYSQL_DATABASE = kwargs.get('MYSQL_DATABASE', environ.get('MYSQL_DATABASE', 'test'))
 
         if self.MYSQL_USER == 'root':
             self.MYSQL_ROOT_PASSWORD = self.MYSQL_PASSWORD

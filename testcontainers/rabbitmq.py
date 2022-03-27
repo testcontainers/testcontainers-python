@@ -57,7 +57,7 @@ class RabbitMqContainer(DockerContainer):
         self.with_env("RABBITMQ_DEFAULT_USER", self.RABBITMQ_DEFAULT_USER)
         self.with_env("RABBITMQ_DEFAULT_PASS", self.RABBITMQ_DEFAULT_PASS)
 
-    @wait_container_is_ready()
+    @wait_container_is_ready(pika.exceptions.IncompatibleProtocolError)
     def readiness_probe(self) -> bool:
         """Test if the RabbitMQ broker is ready."""
         connection = pika.BlockingConnection(self.get_connection_params())

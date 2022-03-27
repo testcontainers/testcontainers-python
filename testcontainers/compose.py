@@ -120,7 +120,7 @@ class DockerCompose(object):
                                     .format(port, service))
         return result
 
-    @wait_container_is_ready()
+    @wait_container_is_ready(requests.exceptions.ConnectionError)
     def wait_for(self, url):
         requests.get(url)
         return self
