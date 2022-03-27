@@ -4,7 +4,7 @@ from io import BytesIO
 from textwrap import dedent
 
 from kafka import KafkaConsumer
-from kafka.errors import KafkaError
+from kafka.errors import KafkaError, UnrecognizedBrokerVersion, NoBrokersAvailable
 
 from testcontainers.core.container import DockerContainer
 from testcontainers.core.waiting_utils import wait_container_is_ready
@@ -35,7 +35,7 @@ class KafkaContainer(DockerContainer):
         port = self.get_exposed_port(self.port_to_expose)
         return '{}:{}'.format(host, port)
 
-    @wait_container_is_ready()
+    @wait_container_is_ready(UnrecognizedBrokerVersion, NoBrokersAvailable, KafkaError, ValueError)
     def _connect(self):
         bootstrap_server = self.get_bootstrap_server()
         consumer = KafkaConsumer(group_id='test', bootstrap_servers=[bootstrap_server])
@@ -43,8 +43,9 @@ class KafkaContainer(DockerContainer):
             raise KafkaError("Unable to connect with kafka container!")
 
     def tc_start(self):
+        host = self.get_container_host_ip()
         port = self.get_exposed_port(self.port_to_expose)
-        listeners = 'PLAINTEXT://localhost:{},BROKER://$(hostname -i):9092'.format(port)
+        listeners = 'PLAINTEXT://{}:{},BROKER://$(hostname -i):9092'.format(host, port)
         data = (
             dedent(
                 """

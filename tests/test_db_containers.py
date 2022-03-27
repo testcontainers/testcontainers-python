@@ -1,8 +1,9 @@
-import pytest
 import sqlalchemy
 from pymongo import MongoClient
 from pymongo.errors import OperationFailure
+import pytest
 
+from testcontainers.core.utils import is_arm
 from testcontainers.core.container import DockerContainer
 from testcontainers.core.waiting_utils import wait_for
 from testcontainers.mongodb import MongoDbContainer
@@ -13,13 +14,14 @@ from testcontainers.oracle import OracleDbContainer
 from testcontainers.postgres import PostgresContainer
 
 
+@pytest.mark.skipif(is_arm(), reason='mysql container not available for ARM')
 def test_docker_run_mysql():
     config = MySqlContainer('mysql:5.7.17')
     with config as mysql:
         e = sqlalchemy.create_engine(mysql.get_connection_url())
         result = e.execute("select version()")
         for row in result:
-            assert row[0] == '5.7.17'
+            assert row[0].startswith('5.7.17')
 
 
 def test_docker_run_postgres():
@@ -31,29 +33,28 @@ def test_docker_run_postgres():
             print("server version:", row[0])
 
 
+@pytest.mark.skip(reason='test does not verify additional code over `test_docker_run_postgres`')
 def test_docker_run_greenplum():
-    postgres_container = PostgresContainer("datagrip/greenplum:6.8",
-                                           user="guest", password="guest", dbname="guest")
-    with postgres_container as postgres:
-        e = sqlalchemy.create_engine(postgres.get_connection_url())
+    container = PostgresContainer("datagrip/greenplum:6.8", user="guest", password="guest",
+                                  dbname="guest")
+    with container:
+        e = sqlalchemy.create_engine(container.get_connection_url())
         result = e.execute("select version()")
         for row in result:
             print("server version:", row[0])
 
 
 def test_docker_run_mariadb():
-    mariadb_container = MySqlContainer("mariadb:10.2.9")
-    with mariadb_container as mariadb:
+    with MySqlContainer("mariadb:10.6.5").maybe_emulate_amd64() as mariadb:
         e = sqlalchemy.create_engine(mariadb.get_connection_url())
         result = e.execute("select version()")
         for row in result:
-            assert row[0] == '10.2.9-MariaDB-10.2.9+maria~jessie'
+            assert row[0].startswith('10.6.5')
 
 
 @pytest.mark.skip(reason="needs oracle client libraries unavailable on Travis")
 def test_docker_run_oracle():
-    oracledb_container = OracleDbContainer()
-    with oracledb_container as oracledb:
+    with OracleDbContainer() as oracledb:
         e = sqlalchemy.create_engine(oracledb.get_connection_url())
         result = e.execute("select * from V$VERSION")
         versions = {'Oracle Database 11g Express Edition Release 11.2.0.2.0 - 64bit Production',
@@ -65,8 +66,7 @@ def test_docker_run_oracle():
 
 
 def test_docker_run_mongodb():
-    mongo_container = MongoDbContainer("mongo:latest")
-    with mongo_container as mongo:
+    with MongoDbContainer("mongo:latest") as mongo:
         db = mongo.get_connection_client().test
         doc = {
             "address": {
@@ -94,26 +94,8 @@ def test_docker_run_mongodb_connect_without_credentials():
             db.restaurants.insert_one({})
 
 
-def test_docker_run_neo4j_v35():
-    neo4j_container = Neo4jContainer("neo4j:3.5")
-    with neo4j_container as neo4j:
-        with neo4j.get_driver() as driver:
-            with driver.session() as session:
-                result = session.run(
-                    """
-                    CALL dbms.components()
-                    YIELD name, versions, edition
-                    UNWIND versions as version
-                    RETURN name, version, edition
-                    """)
-                record = result.single()
-                print("server version:", record["name"], record["version"], record["edition"])
-                assert record["version"].startswith("3.5")
-
-
 def test_docker_run_neo4j_latest():
-    neo4j_container = Neo4jContainer()
-    with neo4j_container as neo4j:
+    with Neo4jContainer() as neo4j:
         with neo4j.get_driver() as driver:
             with driver.session() as session:
                 result = session.run(
@@ -129,10 +111,7 @@ def test_docker_run_neo4j_latest():
 
 
 def test_docker_generic_db():
-    mongo_container = DockerContainer("mongo:latest")
-    mongo_container.with_bind_ports(27017, 27017)
-
-    with mongo_container:
+    with DockerContainer("mongo:latest").with_bind_ports(27017, 27017) as mongo_container:
         def connect():
             return MongoClient("mongodb://{}:{}".format(mongo_container.get_container_host_ip(),
                                                         mongo_container.get_exposed_port(27017)))
@@ -159,15 +138,15 @@ def test_docker_generic_db():
 
 
 def test_docker_run_mssql():
-    config = SqlServerContainer()
-    with config as mssql:
+    image = 'mcr.microsoft.com/azure-sql-edge'
+    dialect = 'mssql+pymssql'
+    with SqlServerContainer(image, dialect=dialect) as mssql:
         e = sqlalchemy.create_engine(mssql.get_connection_url())
         result = e.execute('select @@servicename')
         for row in result:
             assert row[0] == 'MSSQLSERVER'
 
-    config = SqlServerContainer(password="1Secure*Password2")
-    with config as mssql:
+    with SqlServerContainer(image, password="1Secure*Password2", dialect=dialect) as mssql:
         e = sqlalchemy.create_engine(mssql.get_connection_url())
         result = e.execute('select @@servicename')
         for row in result:

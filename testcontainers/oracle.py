@@ -9,7 +9,7 @@ class OracleDbContainer(DbContainer):
     -------
     ::
 
-        with OracleDbContainer():
+        with OracleDbContainer() as oracle:
             e = sqlalchemy.create_engine(oracle.get_connection_url())
             result = e.execute("select 1 from dual")
     """
@@ -24,3 +24,6 @@ class OracleDbContainer(DbContainer):
             dialect="oracle", username="system", password="oracle", port=self.container_port,
             db_name="xe"
         )
+
+    def _configure(self):
+        pass
