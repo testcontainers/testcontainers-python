@@ -13,10 +13,8 @@
 
 import os
 
-import time
 from neo4j import GraphDatabase
 
-from testcontainers.core.exceptions import TimeoutException
 from testcontainers.core.generic import DbContainer
 from testcontainers.core.waiting_utils import wait_container_is_ready, wait_for_logs
 
@@ -69,27 +67,19 @@ class Neo4jContainer(DbContainer):
 
     @wait_container_is_ready()
     def _connect(self):
-        deadline = time.time() + Neo4jContainer.NEO4J_STARTUP_TIMEOUT_SECONDS
-
         # First we wait for Neo4j to say it's listening
         wait_for_logs(
             self,
             "Remote interface available at",
-            Neo4jContainer.NEO4J_STARTUP_TIMEOUT_SECONDS / 4,
+            Neo4jContainer.NEO4J_STARTUP_TIMEOUT_SECONDS,
         )
 
         # Then we actually check that the container really is listening
-        while time.time() < deadline:
-            with self.get_driver() as driver:
-                # Drivers may or may not be lazy
-                # force them to do a round trip to confirm neo4j is working
-                with driver.session() as session:
-                    session.run("RETURN 1").single()
-                    return
-
-        raise TimeoutException(
-            "Neo4j did not start within %.3f seconds" % Neo4jContainer.NEO4J_STARTUP_TIMEOUT_SECONDS
-        )
+        with self.get_driver() as driver:
+            # Drivers may or may not be lazy
+            # force them to do a round trip to confirm neo4j is working
+            with driver.session() as session:
+                session.run("RETURN 1").single()
 
     def get_driver(self, **kwargs):
         return GraphDatabase.driver(
