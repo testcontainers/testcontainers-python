@@ -27,7 +27,7 @@ class RedisContainer(DockerContainer):
     def _connect(self):
         client = self.get_client()
         if not client.ping():
-            raise Exception
+            raise redis.exceptions.ConnectionError("Could not connect to Redis")
 
     def get_client(self, **kwargs):
         """get redis client

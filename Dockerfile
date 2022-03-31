@@ -7,7 +7,6 @@ RUN pip install --upgrade pip \
     && apt-get install -y \
         freetds-dev \
     && rm -rf /var/lib/apt/lists/*
-WORKDIR /workspace
 ARG version=3.8
 COPY requirements/${version}.txt requirements.txt
 COPY setup.py README.rst ./
