@@ -13,3 +13,10 @@ def test_raise_timeout():
 def test_wait_for_hello():
     with DockerContainer("hello-world") as container:
         wait_for_logs(container, "Hello from Docker!")
+
+
+def test_can_get_logs():
+    with DockerContainer("hello-world") as container:
+        wait_for_logs(container, "Hello from Docker!")
+        stdout, stderr = container.get_logs()
+        assert stdout, 'There should be something on stdout'

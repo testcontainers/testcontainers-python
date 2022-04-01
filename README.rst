@@ -1,8 +1,8 @@
 testcontainers-python
 =====================
 
-.. image:: https://travis-ci.org/testcontainers/testcontainers-python.svg?branch=master
-   :target: https://travis-ci.org/testcontainers/testcontainers-python
+.. image:: https://github.com/testcontainers/testcontainers-python/workflows/testcontainers-python/badge.svg
+   :target: https://github.com/testcontainers/testcontainers-python/actions/workflows/main.yml
 .. image:: https://img.shields.io/pypi/v/testcontainers.svg?style=flat-square
    :target: https://pypi.python.org/pypi/testcontainers
 .. image:: https://readthedocs.org/projects/testcontainers-python/badge/?version=latest
@@ -22,6 +22,7 @@ Currently available features:
 * Microsoft SQL Server container
 * Generic docker containers
 * LocalStack
+* RabbitMQ
 
 Installation
 ------------
@@ -58,7 +59,7 @@ Usage within Docker (i.e. in a CI)
 
 When trying to launch a testcontainer from within a Docker container two things have to be provided:
 
-1. The container has to provide a docker client installation. Either use an image that has docker pre-installed (e.g. the [official docker images](https://hub.docker.com/_/docker)) or install the client from within the `Dockerfile` specification.
+1. The container has to provide a docker client installation. Either use an image that has docker pre-installed (e.g. the `official docker images <https://hub.docker.com/_/docker>`_) or install the client from within the `Dockerfile` specification.
 2. The container has to have access to the docker daemon which can be achieved by mounting `/var/run/docker.sock` or setting the `DOCKER_HOST` environment variable as part of your `docker run` command.
 
 
@@ -75,4 +76,4 @@ We recommend you use a `virtual environment <https://virtualenv.pypa.io/en/stabl
 Adding requirements
 ^^^^^^^^^^^^^^^^^^^
 
-We use :code:`pip-tools` to resolve and manage dependencies. If you need to add a dependency to testcontainers or one of the extras, run :code:`pip install pip-tools` followed by :code:`make requirements` to update the requirements files.
+We use :code:`pip-tools` to resolve and manage dependencies. If you need to add a dependency to testcontainers or one of the extras, modify the :code:`setup.py` as well as the :code:`requirements.in` accordingly and then run :code:`pip install pip-tools` followed by :code:`make requirements` to update the requirements files.

@@ -11,7 +11,7 @@
 #    License for the specific language governing permissions and limitations
 #    under the License.
 
-import redis as redis
+import redis
 
 from testcontainers.core.container import DockerContainer
 from testcontainers.core.waiting_utils import wait_container_is_ready
@@ -23,11 +23,11 @@ class RedisContainer(DockerContainer):
         self.port_to_expose = port_to_expose
         self.with_exposed_ports(self.port_to_expose)
 
-    @wait_container_is_ready()
+    @wait_container_is_ready(redis.exceptions.ConnectionError)
     def _connect(self):
         client = self.get_client()
         if not client.ping():
-            raise Exception
+            raise redis.exceptions.ConnectionError("Could not connect to Redis")
 
     def get_client(self, **kwargs):
         """get redis client
