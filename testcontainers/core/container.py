@@ -3,7 +3,7 @@ from docker.models.containers import Container
 
 from testcontainers.core.docker_client import DockerClient
 from testcontainers.core.exceptions import ContainerStartException
-from testcontainers.core.utils import setup_logger, inside_container
+from testcontainers.core.utils import setup_logger, inside_container, is_arm
 
 logger = setup_logger(__name__)
 
@@ -40,6 +40,11 @@ class DockerContainer(object):
 
     def with_kwargs(self, **kwargs) -> 'DockerContainer':
         self._kwargs = kwargs
+        return self
+
+    def maybe_emulate_amd64(self) -> 'DockerContainer':
+        if is_arm():
+            return self.with_kwargs(platform='linux/amd64')
         return self
 
     def start(self):
@@ -126,6 +131,11 @@ class DockerContainer(object):
 
     def get_docker_client(self) -> DockerClient:
         return self._docker
+
+    def get_logs(self):
+        if not self._container:
+            raise ContainerStartException("Container should be started before")
+        return self._container.logs(stderr=False), self._container.logs(stdout=False)
 
     def exec(self, command):
         if not self._container:
