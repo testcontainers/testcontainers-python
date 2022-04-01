@@ -12,6 +12,7 @@
 #    under the License.
 import os
 
+import clickhouse_driver
 from clickhouse_driver.errors import Error
 
 from testcontainers.core.generic import DbContainer
@@ -52,15 +53,13 @@ class ClickHouseContainer(DbContainer):
         self.CLICKHOUSE_DB = dbname or self.CLICKHOUSE_DB
         self.port_to_expose = port
 
-        self.with_exposed_ports(self.port_to_expose)
-
     @wait_container_is_ready(Error, EOFError)
     def _connect(self):
-        import clickhouse_driver
         with clickhouse_driver.Client.from_url(self.get_connection_url()) as client:
             client.execute("SELECT version()")
 
     def _configure(self):
+        self.with_exposed_ports(self.port_to_expose)
         self.with_env("CLICKHOUSE_USER", self.CLICKHOUSE_USER)
         self.with_env("CLICKHOUSE_PASSWORD", self.CLICKHOUSE_PASSWORD)
         self.with_env("CLICKHOUSE_DB", self.CLICKHOUSE_DB)
