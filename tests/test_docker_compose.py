@@ -26,7 +26,10 @@ def test_can_pull_images_before_spawning_service_via_compose():
 
 
 def test_can_build_images_before_spawning_service_via_compose():
-    with patch(f"{subprocess.call.__module__}.{subprocess.call.__name__}", side_effect=subprocess.call) as call_mock:
+    with patch(
+        f"{subprocess.call.__module__}.{subprocess.call.__name__}",
+        side_effect=subprocess.call
+    ) as call_mock:
         with DockerCompose("tests", build=True) as compose:
             host = compose.get_service_host("hub", 4444)
             port = compose.get_service_port("hub", 4444)
