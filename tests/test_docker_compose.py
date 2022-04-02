@@ -30,7 +30,6 @@ def test_can_build_images_before_spawning_service_via_compose():
         with DockerCompose("tests", build=True) as compose:
             ...
 
-    assert compose.build
     docker_compose_cmd = call_mock.call_args_list[0].kwargs["cmd"]
     assert "docker-compose" in docker_compose_cmd
     assert "up" in docker_compose_cmd
