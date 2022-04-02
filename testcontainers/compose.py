@@ -60,12 +60,14 @@ class DockerCompose(object):
             filepath,
             compose_file_name="docker-compose.yml",
             pull=False,
+            build=False,
             env_file=None):
         self.filepath = filepath
         self.compose_file_names = compose_file_name if isinstance(
             compose_file_name, (list, tuple)
         ) else [compose_file_name]
         self.pull = pull
+        self.build = build
         self.env_file = env_file
 
     def __enter__(self):
@@ -86,14 +88,17 @@ class DockerCompose(object):
     def start(self):
         if self.pull:
             pull_cmd = self.docker_compose_command() + ['pull']
-            subprocess.call(pull_cmd, cwd=self.filepath)
+            self._call_command(cmd=pull_cmd)
 
         up_cmd = self.docker_compose_command() + ['up', '-d']
-        subprocess.call(up_cmd, cwd=self.filepath)
+        if self.build:
+            up_cmd.append('--build')
+
+        self._call_command(cmd=up_cmd)
 
     def stop(self):
         down_cmd = self.docker_compose_command() + ['down', '-v']
-        subprocess.call(down_cmd, cwd=self.filepath)
+        self._call_command(cmd=down_cmd)
 
     def get_logs(self):
         logs_cmd = self.docker_compose_command() + ["logs"]
@@ -119,6 +124,11 @@ class DockerCompose(object):
             raise NoSuchPortExposed("Port {} was not exposed for service {}"
                                     .format(port, service))
         return result
+
+    def _call_command(self, cmd, filepath=None):
+        if filepath is None:
+            filepath = self.filepath
+        subprocess.call(cmd, cwd=filepath)
 
     @wait_container_is_ready(requests.exceptions.ConnectionError)
     def wait_for(self, url):

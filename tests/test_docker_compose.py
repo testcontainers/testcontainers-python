@@ -1,3 +1,5 @@
+from unittest.mock import patch
+
 import pytest
 import subprocess
 
@@ -21,6 +23,18 @@ def test_can_pull_images_before_spawning_service_via_compose():
         port = compose.get_service_port("hub", 4444)
         assert host == "0.0.0.0"
         assert port == "4444"
+
+
+def test_can_build_images_before_spawning_service_via_compose():
+    with patch.object(DockerCompose, "_call_command") as call_mock:
+        with DockerCompose("tests", build=True) as compose:
+            ...
+
+    assert compose.build
+    docker_compose_cmd = call_mock.call_args_list[0][1]["cmd"]
+    assert "docker-compose" in docker_compose_cmd
+    assert "up" in docker_compose_cmd
+    assert "--build" in docker_compose_cmd
 
 
 def test_can_throw_exception_if_no_port_exposed():
