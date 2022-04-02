@@ -26,7 +26,7 @@ def test_can_pull_images_before_spawning_service_via_compose():
 
 
 def test_can_build_images_before_spawning_service_via_compose():
-    with patch.object(DockerCompose, DockerCompose._call_command.__name__) as call_mock:
+    with patch.object(DockerCompose, "_call_command") as call_mock:
         with DockerCompose("tests", build=True) as compose:
             ...
 
