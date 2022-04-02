@@ -88,17 +88,17 @@ class DockerCompose(object):
     def start(self):
         if self.pull:
             pull_cmd = self.docker_compose_command() + ['pull']
-            subprocess.call(pull_cmd, cwd=self.filepath)
+            self._call_command(cmd=pull_cmd)
 
         up_cmd = self.docker_compose_command() + ['up', '-d']
         if self.build:
             up_cmd.append('--build')
 
-        subprocess.call(up_cmd, cwd=self.filepath)
+        self._call_command(cmd=up_cmd)
 
     def stop(self):
         down_cmd = self.docker_compose_command() + ['down', '-v']
-        subprocess.call(down_cmd, cwd=self.filepath)
+        self._call_command(cmd=down_cmd)
 
     def get_logs(self):
         logs_cmd = self.docker_compose_command() + ["logs"]
@@ -124,6 +124,11 @@ class DockerCompose(object):
             raise NoSuchPortExposed("Port {} was not exposed for service {}"
                                     .format(port, service))
         return result
+
+    def _call_command(self, cmd, filepath=None):
+        if filepath is None:
+            filepath = self.filepath
+        subprocess.call(cmd, cwd=filepath)
 
     @wait_container_is_ready(requests.exceptions.ConnectionError)
     def wait_for(self, url):
