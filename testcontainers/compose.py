@@ -110,6 +110,31 @@ class DockerCompose(object):
         )
         return result.stdout, result.stderr
 
+    def exec_in_container(self, service_name, command):
+        """
+        Executes a command in the container of one of the services.
+
+        Parameters
+        ----------
+        service_name: str
+            Name of the docker compose service to run the command in
+        command: list[str]
+            The command to execute
+
+        Returns
+        -------
+        tuple[str, str, int]
+            stdout, stderr, return code
+        """
+        exec_cmd = self.docker_compose_command() + ['exec', '-T', service_name] + command
+        result = subprocess.run(
+            exec_cmd,
+            cwd=self.filepath,
+            stdout=subprocess.PIPE,
+            stderr=subprocess.PIPE,
+        )
+        return result.stdout.decode("utf-8"), result.stderr.decode("utf-8"), result.returncode
+
     def get_service_port(self, service_name, port):
         return self._get_service_info(service_name, port)[1]
 
