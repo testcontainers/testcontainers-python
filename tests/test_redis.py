@@ -16,7 +16,7 @@ def test_docker_run_redis():
 
 
 def test_docker_run_redis_with_password():
-    redis_container = RedisContainer(password="mypass")
+    redis_container = RedisContainer(port_to_expose=6380, password="mypass")
     redis_client = redis_container.get_client(decode_responses=True)
     redis_client.set("hello", "world")
     assert redis_client.get("hello") == "world"
