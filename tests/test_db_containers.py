@@ -1,9 +1,11 @@
 import sqlalchemy
+import clickhouse_driver
 from pymongo import MongoClient
 from pymongo.errors import OperationFailure
 import pytest
 
 from testcontainers.core.utils import is_arm
+from testcontainers.clickhouse import ClickHouseContainer
 from testcontainers.core.container import DockerContainer
 from testcontainers.core.waiting_utils import wait_for
 from testcontainers.mongodb import MongoDbContainer
@@ -151,3 +153,12 @@ def test_docker_run_mssql():
         result = e.execute('select @@servicename')
         for row in result:
             assert row[0] == 'MSSQLSERVER'
+
+
+def test_docker_run_clickhouse():
+    clickhouse_container = ClickHouseContainer()
+    with clickhouse_container as clickhouse:
+        client = clickhouse_driver.Client.from_url(clickhouse.get_connection_url())
+        result = client.execute("select 'working'")
+
+        assert result == [('working',)]
