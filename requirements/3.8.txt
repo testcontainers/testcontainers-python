@@ -22,6 +22,10 @@ attrs==21.4.0
     #   trio
 babel==2.9.1
     # via sphinx
+backports-zoneinfo==0.2.1
+    # via
+    #   pytz-deprecation-shim
+    #   tzlocal
 bcrypt==3.2.0
     # via paramiko
 cachetools==5.0.0
@@ -37,6 +41,8 @@ cffi==1.15.0
     #   pynacl
 charset-normalizer==2.0.12
     # via requests
+clickhouse-driver==0.2.3
+    # via testcontainers
 codecov==2.1.12
     # via -r requirements.in
 coverage[toml]==6.3.2
@@ -184,7 +190,10 @@ python-dotenv==0.20.0
 pytz==2022.1
     # via
     #   babel
+    #   clickhouse-driver
     #   neo4j
+pytz-deprecation-shim==0.1.0.post0
+    # via tzlocal
 pyyaml==5.4.1
     # via docker-compose
 redis==4.2.0
@@ -215,7 +224,7 @@ snowballstemmer==2.2.0
     # via sphinx
 sortedcontainers==2.4.0
     # via trio
-sphinx==4.4.0
+sphinx==4.5.0
     # via -r requirements.in
 sphinxcontrib-applehelp==1.0.2
     # via sphinx
@@ -245,6 +254,10 @@ trio-websocket==0.9.2
     # via selenium
 typing-extensions==4.1.1
     # via redis
+tzdata==2022.1
+    # via pytz-deprecation-shim
+tzlocal==4.1
+    # via clickhouse-driver
 urllib3[secure,socks]==1.26.9
     # via
     #   requests
