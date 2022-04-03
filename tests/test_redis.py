@@ -16,10 +16,11 @@ def test_docker_run_redis():
 
 
 def test_docker_run_redis_with_password():
-    redis_container = RedisContainer(password="mypass").with_bind_ports(6379, 6380)
-    redis_client = redis_container.get_client(decode_responses=True)
-    redis_client.set("hello", "world")
-    assert redis_client.get("hello") == "world"
+    config = RedisContainer(password="mypass")
+    with config as redis:
+        client = redis.get_client(decode_responses=True)
+        client.set("hello", "world")
+        assert client.get("hello") == "world"
 
 
 def wait_for_message(pubsub, timeout=1, ignore_subscribe_messages=True):
