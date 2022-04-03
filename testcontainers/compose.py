@@ -115,7 +115,7 @@ class DockerCompose(object):
         Executes a command in the container of one of the services.
 
         Parameters
-        -------
+        ----------
         service_name: str
             Name of the docker compose service to run the command in
         command: list[str]
