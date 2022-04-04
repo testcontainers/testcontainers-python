@@ -62,6 +62,7 @@ docs/_build/
 .noseids
 .idea/
 .venv/
+venv
 .testrepository/
 
 # vscode:
