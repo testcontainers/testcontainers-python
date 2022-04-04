@@ -15,6 +15,14 @@ def test_docker_run_redis():
         assert b'new_msg', msg['data']
 
 
+def test_docker_run_redis_with_password():
+    config = RedisContainer(password="mypass")
+    with config as redis:
+        client = redis.get_client(decode_responses=True)
+        client.set("hello", "world")
+        assert client.get("hello") == "world"
+
+
 def wait_for_message(pubsub, timeout=1, ignore_subscribe_messages=True):
     now = time.time()
     timeout = now + timeout

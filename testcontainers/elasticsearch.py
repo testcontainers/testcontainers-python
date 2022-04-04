@@ -52,5 +52,7 @@ class ElasticSearchContainer(DockerContainer):
         return self
 
 
-ElasticsearchContainer = deprecated(details='Use `ElasticSearchContainer` with a capital S instead '
-                                    'of `ElasticsearchContainer`.')(ElasticSearchContainer)
+@deprecated(details='Use `ElasticSearchContainer` with a capital S instead '
+                    'of `ElasticsearchContainer`.')
+class ElasticsearchContainer(ElasticSearchContainer):
+    pass

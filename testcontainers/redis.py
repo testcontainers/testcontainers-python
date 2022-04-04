@@ -12,16 +12,18 @@
 #    under the License.
 
 import redis
-
 from testcontainers.core.container import DockerContainer
 from testcontainers.core.waiting_utils import wait_container_is_ready
 
 
 class RedisContainer(DockerContainer):
-    def __init__(self, image="redis:latest", port_to_expose=6379):
+    def __init__(self, image="redis:latest", port_to_expose=6379, password=None):
         super(RedisContainer, self).__init__(image)
         self.port_to_expose = port_to_expose
+        self.password = password
         self.with_exposed_ports(self.port_to_expose)
+        if self.password:
+            self.with_command(f"redis-server --requirepass {self.password}")
 
     @wait_container_is_ready(redis.exceptions.ConnectionError)
     def _connect(self):
@@ -44,7 +46,8 @@ class RedisContainer(DockerContainer):
         """
         return redis.Redis(
             host=self.get_container_host_ip(),
-            port=self.get_exposed_port(6379),
+            port=self.get_exposed_port(self.port_to_expose),
+            password=self.password,
             **kwargs,
         )
 
