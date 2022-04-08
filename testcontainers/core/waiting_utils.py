@@ -48,7 +48,7 @@ def wait_container_is_ready(*transient_exceptions):
             try:
                 return wrapped(*args, **kwargs)
             except transient_exceptions as e:
-                logger.info('container is not yet ready: %s', traceback.format_exc())
+                logger.debug('container is not yet ready: %s', traceback.format_exc())
                 time.sleep(config.SLEEP_TIME)
                 exception = e
         raise TimeoutException(
