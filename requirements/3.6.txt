@@ -71,9 +71,9 @@ flake8==3.7.9
     # via -r requirements.in
 google-api-core[grpc]==2.7.1
     # via google-cloud-pubsub
-google-auth==2.6.2
+google-auth==2.6.3
     # via google-api-core
-google-cloud-pubsub==1.7.0
+google-cloud-pubsub==1.7.1
     # via testcontainers
 googleapis-common-protos[grpc]==1.56.0
     # via
@@ -82,15 +82,15 @@ googleapis-common-protos[grpc]==1.56.0
     #   grpcio-status
 greenlet==1.1.2
     # via sqlalchemy
-grpc-google-iam-v1==0.12.3
+grpc-google-iam-v1==0.12.4
     # via google-cloud-pubsub
-grpcio==1.45.0
+grpcio==1.44.0
     # via
     #   google-api-core
     #   googleapis-common-protos
     #   grpc-google-iam-v1
     #   grpcio-status
-grpcio-status==1.45.0
+grpcio-status==1.44.0
     # via google-api-core
 idna==3.3
     # via requests
@@ -155,7 +155,7 @@ pyflakes==2.1.1
     # via flake8
 pygments==2.11.2
     # via sphinx
-pymongo==4.0.2
+pymongo==4.1.0
     # via testcontainers
 pymssql==2.2.4
     # via testcontainers
@@ -163,7 +163,7 @@ pymysql==1.0.2
     # via testcontainers
 pynacl==1.5.0
     # via paramiko
-pyparsing==3.0.7
+pyparsing==3.0.8
     # via packaging
 pyrsistent==0.18.0
     # via jsonschema
@@ -184,7 +184,7 @@ pytz-deprecation-shim==0.1.0.post0
     # via tzlocal
 pyyaml==5.4.1
     # via docker-compose
-redis==4.2.0
+redis==4.2.2
     # via testcontainers
 requests==2.27.1
     # via
@@ -222,7 +222,7 @@ sphinxcontrib-qthelp==1.0.3
     # via sphinx
 sphinxcontrib-serializinghtml==1.1.5
     # via sphinx
-sqlalchemy==1.4.32
+sqlalchemy==1.4.35
     # via testcontainers
 texttable==1.6.4
     # via docker-compose
@@ -237,7 +237,7 @@ typing-extensions==4.1.1
     #   redis
 tzdata==2022.1
     # via pytz-deprecation-shim
-tzlocal==4.1
+tzlocal==4.2
     # via clickhouse-driver
 urllib3==1.26.9
     # via
