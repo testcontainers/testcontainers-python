@@ -41,14 +41,24 @@ class DockerClient(object):
                                           **kwargs)
 
     def port(self, container_id, port):
-        return self.client.api.port(container_id, port)[0]["HostPort"]
+        port_mappings = self.client.api.port(container_id, port)
+        if not port_mappings:
+            raise RuntimeError(f'port mapping for container {container_id} and port {port} is not '
+                               'available')
+        return port_mappings[0]["HostPort"]
+
+    def get_container(self, container_id):
+        containers = self.client.api.containers(filters={'id': container_id})
+        if not containers:
+            raise RuntimeError(f'could not get container with id {container_id}')
+        return containers[0]
 
     def bridge_ip(self, container_id):
-        container = self.client.api.containers(filters={'id': container_id})[0]
+        container = self.get_container(container_id)
         return container['NetworkSettings']['Networks']['bridge']['IPAddress']
 
     def gateway_ip(self, container_id):
-        container = self.client.api.containers(filters={'id': container_id})[0]
+        container = self.get_container(container_id)
         return container['NetworkSettings']['Networks']['bridge']['Gateway']
 
     def host(self):

@@ -11,23 +11,25 @@
 #    License for the specific language governing permissions and limitations
 #    under the License.
 
-import redis as redis
-
+import redis
 from testcontainers.core.container import DockerContainer
 from testcontainers.core.waiting_utils import wait_container_is_ready
 
 
 class RedisContainer(DockerContainer):
-    def __init__(self, image="redis:latest", port_to_expose=6379):
+    def __init__(self, image="redis:latest", port_to_expose=6379, password=None):
         super(RedisContainer, self).__init__(image)
         self.port_to_expose = port_to_expose
+        self.password = password
         self.with_exposed_ports(self.port_to_expose)
+        if self.password:
+            self.with_command(f"redis-server --requirepass {self.password}")
 
-    @wait_container_is_ready()
+    @wait_container_is_ready(redis.exceptions.ConnectionError)
     def _connect(self):
         client = self.get_client()
         if not client.ping():
-            raise Exception
+            raise redis.exceptions.ConnectionError("Could not connect to Redis")
 
     def get_client(self, **kwargs):
         """get redis client
@@ -44,7 +46,8 @@ class RedisContainer(DockerContainer):
         """
         return redis.Redis(
             host=self.get_container_host_ip(),
-            port=self.get_exposed_port(6379),
+            port=self.get_exposed_port(self.port_to_expose),
+            password=self.password,
             **kwargs,
         )
 

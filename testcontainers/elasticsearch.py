@@ -27,7 +27,7 @@ class ElasticSearchContainer(DockerContainer):
         with ElasticSearchContainer() as es:
             connection_url = es.get_url()
     """
-    def __init__(self, image="elasticsearch:7.5.0", port_to_expose=9200):
+    def __init__(self, image="elasticsearch", port_to_expose=9200):
         super(ElasticSearchContainer, self).__init__(image)
         self.port_to_expose = port_to_expose
         self.with_exposed_ports(self.port_to_expose)
@@ -52,5 +52,7 @@ class ElasticSearchContainer(DockerContainer):
         return self
 
 
-ElasticsearchContainer = deprecated(details='Use `ElasticSearchContainer` with a capital S instead '
-                                    'of `ElasticsearchContainer`.')(ElasticSearchContainer)
+@deprecated(details='Use `ElasticSearchContainer` with a capital S instead '
+                    'of `ElasticsearchContainer`.')
+class ElasticsearchContainer(ElasticSearchContainer):
+    pass

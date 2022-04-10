@@ -14,6 +14,7 @@
 
 import re
 import time
+import traceback
 
 import wrapt
 
@@ -24,7 +25,11 @@ from testcontainers.core.utils import setup_logger
 logger = setup_logger(__name__)
 
 
-def wait_container_is_ready():
+# Get a tuple of transient exceptions for which we'll retry. Other exceptions will be raised.
+TRANSIENT_EXCEPTIONS = (TimeoutError, ConnectionError)
+
+
+def wait_container_is_ready(*transient_exceptions):
     """
     Wait until container is ready.
     Function that spawn container should be decorated by this method
@@ -33,22 +38,23 @@ def wait_container_is_ready():
     :return:
     """
 
+    transient_exceptions = TRANSIENT_EXCEPTIONS + tuple(transient_exceptions)
+
     @wrapt.decorator
     def wrapper(wrapped, instance, args, kwargs):
         exception = None
         logger.info("Waiting to be ready...")
-        for _ in range(0, config.MAX_TRIES):
+        for _ in range(config.MAX_TRIES):
             try:
                 return wrapped(*args, **kwargs)
-            except Exception as e:
+            except transient_exceptions as e:
+                logger.debug('container is not yet ready: %s', traceback.format_exc())
                 time.sleep(config.SLEEP_TIME)
                 exception = e
         raise TimeoutException(
-            """Wait time exceeded {0} sec.
-                Method {1}, args {2} , kwargs {3}.
-                    Exception {4}""".format(config.MAX_TRIES,
-                                            wrapped.__name__,
-                                            args, kwargs, exception))
+            f'Wait time ({config.MAX_TRIES * config.SLEEP_TIME}s) exceeded for {wrapped.__name__}'
+            f'(args: {args}, kwargs {kwargs}). Exception: {exception}'
+        )
 
     return wrapper
 
@@ -84,7 +90,9 @@ def wait_for_logs(container, predicate, timeout=None, interval=1):
     start = time.time()
     while True:
         duration = time.time() - start
-        if predicate(container._container.logs().decode()):
+        stdout = container.get_logs()[0].decode()
+        stderr = container.get_logs()[1].decode()
+        if predicate(stdout) or predicate(stderr):
             return duration
         if timeout and duration > timeout:
             raise TimeoutError("container did not emit logs satisfying predicate in %.3f seconds"

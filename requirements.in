@@ -1,7 +1,6 @@
--e file:.[docker-compose,mysql,oracle,postgresql,selenium,google-cloud-pubsub,mongo,redis,mssqlserver,neo4j,kafka,rabbitmq]
+-e file:.[docker-compose,mysql,oracle,postgresql,selenium,google-cloud-pubsub,mongo,redis,mssqlserver,neo4j,kafka,rabbitmq,clickhouse]
 codecov>=2.1.0
-flake8
+flake8<3.8.0  # 3.8.0 adds a dependency on importlib-metadata which conflicts with other packages.
 pytest
 pytest-cov
 sphinx
-docker<4.3.0

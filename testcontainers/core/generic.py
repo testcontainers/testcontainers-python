@@ -14,13 +14,19 @@
 from testcontainers.core.container import DockerContainer
 from testcontainers.core.waiting_utils import wait_container_is_ready
 from deprecation import deprecated
+ADDITIONAL_TRANSIENT_ERRORS = []
+try:
+    from sqlalchemy.exc import OperationalError
+    ADDITIONAL_TRANSIENT_ERRORS.append(OperationalError)
+except ImportError:
+    pass
 
 
 class DbContainer(DockerContainer):
     def __init__(self, image, **kwargs):
         super(DbContainer, self).__init__(image, **kwargs)
 
-    @wait_container_is_ready()
+    @wait_container_is_ready(*ADDITIONAL_TRANSIENT_ERRORS)
     def _connect(self):
         import sqlalchemy
         engine = sqlalchemy.create_engine(self.get_connection_url())
