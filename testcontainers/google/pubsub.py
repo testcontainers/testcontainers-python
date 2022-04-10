@@ -13,6 +13,10 @@
 
 from ..core.container import DockerContainer
 
+from google.cloud import pubsub
+
+import os
+
 
 class PubSubContainer(DockerContainer):
     """
@@ -38,27 +42,31 @@ class PubSubContainer(DockerContainer):
         super(PubSubContainer, self).__init__(image=image)
         self.project = project
         self.port = port
-        self.with_exposed_ports(self.port)
-        self.with_command("gcloud beta emulators pubsub start --project="
-                          "{project} --host-port=0.0.0.0:{port}".format(
-                              project=self.project, port=self.port,
-                          ))
+        self.with_bind_ports(self.port, self.port)
+        self.with_command(
+            "gcloud beta emulators pubsub start "
+            "--project={project} --host-port=0.0.0.0:{port}".format(
+                project=self.project, port=self.port
+            ))
+        # Endpoint environment variable
+        self.endpoint_env_name = 'PUBSUB_EMULATOR_HOST'
+
+    def __enter__(self):
+        os.environ[self.endpoint_env_name] = '0.0.0.0:{port}'.format(port=self.port)
+        return super().__enter__()
+
+    def __exit__(self, exc_type, exc_val, exc_tb):
+        os.unsetenv(self.endpoint_env_name)
+        super().__exit__(exc_type, exc_val, exc_tb)
 
     def get_pubsub_emulator_host(self):
         return "{host}:{port}".format(host=self.get_container_host_ip(),
                                       port=self.get_exposed_port(self.port))
 
-    def _get_channel(self, channel=None):
-        if channel is None:
-            import grpc
-            return grpc.insecure_channel(target=self.get_pubsub_emulator_host())
-
     def get_publisher_client(self, **kwargs):
-        from google.cloud import pubsub
-        kwargs['channel'] = self._get_channel(kwargs.get('channel'))
+        kwargs['client_options'] = dict(api_endpoint=self.get_pubsub_emulator_host())
         return pubsub.PublisherClient(**kwargs)
 
     def get_subscriber_client(self, **kwargs):
-        from google.cloud import pubsub
-        kwargs['channel'] = self._get_channel(kwargs.get('channel'))
+        kwargs['client_options'] = dict(api_endpoint=self.get_pubsub_emulator_host())
         return pubsub.SubscriberClient(**kwargs)
