@@ -58,7 +58,7 @@ setuptools.setup(
         'oracle': ['sqlalchemy', 'cx_Oracle'],
         'postgresql': ['sqlalchemy', 'psycopg2-binary'],
         'selenium': ['selenium'],
-        'google-cloud-pubsub': ['google-cloud-pubsub'],
+        'google-cloud-pubsub': ['google-cloud-pubsub>=2'],
         'mongo': ['pymongo'],
         'redis': ['redis'],
         'mssqlserver': ['pyodbc'],
