@@ -24,6 +24,7 @@ Currently available features:
 * Generic docker containers
 * LocalStack
 * RabbitMQ
+* Keycloak
 
 Installation
 ------------
