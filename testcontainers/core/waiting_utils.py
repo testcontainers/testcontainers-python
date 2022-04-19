@@ -44,10 +44,11 @@ def wait_container_is_ready(*transient_exceptions):
     def wrapper(wrapped, instance, args, kwargs):
         exception = None
         logger.info("Waiting to be ready...")
-        for _ in range(config.MAX_TRIES):
+        for attempt_no in range(config.MAX_TRIES):
             try:
                 return wrapped(*args, **kwargs)
             except transient_exceptions as e:
+                logger.info(f"Connection attempt '{attempt_no + 1}' of '{config.MAX_TRIES + 1}' failed, retrying...")
                 logger.debug('container is not yet ready: %s', traceback.format_exc())
                 time.sleep(config.SLEEP_TIME)
                 exception = e
