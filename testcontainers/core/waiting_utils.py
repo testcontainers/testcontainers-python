@@ -48,7 +48,8 @@ def wait_container_is_ready(*transient_exceptions):
             try:
                 return wrapped(*args, **kwargs)
             except transient_exceptions as e:
-                logger.debug(f"Connection attempt '{attempt_no + 1}' of '{config.MAX_TRIES + 1}' failed: {traceback.format_exc()}")
+                logger.debug(f"Connection attempt '{attempt_no + 1}' of '{config.MAX_TRIES + 1}' "
+                             f"failed: {traceback.format_exc()}")
                 time.sleep(config.SLEEP_TIME)
                 exception = e
         raise TimeoutException(
