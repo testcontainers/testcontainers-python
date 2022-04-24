@@ -14,6 +14,8 @@ import os
 import urllib
 import docker
 from docker.models.containers import Container
+
+from testcontainers.core.cleaner import ResourceCleaner
 from testcontainers.core.utils import inside_container
 from testcontainers.core.utils import default_gateway_ip
 
@@ -30,15 +32,17 @@ class DockerClient(object):
             stdout: bool = True,
             stderr: bool = False,
             remove: bool = False, **kwargs) -> Container:
-        return self.client.containers.run(image,
-                                          command=command,
-                                          stdout=stdout,
-                                          stderr=stderr,
-                                          remove=remove,
-                                          detach=detach,
-                                          environment=environment,
-                                          ports=ports,
-                                          **kwargs)
+        return ResourceCleaner.instance().attach(
+            self.client.containers.run(image,
+                                       command=command,
+                                       stdout=stdout,
+                                       stderr=stderr,
+                                       remove=remove,
+                                       detach=detach,
+                                       environment=environment,
+                                       ports=ports,
+                                       **kwargs)
+        )
 
     def port(self, container_id, port):
         port_mappings = self.client.api.port(container_id, port)
