@@ -10,12 +10,13 @@
 #    WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the
 #    License for the specific language governing permissions and limitations
 #    under the License.
+import atexit
 import os
 import urllib
 import docker
 from docker.models.containers import Container
 
-from testcontainers.core.cleaner import ResourceCleaner
+from testcontainers.core.cleaner import stop_silent
 from testcontainers.core.utils import inside_container
 from testcontainers.core.utils import default_gateway_ip
 
@@ -32,8 +33,7 @@ class DockerClient(object):
             stdout: bool = True,
             stderr: bool = False,
             remove: bool = False, **kwargs) -> Container:
-        return ResourceCleaner.instance().attach(
-            self.client.containers.run(image,
+        container = self.client.containers.run(image,
                                        command=command,
                                        stdout=stdout,
                                        stderr=stderr,
@@ -42,7 +42,9 @@ class DockerClient(object):
                                        environment=environment,
                                        ports=ports,
                                        **kwargs)
-        )
+        atexit.register(stop_silent(container))
+
+        return container
 
     def port(self, container_id, port):
         port_mappings = self.client.api.port(container_id, port)
