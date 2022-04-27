@@ -6,11 +6,9 @@ logger = setup_logger(__name__)
 
 
 def stop_silent(container):
-    def wrapper():
-        try:
-            container.stop()
-        except NotFound:
-            pass
-        except Exception as e:
-            logger.exception(e)
-    return wrapper
+    try:
+        container.stop()
+    except NotFound:
+        pass
+    except Exception as e:
+        logger.exception(e)

@@ -42,7 +42,7 @@ class DockerClient(object):
                                        environment=environment,
                                        ports=ports,
                                        **kwargs)
-        atexit.register(stop_silent(container))
+        atexit.register(stop_silent, container)
 
         return container
 
