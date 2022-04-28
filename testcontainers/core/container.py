@@ -9,12 +9,12 @@ logger = setup_logger(__name__)
 
 
 class DockerContainer(object):
-    def __init__(self, image, **kwargs):
+    def __init__(self, image, docker_client_kw: dict = None, **kwargs):
         self.env = {}
         self.ports = {}
         self.volumes = {}
         self.image = image
-        self._docker = DockerClient()
+        self._docker = DockerClient(**(docker_client_kw if docker_client_kw else {}))
         self._container = None
         self._command = None
         self._name = None

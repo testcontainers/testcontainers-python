@@ -19,8 +19,8 @@ from testcontainers.core.utils import default_gateway_ip
 
 
 class DockerClient(object):
-    def __init__(self):
-        self.client = docker.from_env()
+    def __init__(self, **kwargs):
+        self.client = docker.from_env(**kwargs)
 
     def run(self, image: str,
             command: str = None,
