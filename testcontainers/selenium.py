@@ -49,12 +49,12 @@ class BrowserWebDriverContainer(DockerContainer):
 
     You can easily change browser by passing :code:`DesiredCapabilities.FIREFOX` instead.
     """
-    def __init__(self, capabilities, image=None):
+    def __init__(self, capabilities, image=None, **kwargs):
         self.capabilities = capabilities
         self.image = image or get_image_name(capabilities)
         self.port_to_expose = 4444
         self.vnc_port_to_expose = 5900
-        super(BrowserWebDriverContainer, self).__init__(image=self.image)
+        super(BrowserWebDriverContainer, self).__init__(image=self.image, **kwargs)
         self.with_exposed_ports(self.port_to_expose, self.vnc_port_to_expose)
 
     def _configure(self):

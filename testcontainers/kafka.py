@@ -14,8 +14,8 @@ class KafkaContainer(DockerContainer):
     KAFKA_PORT = 9093
     TC_START_SCRIPT = '/tc-start.sh'
 
-    def __init__(self, image="confluentinc/cp-kafka:5.4.3", port_to_expose=KAFKA_PORT):
-        super(KafkaContainer, self).__init__(image)
+    def __init__(self, image="confluentinc/cp-kafka:5.4.3", port_to_expose=KAFKA_PORT, **kwargs):
+        super(KafkaContainer, self).__init__(image, **kwargs)
         self.port_to_expose = port_to_expose
         self.with_exposed_ports(self.port_to_expose)
         listeners = 'PLAINTEXT://0.0.0.0:{},BROKER://0.0.0.0:9092'.format(port_to_expose)

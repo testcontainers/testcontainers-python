@@ -37,8 +37,9 @@ class PostgresContainer(DbContainer):
                  port=5432, user=None,
                  password=None,
                  dbname=None,
-                 driver="psycopg2"):
-        super(PostgresContainer, self).__init__(image=image)
+                 driver="psycopg2",
+                 **kwargs):
+        super(PostgresContainer, self).__init__(image=image, **kwargs)
         self.POSTGRES_USER = user or self.POSTGRES_USER
         self.POSTGRES_PASSWORD = password or self.POSTGRES_PASSWORD
         self.POSTGRES_DB = dbname or self.POSTGRES_DB

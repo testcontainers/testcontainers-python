@@ -34,6 +34,7 @@ class RabbitMqContainer(DockerContainer):
         port: Optional[int] = None,
         username: Optional[str] = None,
         password: Optional[str] = None,
+        **kwargs,
     ) -> None:
         """Initialize the RabbitMQ test container.
 
@@ -47,7 +48,7 @@ class RabbitMqContainer(DockerContainer):
             password (str, optional):
                 Overwrite the default username which is "guest".
         """
-        super(RabbitMqContainer, self).__init__(image=image)
+        super(RabbitMqContainer, self).__init__(image=image, **kwargs)
         self.RABBITMQ_NODE_PORT = port or int(self.RABBITMQ_NODE_PORT)
         self.RABBITMQ_DEFAULT_USER = username or self.RABBITMQ_DEFAULT_USER
         self.RABBITMQ_DEFAULT_PASS = password or self.RABBITMQ_DEFAULT_PASS

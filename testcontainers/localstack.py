@@ -32,8 +32,8 @@ class LocalStackContainer(DockerContainer):
     EDGE_PORT = 4566
     IMAGE = 'localstack/localstack:0.11.4'
 
-    def __init__(self, image=IMAGE):
-        super(LocalStackContainer, self).__init__(image)
+    def __init__(self, image=IMAGE, **kwargs):
+        super(LocalStackContainer, self).__init__(image, **kwargs)
         self.with_exposed_ports(LocalStackContainer.EDGE_PORT)
 
     def with_services(self, *services):
