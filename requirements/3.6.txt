@@ -8,19 +8,21 @@
     # via -r requirements.in
 alabaster==0.7.12
     # via sphinx
+asn1crypto==1.5.1
+    # via scramp
 async-timeout==4.0.2
     # via redis
 attrs==21.4.0
     # via
     #   jsonschema
     #   pytest
-babel==2.9.1
+babel==2.10.1
     # via sphinx
 backports.zoneinfo==0.2.1
     # via
     #   pytz-deprecation-shim
     #   tzlocal
-bcrypt==3.2.0
+bcrypt==3.2.2
     # via paramiko
 cached-property==1.5.2
     # via docker-compose
@@ -43,7 +45,7 @@ coverage[toml]==6.2
     # via
     #   codecov
     #   pytest-cov
-cryptography==36.0.2
+cryptography==37.0.1
     # via paramiko
 cx-oracle==8.3.0
     # via testcontainers
@@ -69,9 +71,9 @@ entrypoints==0.3
     # via flake8
 flake8==3.7.9
     # via -r requirements.in
-google-api-core[grpc]==2.7.1
+google-api-core[grpc]==2.7.3
     # via google-cloud-pubsub
-google-auth==2.6.3
+google-auth==2.6.6
     # via google-api-core
 google-cloud-pubsub==1.7.1
     # via testcontainers
@@ -118,7 +120,7 @@ markupsafe==2.0.1
     # via jinja2
 mccabe==0.6.1
     # via flake8
-neo4j==4.4.2
+neo4j==4.4.3
     # via testcontainers
 packaging==21.3
     # via
@@ -126,9 +128,11 @@ packaging==21.3
     #   pytest
     #   redis
     #   sphinx
-paramiko==2.10.3
+paramiko==2.10.4
     # via docker
-pika==1.2.0
+pg8000==1.26.0
+    # via testcontainers
+pika==1.2.1
     # via testcontainers
 pluggy==1.0.0
     # via pytest
@@ -153,11 +157,11 @@ pycparser==2.21
     # via cffi
 pyflakes==2.1.1
     # via flake8
-pygments==2.11.2
+pygments==2.12.0
     # via sphinx
-pymongo==4.1.0
+pymongo==4.1.1
     # via testcontainers
-pymssql==2.2.4
+pymssql==2.2.5
     # via testcontainers
 pymysql==1.0.2
     # via testcontainers
@@ -195,11 +199,12 @@ requests==2.27.1
     #   sphinx
 rsa==4.8
     # via google-auth
+scramp==1.4.1
+    # via pg8000
 selenium==3.141.0
     # via testcontainers
 six==1.16.0
     # via
-    #   bcrypt
     #   dockerpty
     #   google-auth
     #   grpcio
@@ -222,7 +227,7 @@ sphinxcontrib-qthelp==1.0.3
     # via sphinx
 sphinxcontrib-serializinghtml==1.1.5
     # via sphinx
-sqlalchemy==1.4.35
+sqlalchemy==1.4.36
     # via testcontainers
 texttable==1.6.4
     # via docker-compose
@@ -247,7 +252,7 @@ websocket-client==0.59.0
     # via
     #   docker
     #   docker-compose
-wrapt==1.14.0
+wrapt==1.14.1
     # via
     #   deprecated
     #   testcontainers
