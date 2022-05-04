@@ -56,7 +56,7 @@ setuptools.setup(
         'docker-compose': ['docker-compose'],
         'mysql': ['sqlalchemy', 'pymysql'],
         'oracle': ['sqlalchemy', 'cx_Oracle'],
-        'postgresql': ['sqlalchemy', 'psycopg2-binary', 'pg8000'],
+        'postgresql': ['sqlalchemy', 'psycopg2-binary'],
         'selenium': ['selenium'],
         'google-cloud-pubsub': ['google-cloud-pubsub < 2'],
         'mongo': ['pymongo'],
