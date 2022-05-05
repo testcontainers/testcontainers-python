@@ -51,8 +51,9 @@ coverage[toml]==6.3.2
     # via
     #   codecov
     #   pytest-cov
-cryptography==37.0.2
+cryptography==36.0.2
     # via
+    #   -r requirements.in
     #   paramiko
     #   pyopenssl
     #   urllib3

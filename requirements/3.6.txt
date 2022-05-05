@@ -45,8 +45,10 @@ coverage[toml]==6.2
     # via
     #   codecov
     #   pytest-cov
-cryptography==37.0.2
-    # via paramiko
+cryptography==36.0.2
+    # via
+    #   -r requirements.in
+    #   paramiko
 cx-oracle==8.3.0
     # via testcontainers
 deprecated==1.2.13
