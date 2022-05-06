@@ -1,7 +1,6 @@
 from unittest.mock import patch
 
 import pytest
-import subprocess
 
 from testcontainers.compose import DockerCompose
 from testcontainers.core.docker_client import DockerClient
@@ -60,8 +59,8 @@ def test_compose_can_wait_for_logs():
 def test_can_parse_multiple_compose_files():
     with DockerCompose(filepath=ROOT,
                        compose_file_name=["docker-compose.yml", "docker-compose-2.yml"]) as compose:
-        host = compose.get_service_host("mysql", 3306)
-        port = compose.get_service_port("mysql", 3306)
+        host = compose.get_service_host("alpine", 3306)
+        port = compose.get_service_port("alpine", 3306)
         assert host == "0.0.0.0"
         assert port == "3306"
 
@@ -81,10 +80,9 @@ def test_can_get_logs():
 
 def test_can_pass_env_params_by_env_file():
     with DockerCompose(ROOT, compose_file_name='docker-compose-3.yml',
-                       env_file='.env.test') as _:
-        check_env_is_set_cmd = 'docker exec tests_mysql_1 printenv | grep TEST_ASSERT_KEY'.split()
-        out = subprocess.run(check_env_is_set_cmd, stdout=subprocess.PIPE)
-        assert out.stdout.decode('utf-8').splitlines()[0], 'test_is_passed'
+                       env_file='.env.test') as compose:
+        stdout, *_ = compose.exec_in_container("alpine", ["printenv"])
+        assert stdout.splitlines()[0], 'test_has_passed'
 
 
 def test_can_exec_commands():

@@ -1,6 +1,6 @@
-mysql:
-  image: mysql
-  ports:
-    - "3306:3306"
-  environment:
-    MYSQL_ALLOW_EMPTY_PASSWORD: "true"
+services:
+  alpine:
+    image: alpine
+    command: sleep 3600
+    ports:
+      - "3306:3306"
