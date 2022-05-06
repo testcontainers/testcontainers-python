@@ -27,10 +27,10 @@ def test_docker_generic_db():
                 "restaurant_id": "41704620"
             }
         )
-        print(result.inserted_id)
+        assert result.inserted_id
         cursor = db.restaurants.find({"borough": "Manhattan"})
         for document in cursor:
-            print(document)
+            assert document
 
 
 def test_docker_run_mongodb():

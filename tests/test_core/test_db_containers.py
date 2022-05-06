@@ -23,7 +23,7 @@ def test_docker_run_postgres():
         e = sqlalchemy.create_engine(postgres.get_connection_url())
         result = e.execute("select version()")
         for row in result:
-            print("server version:", row[0])
+            assert row[0].lower().startswith("postgresql 9.5")
 
 
 def test_docker_run_postgres_with_driver_pg8000():
