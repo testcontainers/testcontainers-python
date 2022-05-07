@@ -1,0 +1,17 @@
+services:
+  hub:
+    image: selenium/hub
+    ports:
+      - "4444:4444"
+  firefox:
+    image: selenium/node-firefox
+    links:
+      - hub
+    expose:
+      - "5555"
+  chrome:
+    image: selenium/node-chrome
+    links:
+      - hub
+    expose:
+      - "5555"

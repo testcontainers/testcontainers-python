@@ -1,0 +1,8 @@
+services:
+  alpine:
+    image: alpine
+    command: sleep 3600
+    ports:
+      - "3306:3306"
+    environment:
+      TEST_ASSERT_KEY: ${TAG_TEST_ASSERT_KEY}
