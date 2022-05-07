@@ -6,3 +6,4 @@ You have implemented a new container and would like to contribute it? Great! Her
 - [ ] You have updated all python requirements by running `make requirements` from the root directory.
 - [ ] You have added tests for the new container in the `tests` directory, e.g. `tests/test_my_fancy_container.py`.
 - [ ] You have added the name of the container (such as `my_fancy_container`) to the `test-components` matrix in `.github/workflows/main.yml` to ensure the tests are run.
+- [ ] You have rebased your development branch on `master` (or merged `master` into your development branch).
