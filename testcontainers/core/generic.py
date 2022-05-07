@@ -16,8 +16,8 @@ from testcontainers.core.waiting_utils import wait_container_is_ready
 from deprecation import deprecated
 ADDITIONAL_TRANSIENT_ERRORS = []
 try:
-    from sqlalchemy.exc import OperationalError
-    ADDITIONAL_TRANSIENT_ERRORS.append(OperationalError)
+    from sqlalchemy.exc import DBAPIError
+    ADDITIONAL_TRANSIENT_ERRORS.append(DBAPIError)
 except ImportError:
     pass
 

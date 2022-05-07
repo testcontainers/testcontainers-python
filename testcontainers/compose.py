@@ -209,9 +209,8 @@ class DockerCompose(object):
         port_cmd = self.docker_compose_command() + ["port", service, str(port)]
         output = subprocess.check_output(port_cmd, cwd=self.filepath).decode("utf-8")
         result = str(output).rstrip().split(":")
-        if len(result) == 1:
-            raise NoSuchPortExposed("Port {} was not exposed for service {}"
-                                    .format(port, service))
+        if len(result) != 2 or not all(result):
+            raise NoSuchPortExposed(f"port {port} is not exposed for service {service}")
         return result
 
     def _call_command(self, cmd, filepath=None):

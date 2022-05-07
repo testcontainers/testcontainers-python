@@ -8,8 +8,27 @@ on:
 jobs:
   build:
     strategy:
+      fail-fast: false
       matrix:
-        python-version: [3.6, 3.7, 3.8]
+        python-version:
+          - "3.7"
+          - "3.8"
+          - "3.9"
+          - "3.10"
+        test-component:
+          - core
+          - clickhouse.py
+          - elasticsearch.py
+          - google.py
+          - kafka.py
+          - localstack.py
+          - mongodb.py
+          - neo4j.py
+          - nginx.py
+          - rabbitmq.py
+          - redis.py
+          - selenium.py
+          - webdriver.py
     runs-on: ubuntu-18.04
     steps:
       - uses: actions/checkout@v2
@@ -40,9 +59,12 @@ jobs:
           docker run --rm -v /var/run/docker.sock:/var/run/docker.sock --network=bridge testcontainers-python python diagnostics.py
           echo "Container diagnostics with host network"
           docker run --rm -v /var/run/docker.sock:/var/run/docker.sock --network=host testcontainers-python python diagnostics.py
+      - name: Make docs
+        if: matrix.python-version == '3.7'
+        run: |
+          sphinx-build -nW docs docs/_build/html
       - name: Run checks
         run: |
           flake8
-          sphinx-build -nW docs docs/_build/html
-          py.test -svx --cov-config .coveragerc --cov-report html:skip-covered --cov-report term:skip-covered --cov=testcontainers --tb=short tests/
+          py.test -svx --cov-config .coveragerc --cov-report html:skip-covered --cov-report term:skip-covered --cov=testcontainers --tb=short tests/test_${{ matrix.test-component }}
           codecov
