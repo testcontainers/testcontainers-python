@@ -48,7 +48,7 @@ setuptools.setup(
         'Operating System :: MacOS',
     ],
     install_requires=[
-        'docker',
+        'docker>=4.0.0',
         'wrapt',
         'deprecation',
     ],

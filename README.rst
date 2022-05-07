@@ -78,3 +78,12 @@ Adding requirements
 ^^^^^^^^^^^^^^^^^^^
 
 We use :code:`pip-tools` to resolve and manage dependencies. If you need to add a dependency to testcontainers or one of the extras, modify the :code:`setup.py` as well as the :code:`requirements.in` accordingly and then run :code:`pip install pip-tools` followed by :code:`make requirements` to update the requirements files.
+
+Contributing a new container
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+You can contribute a new container in three steps:
+
+1. Create a new module at :code:`testcontainers/[my fancy container].py` that implements the new functionality.
+2. Create a new test module at :code:`tests/test_[my fancy container].py` that tests the new functionality.
+3. Add :code:`[my fancy container]` to the list of test components in the GitHub Action configuration at :code:`.github/workflows/main.yml`.
