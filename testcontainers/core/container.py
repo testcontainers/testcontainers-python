@@ -14,7 +14,7 @@ class DockerContainer(object):
         self.ports = {}
         self.volumes = {}
         self.image = image
-        self._docker = DockerClient(**(docker_client_kw if docker_client_kw else {}))
+        self._docker = DockerClient(**(docker_client_kw or {}))
         self._container = None
         self._command = None
         self._name = None
