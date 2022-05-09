@@ -17,8 +17,8 @@ from testcontainers.core.waiting_utils import wait_container_is_ready
 
 
 class RedisContainer(DockerContainer):
-    def __init__(self, image="redis:latest", port_to_expose=6379, password=None):
-        super(RedisContainer, self).__init__(image)
+    def __init__(self, image="redis:latest", port_to_expose=6379, password=None, **kwargs):
+        super(RedisContainer, self).__init__(image, **kwargs)
         self.port_to_expose = port_to_expose
         self.password = password
         self.with_exposed_ports(self.port_to_expose)

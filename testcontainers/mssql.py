@@ -21,8 +21,8 @@ class SqlServerContainer(DbContainer):
     linux-mac/installing-the-microsoft-odbc-driver-for-sql-server>`_.
     """
     def __init__(self, image="mcr.microsoft.com/mssql/server:2019-latest", user="SA", password=None,
-                 port=1433, dbname="tempdb", dialect='mssql+pymssql'):
-        super(SqlServerContainer, self).__init__(image)
+                 port=1433, dbname="tempdb", dialect='mssql+pymssql', **kwargs):
+        super(SqlServerContainer, self).__init__(image, **kwargs)
 
         self.SQLSERVER_PASSWORD = password or environ.get("SQLSERVER_PASSWORD", "1Secure*Password1")
         self.port_to_expose = port

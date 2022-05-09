@@ -47,7 +47,7 @@ class Neo4jContainer(DbContainer):
     NEO4J_USER = "neo4j"
 
     def __init__(self, image="neo4j:latest", **kwargs):
-        super(Neo4jContainer, self).__init__(image)
+        super(Neo4jContainer, self).__init__(image, **kwargs)
         self.bolt_port = Neo4jContainer.DEFAULT_BOLT_PORT
         self.with_exposed_ports(self.bolt_port)
         self._driver = None

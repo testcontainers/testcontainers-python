@@ -16,7 +16,7 @@ from testcontainers.core.container import DockerContainer
 
 class NginxContainer(DockerContainer):
     @deprecated(details="Use `DockerContainer` with 'nginx:latest' image and expose port 80.")
-    def __init__(self, image="nginx:latest", port_to_expose=80):
-        super(NginxContainer, self).__init__(image)
+    def __init__(self, image="nginx:latest", port_to_expose=80, **kwargs):
+        super(NginxContainer, self).__init__(image, **kwargs)
         self.port_to_expose = port_to_expose
         self.with_exposed_ports(self.port_to_expose)
