@@ -77,6 +77,8 @@ docopt==0.6.2
     # via docker-compose
 docutils==0.17.1
     # via sphinx
+ecdsa==0.17.0
+    # via python-jose
 entrypoints==0.3
     # via flake8
 flake8==3.7.9
@@ -157,6 +159,7 @@ py==1.11.0
 pyasn1==0.4.8
     # via
     #   pyasn1-modules
+    #   python-jose
     #   rsa
 pyasn1-modules==0.2.8
     # via google-auth
@@ -192,6 +195,10 @@ pytest-cov==3.0.0
     # via -r requirements.in
 python-dotenv==0.20.0
     # via docker-compose
+python-jose==3.3.0
+    # via python-keycloak
+python-keycloak==0.27.0
+    # via testcontainers
 pytz==2022.1
     # via
     #   babel
@@ -209,9 +216,12 @@ requests==2.27.1
     #   docker
     #   docker-compose
     #   google-api-core
+    #   python-keycloak
     #   sphinx
 rsa==4.8
-    # via google-auth
+    # via
+    #   google-auth
+    #   python-jose
 scramp==1.4.1
     # via pg8000
 selenium==4.1.3
@@ -219,6 +229,7 @@ selenium==4.1.3
 six==1.16.0
     # via
     #   dockerpty
+    #   ecdsa
     #   google-auth
     #   grpcio
     #   jsonschema
