@@ -2,7 +2,7 @@ from unittest.mock import MagicMock, patch
 import docker
 from testcontainers.core.docker_client import DockerClient
 from testcontainers.core.container import DockerContainer
-from testcontainers.core.generic import DbContainer
+
 
 def test_docker_client_from_env():
     test_kwargs = dict(
@@ -13,7 +13,8 @@ def test_docker_client_from_env():
         DockerClient(**test_kwargs)
 
     mock_docker.from_env.assert_called_with(**test_kwargs)
-    
+
+
 def test_container_docker_client_kw():
     test_kwargs = dict(
         test_kw="test_value"
