@@ -1,4 +1,5 @@
 from testcontainers.core.generic import DbContainer
+from testcontainers.core.waiting_utils import wait_container_is_ready, wait_for_logs
 
 
 class OracleDbContainer(DbContainer):
@@ -13,17 +14,31 @@ class OracleDbContainer(DbContainer):
             e = sqlalchemy.create_engine(oracle.get_connection_url())
             result = e.execute("select 1 from dual")
     """
-    def __init__(self, image="wnameless/oracle-xe-11g-r2:latest", **kwargs):
-        super(OracleDbContainer, self).__init__(image=image, **kwargs)
+
+    ORACLE_STARTUP_TIMEOUT_SECONDS = 10
+
+    def __init__(self, image="wnameless/oracle-xe-11g-r2:latest"):
+        super(OracleDbContainer, self).__init__(image=image)
         self.container_port = 1521
         self.with_exposed_ports(self.container_port)
         self.with_env("ORACLE_ALLOW_REMOTE", "true")
 
     def get_connection_url(self):
         return super()._create_connection_url(
-            dialect="oracle", username="system", password="oracle", port=self.container_port,
-            db_name="xe"
+            dialect="oracle", username="system", password="oracle", port=self.container_port, db_name="XE"
         )
+
+    @wait_container_is_ready()
+    def _connect(self):
+        import sqlalchemy
+
+        engine = sqlalchemy.create_engine(self.get_connection_url())
+        wait_for_logs(
+            self,
+            "System altered.",
+            OracleDbContainer.ORACLE_STARTUP_TIMEOUT_SECONDS,
+        )
+        engine.connect()
 
     def _configure(self):
         pass
