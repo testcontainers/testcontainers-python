@@ -67,6 +67,7 @@ setuptools.setup(
         'rabbitmq': ['pika'],
         'clickhouse': ['clickhouse-driver'],
         'keycloak': ['python-keycloak'],
+        'arango':['python-arango']
     },
     long_description_content_type="text/x-rst",
     long_description=long_description,

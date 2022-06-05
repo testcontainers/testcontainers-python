@@ -25,6 +25,7 @@ Currently available features:
 * LocalStack
 * RabbitMQ
 * Keycloak
+* ArangoDB
 
 Installation
 ------------
