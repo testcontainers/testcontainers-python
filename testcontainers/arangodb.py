@@ -2,10 +2,9 @@
 ArangoDB container support.
 """
 from os import environ
-from arango import ArangoClient
-
 from testcontainers.core.generic import DbContainer
 from testcontainers.core.waiting_utils import wait_for_logs
+
 
 class ArangoDbContainer(DbContainer):
     """
@@ -35,9 +34,9 @@ class ArangoDbContainer(DbContainer):
 
         # https://www.arangodb.com/docs/stable/deployment-single-instance-manual-start.html
         self.arango_no_auth = kwargs.get(
-            'ARANGO_NO_AUTH',environ.get('ARANGO_NO_AUTH'))
+            'ARANGO_NO_AUTH', environ.get('ARANGO_NO_AUTH'))
         self.arango_root_password = kwargs.get(
-            'ARANGO_ROOT_PASSWORD',environ.get('ARANGO_ROOT_PASSWORD', 'passwd'))
+            'ARANGO_ROOT_PASSWORD', environ.get('ARANGO_ROOT_PASSWORD', 'passwd'))
         self.arango_random_root_password = kwargs.get(
             'ARANGO_RANDOM_ROOT_PASSWORD', environ.get('ARANGO_RANDOM_ROOT_PASSWORD'))
 
@@ -62,5 +61,3 @@ class ArangoDbContainer(DbContainer):
             self,
             predicate="is ready for business",
             timeout=10)
-
-        ArangoClient(self.get_connection_url())
