@@ -171,6 +171,8 @@ pyflakes==2.1.1
     # via flake8
 pygments==2.12.0
     # via sphinx
+pyjwt==2.4.0
+    # via python-arango
 pymongo==4.1.1
     # via testcontainers
 pymssql==2.2.5
@@ -193,6 +195,8 @@ pytest==7.1.2
     #   pytest-cov
 pytest-cov==3.0.0
     # via -r requirements.in
+python-arango==7.3.4
+    # via testcontainers
 python-dotenv==0.20.0
     # via docker-compose
 python-jose==3.3.0
@@ -216,8 +220,12 @@ requests==2.27.1
     #   docker
     #   docker-compose
     #   google-api-core
+    #   python-arango
     #   python-keycloak
+    #   requests-toolbelt
     #   sphinx
+requests-toolbelt==0.9.1
+    # via python-arango
 rsa==4.8
     # via
     #   google-auth
@@ -275,6 +283,7 @@ tzlocal==4.2
     # via clickhouse-driver
 urllib3[secure,socks]==1.26.9
     # via
+    #   python-arango
     #   python-keycloak
     #   requests
     #   selenium
