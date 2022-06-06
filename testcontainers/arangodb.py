@@ -14,7 +14,7 @@ class ArangoDbContainer(DbContainer):
     -------
     The example will spin up a ArangoDB container.
     You may use the :code:`get_connection_url()` method which returns a arangoclient-compatible url
-    in format :code:`scheme://host:port`. As of now, only a single host supported (over HTTP).
+    in format :code:`scheme://host:port`. As of now, only a single host is supported (over HTTP).
     ::
 
         with ArangoContainer("arangodb:3.9.1") as arango:
