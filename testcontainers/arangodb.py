@@ -26,7 +26,7 @@ class ArangoDbContainer(DbContainer):
             # Create a new database named "test".
             sys_db.create_database("test")
     """
-    def __init__(self, image="arangodb:latest", **kwargs):
+    def __init__(self, image="arangodb:latest", port_to_expose=8529, **kwargs):
         super().__init__(image=image)
         self.port_to_expose = 8529
         self.with_exposed_ports(self.port_to_expose)
