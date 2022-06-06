@@ -2,6 +2,7 @@
 ArangoDB container support.
 """
 from os import environ
+from testcontainers.core.config import MAX_TRIES
 from testcontainers.core.generic import DbContainer
 from testcontainers.core.waiting_utils import wait_for_logs
 
@@ -26,20 +27,27 @@ class ArangoDbContainer(DbContainer):
             # Create a new database named "test".
             sys_db.create_database("test")
     """
-    def __init__(self, image="arangodb:latest", port_to_expose=8529, **kwargs):
+    def __init__(self,
+                 image="arangodb:latest",
+                 port_to_expose=8529,
+                 hostname='localhost',
+                 arango_root_password='passwd',
+                 arango_no_auth=None,
+                 arango_random_root_password=None,
+                 **kwargs):
         super().__init__(image=image)
         self.port_to_expose = port_to_expose
         self.with_exposed_ports(self.port_to_expose)
 
-        self.arango_host = kwargs.get('ARANGO_HOST', 'localhost')
+        self.arango_host = hostname
 
         # https://www.arangodb.com/docs/stable/deployment-single-instance-manual-start.html
-        self.arango_no_auth = kwargs.get(
-            'ARANGO_NO_AUTH', environ.get('ARANGO_NO_AUTH'))
-        self.arango_root_password = kwargs.get(
-            'ARANGO_ROOT_PASSWORD', environ.get('ARANGO_ROOT_PASSWORD', 'passwd'))
-        self.arango_random_root_password = kwargs.get(
-            'ARANGO_RANDOM_ROOT_PASSWORD', environ.get('ARANGO_RANDOM_ROOT_PASSWORD'))
+        self.arango_no_auth = arango_no_auth or \
+            environ.get("ARANGO_NO_AUTH")
+        self.arango_root_password = arango_root_password or \
+            environ.get('ARANGO_ROOT_PASSWORD')
+        self.arango_random_root_password = arango_random_root_password or \
+            environ.get('ARANGO_RANDOM_ROOT_PASSWORD')
 
     def _configure(self):
         self.with_env(
@@ -61,4 +69,4 @@ class ArangoDbContainer(DbContainer):
         wait_for_logs(
             self,
             predicate="is ready for business",
-            timeout=10)
+            timeout=MAX_TRIES)
