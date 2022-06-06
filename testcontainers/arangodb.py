@@ -28,7 +28,7 @@ class ArangoDbContainer(DbContainer):
     """
     def __init__(self, image="arangodb:latest", port_to_expose=8529, **kwargs):
         super().__init__(image=image)
-        self.port_to_expose = 8529
+        self.port_to_expose = port_to_expose
         self.with_exposed_ports(self.port_to_expose)
 
         self.arango_host = kwargs.get('ARANGO_HOST', 'localhost')
