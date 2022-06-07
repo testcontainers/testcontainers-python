@@ -73,7 +73,7 @@ def test_docker_run_arango_without_auth():
     image_version = '3.9.1'
     image = f'{ARANGODB_IMAGE_NAME}:{image_version}'
 
-    with ArangoDbContainer(image, arango_no_auth='1') as arango:
+    with ArangoDbContainer(image, arango_no_auth=True) as arango:
         client = ArangoClient(hosts=arango.get_connection_url())
 
         arango_test_ops(
@@ -94,7 +94,7 @@ def test_docker_run_arango_older_version():
     image_version = '3.1.7'
     image = f'{ARANGODB_IMAGE_NAME}:{image_version}'
 
-    with ArangoDbContainer(image, arango_no_auth='1') as arango:
+    with ArangoDbContainer(image, arango_no_auth=True) as arango:
         client = ArangoClient(hosts=arango.get_connection_url())
 
         arango_test_ops(
@@ -111,7 +111,7 @@ def test_docker_run_arango_random_root_password():
     image = f'{ARANGODB_IMAGE_NAME}:{image_version}'
     arango_db_root_password = 'passwd'
 
-    with ArangoDbContainer(image, arango_random_root_password='1') as arango:
+    with ArangoDbContainer(image, arango_random_root_password=True) as arango:
         client = ArangoClient(hosts=arango.get_connection_url())
 
         # Test invalid auth (we don't know the password in random mode)

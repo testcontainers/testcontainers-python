@@ -30,16 +30,24 @@ class ArangoDbContainer(DbContainer):
     def __init__(self,
                  image="arangodb:latest",
                  port_to_expose=8529,
-                 hostname='localhost',
                  arango_root_password='passwd',
-                 arango_no_auth=None,
-                 arango_random_root_password=None,
+                 arango_no_auth=False,
+                 arango_random_root_password=False,
                  **kwargs):
+        """
+        Args:
+            image (str, optional): Actual docker image/tag to pull. Defaults to "arangodb:latest".
+            port_to_expose (int, optional): Port the container needs to expose. Defaults to 8529.
+            arango_root_password (str, optional): Start ArangoDB with the
+                given password for root. Defaults to 'passwd'.
+            arango_no_auth (bool, optional): Disable authentication completely.
+                Defaults to False.
+            arango_random_root_password (bool, optional): Let ArangoDB generate a
+                random root password. Defaults to False.
+        """
         super().__init__(image=image)
         self.port_to_expose = port_to_expose
         self.with_exposed_ports(self.port_to_expose)
-
-        self.arango_host = hostname
 
         # https://www.arangodb.com/docs/stable/deployment-single-instance-manual-start.html
         self.arango_no_auth = arango_no_auth or \
@@ -61,7 +69,7 @@ class ArangoDbContainer(DbContainer):
         # for now, single host over HTTP
         scheme = 'http'
         port = self.get_exposed_port(self.port_to_expose)
-        url = f"{scheme}://{self.arango_host}:{port}"
+        url = f"{scheme}://{self.get_container_host_ip()}:{port}"
 
         return url
 
