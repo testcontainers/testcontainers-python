@@ -30,6 +30,7 @@ jobs:
           - selenium.py
           - webdriver.py
           - keycloak.py
+          - arangodb.py
     runs-on: ubuntu-18.04
     steps:
       - uses: actions/checkout@v2

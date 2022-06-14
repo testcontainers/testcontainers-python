@@ -22,6 +22,7 @@ Currently available features:
 * ClickHouse container
 * Microsoft SQL Server container
 * Generic docker containers
+* ArangoDB container
 * LocalStack
 * RabbitMQ
 * Keycloak

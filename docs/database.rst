@@ -1,7 +1,7 @@
 Database containers
 ===================
 
-Allows to spin up database images such as MySQL, PostgreSQL, MariaDB, Oracle XE, MongoDb, ClickHouse or Neo4j.
+Allows to spin up database images such as MySQL, PostgreSQL, MariaDB, Oracle XE, MongoDb, ClickHouse, Neo4j or ArangoDB
 
 .. autoclass:: testcontainers.mysql.MySqlContainer
 .. autoclass:: testcontainers.mysql.MariaDbContainer
@@ -12,3 +12,4 @@ Allows to spin up database images such as MySQL, PostgreSQL, MariaDB, Oracle XE,
 .. autoclass:: testcontainers.mssql.SqlServerContainer
 .. autoclass:: testcontainers.clickhouse.ClickHouseContainer
 .. autoclass:: testcontainers.neo4j.Neo4jContainer
+.. autoclass:: testcontainers.arangodb.ArangoDbContainer
