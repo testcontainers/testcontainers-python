@@ -5,6 +5,7 @@ from os import environ
 from testcontainers.core.config import MAX_TRIES
 from testcontainers.core.generic import DbContainer
 from testcontainers.core.waiting_utils import wait_for_logs
+import typing
 
 
 class ArangoDbContainer(DbContainer):
@@ -22,52 +23,55 @@ class ArangoDbContainer(DbContainer):
             client = ArangoClient(hosts=arango.get_connection_url())
 
             # Connect
-            sys_db = arango_client.db(username='root', password='')
+            sys_db = arango_client.db(username="root", password="")
 
             # Create a new database named "test".
             sys_db.create_database("test")
     """
     def __init__(self,
-                 image="arangodb:latest",
-                 port_to_expose=8529,
-                 arango_root_password='passwd',
-                 arango_no_auth=False,
-                 arango_random_root_password=False,
+                 image: str = "arangodb:latest",
+                 port_to_expose: int = 8529,
+                 arango_root_password: str = "passwd",
+                 arango_no_auth: typing.Optional[bool] = None,
+                 arango_random_root_password: typing.Optional[bool] = None,
                  **kwargs):
         """
         Args:
-            image (str, optional): Actual docker image/tag to pull. Defaults to "arangodb:latest".
-            port_to_expose (int, optional): Port the container needs to expose. Defaults to 8529.
-            arango_root_password (str, optional): Start ArangoDB with the
-                given password for root. Defaults to 'passwd'.
-            arango_no_auth (bool, optional): Disable authentication completely.
-                Defaults to False.
-            arango_random_root_password (bool, optional): Let ArangoDB generate a
-                random root password. Defaults to False.
+            image: Actual docker image/tag to pull.
+            port_to_expose: Port the container needs to expose.
+            arango_root_password: Start ArangoDB with the given password for root. Defaults to the
+                environment variable `ARANGO_ROOT_PASSWORD` if `None`.
+            arango_no_auth: Disable authentication completely. Defaults to the environment variable
+                `ARANGO_NO_AUTH` or `False` if the environment variable is not available.
+            arango_random_root_password: Let ArangoDB generate a random root password. Defaults to
+                the environment variable `ARANGO_NO_AUTH` or `False` if the environment variable is
+                not available.
         """
-        super().__init__(image=image)
+        super().__init__(image=image, **kwargs)
         self.port_to_expose = port_to_expose
         self.with_exposed_ports(self.port_to_expose)
 
-        # https://www.arangodb.com/docs/stable/deployment-single-instance-manual-start.html
-        self.arango_no_auth = arango_no_auth or \
-            environ.get("ARANGO_NO_AUTH")
-        self.arango_root_password = arango_root_password or \
-            environ.get('ARANGO_ROOT_PASSWORD')
-        self.arango_random_root_password = arango_random_root_password or \
-            environ.get('ARANGO_RANDOM_ROOT_PASSWORD')
+        # See https://www.arangodb.com/docs/stable/deployment-single-instance-manual-start.html for
+        # details. We convert to int then to bool because Arango uses the string literal "1" to
+        # indicate flags.
+        self.arango_no_auth = bool(int(environ.get("ARANGO_NO_AUTH", 0) if arango_no_auth is None
+                                   else arango_no_auth))
+        self.arango_root_password = environ.get("ARANGO_ROOT_PASSWORD") if arango_root_password is \
+            None else arango_root_password
+        self.arango_random_root_password = bool(int(
+            environ.get("ARANGO_RANDOM_ROOT_PASSWORD", 0) if arango_random_root_password is None
+            else arango_random_root_password
+        ))
 
     def _configure(self):
-        self.with_env(
-            "ARANGO_NO_AUTH", self.arango_no_auth)
-        self.with_env(
-            "ARANGO_ROOT_PASSWORD", self.arango_root_password)
-        self.with_env(
-            "ARANGO_RANDOM_ROOT_PASSWORD", self.arango_random_root_password)
+        self.with_env("ARANGO_NO_AUTH", "1" if self.arango_no_auth else "0")
+        self.with_env("ARANGO_ROOT_PASSWORD", self.arango_root_password)
+        self.with_env("ARANGO_RANDOM_ROOT_PASSWORD",
+                      "1" if self.arango_random_root_password else "0")
 
     def get_connection_url(self):
         # for now, single host over HTTP
-        scheme = 'http'
+        scheme = "http"
         port = self.get_exposed_port(self.port_to_expose)
         url = f"{scheme}://{self.get_container_host_ip()}:{port}"
 
