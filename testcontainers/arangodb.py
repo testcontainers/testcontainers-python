@@ -64,10 +64,11 @@ class ArangoDbContainer(DbContainer):
         ))
 
     def _configure(self):
-        self.with_env("ARANGO_NO_AUTH", "1" if self.arango_no_auth else "0")
         self.with_env("ARANGO_ROOT_PASSWORD", self.arango_root_password)
-        self.with_env("ARANGO_RANDOM_ROOT_PASSWORD",
-                      "1" if self.arango_random_root_password else "0")
+        if self.arango_no_auth:
+            self.with_env("ARANGO_NO_AUTH", "1")
+        if self.arango_random_root_password:
+            self.with_env("ARANGO_RANDOM_ROOT_PASSWORD", "1")
 
     def get_connection_url(self):
         # for now, single host over HTTP
