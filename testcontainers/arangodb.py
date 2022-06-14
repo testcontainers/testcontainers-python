@@ -42,10 +42,10 @@ class ArangoDbContainer(DbContainer):
             arango_root_password: Start ArangoDB with the given password for root. Defaults to the
                 environment variable `ARANGO_ROOT_PASSWORD` if `None`.
             arango_no_auth: Disable authentication completely. Defaults to the environment variable
-                `ARANGO_NO_AUTH` or `False` if the environment variable is not available.
+                `ARANGO_NO_AUTH` if `None` or `False` if the environment variable is not available.
             arango_random_root_password: Let ArangoDB generate a random root password. Defaults to
-                the environment variable `ARANGO_NO_AUTH` or `False` if the environment variable is
-                not available.
+                the environment variable `ARANGO_NO_AUTH` if `None` or `False` if the environment
+                variable is not available.
         """
         super().__init__(image=image, **kwargs)
         self.port_to_expose = port_to_expose
