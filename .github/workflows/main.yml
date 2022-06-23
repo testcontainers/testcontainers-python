@@ -32,8 +32,8 @@ jobs:
           - keycloak.py
           - arangodb.py
         os:
-          - ubuntu-18.04
-          - windows-10
+          - windows-2019
+          - ubuntu-20.04
     runs-on: ${{ matrix.os }}
     steps:
       - uses: actions/checkout@v2
