@@ -25,6 +25,7 @@ jobs:
           - mongodb.py
           - neo4j.py
           - nginx.py
+          - opensearch.py
           - rabbitmq.py
           - redis.py
           - selenium.py

@@ -26,6 +26,7 @@ Currently available features:
 * LocalStack
 * RabbitMQ
 * Keycloak
+* OpenSearch container
 
 Installation
 ------------
