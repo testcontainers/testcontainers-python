@@ -1,6 +1,7 @@
 from deprecation import deprecated
 from docker.models.containers import Container
 
+from testcontainers.core.waiting_utils import wait_container_is_ready
 from testcontainers.core.docker_client import DockerClient
 from testcontainers.core.exceptions import ContainerStartException
 from testcontainers.core.utils import setup_logger, inside_container, is_arm
@@ -101,6 +102,7 @@ class DockerContainer(object):
             return gateway_ip
         return host
 
+    @wait_container_is_ready()
     def get_exposed_port(self, port) -> str:
         mapped_port = self.get_docker_client().port(self._container.id, port)
         if inside_container():
