@@ -43,8 +43,8 @@ class DockerClient(object):
     def port(self, container_id, port):
         port_mappings = self.client.api.port(container_id, port)
         if not port_mappings:
-            raise ConnectionError(f'port mapping for container {container_id} and port {port} is not '
-                               'available')
+            raise ConnectionError(f'port mapping for container {container_id} and port {port} is '
+                                  'not available')
         return port_mappings[0]["HostPort"]
 
     def get_container(self, container_id):
