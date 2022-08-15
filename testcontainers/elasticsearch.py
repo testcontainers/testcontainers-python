@@ -10,10 +10,50 @@
 #    WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the
 #    License for the specific language governing permissions and limitations
 #    under the License.
+import logging
+import re
+import urllib
+from typing import Dict
+
 from deprecation import deprecated
+
 from testcontainers.core.container import DockerContainer
 from testcontainers.core.waiting_utils import wait_container_is_ready
-import urllib
+
+_FALLBACK_VERSION = 8
+"""This version is used when no version could be detected from the image name."""
+
+
+def _major_version_from_image_name(image_name: str) -> int:
+    """Returns the major version from a container name like 'elasticsearch:8.1.0'
+    If the major version could not be determined, it will use the most recent
+    one (8 at the time of writing 2022-08-11).
+    """
+    version_string = image_name.split(":")[-1]
+    regex_match = re.compile(r"(\d+)\.\d+\.\d+").match(version_string)
+    if not regex_match:
+        logging.warning("Could not determine major version from image name '%s'. Will use %s",
+                        image_name, _FALLBACK_VERSION)
+        return _FALLBACK_VERSION
+    else:
+        return int(regex_match.group(1))
+
+
+def _environment_by_version(version: int) -> Dict[str, str]:
+    """Returns environment variables required for each major version to work."""
+    if version == 6:
+        # This setting is needed to avoid the check for the kernel parameter
+        # vm.max_map_count in the BootstrapChecks
+        return {"discovery.zen.minimum_master_nodes": "1"}
+    elif version == 7:
+        return {}
+    elif version == 8:
+        # Elasticsearch uses https now by default. However, our readiness
+        # check uses http, which does not work. Hence we disable security
+        # which should not be an issue for our context
+        return {"xpack.security.enabled": "false"}
+    else:
+        raise ValueError(f"Unknown elasticsearch version given: {version}")
 
 
 class ElasticSearchContainer(DockerContainer):
@@ -33,7 +73,10 @@ class ElasticSearchContainer(DockerContainer):
         self.with_exposed_ports(self.port_to_expose)
         self.with_env('transport.host', '127.0.0.1')
         self.with_env('http.host', '0.0.0.0')
-        self.with_env('discovery.zen.minimum_master_nodes', '1')
+
+        major_version = _major_version_from_image_name(image)
+        for key, value in _environment_by_version(major_version).items():
+            self.with_env(key, value)
 
     @wait_container_is_ready()
     def _connect(self):
