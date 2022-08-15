@@ -33,7 +33,7 @@ def _major_version_from_image_name(image_name: str) -> int:
     regex_match = re.compile(r"(\d+)\.\d+\.\d+").match(version_string)
     if not regex_match:
         logging.warning("Could not determine major version from image name '%s'. Will use %s",
-                image_name, _FALLBACK_VERSION)
+                        image_name, _FALLBACK_VERSION)
         return _FALLBACK_VERSION
     else:
         return int(regex_match.group(1))
