@@ -79,6 +79,8 @@ entrypoints==0.3
     # via flake8
 flake8==3.7.9
     # via -r requirements.in
+freezegun==1.2.2
+    # via pytest-freezegun
 google-api-core[grpc]==2.8.1
     # via google-cloud-pubsub
 google-auth==2.6.6
@@ -187,10 +189,15 @@ pytest==7.1.2
     # via
     #   -r requirements.in
     #   pytest-cov
+    #   pytest-freezegun
 pytest-cov==3.0.0
+    # via -r requirements.in
+pytest-freezegun==0.4.2
     # via -r requirements.in
 python-arango==7.3.4
     # via testcontainers
+python-dateutil==2.8.2
+    # via freezegun
 python-dotenv==0.20.0
     # via docker-compose
 python-jose==3.3.0
@@ -236,6 +243,7 @@ six==1.16.0
     #   grpcio
     #   jsonschema
     #   paramiko
+    #   python-dateutil
     #   websocket-client
 sniffio==1.2.0
     # via trio
