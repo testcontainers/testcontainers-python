@@ -68,6 +68,7 @@ setuptools.setup(
         'clickhouse': ['clickhouse-driver'],
         'keycloak': ['python-keycloak'],
         'arangodb': ['python-arango'],
+        'azurite': ['azure-storage-blob'],
     },
     long_description_content_type="text/x-rst",
     long_description=long_description,
