@@ -35,7 +35,8 @@ class _LocalImagesCache:
         try:
             image = self.docker_client.images.get(image_name)
         except ImageNotFound:
-            del self.images_cache[image_name]
+            if image_name in self.images_cache:
+                del self.images_cache[image_name]
 
             return None
 
