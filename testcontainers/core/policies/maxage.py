@@ -19,8 +19,8 @@ from testcontainers.core.policies.base import ImagePullPolicy
 
 
 class MaxAgePullPolicy(ImagePullPolicy):
-    """An ImagePullPolicy which pulls the image from a remote repository only if its created date is older than
-    max_age """
+    """An ImagePullPolicy which pulls the image from a remote repository only if its
+    created date is older than max_age """
 
     def __init__(self, max_age: timedelta):
         self.max_age = max_age
@@ -29,5 +29,5 @@ class MaxAgePullPolicy(ImagePullPolicy):
         created_str = image.attrs["Created"]
         created_datetime = datetime.fromisoformat(created_str[:-4])
 
-        return datetime.now() - created_datetime > self.max_age
-
+        age = datetime.now() - created_datetime
+        return age > self.max_age

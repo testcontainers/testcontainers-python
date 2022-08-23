@@ -21,5 +21,6 @@ class AlwaysPullPolicy(ImagePullPolicy):
     An ImagePullPolicy which pulls the image even if it exists locally.
     Useful for obtaining the latest version of an image with a static tag, i.e. 'latest'
     """
+
     def should_pull_cached(self, image: Image) -> bool:
         return True
