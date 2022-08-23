@@ -61,12 +61,12 @@ class KeycloakContainer(DockerContainer):
 
     def get_client(self, **kwargs):
         default_kwargs = dict(
-                server_url="{}/auth/".format(self.get_url()),
-                username=self.KEYCLOAK_USER,
-                password=self.KEYCLOAK_PASSWORD,
-                realm_name="master",
-                verify=True,
-            )
+            server_url="{}/auth/".format(self.get_url()),
+            username=self.KEYCLOAK_USER,
+            password=self.KEYCLOAK_PASSWORD,
+            realm_name="master",
+            verify=True,
+        )
         kwargs = {
             **default_kwargs,
             **kwargs

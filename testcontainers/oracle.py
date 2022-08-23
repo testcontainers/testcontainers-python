@@ -13,6 +13,7 @@ class OracleDbContainer(DbContainer):
             e = sqlalchemy.create_engine(oracle.get_connection_url())
             result = e.execute("select 1 from dual")
     """
+
     def __init__(self, image="wnameless/oracle-xe-11g-r2:latest", **kwargs):
         super(OracleDbContainer, self).__init__(image=image, **kwargs)
         self.container_port = 1521
