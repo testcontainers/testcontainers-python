@@ -20,6 +20,7 @@ class SqlServerContainer(DbContainer):
     Requires `ODBC Driver 17 for SQL Server <https://docs.microsoft.com/en-us/sql/connect/odbc/
     linux-mac/installing-the-microsoft-odbc-driver-for-sql-server>`_.
     """
+
     def __init__(self, image="mcr.microsoft.com/mssql/server:2019-latest", user="SA", password=None,
                  port=1433, dbname="tempdb", dialect='mssql+pymssql', **kwargs):
         super(SqlServerContainer, self).__init__(image, **kwargs)

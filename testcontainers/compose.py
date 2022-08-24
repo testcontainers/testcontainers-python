@@ -67,6 +67,7 @@ class DockerCompose(object):
         expose:
             - "5555"
     """
+
     def __init__(
             self,
             filepath,

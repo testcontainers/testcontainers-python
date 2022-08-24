@@ -67,6 +67,7 @@ class ElasticSearchContainer(DockerContainer):
         with ElasticSearchContainer() as es:
             connection_url = es.get_url()
     """
+
     def __init__(self, image="elasticsearch", port_to_expose=9200, **kwargs):
         super(ElasticSearchContainer, self).__init__(image, **kwargs)
         self.port_to_expose = port_to_expose

@@ -10,5 +10,5 @@ def test_docker_run_nginx():
         url = "http://{}:{}/".format(nginx.get_container_host_ip(),
                                      nginx.get_exposed_port(port))
         r = requests.get(url)
-        assert(r.status_code == 200)
-        assert('Welcome to nginx!' in r.text)
+        assert (r.status_code == 200)
+        assert ('Welcome to nginx!' in r.text)
