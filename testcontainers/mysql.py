@@ -33,6 +33,7 @@ class MySqlContainer(DbContainer):
             result = e.execute("select version()")
             version, = result.fetchone()
     """
+
     def __init__(self, image="mysql:latest", **kwargs):
         super(MySqlContainer, self).__init__(image)
         self.port_to_expose = 3306

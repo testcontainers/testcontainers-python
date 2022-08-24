@@ -49,6 +49,7 @@ class BrowserWebDriverContainer(DockerContainer):
 
     You can easily change browser by passing :code:`DesiredCapabilities.FIREFOX` instead.
     """
+
     def __init__(self, capabilities, image=None, **kwargs):
         self.capabilities = capabilities
         self.image = image or get_image_name(capabilities)

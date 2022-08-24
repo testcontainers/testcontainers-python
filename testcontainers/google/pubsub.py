@@ -33,6 +33,7 @@ class PubSubContainer(DockerContainer):
                 topic_path = publisher.topic_path(pubsub.project, "my-topic")
                 topic = publisher.create_topic(topic_path)
     """
+
     def __init__(self, image="google/cloud-sdk:latest",
                  project="test-project", port=8432, **kwargs):
         super(PubSubContainer, self).__init__(image=image, **kwargs)
