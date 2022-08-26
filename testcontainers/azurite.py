@@ -35,8 +35,8 @@ class AzuriteContainer(DockerContainer):
 
     _AZURITE_ACCOUNT_NAME = os.environ.get("AZURITE_ACCOUNT_NAME", "devstoreaccount1")
     _AZURITE_ACCOUNT_KEY = os.environ.get("AZURITE_ACCOUNT_KEY", "Eby8vdM02xNOcqFlqUwJPLlmEtlCDX"
-                                                                "J1OUzFT50uSRZ6IFsuFq2UVErCz4I6"
-                                                                "tq/K1SZFPTOtr/KBHBeksoGMGw==")
+                                          "J1OUzFT50uSRZ6IFsuFq2UVErCz4I6"
+                                          "tq/K1SZFPTOtr/KBHBeksoGMGw==")
 
     _BLOB_SERVICE_PORT = 10_000
     _QUEUE_SERVICE_PORT = 10_001
@@ -73,7 +73,8 @@ class AzuriteContainer(DockerContainer):
         self.ports_to_expose = ports_to_expose
 
         self.with_exposed_ports(*ports_to_expose)
-        self.with_env("AZURITE_ACCOUNTS", f"{self._AZURITE_ACCOUNT_NAME}:{self._AZURITE_ACCOUNT_KEY}")
+        self.with_env("AZURITE_ACCOUNTS",
+                      f"{self._AZURITE_ACCOUNT_NAME}:{self._AZURITE_ACCOUNT_KEY}")
 
     def get_connection_string(self):
         host_ip = self.get_container_host_ip()
