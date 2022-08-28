@@ -186,7 +186,7 @@ class DockerCompose(object):
         str:
             The mapped port on the host
         """
-        return self._get_service_info(service_name, port)[1]
+        return self.get_service_info(service_name, port)[1]
 
     def get_service_host(self, service_name, port):
         """
@@ -204,15 +204,30 @@ class DockerCompose(object):
         str:
             The hostname for the service
         """
-        return self._get_service_info(service_name, port)[0]
+        return self.get_service_info(service_name, port)[0]
 
-    def _get_service_info(self, service, port):
+    def get_service_info(self, service, port):
+        """
+        Returns the host and the port for one of the services.
+
+        Parameters
+        ----------
+        service: str
+            Name of the docker compose service
+        port: int
+            The internal port to get the host for
+
+        Returns
+        -------
+        (str, str):
+            The hostname for the service, The port for the service
+        """
         port_cmd = self.docker_compose_command() + ["port", service, str(port)]
         output = subprocess.check_output(port_cmd, cwd=self.filepath).decode("utf-8")
         result = str(output).rstrip().split(":")
         if len(result) != 2 or not all(result):
             raise NoSuchPortExposed(f"port {port} is not exposed for service {service}")
-        return result
+        return result[0], result[1]
 
     def _call_command(self, cmd, filepath=None):
         if filepath is None:
