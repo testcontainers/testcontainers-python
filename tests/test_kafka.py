@@ -13,6 +13,11 @@ def test_kafka_producer_consumer_custom_port():
         produce_and_consume_kafka_message(container)
 
 
+def test_kafka_confluent_7_1_3():
+    with KafkaContainer(image='confluentinc/cp-kafka:7.1.3') as container:
+        produce_and_consume_kafka_message(container)
+
+
 def produce_and_consume_kafka_message(container):
     topic = 'test-topic'
     bootstrap_server = container.get_bootstrap_server()
