@@ -70,8 +70,6 @@ class AzuriteContainer(DockerContainer):
         if len(ports_to_expose) == 0:
             raise ValueError("Expected a list with port numbers to expose")
 
-        self.ports_to_expose = ports_to_expose
-
         self.with_exposed_ports(*ports_to_expose)
         self.with_env("AZURITE_ACCOUNTS",
                       f"{self._AZURITE_ACCOUNT_NAME}:{self._AZURITE_ACCOUNT_KEY}")
@@ -82,17 +80,17 @@ class AzuriteContainer(DockerContainer):
                             f"AccountName={self._AZURITE_ACCOUNT_NAME};" \
                             f"AccountKey={self._AZURITE_ACCOUNT_KEY};"
 
-        if self._BLOB_SERVICE_PORT in self.ports_to_expose:
+        if self._BLOB_SERVICE_PORT in self.ports:
             connection_string += f"BlobEndpoint=http://{host_ip}:" \
                                  f"{self.get_exposed_port(self._BLOB_SERVICE_PORT)}" \
                                  f"/{self._AZURITE_ACCOUNT_NAME};"
 
-        if self._QUEUE_SERVICE_PORT in self.ports_to_expose:
+        if self._QUEUE_SERVICE_PORT in self.ports:
             connection_string += f"QueueEndpoint=http://{host_ip}:" \
                                  f"{self.get_exposed_port(self._QUEUE_SERVICE_PORT)}" \
                                  f"/{self._AZURITE_ACCOUNT_NAME};"
 
-        if self._TABLE_SERVICE_PORT in self.ports_to_expose:
+        if self._TABLE_SERVICE_PORT in self.ports:
             connection_string += f"TableEndpoint=http://{host_ip}:" \
                                  f"{self.get_exposed_port(self._TABLE_SERVICE_PORT)}" \
                                  f"/{self._AZURITE_ACCOUNT_NAME};"
@@ -108,4 +106,4 @@ class AzuriteContainer(DockerContainer):
     def _connect(self):
         with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as s:
             s.connect((self.get_container_host_ip(),
-                       int(self.get_exposed_port(self.ports_to_expose[0]))))
+                       int(self.get_exposed_port(next(iter(self.ports))))))
