@@ -227,7 +227,7 @@ class DockerCompose(object):
         result = str(output).rstrip().split(":")
         if len(result) != 2 or not all(result):
             raise NoSuchPortExposed(f"port {port} is not exposed for service {service}")
-        return result[0], result[1]
+        return result
 
     def _call_command(self, cmd, filepath=None):
         if filepath is None:
