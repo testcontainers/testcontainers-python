@@ -39,7 +39,7 @@ class KafkaContainer(DockerContainer):
     def _connect(self):
         bootstrap_server = self.get_bootstrap_server()
         consumer = KafkaConsumer(group_id='test', bootstrap_servers=[bootstrap_server])
-        if not consumer.topics():
+        if not consumer.bootstrap_connected():
             raise KafkaError("Unable to connect with kafka container!")
 
     def tc_start(self):
