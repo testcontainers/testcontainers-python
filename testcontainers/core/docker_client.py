@@ -12,10 +12,12 @@
 #    under the License.
 import os
 import urllib
+
 import docker
 from docker.models.containers import Container
-from testcontainers.core.utils import inside_container
-from testcontainers.core.utils import default_gateway_ip
+from docker.models.images import Image
+
+from testcontainers.core.utils import default_gateway_ip, inside_container
 
 
 class DockerClient(object):
@@ -39,6 +41,9 @@ class DockerClient(object):
                                           environment=environment,
                                           ports=ports,
                                           **kwargs)
+
+    def pull_image(self, image: str) -> Image:
+        return self.client.images.pull(*image.split(":"))
 
     def port(self, container_id, port):
         port_mappings = self.client.api.port(container_id, port)

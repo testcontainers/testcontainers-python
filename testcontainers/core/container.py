@@ -1,10 +1,11 @@
 from deprecation import deprecated
 from docker.models.containers import Container
 
-from testcontainers.core.waiting_utils import wait_container_is_ready
 from testcontainers.core.docker_client import DockerClient
 from testcontainers.core.exceptions import ContainerStartException
-from testcontainers.core.utils import setup_logger, inside_container, is_arm
+from testcontainers.core.policies import DefaultPullPolicy, ImagePullPolicy
+from testcontainers.core.utils import inside_container, is_arm, setup_logger
+from testcontainers.core.waiting_utils import wait_container_is_ready
 
 logger = setup_logger(__name__)
 
@@ -20,6 +21,7 @@ class DockerContainer(object):
         self._command = None
         self._name = None
         self._kwargs = kwargs
+        self.pull_policy = DefaultPullPolicy()
 
     def with_env(self, key: str, value: str) -> 'DockerContainer':
         self.env[key] = value
@@ -43,14 +45,22 @@ class DockerContainer(object):
         self._kwargs = kwargs
         return self
 
+    def with_pull_policy(self, policy: ImagePullPolicy) -> 'DockerContainer':
+        self.pull_policy = policy
+        return self
+
     def maybe_emulate_amd64(self) -> 'DockerContainer':
         if is_arm():
             return self.with_kwargs(platform='linux/amd64')
         return self
 
     def start(self):
-        logger.info("Pulling image %s", self.image)
         docker_client = self.get_docker_client()
+
+        if self.pull_policy.should_pull(self.image):
+            logger.info("Pulling image %s", self.image)
+            docker_client.pull_image(self.image)
+
         self._container = docker_client.run(self.image,
                                             command=self._command,
                                             detach=True,
