@@ -31,6 +31,7 @@ jobs:
           - webdriver.py
           - keycloak.py
           - arangodb.py
+          - azurite.py
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v2
