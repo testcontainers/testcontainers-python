@@ -45,7 +45,7 @@ class BrowserWebDriverContainer(DockerContainer):
         with BrowserWebDriverContainer(DesiredCapabilities.CHROME) as chrome:
             webdriver = chrome.get_driver()
             webdriver.get("http://google.com")
-            webdriver.find_element_by_name("q").send_keys("Hello")
+            webdriver.find_element("name", "q").send_keys("Hello")
 
     You can easily change browser by passing :code:`DesiredCapabilities.FIREFOX` instead.
     """
