@@ -12,4 +12,4 @@ def test_webdriver_container_container(caps):
     with BrowserWebDriverContainer(caps).maybe_emulate_amd64() as chrome:
         webdriver = chrome.get_driver()
         webdriver.get("http://google.com")
-        webdriver.find_element_by_name("q").send_keys("Hello")
+        webdriver.find_element("name", "q").send_keys("Hello")
