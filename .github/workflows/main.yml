@@ -62,12 +62,13 @@ jobs:
           docker run --rm -v /var/run/docker.sock:/var/run/docker.sock --network=bridge testcontainers-python python diagnostics.py
           echo "Container diagnostics with host network"
           docker run --rm -v /var/run/docker.sock:/var/run/docker.sock --network=host testcontainers-python python diagnostics.py
-      - name: Make docs
+      - name: Build documentation
+        run: sphinx-build -nW docs docs/_build/html
+      - name: Run doctests
+        run: sphinx-build -b doctest docs docs/_build/html
+      - name: Lint the code
+        run: flake8
+      - name: Run tests
         run: |
-          sphinx-build -nW docs docs/_build/html
-          sphinx-build -b doctest docs docs/_build/html
-      - name: Run checks
-        run: |
-          flake8
           py.test -svx --cov-config .coveragerc --cov-report html:skip-covered --cov-report term:skip-covered --cov=testcontainers --tb=short tests/test_${{ matrix.test-component }}
           codecov
