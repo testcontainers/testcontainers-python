@@ -68,3 +68,5 @@ venv
 # vscode:
 .devcontainer/
 .vscode/
+
+.DS_Store

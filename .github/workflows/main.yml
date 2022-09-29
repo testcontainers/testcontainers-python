@@ -63,9 +63,9 @@ jobs:
           echo "Container diagnostics with host network"
           docker run --rm -v /var/run/docker.sock:/var/run/docker.sock --network=host testcontainers-python python diagnostics.py
       - name: Make docs
-        if: matrix.python-version == '3.7'
         run: |
           sphinx-build -nW docs docs/_build/html
+          sphinx-build -b doctest docs docs/_build/html
       - name: Run checks
         run: |
           flake8
