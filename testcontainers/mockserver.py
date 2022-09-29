@@ -17,7 +17,8 @@ class MockServerContainer(DockerContainer):
 
         with MockServerContainer() as mockserver:
             mockserver_client = mockserver.get_client()
-            mockserver_client.stub(request(method='GET', path='/path'), response=response(code=HTTPStatus.OK))
+            mockserver_client.stub(request(method='GET', path='/path'),
+                                   response=response(code=HTTPStatus.OK))
 
             response = requests.get(f'{mockserver.base_url}/path')
             assert response.status_code == HTTPStatus.OK
