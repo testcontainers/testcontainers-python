@@ -35,7 +35,7 @@ class MySqlContainer(DbContainer):
     """
 
     def __init__(self, image="mysql:latest", **kwargs):
-        super(MySqlContainer, self).__init__(image)
+        super(MySqlContainer, self).__init__(image, **kwargs)
         self.port_to_expose = 3306
         self.with_exposed_ports(self.port_to_expose)
         self.MYSQL_USER = kwargs.get('MYSQL_USER', environ.get('MYSQL_USER', 'test'))
