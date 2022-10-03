@@ -45,22 +45,25 @@ The testcontainers package is available from `PyPI <https://pypi.org/project/tes
 Basic usage
 -----------
 
-.. code-block:: python
+.. doctest::
 
-    import sqlalchemy
-    from testcontainers.mysql import MySqlContainer
+    >>> from testcontainers.postgres import PostgresContainer
+    >>> import sqlalchemy
 
-    with MySqlContainer('mysql:5.7.17') as mysql:
-        engine = sqlalchemy.create_engine(mysql.get_connection_url())
-        version, = engine.execute("select version()").fetchone()
-        print(version)  # 5.7.17
+    >>> postgres_container = PostgresContainer("postgres:9.5")
+    >>> with postgres_container as postgres:
+    ...     e = sqlalchemy.create_engine(postgres.get_connection_url())
+    ...     result = e.execute("select version()")
+    ...     version, = result.fetchone()
+    >>> version
+    'PostgreSQL 9.5...'
 
-The snippet above will spin up a MySql database in a container. The :code:`get_connection_url()` convenience method returns a :code:`sqlalchemy` compatible url we use to connect to the database and retrieve the database version.
+The snippet above will spin up a Postgres database in a container. The :code:`get_connection_url()` convenience method returns a :code:`sqlalchemy` compatible url we use to connect to the database and retrieve the database version.
 
 More extensive documentation can be found at `Read The Docs <http://testcontainers-python.readthedocs.io/>`_.
 
-Usage within Docker (i.e. in a CI)
-----------------------------------
+Usage within Docker (e.g., in a CI)
+-----------------------------------
 
 When trying to launch a testcontainer from within a Docker container two things have to be provided:
 
