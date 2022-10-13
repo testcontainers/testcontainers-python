@@ -7,7 +7,7 @@ Allows to spin up services configured via :code:`docker-compose.yml`.
 
 import requests
 import subprocess
-
+from functools import cached_property
 from testcontainers.core.waiting_utils import wait_container_is_ready
 from testcontainers.core.exceptions import NoSuchPortExposed
 
