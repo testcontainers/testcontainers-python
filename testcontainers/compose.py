@@ -89,6 +89,19 @@ class DockerCompose(object):
 
     def __exit__(self, exc_type, exc_val, exc_tb):
         self.stop()
+        
+    @cached_property
+    def base_docker_compose(self):
+        """
+        Returns the basecommand parts used for the docker compose commands depending on the docker compose api
+
+        Returns
+        -------
+        list[str]
+            The docker compose command parts
+        """
+        return ["docker","compose"] if subprocess.run(["docker", "compose", "--help"], stdout=subprocess.DEVNULL,
+        stderr=subprocess.STDOUT).returncode == 0 else ["docker-compose"]
 
     def docker_compose_command(self):
         """
@@ -99,7 +112,7 @@ class DockerCompose(object):
         list[str]
             The docker compose command parts
         """
-        docker_compose_cmd = ['docker-compose']
+        docker_compose_cmd = self.base_docker_compose
         for file in self.compose_file_names:
             docker_compose_cmd += ['-f', file]
         if self.env_file:
