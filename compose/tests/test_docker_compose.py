@@ -15,7 +15,7 @@ ROOT = os.path.dirname(__file__)
 def test_can_throw_exception_if_docker_command_fails():
     with pytest.raises(ContainerStartException):
         with DockerCompose(ROOT, compose_file_name='does-not-exist.yml'):
-            pass
+            ...
 
 
 def test_can_spawn_service_via_compose():
