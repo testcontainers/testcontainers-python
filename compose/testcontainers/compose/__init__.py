@@ -10,7 +10,7 @@ import subprocess
 from typing import Iterable, List, Optional, Tuple, Union
 
 from testcontainers.core.waiting_utils import wait_container_is_ready
-from testcontainers.core.exceptions import NoSuchPortExposed
+from testcontainers.core.exceptions import ContainerStartException, NoSuchPortExposed
 
 
 class DockerCompose:
@@ -110,7 +110,10 @@ class DockerCompose:
         if self.build:
             up_cmd.append('--build')
 
-        self._call_command(cmd=up_cmd)
+        return_code = self._call_command(cmd=up_cmd)
+
+        if return_code:
+            raise ContainerStartException(f"Docker compose failed with return code {return_code}")
 
     def stop(self) -> None:
         """
@@ -194,7 +197,9 @@ class DockerCompose:
     def _call_command(self, cmd: Union[str, List[str]], filepath: Optional[str] = None) -> None:
         if filepath is None:
             filepath = self.filepath
-        subprocess.call(cmd, cwd=filepath)
+
+        return subprocess.call(cmd, cwd=filepath)
+
 
     @wait_container_is_ready(requests.exceptions.ConnectionError)
     def wait_for(self, url: str) -> 'DockerCompose':
