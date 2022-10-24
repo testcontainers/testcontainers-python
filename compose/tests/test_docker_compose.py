@@ -5,11 +5,17 @@ import pytest
 
 from testcontainers.compose import DockerCompose
 from testcontainers.core.docker_client import DockerClient
-from testcontainers.core.exceptions import NoSuchPortExposed
+from testcontainers.core.exceptions import ContainerStartException, NoSuchPortExposed
 from testcontainers.core.waiting_utils import wait_for_logs
 
 
 ROOT = os.path.dirname(__file__)
+
+
+def test_can_throw_exception_if_docker_command_fails():
+    with pytest.raises(ContainerStartException):
+        with DockerCompose(ROOT, compose_file_name='does-not-exist.yml'):
+            pass
 
 
 def test_can_spawn_service_via_compose():
