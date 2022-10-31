@@ -11,6 +11,7 @@
 #    License for the specific language governing permissions and limitations
 #    under the License.
 import os
+import warnings
 
 import clickhouse_driver
 from clickhouse_driver.errors import Error
@@ -41,17 +42,28 @@ class ClickHouseContainer(DbContainer):
     def __init__(
             self,
             image="clickhouse/clickhouse-server:latest",
-            port=9000,
+            http_port=8123,
+            native_port=9000,
+            port=None,
             user=None,
             password=None,
             dbname=None
     ):
+        if port is not None:
+            warnings.warn(
+                "The `port` parameter is deprecated. Use `http_port` and `native_port` instead.",
+                category=DeprecationWarning,
+            )
+            native_port = port
         super().__init__(image=image)
 
         self.CLICKHOUSE_USER = user or self.CLICKHOUSE_USER
         self.CLICKHOUSE_PASSWORD = password or self.CLICKHOUSE_PASSWORD
         self.CLICKHOUSE_DB = dbname or self.CLICKHOUSE_DB
-        self.port_to_expose = port
+        self.port_to_expose = native_port  # TODO: deprecated, remove
+        self.http_port = http_port
+        self.native_port = native_port
+        self.with_exposed_ports(self.http_port, self.native_port)
 
     @wait_container_is_ready(Error, EOFError)
     def _connect(self):
@@ -59,7 +71,6 @@ class ClickHouseContainer(DbContainer):
             client.execute("SELECT version()")
 
     def _configure(self):
-        self.with_exposed_ports(self.port_to_expose)
         self.with_env("CLICKHOUSE_USER", self.CLICKHOUSE_USER)
         self.with_env("CLICKHOUSE_PASSWORD", self.CLICKHOUSE_PASSWORD)
         self.with_env("CLICKHOUSE_DB", self.CLICKHOUSE_DB)
@@ -71,5 +82,5 @@ class ClickHouseContainer(DbContainer):
             password=self.CLICKHOUSE_PASSWORD,
             db_name=self.CLICKHOUSE_DB,
             host=host,
-            port=self.port_to_expose,
+            port=self.native_port,
         )
