@@ -52,6 +52,7 @@ class ClickHouseContainer(DbContainer):
         self.CLICKHOUSE_PASSWORD = password or self.CLICKHOUSE_PASSWORD
         self.CLICKHOUSE_DB = dbname or self.CLICKHOUSE_DB
         self.port_to_expose = port
+        self.with_exposed_ports(self.port_to_expose)
 
     @wait_container_is_ready(Error, EOFError)
     def _connect(self):
@@ -59,7 +60,6 @@ class ClickHouseContainer(DbContainer):
             client.execute("SELECT version()")
 
     def _configure(self):
-        self.with_exposed_ports(self.port_to_expose)
         self.with_env("CLICKHOUSE_USER", self.CLICKHOUSE_USER)
         self.with_env("CLICKHOUSE_PASSWORD", self.CLICKHOUSE_PASSWORD)
         self.with_env("CLICKHOUSE_DB", self.CLICKHOUSE_DB)
