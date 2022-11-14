@@ -27,6 +27,7 @@ jobs:
           - nginx.py
           - rabbitmq.py
           - redis.py
+          - dragonfly.py
           - selenium.py
           - webdriver.py
           - keycloak.py

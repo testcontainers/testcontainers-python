@@ -27,6 +27,7 @@ Currently available features:
 * RabbitMQ
 * Keycloak
 * Azurite container
+* `Dragonfly DB container  <https://dragonflydb.io/>`_
 
 Installation
 ------------
