@@ -20,7 +20,22 @@ from testcontainers.core.utils import default_gateway_ip
 
 class DockerClient(object):
     def __init__(self, **kwargs):
-        self.client = docker.from_env(**kwargs)
+
+        docker_host = DockerClient.read_docker_host_from_properties()
+
+        if docker_host:
+            self.client = docker.DockerClient(base_url=docker_host)
+        else:
+            self.client = docker.from_env(**kwargs)
+
+    def read_docker_host_from_properties():
+        try:
+            with open(os.path.expanduser('~/.testcontainers.properties')) as f:
+                for line in f:
+                    if line.startswith('docker.host'):
+                        return line.split('=')[1].strip()
+        except FileNotFoundError:
+            return None
 
     def run(self, image: str,
             command: str = None,
