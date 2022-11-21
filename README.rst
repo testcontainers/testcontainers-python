@@ -73,7 +73,7 @@ When trying to launch a testcontainer from within a Docker container two things 
 Setting up a development environment
 ------------------------------------
 
-We recommend you use a `virtual environment <https://virtualenv.pypa.io/en/stable/>`_ for development. Note that a python version :code:`>=3.6` is required. After setting up your virtual environment, you can install all dependencies and test the installation by running the following snippet.
+We recommend you use a `virtual environment <https://virtualenv.pypa.io/en/stable/>`_ for development. Note that a python version :code:`>=3.7` is required. After setting up your virtual environment, you can install all dependencies and test the installation by running the following snippet.
 
 .. code-block:: bash
 
