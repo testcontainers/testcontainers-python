@@ -4,7 +4,8 @@ from testcontainers.core.waiting_utils import wait_for_logs
 
 
 def test_wait_for_logs_docker_in_docker():
-    # real dind isn't possible (AFAIK) in CI, forwarding the socket to a container port is at least somewhat the same
+    # real dind isn't possible (AFAIK) in CI
+    # forwarding the socket to a container port is at least somewhat the same
     client = DockerClient()
     not_really_dind = client.run(
         image="alpine/socat",
@@ -15,7 +16,8 @@ def test_wait_for_logs_docker_in_docker():
 
     not_really_dind.start()
 
-    # get ip address for DOCKER_HOST, avoiding DockerContainer class here to prevent code changes affecting the test
+    # get ip address for DOCKER_HOST
+    # avoiding DockerContainer class here to prevent code changes affecting the test
     specs = client.get_container(not_really_dind.id)
     docker_host_ip = specs['NetworkSettings']['Networks']['bridge']['IPAddress']
     docker_host = f"tcp://{docker_host_ip}:2375"
