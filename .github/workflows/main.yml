@@ -72,3 +72,7 @@ jobs:
         run: |
           py.test -svx --cov-config .coveragerc --cov-report html:skip-covered --cov-report term:skip-covered --cov=testcontainers --tb=short tests/test_${{ matrix.test-component }}
           codecov
+      - name: Build package and check it
+        run: |
+          python setup.py bdist_wheel
+          twine check dist/*

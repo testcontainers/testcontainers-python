@@ -15,6 +15,7 @@ import setuptools
 
 with open('README.rst') as fp:
     long_description = fp.read()
+long_description = long_description.replace(".. doctest::", ".. code-block::")
 
 # Load the version number
 try:

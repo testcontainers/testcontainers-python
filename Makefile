@@ -17,8 +17,8 @@ requirements : ${REQUIREMENTS}
 
 ${REQUIREMENTS} : requirements/%.txt : requirements.in setup.py
 	mkdir -p $(dir $@)
-	${RUN} -w /workspace -v `pwd`:/workspace python:$* bash -c \
-		"pip install pip-tools && pip-compile -v --upgrade -o $@ $<"
+	${RUN} -w /workspace -v `pwd`:/workspace --platform=linux/amd64 python:$* bash -c \
+		"pip install pip-tools && pip-compile --resolver=backtracking -v --upgrade -o $@ $<"
 
 
 # Targets to build docker images
