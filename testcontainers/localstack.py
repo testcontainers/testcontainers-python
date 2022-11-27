@@ -21,6 +21,7 @@ class LocalStackContainer(DockerContainer):
     Example
     -------
     ::
+
         localstack = LocalStackContainer(image="localstack/localstack:0.11.4")
         localstack.with_services("dynamodb", "lambda")
         localstack.start()

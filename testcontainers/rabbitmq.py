@@ -8,13 +8,13 @@ from testcontainers.core.waiting_utils import wait_container_is_ready
 
 class RabbitMqContainer(DockerContainer):
     """
-    Test container for RabbitMQ.
+    Test container for RabbitMQ. The example below spins up a RabbitMQ broker and uses the `pika` client library
+    (https://pypi.org/project/pika/) establish a connection to the broker.
 
     Example
     -------
-    The example spins up a RabbitMQ broker and uses the `pika` client library
-    (https://pypi.org/project/pika/) establish a connection to the broker.
     ::
+
         from testcontainer.rabbitmq import RabbitMqContainer
         import pika
 

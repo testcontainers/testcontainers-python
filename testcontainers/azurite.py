@@ -19,7 +19,9 @@ from testcontainers.core.waiting_utils import wait_container_is_ready
 
 class AzuriteContainer(DockerContainer):
     """
-        Azurite container.
+        The example below spins up an Azurite container and
+        shows an example to create a Blob service client with the container. The method get_connection_string
+        can be used to create a client for Blob service, Queue service and Table service.
 
         Example
         -------
