@@ -6,3 +6,4 @@ pg8000
 pytest
 pytest-cov
 sphinx
+twine
