@@ -22,11 +22,18 @@ class PostgresContainer(DbContainer):
     Example
     -------
     The example spins up a Postgres database and connects to it using the :code:`psycopg` driver.
-    ::
+    .. doctest::
 
-        with PostgresContainer("postgres:9.5") as postgres:
-            e = sqlalchemy.create_engine(postgres.get_connection_url())
-            result = e.execute("select version()")
+        >>> from testcontainers.postgres import PostgresContainer
+        >>> import sqlalchemy
+
+        >>> postgres_container = PostgresContainer("postgres:9.5")
+        >>> with postgres_container as postgres:
+        ...     e = sqlalchemy.create_engine(postgres.get_connection_url())
+        ...     result = e.execute("select version()")
+        ...     version, = result.fetchone()
+        >>> version
+        'PostgreSQL 9.5...'
     """
     POSTGRES_USER = os.environ.get("POSTGRES_USER", "test")
     POSTGRES_PASSWORD = os.environ.get("POSTGRES_PASSWORD", "test")

@@ -13,15 +13,14 @@ class RabbitMqContainer(DockerContainer):
 
     Example
     -------
-    ::
+    .. doctest::
 
-        from testcontainer.rabbitmq import RabbitMqContainer
-        import pika
+        >>> import pika
+        >>> from testcontainers.rabbitmq import RabbitMqContainer
 
-        with RabbitMqContainer("rabbitmq:3.9.10") as rabbitmq:
-
-            connection = pika.BlockingConnection(rabbitmq.get_connection_params())
-            channel = connection.channel()
+        >>> with RabbitMqContainer("rabbitmq:3.9.10") as rabbitmq:
+        ...    connection = pika.BlockingConnection(rabbitmq.get_connection_params())
+        ...    channel = connection.channel()
     """
 
     RABBITMQ_NODE_PORT = os.environ.get("RABBITMQ_NODE_PORT", 5672)

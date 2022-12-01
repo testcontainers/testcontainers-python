@@ -22,10 +22,12 @@ class RedisContainer(DockerContainer):
 
         Example
         -------
-        ::
+        .. doctest::
 
-            with RedisContainer() as redis:
-                redis_client = redis.get_client()
+            >>> from testcontainers.redis import RedisContainer
+
+            >>> with RedisContainer() as redis_container:
+            ...     redis_client = redis_container.get_client()
         """
     def __init__(self, image="redis:latest", port_to_expose=6379, password=None, **kwargs):
         super(RedisContainer, self).__init__(image, **kwargs)

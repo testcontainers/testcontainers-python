@@ -20,12 +20,18 @@ class LocalStackContainer(DockerContainer):
 
     Example
     -------
+    .. doctest::
+
+        >>> from testcontainers.localstack import LocalStackContainer
+
+        >>> with LocalStackContainer(image="localstack/localstack:0.11.4") as localstack:
+        ...     localstack.with_services("dynamodb", "lambda")
+        ...     dynamo_endpoint = localstack.get_url()
+        <testcontainers.localstack.LocalStackContainer object at 0x...>
+
+    The endpoint can be used to create a client with the boto3 library:
     ::
 
-        localstack = LocalStackContainer(image="localstack/localstack:0.11.4")
-        localstack.with_services("dynamodb", "lambda")
-        localstack.start()
-        dynamo_endpoint = localstack.get_url()
         dynamo_client = boto3.client("dynamodb", endpoint_url=dynamo_endpoint)
         scan_result = dynamo_client.scan(TableName='foo')
         # Do something with the scan result
