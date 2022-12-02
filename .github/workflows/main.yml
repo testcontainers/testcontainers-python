@@ -35,6 +35,8 @@ jobs:
           python -m pip install --upgrade pip
           pip install wheel
           pip install -r requirements/${{ matrix.python-version }}.txt
+      - name: Build documentation
+        run: sphinx-build -nW docs docs/_build/html
       - name: Run doctests
         run: sphinx-build -b doctest docs docs/_build/html
 
@@ -94,8 +96,6 @@ jobs:
           docker run --rm -v /var/run/docker.sock:/var/run/docker.sock --network=bridge testcontainers-python python diagnostics.py
           echo "Container diagnostics with host network"
           docker run --rm -v /var/run/docker.sock:/var/run/docker.sock --network=host testcontainers-python python diagnostics.py
-      - name: Build documentation
-        run: sphinx-build -nW docs docs/_build/html
       - name: Lint the code
         run: flake8
       - name: Run tests
