@@ -22,6 +22,7 @@ jobs:
           - google.py
           - kafka.py
           - localstack.py
+          - minio.py
           - mongodb.py
           - neo4j.py
           - nginx.py
