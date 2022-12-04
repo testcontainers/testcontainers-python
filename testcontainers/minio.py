@@ -25,16 +25,13 @@ class MinioContainer(DockerContainer):
     ):
         super(MinioContainer, self).__init__(image, **kwargs)
         self.port_to_expose = port_to_expose
-        self.console_port = port_to_expose + 1
         self.access_key = access_key
         self.secret_key = secret_key
 
-        self.with_exposed_ports(self.port_to_expose, self.console_port)
+        self.with_exposed_ports(self.port_to_expose)
         self.with_env("MINIO_ACCESS_KEY", self.access_key)
         self.with_env("MINIO_SECRET_KEY", self.secret_key)
-        self.with_command(
-            f"server /data --address :{self.port_to_expose} --console-address :{self.console_port}"
-        )
+        self.with_command(f"server /data --address :{self.port_to_expose}")
 
     def get_client(self, **kwargs) -> Minio:
         """Returns a Minio client to connect to the container.
@@ -58,7 +55,6 @@ class MinioContainer(DockerContainer):
         """
         return {
             "endpoint": f"{self.get_container_host_ip()}:{self.get_exposed_port(self.port_to_expose)}",
-            "console_address": f"http://{self.get_container_host_ip()}:{self.console_port}",
             "access_key": self.access_key,
             "secret_key": self.secret_key,
         }

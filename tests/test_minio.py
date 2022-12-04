@@ -1,26 +1,10 @@
 import io
-import socket
-from contextlib import closing
-
-from pytest import fixture
 
 from testcontainers.minio import MinioContainer
 
 
-@fixture
-def port_to_expose():
-    with closing(socket.socket(socket.AF_INET, socket.SOCK_STREAM)) as s:
-        s.bind(("localhost", 0))
-        s.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
-        return s.getsockname()[1]
-
-
-def test_docker_run_minio(port_to_expose):
-    config = MinioContainer(
-        port_to_expose=port_to_expose,
-        access_key="test-access",
-        secret_key="test-secret",
-    )
+def test_docker_run_minio():
+    config = MinioContainer(access_key="test-access", secret_key="test-secret")
     with config as minio:
         client = minio.get_client()
         client.make_bucket("test")
