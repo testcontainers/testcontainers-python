@@ -9,7 +9,6 @@ from testcontainers.core.waiting_utils import wait_container_is_ready
 
 class MinioConfig(TypedDict):
     endpoint: str
-    console_address: str
     access_key: str
     secret_key: str
 
