@@ -36,7 +36,8 @@ class MinioContainer(DockerContainer):
         """Returns a Minio client to connect to the container.
 
         Returns:
-            Minio: Python Minio Client according to https://min.io/docs/minio/linux/developers/python/API.html
+            Minio: Python Minio Client according to 
+            https://min.io/docs/minio/linux/developers/python/API.html
         """
         return Minio(
             f"{self.get_container_host_ip()}:{self.get_exposed_port(self.port_to_expose)}",
@@ -53,7 +54,8 @@ class MinioContainer(DockerContainer):
             MinioConfig: Dictionary with the endpoint, access_key and secret_key.
         """
         return {
-            "endpoint": f"{self.get_container_host_ip()}:{self.get_exposed_port(self.port_to_expose)}",
+            "endpoint": f"{self.get_container_host_ip()}" +
+                f":{self.get_exposed_port(self.port_to_expose)}",
             "access_key": self.access_key,
             "secret_key": self.secret_key,
         }
