@@ -18,6 +18,7 @@ class MinioContainer(DockerContainer):
     -------
     .. doctest::
 
+        >>> import io
         >>> from testcontainers.minio import MinioContainer
 
         >>> with MinioContainer() as minio:
