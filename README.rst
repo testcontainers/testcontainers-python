@@ -27,6 +27,7 @@ Currently available features:
 * RabbitMQ
 * Keycloak
 * Azurite container
+* Minio container
 
 Installation
 ------------
