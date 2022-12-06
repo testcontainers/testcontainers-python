@@ -25,7 +25,7 @@ class MinioContainer(DockerContainer):
         ...   client = minio.get_client()
         ...   client.make_bucket("test")
         ...   test_content = b"Hello World"
-        ...   client.put_object(
+        ...   write_result = client.put_object(
         ...       "test",
         ...       "testfile.txt",
         ...       io.BytesIO(test_content),
