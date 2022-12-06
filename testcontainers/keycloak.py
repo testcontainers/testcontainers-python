@@ -25,10 +25,12 @@ class KeycloakContainer(DockerContainer):
 
     Example
     -------
-    ::
+    .. doctest::
 
-        with KeycloakContainer() as kc:
-            keycloak: KeycloakAdmin = kc.get_client()
+        >>> from testcontainers.keycloak import KeycloakContainer
+
+        >>> with KeycloakContainer() as kc:
+        ...    keycloak = kc.get_client()
     """
     KEYCLOAK_USER = os.environ.get("KEYCLOAK_USER", "test")
     KEYCLOAK_PASSWORD = os.environ.get("KEYCLOAK_PASSWORD", "test")

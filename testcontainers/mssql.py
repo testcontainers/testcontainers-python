@@ -9,11 +9,14 @@ class SqlServerContainer(DbContainer):
 
     Example
     -------
-    ::
+    .. doctest::
 
-        with SqlServerContainer() as mssql:
-            e = sqlalchemy.create_engine(mssql.get_connection_url())
-            result = e.execute("select @@VERSION")
+        >>> import sqlalchemy
+        >>> from testcontainers.mssql import SqlServerContainer
+
+        >>> with SqlServerContainer() as mssql:
+        ...    e = sqlalchemy.create_engine(mssql.get_connection_url())
+        ...    result = e.execute("select @@VERSION")
 
     Notes
     -----
