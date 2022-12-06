@@ -22,4 +22,5 @@ Usage modes
    Keycloak container <keycloak>
    RabbitMQ container <rabbitmq>
    Redis container <redis>
+   Minio container <minio>
 
