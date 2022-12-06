@@ -8,7 +8,8 @@ from testcontainers.core.waiting_utils import wait_container_is_ready
 class MinioContainer(DockerContainer):
     """
     The example below spins up an Minio container and creates a new bucket in it.
-    Furthermore, it demonstrates how an object is written to this bucket and then subsequently retrieved.
+    Furthermore, it demonstrates how an object is written to this bucket and
+    then subsequently retrieved.
     The method :code:`get_client` can be used to create a client for the Minio Python API.
     The method :code:`get_config` can be used to retrieve the endpoint, access key
     and secret key of the container.
@@ -44,9 +45,12 @@ class MinioContainer(DockerContainer):
         Args:
             image (str, optional): The Docker image to use for the Minio container.
                                    Defaults to "minio/minio:RELEASE.2022-12-02T19-19-22Z".
-            port_to_expose (int, optional): The port to expose on the container. Defaults to 9000.
-            access_key (str, optional): The access key for client connections. Defaults to "minioadmin".
-            secret_key (str, optional): The secret key for client connections. Defaults to "minioadmin".
+            port_to_expose (int, optional): The port to expose on the container.
+                                            Defaults to 9000.
+            access_key (str, optional): The access key for client connections.
+                                        Defaults to "minioadmin".
+            secret_key (str, optional): The secret key for client connections.
+                                        Defaults to "minioadmin".
         """
         super(MinioContainer, self).__init__(image, **kwargs)
         self.port_to_expose = port_to_expose
