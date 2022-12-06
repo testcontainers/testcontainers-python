@@ -45,7 +45,7 @@ class MinioContainer(DockerContainer):
         """Returns the configuration of the Minio container.
 
         Returns:
-            MinioConfig: Dictionary with the endpoint, access_key and secret_key.
+            dict: {`endpoint`: str, `access_key`: str, `secret_key`: str}
         """
         host_ip = self.get_container_host_ip()
         exposed_port = self.get_exposed_port(self.port_to_expose)
