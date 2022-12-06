@@ -11,6 +11,18 @@ from testcontainers.core.waiting_utils import wait_container_is_ready
 
 
 class KafkaContainer(DockerContainer):
+    """
+    Kafka container.
+
+    Example
+    -------
+    .. doctest::
+
+        >>> from testcontainers.kafka import KafkaContainer
+
+        >>> with KafkaContainer() as kafka:
+        ...    connection = kafka.get_bootstrap_server()
+    """
     KAFKA_PORT = 9093
     TC_START_SCRIPT = '/tc-start.sh'
 

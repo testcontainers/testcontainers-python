@@ -38,14 +38,13 @@ class BrowserWebDriverContainer(DockerContainer):
 
     Example
     -------
-    ::
+    .. doctest::
 
-        from selenium.webdriver import DesiredCapabilities
+        >>> from testcontainers.selenium import BrowserWebDriverContainer
+        >>> from selenium.webdriver import DesiredCapabilities
 
-        with BrowserWebDriverContainer(DesiredCapabilities.CHROME) as chrome:
-            webdriver = chrome.get_driver()
-            webdriver.get("http://google.com")
-            webdriver.find_element("name", "q").send_keys("Hello")
+        >>> with BrowserWebDriverContainer(DesiredCapabilities.CHROME) as chrome:
+        ...    webdriver = chrome.get_driver()
 
     You can easily change browser by passing :code:`DesiredCapabilities.FIREFOX` instead.
     """

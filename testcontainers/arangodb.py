@@ -17,16 +17,21 @@ class ArangoDbContainer(DbContainer):
     The example will spin up a ArangoDB container.
     You may use the :code:`get_connection_url()` method which returns a arangoclient-compatible url
     in format :code:`scheme://host:port`. As of now, only a single host is supported (over HTTP).
-    ::
 
-        with ArangoContainer("arangodb:3.9.1") as arango:
-            client = ArangoClient(hosts=arango.get_connection_url())
+    .. doctest::
 
-            # Connect
-            sys_db = arango_client.db(username="root", password="")
+        >>> from testcontainers.arangodb import ArangoDbContainer
+        >>> from arango import ArangoClient
 
-            # Create a new database named "test".
-            sys_db.create_database("test")
+        >>> with ArangoDbContainer("arangodb:3.9.1") as arango:
+        ...    client = ArangoClient(hosts=arango.get_connection_url())
+        ...
+        ...    # Connect
+        ...    sys_db = client.db(username="root", password="passwd")
+        ...
+        ...    # Create a new database named "test".
+        ...    sys_db.create_database("test")
+        True
     """
 
     def __init__(self,
