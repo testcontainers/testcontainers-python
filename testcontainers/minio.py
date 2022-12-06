@@ -1,16 +1,8 @@
-from typing import TypedDict
-
 from minio import Minio
 from requests import ConnectionError, Response, get
 
 from testcontainers.core.container import DockerContainer
 from testcontainers.core.waiting_utils import wait_container_is_ready
-
-
-class MinioConfig(TypedDict):
-    endpoint: str
-    access_key: str
-    secret_key: str
 
 
 class MinioContainer(DockerContainer):
@@ -37,25 +29,28 @@ class MinioContainer(DockerContainer):
 
         Returns:
             Minio: Python Minio Client according to
-            https://min.io/docs/minio/linux/developers/python/API.html
+                   https://min.io/docs/minio/linux/developers/python/API.html
         """
+        host_ip = self.get_container_host_ip()
+        exposed_port = self.get_exposed_port(self.port_to_expose)
         return Minio(
-            f"{self.get_container_host_ip()}:{self.get_exposed_port(self.port_to_expose)}",
+            f"{host_ip}:{exposed_port}",
             access_key=self.access_key,
             secret_key=self.secret_key,
             secure=False,
             **kwargs,
         )
 
-    def get_config(self) -> MinioConfig:
+    def get_config(self) -> dict:
         """Returns the configuration of the Minio container.
 
         Returns:
             MinioConfig: Dictionary with the endpoint, access_key and secret_key.
         """
+        host_ip = self.get_container_host_ip()
+        exposed_port = self.get_exposed_port(self.port_to_expose)
         return {
-            "endpoint": f"{self.get_container_host_ip()}" +
-                        f":{self.get_exposed_port(self.port_to_expose)}",
+            "endpoint": f"{host_ip}:{exposed_port}",
             "access_key": self.access_key,
             "secret_key": self.secret_key,
         }
