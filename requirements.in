@@ -1,4 +1,4 @@
--e file:.[docker-compose,mysql,oracle,postgresql,selenium,google-cloud-pubsub,mongo,redis,mssqlserver,neo4j,kafka,rabbitmq,clickhouse,keycloak,arangodb,azurite]
+-e file:.[docker-compose,mysql,oracle,postgresql,selenium,google-cloud-pubsub,minio,mongo,redis,mssqlserver,neo4j,kafka,rabbitmq,clickhouse,keycloak,arangodb,azurite]
 codecov>=2.1.0
 cryptography<37
 flake8<3.8.0  # 3.8.0 adds a dependency on importlib-metadata which conflicts with other packages.
