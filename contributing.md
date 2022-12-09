@@ -1,6 +1,6 @@
 # Contributing
 
-## Contributing a container
+### Contributing a new container
 
 You can contribute a new container in three steps:
 

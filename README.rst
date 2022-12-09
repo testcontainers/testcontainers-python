@@ -88,4 +88,4 @@ We use :code:`pip-tools` to resolve and manage dependencies. If you need to add 
 Contributing
 ^^^^^^^^^^^^
 
-See `contributing.md <contributing.md>`_ for contributing guidelines.
+See `contributing.md <https://github.com/testcontainers/testcontainers-python/contributing.md>`_ for contributing guidelines.
