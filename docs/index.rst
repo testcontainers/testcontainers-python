@@ -15,3 +15,12 @@ Usage modes
    Selenium containers <selenium>
    Docker Compose <compose>
    Google Cloud Emulators <google-cloud-emulators>
+   Azure Emulators <azure>
+   AWS Emulators <aws>
+   Elastic Search <elasticsearch>
+   Kafka container <kafka>
+   Keycloak container <keycloak>
+   RabbitMQ container <rabbitmq>
+   Redis container <redis>
+   Minio container <minio>
+

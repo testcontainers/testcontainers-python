@@ -22,29 +22,29 @@ class MongoDbContainer(DbContainer):
 
     Example
     -------
-    ::
+    .. doctest::
 
-        with MongoDbContainer("mongo:latest") as mongo:
-            db = mongo.get_connection_client().test
-            # Insert a database entry
-            result = db.restaurants.insert_one(
-                {
-                    "address": {
-                        "street": "2 Avenue",
-                        "zipcode": "10075",
-                        "building": "1480",
-                        "coord": [-73.9557413, 40.7720266]
-                    },
-                    "borough": "Manhattan",
-                    "cuisine": "Italian",
-                    "name": "Vella",
-                    "restaurant_id": "41704620"
-                }
-            )
-            # Find the restaurant document
-            cursor = db.restaurants.find({"borough": "Manhattan"})
-            for document in cursor:
-                # Do something interesting with the document
+        >>> from testcontainers.mongodb import MongoDbContainer
+
+        >>> with MongoDbContainer("mongo:latest") as mongo:
+        ...    db = mongo.get_connection_client().test
+        ...    # Insert a database entry
+        ...    result = db.restaurants.insert_one(
+        ...        {
+        ...            "address": {
+        ...                "street": "2 Avenue",
+        ...                "zipcode": "10075",
+        ...                "building": "1480",
+        ...                "coord": [-73.9557413, 40.7720266]
+        ...            },
+        ...            "borough": "Manhattan",
+        ...            "cuisine": "Italian",
+        ...            "name": "Vella",
+        ...            "restaurant_id": "41704620"
+        ...        }
+        ...    )
+        ...    # Find the restaurant document
+        ...    cursor = db.restaurants.find({"borough": "Manhattan"})
     """
     MONGO_INITDB_ROOT_USERNAME = os.environ.get("MONGO_INITDB_ROOT_USERNAME", "test")
     MONGO_INITDB_ROOT_PASSWORD = os.environ.get("MONGO_INITDB_ROOT_PASSWORD", "test")

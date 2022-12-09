@@ -25,13 +25,15 @@ class Neo4jContainer(DbContainer):
 
     Example
     -------
-    ::
-        with Neo4jContainer() as neo4j:
-            with neo4j.get_driver() as driver:
-                with driver.session() as session:
-                    result = session.run("MATCH (n) RETURN n LIMIT 1")
-                    record = result.single()
+    .. doctest::
 
+        >>> from testcontainers.neo4j import Neo4jContainer
+
+        >>> with Neo4jContainer() as neo4j, \
+                    neo4j.get_driver() as driver, \
+                    driver.session() as session:
+        ...     result = session.run("MATCH (n) RETURN n LIMIT 1")
+        ...     record = result.single()
     """
 
     # The official image requires a change of password on startup.

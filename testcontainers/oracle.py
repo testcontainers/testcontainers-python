@@ -9,9 +9,12 @@ class OracleDbContainer(DbContainer):
     -------
     ::
 
-        with OracleDbContainer() as oracle:
-            e = sqlalchemy.create_engine(oracle.get_connection_url())
-            result = e.execute("select 1 from dual")
+        >>> import sqlalchemy
+        >>> from testcontainers.oracle import OracleDbContainer
+
+        >>> with OracleDbContainer() as oracle:
+        ...     e = sqlalchemy.create_engine(oracle.get_connection_url())
+        ...     result = e.execute("select * from V$VERSION")
     """
 
     def __init__(self, image="wnameless/oracle-xe-11g-r2:latest", **kwargs):

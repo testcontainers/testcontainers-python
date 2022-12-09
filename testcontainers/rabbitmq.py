@@ -8,20 +8,19 @@ from testcontainers.core.waiting_utils import wait_container_is_ready
 
 class RabbitMqContainer(DockerContainer):
     """
-    Test container for RabbitMQ.
+    Test container for RabbitMQ. The example below spins up a RabbitMQ broker and uses the
+    `pika` client library (https://pypi.org/project/pika/) to establish a connection to the broker.
 
     Example
     -------
-    The example spins up a RabbitMQ broker and uses the `pika` client library
-    (https://pypi.org/project/pika/) establish a connection to the broker.
-    ::
-        from testcontainer.rabbitmq import RabbitMqContainer
-        import pika
+    .. doctest::
 
-        with RabbitMqContainer("rabbitmq:3.9.10") as rabbitmq:
+        >>> import pika
+        >>> from testcontainers.rabbitmq import RabbitMqContainer
 
-            connection = pika.BlockingConnection(rabbitmq.get_connection_params())
-            channel = connection.channel()
+        >>> with RabbitMqContainer("rabbitmq:3.9.10") as rabbitmq:
+        ...    connection = pika.BlockingConnection(rabbitmq.get_connection_params())
+        ...    channel = connection.channel()
     """
 
     RABBITMQ_NODE_PORT = os.environ.get("RABBITMQ_NODE_PORT", 5672)

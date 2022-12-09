@@ -26,12 +26,15 @@ class MySqlContainer(DbContainer):
     in the constructor. Alternatively, you may use the :code:`get_connection_url()` method which
     returns a sqlalchemy-compatible url in format
     :code:`dialect+driver://username:password@host:port/database`.
-    ::
+    .. doctest::
 
-        with MySqlContainer('mysql:5.7.17') as mysql:
-            e = sqlalchemy.create_engine(mysql.get_connection_url())
-            result = e.execute("select version()")
-            version, = result.fetchone()
+        >>> import sqlalchemy
+        >>> from testcontainers.mysql import MySqlContainer
+
+        >>> with MySqlContainer('mysql:5.7.17') as mysql:
+        ...     e = sqlalchemy.create_engine(mysql.get_connection_url())
+        ...     result = e.execute("select version()")
+        ...     version, = result.fetchone()
     """
 
     def __init__(self,
