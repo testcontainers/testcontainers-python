@@ -72,6 +72,7 @@ setuptools.setup(
         'keycloak': ['python-keycloak'],
         'arangodb': ['python-arango'],
         'azurite': ['azure-storage-blob'],
+        'opensearch': ['opensearch-py'],
     },
     long_description_content_type="text/x-rst",
     long_description=long_description,

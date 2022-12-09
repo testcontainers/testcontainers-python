@@ -23,4 +23,5 @@ Usage modes
    RabbitMQ container <rabbitmq>
    Redis container <redis>
    Minio container <minio>
+   OpeanSearch container <opensearch>
 

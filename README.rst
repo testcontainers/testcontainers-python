@@ -28,6 +28,7 @@ Currently available features:
 * Keycloak
 * Azurite container
 * Minio container
+* OpeanSearch container
 
 Installation
 ------------
