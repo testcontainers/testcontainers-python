@@ -12,23 +12,28 @@ Python port for testcontainers-java that allows using docker containers for func
 
 Currently available features:
 
-* Selenium Grid containers
-* Selenium Standalone containers
-* MySql Db container
+* Generic docker container
+* ArangoDB container
+* Azurite container
+* ClickHouse container
+* ElasticSearch container
+* Kafka container
+* Keycloak container
+* LocalStack container
 * MariaDb container
+* Minio container
+* MongoDB container
+* Microsoft SQL Server container
+* MySql Db container
 * Neo4j container
+* NGINX container
+* OpeanSearch container
 * OracleDb container
 * PostgreSQL Db container
-* ClickHouse container
-* Microsoft SQL Server container
-* Generic docker containers
-* ArangoDB container
-* LocalStack
-* RabbitMQ
-* Keycloak
-* Azurite container
-* Minio container
-* OpeanSearch container
+* RabbitMQ container
+* Redis container
+* Selenium Grid container
+* Selenium Standalone container
 
 Installation
 ------------
