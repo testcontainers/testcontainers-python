@@ -42,7 +42,7 @@ cached-property==1.5.2
     # via docker-compose
 cachetools==5.2.0
     # via google-auth
-certifi==2022.9.24
+certifi==2022.12.7
     # via
     #   minio
     #   msrest
