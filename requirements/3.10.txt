@@ -36,7 +36,7 @@ bleach==5.0.1
     # via readme-renderer
 cachetools==5.2.0
     # via google-auth
-certifi==2022.9.24
+certifi==2022.12.7
     # via
     #   minio
     #   msrest
@@ -165,12 +165,11 @@ oauthlib==3.2.2
     # via requests-oauthlib
 outcome==1.2.0
     # via trio
-packaging==21.3
+packaging==22.0
     # via
     #   deprecation
     #   docker
     #   pytest
-    #   redis
     #   sphinx
 paramiko==2.12.0
     # via docker
@@ -218,8 +217,6 @@ pymysql==1.0.2
     # via testcontainers
 pynacl==1.5.0
     # via paramiko
-pyparsing==3.0.9
-    # via packaging
 pyrsistent==0.19.2
     # via jsonschema
 pysocks==1.7.1
@@ -251,7 +248,7 @@ pyyaml==5.4.1
     # via docker-compose
 readme-renderer==37.3
     # via twine
-redis==4.3.5
+redis==4.4.0
     # via testcontainers
 requests==2.28.1
     # via
