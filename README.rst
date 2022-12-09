@@ -88,4 +88,4 @@ We use :code:`pip-tools` to resolve and manage dependencies. If you need to add 
 Contributing
 ^^^^^^^^^^^^
 
-See [a relative link](contributing.md) for contributing guidelines.
+See `contributing.md <contributing.md>`_ for contributing guidelines.
