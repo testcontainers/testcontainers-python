@@ -38,6 +38,20 @@ class PostgresContainer(DbContainer):
     POSTGRES_USER = os.environ.get("POSTGRES_USER", "test")
     POSTGRES_PASSWORD = os.environ.get("POSTGRES_PASSWORD", "test")
     POSTGRES_DB = os.environ.get("POSTGRES_DB", "test")
+    POSTGRES_INITDB_ARGS = os.environ.get("POSTGRES_INITDB_ARGS", None)
+    POSTGRES_INITDB_WALDIR = os.environ.get("POSTGRES_INITDB_WALDIR", None)
+    POSTGRES_HOST_AUTH_METHOD = os.environ.get("POSTGRES_HOST_AUTH_METHOD", None)
+    PGDATA = os.environ.get("PGDATA", None)
+
+    env_names = [
+        "POSTGRES_USER",
+        "POSTGRES_PASSWORD",
+        "POSTGRES_DB",
+        "POSTGRES_INITDB_ARGS",
+        "POSTGRES_INITDB_WALDIR",
+        "POSTGRES_HOST_AUTH_METHOD",
+        "PGDATA"
+    ]
 
     def __init__(self,
                  image="postgres:latest",
@@ -45,6 +59,10 @@ class PostgresContainer(DbContainer):
                  password=None,
                  dbname=None,
                  driver="psycopg2",
+                 initdb_args=None,
+                 initdb_waldir=None,
+                 host_auth_method=None,
+                 pgdata=None,
                  **kwargs):
         super(PostgresContainer, self).__init__(image=image, **kwargs)
         self.POSTGRES_USER = user or self.POSTGRES_USER
@@ -52,13 +70,16 @@ class PostgresContainer(DbContainer):
         self.POSTGRES_DB = dbname or self.POSTGRES_DB
         self.port_to_expose = port
         self.driver = driver
-
+        self.POSTGRES_INITDB_ARGS = initdb_args or self.POSTGRES_INITDB_ARGS
+        self.POSTGRES_INITDB_WALDIR = initdb_waldir or self.POSTGRES_INITDB_WALDIR
+        self.POSTGRES_HOST_AUTH_METHOD = host_auth_method or self.POSTGRES_HOST_AUTH_METHOD
+        self.PGDATA = pgdata or self.PGDATA
         self.with_exposed_ports(self.port_to_expose)
 
     def _configure(self):
-        self.with_env("POSTGRES_USER", self.POSTGRES_USER)
-        self.with_env("POSTGRES_PASSWORD", self.POSTGRES_PASSWORD)
-        self.with_env("POSTGRES_DB", self.POSTGRES_DB)
+        for env_name in self.env_names:
+            if getattr(self, env_name) is not None:
+                self.with_env(env_name, getattr(self, env_name))
 
     def get_connection_url(self, host=None):
         return super()._create_connection_url(dialect="postgresql+{}".format(self.driver),

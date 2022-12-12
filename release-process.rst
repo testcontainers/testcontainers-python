@@ -10,7 +10,7 @@ Steps::
     tox -esphinx-docs
 
 
-Decleare package version
+Declare package version
 ------------------------
 
 In setup.py bump version to the next::
@@ -51,7 +51,7 @@ Steps::
     python setup.py bdist_wheel
 
 
-Check install capability for the whell
+Check install capability for the wheel
 --------------------------------------
 
 Steps::
