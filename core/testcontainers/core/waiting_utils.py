@@ -55,6 +55,10 @@ def wait_container_is_ready(*transient_exceptions) -> Callable:
             logger.info("Waiting for %s to be ready ...", instance)
 
         exception = None
+<<<<<<< HEAD:core/testcontainers/core/waiting_utils.py
+=======
+        logger.info("Waiting for %s to be ready...", instance.image)
+>>>>>>> 34c2f83 (Impove waiting logs a bit):testcontainers/core/waiting_utils.py
         for attempt_no in range(config.MAX_TRIES):
             try:
                 return wrapped(*args, **kwargs)
@@ -63,8 +67,13 @@ def wait_container_is_ready(*transient_exceptions) -> Callable:
                              f"failed: {traceback.format_exc()}")
                 time.sleep(config.POLLING_INTERVAL)
                 exception = e
+<<<<<<< HEAD:core/testcontainers/core/waiting_utils.py
         raise TimeoutError(
             f'Wait time ({config.MAX_TRIES * config.SLEEP_TIME}s) exceeded for {wrapped.__name__}'
+=======
+        raise TimeoutException(
+            f'Wait time ({config.MAX_TRIES * config.POLLING_INTERVAL}s) exceeded for {instance.image}'
+>>>>>>> 34c2f83 (Impove waiting logs a bit):testcontainers/core/waiting_utils.py
             f'(args: {args}, kwargs {kwargs}). Exception: {exception}'
         )
 
