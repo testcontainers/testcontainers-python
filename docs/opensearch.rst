@@ -1,6 +1,6 @@
 OpenSearch
 ===================
 
-Allows to spin up OpeanSearch Container.
+Allows to spin up OpenSearch Container.
 
 .. autoclass:: testcontainers.opensearch.OpenSearchContainer

@@ -27,7 +27,7 @@ Currently available features:
 * MySql Db container
 * Neo4j container
 * NGINX container
-* OpeanSearch container
+* OpenSearch container
 * OracleDb container
 * PostgreSQL Db container
 * RabbitMQ container
