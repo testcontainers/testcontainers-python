@@ -1,4 +1,4 @@
-OpeanSearch
+OpenSearch
 ===================
 
 Allows to spin up OpeanSearch Container.
