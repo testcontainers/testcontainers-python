@@ -16,6 +16,7 @@ testcontainers-python facilitates the use of Docker containers for functional an
     arangodb/README
     azurite/README
     clickhouse/README
+    cockroachdb/README
     compose/README
     elasticsearch/README
     google/README
