@@ -78,15 +78,15 @@ class OpenSearchContainer(DockerContainer):
         """
         config = self.get_config()
         return OpenSearch(
-            hosts = [
+            hosts=[
                 {
                     "host": config["host"],
                     "port": config["port"],
                 }
             ],
-            http_auth = (config["user"], config["password"]),
-            use_ssl = self.security_enabled,
-            verify_certs = verify_certs,
+            http_auth=(config["user"], config["password"]),
+            use_ssl=self.security_enabled,
+            verify_certs=verify_certs,
             **kwargs,
         )
 
