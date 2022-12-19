@@ -32,7 +32,7 @@ class OpenSearchContainer(DockerContainer):
         self,
         image="opensearchproject/opensearch:2.4.0",
         port_to_expose=9200,
-        security_disabled=True,
+        security_enabled=False,
         **kwargs,
     ):
         """
@@ -41,17 +41,17 @@ class OpenSearchContainer(DockerContainer):
                                    Defaults to "opensearchproject/opensearch:2.4.0".
             port_to_expose (int, optional): The port to expose on the container.
                                             Defaults to 9200.
-            security_disabled (bool, optional): `True` disables the security plugin in OpenSearch.
-                                                Defaults to True.
+            security_enabled (bool, optional): `False` disables the security plugin in OpenSearch.
+                                                Defaults to False.
         """
         super(OpenSearchContainer, self).__init__(image, **kwargs)
         self.port_to_expose = port_to_expose
-        self.security_disabled = security_disabled
+        self.security_enabled = security_enabled
 
         self.with_exposed_ports(self.port_to_expose)
         self.with_env("discovery.type", "single-node")
-        self.with_env("plugins.security.disabled", f"{'true' if security_disabled else 'false'}")
-        if not security_disabled:
+        self.with_env("plugins.security.disabled", f"{'false' if security_enabled else 'true'}")
+        if security_enabled:
             self.with_env("plugins.security.allow_default_init_securityindex", "true")
 
     def get_config(self):
@@ -78,15 +78,15 @@ class OpenSearchContainer(DockerContainer):
         """
         config = self.get_config()
         return OpenSearch(
-            hosts=[
+            hosts = [
                 {
                     "host": config["host"],
                     "port": config["port"],
                 }
             ],
-            http_auth=(config["user"], config["password"]),
-            use_ssl=not self.security_disabled,
-            verify_certs=verify_certs,
+            http_auth = (config["user"], config["password"]),
+            use_ssl = self.security_enabled,
+            verify_certs = verify_certs,
             **kwargs,
         )
 

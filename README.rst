@@ -21,9 +21,9 @@ Currently available features:
 * Keycloak container
 * LocalStack container
 * MariaDb container
+* Microsoft SQL Server container
 * Minio container
 * MongoDB container
-* Microsoft SQL Server container
 * MySql Db container
 * Neo4j container
 * NGINX container

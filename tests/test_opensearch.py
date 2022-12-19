@@ -8,7 +8,7 @@ def test_docker_run_opensearch():
 
 
 def test_docker_run_opensearch_with_security():
-    with OpenSearchContainer(security_disabled=False) as opensearch:
+    with OpenSearchContainer(security_enabled=True) as opensearch:
         client = opensearch.get_client()
         assert client.cluster.health()["status"] == "green"
 
@@ -21,7 +21,7 @@ def test_docker_run_opensearch_v1():
 
 def test_docker_run_opensearch_v1_with_security():
     with OpenSearchContainer(
-        image="opensearchproject/opensearch:1.3.6", security_disabled=False
+        image="opensearchproject/opensearch:1.3.6", security_enabled=True
     ) as opensearch:
         client = opensearch.get_client()
         assert client.cluster.health()["status"] == "green"
