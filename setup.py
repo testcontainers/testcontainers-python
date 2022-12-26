@@ -22,7 +22,7 @@ try:
     with open('VERSION') as fp:
         version = fp.read().strip()
 except FileNotFoundError:
-    version = 'dev'
+    version = '0.dev0'
 
 setuptools.setup(
     name='testcontainers',
