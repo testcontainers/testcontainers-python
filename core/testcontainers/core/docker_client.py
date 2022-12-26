@@ -14,6 +14,7 @@ import atexit
 import docker
 from docker.errors import NotFound
 from docker.models.containers import Container, ContainerCollection
+from docker.transport import UnixHTTPAdapter
 import functools as ft
 import os
 from typing import List, Optional, Union
@@ -102,11 +103,14 @@ class DockerClient:
 
         except ValueError:
             return None
+        adapter = self.client.api.get_adapter(self.client.api.base_url)
+        is_ipc = isinstance(adapter, UnixHTTPAdapter)
+        is_ipc |= hasattr(adapter, "socket_path") or hasattr(adapter, "npipe_path")
+        is_ipc |= 'unix' in url.scheme or 'npipe' in url.scheme
+        if is_ipc and inside_container():
+            ip_address = default_gateway_ip()
+            if ip_address:
+                return ip_address
         if 'http' in url.scheme or 'tcp' in url.scheme:
             return url.hostname
-        if 'unix' in url.scheme or 'npipe' in url.scheme:
-            if inside_container():
-                ip_address = default_gateway_ip()
-                if ip_address:
-                    return ip_address
         return "localhost"
