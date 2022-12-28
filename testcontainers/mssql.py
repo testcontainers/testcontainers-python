@@ -28,10 +28,10 @@ class SqlServerContainer(DbContainer):
                  port=1433, dbname="tempdb", dialect='mssql+pymssql', **kwargs):
         super(SqlServerContainer, self).__init__(image, **kwargs)
 
-        self.SQLSERVER_PASSWORD = password or environ.get("SQLSERVER_PASSWORD", "1Secure*Password1")
         self.port_to_expose = port
         self.with_exposed_ports(self.port_to_expose)
 
+        self.SQLSERVER_PASSWORD = password or environ.get("SQLSERVER_PASSWORD", "1Secure*Password1")
         self.SQLSERVER_USER = user
         self.SQLSERVER_DBNAME = dbname
         self.dialect = dialect
