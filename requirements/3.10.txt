@@ -40,6 +40,7 @@ certifi==2022.12.7
     # via
     #   minio
     #   msrest
+    #   opensearch-py
     #   requests
     #   selenium
 cffi==1.15.1
@@ -163,6 +164,8 @@ neo4j==5.3.0
     # via testcontainers
 oauthlib==3.2.2
     # via requests-oauthlib
+opensearch-py==2.0.1
+    # via testcontainers
 outcome==1.2.0
     # via trio
 packaging==22.0
@@ -258,6 +261,7 @@ requests==2.28.1
     #   docker-compose
     #   google-api-core
     #   msrest
+    #   opensearch-py
     #   python-arango
     #   python-keycloak
     #   requests-oauthlib
@@ -343,6 +347,7 @@ urllib3[socks]==1.26.13
     # via
     #   docker
     #   minio
+    #   opensearch-py
     #   python-arango
     #   python-keycloak
     #   requests
