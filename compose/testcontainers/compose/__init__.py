@@ -31,7 +31,7 @@ class DockerCompose(object):
 
     Example
     -------
-    ::
+    .. doctest::
 
         with DockerCompose("/home/project",
                            compose_file_name=["docker-compose-1.yml", "docker-compose-2.yml"],

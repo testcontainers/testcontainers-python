@@ -7,7 +7,7 @@ class OracleDbContainer(DbContainer):
 
     Example
     -------
-    ::
+    .. code-block::
 
         >>> import sqlalchemy
         >>> from testcontainers.oracle import OracleDbContainer

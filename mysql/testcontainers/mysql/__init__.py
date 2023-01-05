@@ -77,7 +77,7 @@ class MariaDbContainer(MySqlContainer):
 
     Example
     -------
-    ::
+    .. doctest::
 
         with MariaDbContainer("mariadb:latest") as mariadb:
             e = sqlalchemy.create_engine(mariadb.get_connection_url())

@@ -24,7 +24,8 @@ class PubSubContainer(DockerContainer):
     The :code:`pubsub` instance provides convenience methods :code:`get_publisher` and
     :code:`get_subscriber` to connect to the emulator without having to set the environment variable
     :code:`PUBSUB_EMULATOR_HOST`.
-    ::
+
+    .. doctest::
 
         def test_docker_run_pubsub():
             config = PubSubContainer('google/cloud-sdk:emulators')

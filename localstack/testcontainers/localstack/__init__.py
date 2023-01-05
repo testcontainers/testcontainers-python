@@ -30,7 +30,7 @@ class LocalStackContainer(DockerContainer):
         <testcontainers.localstack.LocalStackContainer object at 0x...>
 
     The endpoint can be used to create a client with the boto3 library:
-    ::
+    .. doctest::
 
         dynamo_client = boto3.client("dynamodb", endpoint_url=dynamo_endpoint)
         scan_result = dynamo_client.scan(TableName='foo')
