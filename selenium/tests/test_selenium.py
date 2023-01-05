@@ -13,3 +13,10 @@ def test_webdriver_container_container(caps):
         webdriver = chrome.get_driver()
         webdriver.get("http://google.com")
         webdriver.find_element("name", "q").send_keys("Hello")
+
+
+def test_selenium_custom_image():
+    image = "selenium/standalone-chrome:latest"
+    chrome = BrowserWebDriverContainer(DesiredCapabilities.CHROME, image=image)
+    assert "image" in dir(chrome), "`image` attribute was not instantialized."
+    assert chrome.image == image, "`image` attribute was not set to the user provided value"

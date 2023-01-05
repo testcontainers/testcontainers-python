@@ -50,24 +50,28 @@ jobs:
           - "3.9"
           - "3.10"
         test-component:
+          - arangodb
+          - azurite
+          - clickhouse
+          - compose
           - core
-          - clickhouse.py
-          - elasticsearch.py
-          - google.py
-          - kafka.py
-          - localstack.py
-          - minio.py
-          - mongodb.py
-          - neo4j.py
-          - nginx.py
-          - rabbitmq.py
-          - redis.py
-          - selenium.py
-          - webdriver.py
-          - keycloak.py
-          - arangodb.py
-          - azurite.py
-          - opensearch.py
+          - elasticsearch
+          - google
+          - kafka
+          - keycloak
+          - localstack
+          - minio
+          - mongodb
+          - mssql
+          - mysql
+          - neo4j
+          - nginx
+          - opensearch
+          - oracle
+          - postgres
+          - rabbitmq
+          - redis
+          - selenium
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v2
@@ -101,10 +105,4 @@ jobs:
       - name: Lint the code
         run: flake8
       - name: Run tests
-        run: |
-          py.test -svx --cov-config .coveragerc --cov-report html:skip-covered --cov-report term:skip-covered --cov=testcontainers --tb=short tests/test_${{ matrix.test-component }}
-          codecov
-      - name: Build package and check it
-        run: |
-          python setup.py bdist_wheel
-          twine check dist/*
+        run: pytest -svx --cov-report html:skip-covered --cov-report term:skip-covered --cov=testcontainers --tb=short ${{ matrix.test-component }}/tests
