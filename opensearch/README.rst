@@ -1,0 +1,1 @@
+.. autoclass:: testcontainers.opensearch.OpenSearchContainer

@@ -36,6 +36,10 @@ extensions = [
     'sphinx.ext.napoleon',
 ]
 
+# Configure autodoc to avoid excessively long fully-qualified names.
+add_module_names = False
+autodoc_typehints_format = "short"
+
 # Add any paths that contain templates here, relative to this directory.
 templates_path = ['_templates']
 
@@ -46,7 +50,7 @@ templates_path = ['_templates']
 source_suffix = '.rst'
 
 # The master toctree document.
-master_doc = 'index'
+master_doc = 'README'
 
 # General information about the project.
 project = u'testcontainers'

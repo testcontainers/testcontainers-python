@@ -100,3 +100,28 @@ You can contribute a new container in three steps:
 1. Create a new module at :code:`testcontainers/[my fancy container].py` that implements the new functionality.
 2. Create a new test module at :code:`tests/test_[my fancy container].py` that tests the new functionality.
 3. Add :code:`[my fancy container]` to the list of test components in the GitHub Action configuration at :code:`.github/workflows/main.yml`.
+
+.. toctree::
+
+    core/README
+    arangodb/README
+    azurite/README
+    clickhouse/README
+    compose/README
+    elasticsearch/README
+    google/README
+    kafka/README
+    keycloak/README
+    localstack/README
+    minio/README
+    mongodb/README
+    mssql/README
+    mysql/README
+    neo4j/README
+    nginx/README
+    opensearch/README
+    oracle/README
+    postgres/README
+    rabbitmq/README
+    redis/README
+    selenium/README

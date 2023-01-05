@@ -1,0 +1,1 @@
+.. autoclass:: testcontainers.clickhouse.ClickHouseContainer

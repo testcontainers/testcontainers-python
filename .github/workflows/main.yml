@@ -36,9 +36,9 @@ jobs:
           pip install wheel
           pip install -r requirements/${{ matrix.python-version }}.txt
       - name: Build documentation
-        run: sphinx-build -nW docs docs/_build/html
+        run: sphinx-build -nW . docs/_build
       - name: Run doctests
-        run: sphinx-build -b doctest docs docs/_build/html
+        run: sphinx-build -b doctest . docs/_build
 
   build:
     strategy:
