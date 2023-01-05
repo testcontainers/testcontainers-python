@@ -1,9 +1,9 @@
 name: testcontainers-python
 on:
   push:
-    branches: [ master ]
+    branches: [master]
   pull_request:
-    branches: [ master ]
+    branches: [master]
 
 jobs:
   sphinx:
@@ -108,3 +108,14 @@ jobs:
         run: >
           pytest -svx --cov-report=term-missing --cov=testcontainers.${{ matrix.test-component }}
           --tb=short ${{ matrix.test-component }}/tests
+      - name: Build the package
+        working-directory: ${{ matrix.test-component }}
+        run: |
+          python setup.py bdist_wheel
+          twine check dist/*
+      - name: Publish the package to pypi
+        if: github.event_name == 'push' && github.ref == 'refs/heads/master' && github.repository_owner == 'testcontainers'
+        env:
+          TWINE_USERNAME: __token__
+          TWINE_PASSWORD: ${{ secrets.PYPI_TOKEN }}
+        run: twine upload ${{ matrix.test-component }}/dist/*
