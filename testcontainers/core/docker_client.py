@@ -10,12 +10,29 @@
 #    WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the
 #    License for the specific language governing permissions and limitations
 #    under the License.
+import atexit
 import os
 import urllib
 import docker
+from docker.errors import NotFound
 from docker.models.containers import Container
+
 from testcontainers.core.utils import inside_container
 from testcontainers.core.utils import default_gateway_ip
+from testcontainers.core.utils import setup_logger
+
+
+LOGGER = setup_logger(__name__)
+
+
+def _stop_container(container):
+    try:
+        container.stop()
+    except NotFound:
+        pass
+    except Exception as ex:
+        LOGGER.warning("failed to shut down container %s with image %s: %s", container.id,
+                       container.image, ex)
 
 
 class DockerClient(object):
@@ -30,15 +47,18 @@ class DockerClient(object):
             stdout: bool = True,
             stderr: bool = False,
             remove: bool = False, **kwargs) -> Container:
-        return self.client.containers.run(image,
-                                          command=command,
-                                          stdout=stdout,
-                                          stderr=stderr,
-                                          remove=remove,
-                                          detach=detach,
-                                          environment=environment,
-                                          ports=ports,
-                                          **kwargs)
+        container = self.client.containers.run(image,
+                                               command=command,
+                                               stdout=stdout,
+                                               stderr=stderr,
+                                               remove=remove,
+                                               detach=detach,
+                                               environment=environment,
+                                               ports=ports,
+                                               **kwargs)
+        atexit.register(_stop_container, container)
+
+        return container
 
     def port(self, container_id, port):
         port_mappings = self.client.api.port(container_id, port)
