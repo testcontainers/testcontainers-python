@@ -1,3 +1,4 @@
+import os
 from unittest.mock import patch
 
 import pytest
@@ -8,7 +9,7 @@ from testcontainers.core.exceptions import NoSuchPortExposed
 from testcontainers.core.waiting_utils import wait_for_logs
 
 
-ROOT = "tests/test_core"
+ROOT = os.path.dirname(__file__)
 
 
 def test_can_spawn_service_via_compose():
