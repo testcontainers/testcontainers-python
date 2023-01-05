@@ -11,7 +11,7 @@
 #    License for the specific language governing permissions and limitations
 #    under the License.
 
-from ..core.container import DockerContainer
+from testcontainers.core.container import DockerContainer
 
 
 class PubSubContainer(DockerContainer):

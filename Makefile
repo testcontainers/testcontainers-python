@@ -15,7 +15,7 @@ default : tests/3.8
 
 requirements : ${REQUIREMENTS}
 
-${REQUIREMENTS} : requirements/%.txt : requirements.in setup.py
+${REQUIREMENTS} : requirements/%.txt : requirements.in */setup.py
 	mkdir -p $(dir $@)
 	${RUN} -w /workspace -v `pwd`:/workspace --platform=linux/amd64 python:$* bash -c \
 		"pip install pip-tools && pip-compile --resolver=backtracking -v --upgrade -o $@ $<"

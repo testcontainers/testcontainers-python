@@ -17,17 +17,10 @@ with open('README.rst') as fp:
     long_description = fp.read()
 long_description = long_description.replace(".. doctest::", ".. code-block::")
 
-# Load the version number
-try:
-    with open('VERSION') as fp:
-        version = fp.read().strip()
-except FileNotFoundError:
-    version = '0.dev0'
 
 setuptools.setup(
     name='testcontainers',
-    packages=setuptools.find_packages(exclude=['tests']),
-    version=version,
+    version='4.0.0rc1',
     description='Library provides lightweight, throwaway instances of common databases, Selenium '
                 'web browsers, or anything else that can run in a Docker container',
     author='Sergey Pirogov',
@@ -55,24 +48,24 @@ setuptools.setup(
         'deprecation',
     ],
     extras_require={
-        'docker-compose': ['docker-compose'],
-        'mysql': ['sqlalchemy', 'pymysql'],
-        'oracle': ['sqlalchemy', 'cx_Oracle'],
-        'postgresql': ['sqlalchemy', 'psycopg2-binary'],
-        'selenium': ['selenium'],
-        'google-cloud-pubsub': ['google-cloud-pubsub < 2'],
-        'minio': ['minio'],
-        'mongo': ['pymongo'],
-        'redis': ['redis'],
-        'mssqlserver': ['pymssql'],
-        'neo4j': ['neo4j'],
-        'kafka': ['kafka-python'],
-        'rabbitmq': ['pika'],
-        'clickhouse': ['clickhouse-driver'],
-        'keycloak': ['python-keycloak'],
-        'arangodb': ['python-arango'],
-        'azurite': ['azure-storage-blob'],
-        'opensearch': ['opensearch-py'],
+        'arangodb': ['testcontainers-arangodb'],
+        'azurite': ['testcontainers-azurite'],
+        'clickhouse': ['testcontainers-clickhouse'],
+        'docker-compose': ['testcontainers-compose'],
+        'google-cloud-pubsub': ['testcontainers-gcp'],
+        'kafka': ['testcontainers-kafka'],
+        'keycloak': ['testcontainers-keycloak'],
+        'minio': ['testcontainers-minio'],
+        'mongo': ['testcontainers-mongo'],
+        'mssqlserver': ['testcontainers-mssql'],
+        'mysql': ['testcontainers-mysql'],
+        'neo4j': ['testcontainers-neo4j'],
+        'opensearch': ['testcontainers-opensearch'],
+        'oracle': ['testcontainers-oracle'],
+        'postgresql': ['testcontainers-postgres'],
+        'rabbitmq': ['testcontainers-rabbitmq'],
+        'redis': ['testcontainers-redis'],
+        'selenium': ['testcontainers-selenium'],
     },
     long_description_content_type="text/x-rst",
     long_description=long_description,
