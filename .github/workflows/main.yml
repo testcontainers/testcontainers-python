@@ -105,4 +105,6 @@ jobs:
       - name: Lint the code
         run: flake8
       - name: Run tests
-        run: pytest -svx --cov-report html:skip-covered --cov-report term:skip-covered --cov=testcontainers --tb=short ${{ matrix.test-component }}/tests
+        run: >
+          pytest -svx --cov-report=term-missing --cov=testcontainers.${{ matrix.test-component }}
+          --tb=short ${{ matrix.test-component }}/tests
