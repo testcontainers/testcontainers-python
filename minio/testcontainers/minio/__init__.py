@@ -14,24 +14,24 @@ class MinioContainer(DockerContainer):
     The method :code:`get_config` can be used to retrieve the endpoint, access key
     and secret key of the container.
 
-    Example
-    -------
-    .. doctest::
+    Example:
 
-        >>> import io
-        >>> from testcontainers.minio import MinioContainer
+        .. doctest::
 
-        >>> with MinioContainer() as minio:
-        ...   client = minio.get_client()
-        ...   client.make_bucket("test")
-        ...   test_content = b"Hello World"
-        ...   write_result = client.put_object(
-        ...       "test",
-        ...       "testfile.txt",
-        ...       io.BytesIO(test_content),
-        ...       length=len(test_content),
-        ...   )
-        ...   retrieved_content = client.get_object("test", "testfile.txt").data
+            >>> import io
+            >>> from testcontainers.minio import MinioContainer
+
+            >>> with MinioContainer() as minio:
+            ...   client = minio.get_client()
+            ...   client.make_bucket("test")
+            ...   test_content = b"Hello World"
+            ...   write_result = client.put_object(
+            ...       "test",
+            ...       "testfile.txt",
+            ...       io.BytesIO(test_content),
+            ...       length=len(test_content),
+            ...   )
+            ...   retrieved_content = client.get_object("test", "testfile.txt").data
     """
 
     def __init__(self, image: str = "minio/minio:RELEASE.2022-12-02T19-19-22Z",

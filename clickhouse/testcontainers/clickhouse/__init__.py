@@ -24,20 +24,20 @@ class ClickHouseContainer(DbContainer):
     """
     ClickHouse database container.
 
-    Example
-    -------
-    The example spins up a ClickHouse database and connects to it
-    using the :code:`clickhouse-driver`.
+    Example:
 
-    .. doctest::
+        The example spins up a ClickHouse database and connects to it using the
+        :code:`clickhouse-driver`.
 
-        >>> import clickhouse_driver
-        >>> from testcontainers.clickhouse import ClickHouseContainer
+        .. doctest::
 
-        >>> with ClickHouseContainer("clickhouse/clickhouse-server:21.8") as clickhouse:
-        ...     client = clickhouse_driver.Client.from_url(clickhouse.get_connection_url())
-        ...     client.execute("select 'working'")
-        [('working',)]
+            >>> import clickhouse_driver
+            >>> from testcontainers.clickhouse import ClickHouseContainer
+
+            >>> with ClickHouseContainer("clickhouse/clickhouse-server:21.8") as clickhouse:
+            ...     client = clickhouse_driver.Client.from_url(clickhouse.get_connection_url())
+            ...     client.execute("select 'working'")
+            [('working',)]
     """
 
     CLICKHOUSE_USER = os.environ.get("CLICKHOUSE_USER", "test")

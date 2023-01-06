@@ -23,14 +23,14 @@ class KeycloakContainer(DockerContainer):
     """
     Keycloak container.
 
-    Example
-    -------
-    .. doctest::
+    Example:
 
-        >>> from testcontainers.keycloak import KeycloakContainer
+        .. doctest::
 
-        >>> with KeycloakContainer() as kc:
-        ...    keycloak = kc.get_client()
+            >>> from testcontainers.keycloak import KeycloakContainer
+
+            >>> with KeycloakContainer() as kc:
+            ...    keycloak = kc.get_client()
     """
     KEYCLOAK_USER = os.environ.get("KEYCLOAK_USER", "test")
     KEYCLOAK_PASSWORD = os.environ.get("KEYCLOAK_PASSWORD", "test")

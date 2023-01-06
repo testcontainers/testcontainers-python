@@ -5,16 +5,16 @@ class OracleDbContainer(DbContainer):
     """
     Oracle database container.
 
-    Example
-    -------
-    .. code-block::
+    Example:
 
-        >>> import sqlalchemy
-        >>> from testcontainers.oracle import OracleDbContainer
+        .. code-block::
 
-        >>> with OracleDbContainer() as oracle:
-        ...     e = sqlalchemy.create_engine(oracle.get_connection_url())
-        ...     result = e.execute("select * from V$VERSION")
+            >>> import sqlalchemy
+            >>> from testcontainers.oracle import OracleDbContainer
+
+            >>> with OracleDbContainer() as oracle:
+            ...     e = sqlalchemy.create_engine(oracle.get_connection_url())
+            ...     result = e.execute("select * from V$VERSION")
     """
 
     def __init__(self, image: str = "wnameless/oracle-xe-11g-r2:latest", **kwargs) -> None:

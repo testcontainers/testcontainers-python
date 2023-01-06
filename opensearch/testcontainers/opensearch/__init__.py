@@ -7,25 +7,24 @@ from testcontainers.core.waiting_utils import wait_container_is_ready
 
 class OpenSearchContainer(DockerContainer):
     """
-    The following example demonstrates how to create a new index in an OpenSearch container
-    and add a document to it. It also shows how to search within the created index. The refresh
-    step in between makes sure that the newly created document is available for search.
+    The following example demonstrates how to create a new index in an OpenSearch container and add
+    a document to it. It also shows how to search within the created index. The refresh step in
+    between makes sure that the newly created document is available for search.
 
-    The method :code:`get_client` can be used to create a OpenSearch Python Client.
-    The method :code:`get_config` can be used to retrieve the host, port, user
-    and password of the container.
+    The method :code:`get_client` can be used to create a OpenSearch Python Client. The method
+    :code:`get_config` can be used to retrieve the host, port, user, and password of the container.
 
-    Example
-    -------
-    .. doctest::
+    Example:
 
-        >>> from testcontainers.opensearch import OpenSearchContainer
+        .. doctest::
 
-        >>> with OpenSearchContainer() as opensearch:
-        ...   client = opensearch.get_client()
-        ...   creation_result = client.index(index="test", body={"test": "test"})
-        ...   refresh_result = client.indices.refresh(index="test")
-        ...   search_result = client.search(index="test", body={"query": {"match_all": {}}})
+            >>> from testcontainers.opensearch import OpenSearchContainer
+
+            >>> with OpenSearchContainer() as opensearch:
+            ...   client = opensearch.get_client()
+            ...   creation_result = client.index(index="test", body={"test": "test"})
+            ...   refresh_result = client.indices.refresh(index="test")
+            ...   search_result = client.search(index="test", body={"query": {"match_all": {}}})
     """
 
     def __init__(self, image: str = "opensearchproject/opensearch:2.4.0",

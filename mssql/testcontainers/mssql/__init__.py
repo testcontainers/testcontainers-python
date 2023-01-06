@@ -5,23 +5,18 @@ from testcontainers.core.generic import DbContainer
 
 class SqlServerContainer(DbContainer):
     """
-    Microsoft Sql Server database container.
+    Microsoft SQL Server database container.
 
-    Example
-    -------
-    .. doctest::
+    Example:
 
-        >>> import sqlalchemy
-        >>> from testcontainers.mssql import SqlServerContainer
+        .. doctest::
 
-        >>> with SqlServerContainer() as mssql:
-        ...    e = sqlalchemy.create_engine(mssql.get_connection_url())
-        ...    result = e.execute("select @@VERSION")
+            >>> import sqlalchemy
+            >>> from testcontainers.mssql import SqlServerContainer
 
-    Notes
-    -----
-    Requires `ODBC Driver 17 for SQL Server <https://docs.microsoft.com/en-us/sql/connect/odbc/
-    linux-mac/installing-the-microsoft-odbc-driver-for-sql-server>`_.
+            >>> with SqlServerContainer() as mssql:
+            ...    e = sqlalchemy.create_engine(mssql.get_connection_url())
+            ...    result = e.execute("select @@VERSION")
     """
 
     def __init__(self, image: str = "mcr.microsoft.com/mssql/server:2019-latest", user: str = "SA",

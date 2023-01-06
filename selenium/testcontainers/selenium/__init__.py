@@ -38,17 +38,17 @@ class BrowserWebDriverContainer(DockerContainer):
     """
     Selenium browser container for Chrome or Firefox.
 
-    Example
-    -------
-    .. doctest::
+    Example:
 
-        >>> from testcontainers.selenium import BrowserWebDriverContainer
-        >>> from selenium.webdriver import DesiredCapabilities
+        .. doctest::
 
-        >>> with BrowserWebDriverContainer(DesiredCapabilities.CHROME) as chrome:
-        ...    webdriver = chrome.get_driver()
+            >>> from testcontainers.selenium import BrowserWebDriverContainer
+            >>> from selenium.webdriver import DesiredCapabilities
 
-    You can easily change browser by passing :code:`DesiredCapabilities.FIREFOX` instead.
+            >>> with BrowserWebDriverContainer(DesiredCapabilities.CHROME) as chrome:
+            ...    webdriver = chrome.get_driver()
+
+        You can easily change browser by passing :code:`DesiredCapabilities.FIREFOX` instead.
     """
 
     def __init__(self, capabilities: str, image: Optional[str] = None, **kwargs) -> None:

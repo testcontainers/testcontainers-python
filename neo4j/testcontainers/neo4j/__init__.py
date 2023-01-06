@@ -23,17 +23,17 @@ class Neo4jContainer(DbContainer):
     """
     Neo4j Graph Database (Standalone) database container.
 
-    Example
-    -------
-    .. doctest::
+    Example:
 
-        >>> from testcontainers.neo4j import Neo4jContainer
+        .. doctest::
 
-        >>> with Neo4jContainer() as neo4j, \
-                    neo4j.get_driver() as driver, \
-                    driver.session() as session:
-        ...     result = session.run("MATCH (n) RETURN n LIMIT 1")
-        ...     record = result.single()
+            >>> from testcontainers.neo4j import Neo4jContainer
+
+            >>> with Neo4jContainer() as neo4j, \
+                        neo4j.get_driver() as driver, \
+                        driver.session() as session:
+            ...     result = session.run("MATCH (n) RETURN n LIMIT 1")
+            ...     record = result.single()
     """
 
     # The official image requires a change of password on startup.

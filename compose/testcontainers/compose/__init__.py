@@ -24,43 +24,44 @@ class DockerCompose:
         build: Build images referenced in the configuration file.
         env_file: Path to an env file containing environment variables to pass to docker compose.
 
-    Example
-    -------
-    .. doctest::
+    Example:
 
-        with DockerCompose("/home/project",
-                           compose_file_name=["docker-compose-1.yml", "docker-compose-2.yml"],
-                           pull=True) as compose:
-            host = compose.get_service_host("hub", 4444)
-            port = compose.get_service_port("hub", 4444)
-            driver = webdriver.Remote(
-                command_executor=("http://{}:{}/wd/hub".format(host,port)),
-                desired_capabilities=CHROME,
-            )
-            driver.get("http://automation-remarks.com")
-            stdout, stderr = compose.get_logs()
-            if stderr:
-                print("Errors\\n:{}".format(stderr))
+        This example spins up chrome and firefox containers using docker compose.
 
+        .. doctest::
 
-    .. code-block:: yaml
+            compose_filename = ["docker-compose-1.yml", "docker-compose-2.yml"]
+            with DockerCompose("/home/project", compose_file_name=compose_file_name, pull=True) as \
+                    compose:
+                host = compose.get_service_host("hub", 4444)
+                port = compose.get_service_port("hub", 4444)
+                driver = webdriver.Remote(
+                    command_executor=("http://{}:{}/wd/hub".format(host,port)),
+                    desired_capabilities=CHROME,
+                )
+                driver.get("http://automation-remarks.com")
+                stdout, stderr = compose.get_logs()
+                if stderr:
+                    print("Errors\\n:{}".format(stderr))
 
-        hub:
-        image: selenium/hub
-        ports:
-        - "4444:4444"
-        firefox:
-        image: selenium/node-firefox
-        links:
-            - hub
-        expose:
-            - "5555"
-        chrome:
-        image: selenium/node-chrome
-        links:
-            - hub
-        expose:
-            - "5555"
+        .. code-block:: yaml
+
+            hub:
+            image: selenium/hub
+            ports:
+            - "4444:4444"
+            firefox:
+            image: selenium/node-firefox
+            links:
+                - hub
+            expose:
+                - "5555"
+            chrome:
+            image: selenium/node-chrome
+            links:
+                - hub
+            expose:
+                - "5555"
     """
     def __init__(
             self,

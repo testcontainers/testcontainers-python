@@ -14,14 +14,14 @@ class KafkaContainer(DockerContainer):
     """
     Kafka container.
 
-    Example
-    -------
-    .. doctest::
+    Example:
 
-        >>> from testcontainers.kafka import KafkaContainer
+        .. doctest::
 
-        >>> with KafkaContainer() as kafka:
-        ...    connection = kafka.get_bootstrap_server()
+            >>> from testcontainers.kafka import KafkaContainer
+
+            >>> with KafkaContainer() as kafka:
+            ...    connection = kafka.get_bootstrap_server()
     """
     KAFKA_PORT = 9093
     TC_START_SCRIPT = '/tc-start.sh'

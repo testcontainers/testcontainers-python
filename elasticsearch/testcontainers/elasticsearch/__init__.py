@@ -58,18 +58,18 @@ class ElasticSearchContainer(DockerContainer):
     """
     ElasticSearch container.
 
-    Example
-    -------
-    .. doctest::
+    Example:
 
-        >>> import json
-        >>> import urllib
-        >>> from testcontainers.elasticsearch import ElasticSearchContainer
+        .. doctest::
 
-        >>> with ElasticSearchContainer(f'elasticsearch:8.3.3') as es:
-        ...    resp = urllib.request.urlopen(es.get_url())
-        ...    json.loads(resp.read().decode())['version']['number']
-        '8.3.3'
+            >>> import json
+            >>> import urllib
+            >>> from testcontainers.elasticsearch import ElasticSearchContainer
+
+            >>> with ElasticSearchContainer(f'elasticsearch:8.3.3') as es:
+            ...    resp = urllib.request.urlopen(es.get_url())
+            ...    json.loads(resp.read().decode())['version']['number']
+            '8.3.3'
     """
 
     def __init__(self, image="elasticsearch", port_to_expose=9200, **kwargs) -> None:

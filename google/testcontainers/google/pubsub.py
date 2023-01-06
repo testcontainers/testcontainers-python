@@ -20,21 +20,21 @@ class PubSubContainer(DockerContainer):
     """
     PubSub container for testing managed message queues.
 
-    Example
-    -------
-    The example will spin up a Google Cloud PubSub emulator that you can use for integration tests.
-    The :code:`pubsub` instance provides convenience methods :code:`get_publisher` and
-    :code:`get_subscriber` to connect to the emulator without having to set the environment variable
-    :code:`PUBSUB_EMULATOR_HOST`.
+    Example:
 
-    .. doctest::
+        The example will spin up a Google Cloud PubSub emulator that you can use for integration
+        tests. The :code:`pubsub` instance provides convenience methods :code:`get_publisher` and
+        :code:`get_subscriber` to connect to the emulator without having to set the environment
+        variable :code:`PUBSUB_EMULATOR_HOST`.
 
-        def test_docker_run_pubsub():
-            config = PubSubContainer('google/cloud-sdk:emulators')
-            with config as pubsub:
-                publisher = pubsub.get_publisher()
-                topic_path = publisher.topic_path(pubsub.project, "my-topic")
-                topic = publisher.create_topic(topic_path)
+        .. doctest::
+
+            def test_docker_run_pubsub():
+                config = PubSubContainer('google/cloud-sdk:emulators')
+                with config as pubsub:
+                    publisher = pubsub.get_publisher()
+                    topic_path = publisher.topic_path(pubsub.project, "my-topic")
+                    topic = publisher.create_topic(topic_path)
     """
     def __init__(self, image: str = "google/cloud-sdk:emulators", project: str = "test-project",
                  port: int = 8432, **kwargs) -> None:
