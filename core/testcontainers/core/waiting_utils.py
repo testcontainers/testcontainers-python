@@ -42,9 +42,15 @@ def wait_container_is_ready(*transient_exceptions):
 
     @wrapt.decorator
     def wrapper(wrapped, instance, args, kwargs):
+        from .container import DockerContainer
+
+        if isinstance(instance, DockerContainer):
+            logger.info("Waiting for container %s with image %s to be ready ...",
+                        instance._container, instance.image)
+        else:
+            logger.info("Waiting for %s to be ready ...", instance)
+
         exception = None
-        logger.info("Waiting for container %s with image %s to be ready...", instance._container,
-                    instance.image)
         for attempt_no in range(config.MAX_TRIES):
             try:
                 return wrapped(*args, **kwargs)
