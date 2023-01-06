@@ -66,5 +66,12 @@ ${REQUIREMENTS} : requirements/%.txt : requirements.in */setup.py
 	${RUN} -w /workspace -v `pwd`:/workspace --platform=linux/amd64 python:$* bash -c \
 		"pip install pip-tools && pip-compile --resolver=backtracking -v --upgrade -o $@ $<"
 
+# Remove any generated files.
+clean :
+	rm -rf docs/_build
+	rm -rf */build
+	rm -rf */dist
+	rm -rf */*.egg-info
+
 # Targets that do not generate file-level artifacts.
-.PHONY : dists ${DISTRIBUTIONS} docs doctests image tests ${TESTS}
+.PHONY : clean dists ${DISTRIBUTIONS} docs doctests image tests ${TESTS}
