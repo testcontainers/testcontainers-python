@@ -27,25 +27,15 @@ class RabbitMqContainer(DockerContainer):
     RABBITMQ_DEFAULT_USER = os.environ.get("RABBITMQ_DEFAULT_USER", "guest")
     RABBITMQ_DEFAULT_PASS = os.environ.get("RABBITMQ_DEFAULT_PASS", "guest")
 
-    def __init__(
-        self,
-        image: str = "rabbitmq:latest",
-        port: Optional[int] = None,
-        username: Optional[str] = None,
-        password: Optional[str] = None,
-        **kwargs,
-    ) -> None:
+    def __init__(self, image: str = "rabbitmq:latest", port: Optional[int] = None,
+                 username: Optional[str] = None, password: Optional[str] = None, **kwargs) -> None:
         """Initialize the RabbitMQ test container.
 
         Args:
-            image (str, optional):
-                The docker image from docker hub. Defaults to "rabbitmq:latest".
-            port (int, optional):
-                The port to reach the AMQP API. Defaults to 5672.
-            username (str, optional):
-                Overwrite the default username which is "guest".
-            password (str, optional):
-                Overwrite the default username which is "guest".
+            image: Docker image from docker hub. Defaults to "rabbitmq:latest".
+            port: Port to reach the AMQP API. Defaults to 5672.
+            username: RabbitMQ username.
+            password: RabbitMQ password.
         """
         super(RabbitMqContainer, self).__init__(image=image, **kwargs)
         self.RABBITMQ_NODE_PORT = port or int(self.RABBITMQ_NODE_PORT)
@@ -81,7 +71,7 @@ class RabbitMqContainer(DockerContainer):
             credentials=credentials,
         )
 
-    def start(self):
+    def start(self) -> "RabbitMqContainer":
         """Start the test container."""
         super().start()
         self.readiness_probe()
