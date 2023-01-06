@@ -15,7 +15,7 @@
 import re
 import time
 import traceback
-from typing import Any, Callable, Iterable, Mapping, Optional, TYPE_CHECKING
+from typing import Any, Callable, Iterable, Mapping, Optional, TYPE_CHECKING, Union
 import wrapt
 
 from . import config
@@ -76,27 +76,21 @@ def wait_for(condition: Callable[..., bool]) -> bool:
     return condition()
 
 
-def wait_for_logs(container: "DockerContainer", predicate: Callable,
+def wait_for_logs(container: "DockerContainer", predicate: Union[Callable, str],
                   timeout: Optional[float] = None, interval: float = 1) -> float:
     """
     Wait for the container to emit logs satisfying the predicate.
 
-    Parameters
-    ----------
-    container : DockerContainer
-        Container whose logs to wait for.
-    predicate : callable or str
-        Predicate that should be satisfied by the logs. If a string, the it is used as the pattern
-        for a multiline regular expression search.
-    timeout : float or None
-        Number of seconds to wait for the predicate to be satisfied. Defaults to wait indefinitely.
-    interval : float
-        Interval at which to poll the logs.
+    Args:
+        container: Container whose logs to wait for.
+        predicate: Predicate that should be satisfied by the logs. If a string, the it is used as
+        the pattern for a multiline regular expression search.
+        timeout: Number of seconds to wait for the predicate to be satisfied. Defaults to wait
+            indefinitely.
+        interval: Interval at which to poll the logs.
 
-    Returns
-    -------
-    duration : float
-        Number of seconds until the predicate was satisfied.
+    Returns:
+        duration: Number of seconds until the predicate was satisfied.
     """
     if isinstance(predicate, str):
         predicate = re.compile(predicate, re.MULTILINE).search

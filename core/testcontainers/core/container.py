@@ -71,10 +71,10 @@ class DockerContainer:
     def __enter__(self) -> 'DockerContainer':
         return self.start()
 
-    def __exit__(self, exc_type, exc_val, exc_tb):
+    def __exit__(self, exc_type, exc_val, exc_tb) -> None:
         self.stop()
 
-    def __del__(self):
+    def __del__(self) -> None:
         """
         Try to remove the container in all circumstances
         """
