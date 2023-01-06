@@ -22,5 +22,3 @@ jobs:
           pip install -r requirements/3.10.txt
       - name: Build documentation
         run: make docs
-      - name: Run doctests
-        run: make doctests

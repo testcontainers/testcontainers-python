@@ -12,6 +12,7 @@ UPLOAD = $(addsuffix /upload,${PACKAGES})
 # All */tests folders for each of the test suites.
 TESTS = $(addsuffix /tests,$(filter-out meta,${PACKAGES}))
 TESTS_DIND = $(addsuffix -dind,${TESTS})
+DOCTESTS = $(addsuffix /doctest,$(filter-out meta,${PACKAGES}))
 # All linting targets.
 LINT = $(addsuffix /lint,${PACKAGES})
 
@@ -56,8 +57,11 @@ ${TESTS_DIND} : %/tests-dind : image
 docs :
 	sphinx-build -nW . docs/_build
 
-doctests :
+doctest : ${DOCTESTS}
 	sphinx-build -b doctest . docs/_build
+
+${DOCTESTS} : %/doctest :
+	sphinx-build -b doctest -c doctests $* docs/_build
 
 # Targets to build requirement files
 requirements : ${REQUIREMENTS}
