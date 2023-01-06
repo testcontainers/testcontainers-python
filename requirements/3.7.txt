@@ -140,8 +140,6 @@ cryptography==36.0.2
     #   secretstorage
 cx-oracle==8.3.0
     # via testcontainers-oracle
-deprecation==2.1.0
-    # via testcontainers-core
 distro==1.8.0
     # via docker-compose
 dnspython==2.2.1
@@ -253,7 +251,6 @@ outcome==1.2.0
     # via trio
 packaging==22.0
     # via
-    #   deprecation
     #   docker
     #   pytest
     #   sphinx
@@ -360,7 +357,7 @@ requests-toolbelt==0.9.1
     #   twine
 rfc3986==2.0.0
     # via twine
-rich==13.0.0
+rich==13.0.1
     # via twine
 rsa==4.9
     # via

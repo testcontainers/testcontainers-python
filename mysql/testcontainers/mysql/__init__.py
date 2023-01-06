@@ -10,7 +10,6 @@
 #    WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the
 #    License for the specific language governing permissions and limitations
 #    under the License.
-from deprecation import deprecated
 from os import environ
 
 from testcontainers.core.generic import DbContainer
@@ -69,20 +68,3 @@ class MySqlContainer(DbContainer):
                                               password=self.MYSQL_PASSWORD,
                                               db_name=self.MYSQL_DATABASE,
                                               port=self.port_to_expose)
-
-
-class MariaDbContainer(MySqlContainer):
-    """
-    Maria database container, a commercially-supported fork of MySql.
-
-    Example
-    -------
-    .. doctest::
-
-        with MariaDbContainer("mariadb:latest") as mariadb:
-            e = sqlalchemy.create_engine(mariadb.get_connection_url())
-            result = e.execute("select version()")
-    """
-    @deprecated(details="Use `MySqlContainer` with 'mariadb:latest' image.")
-    def __init__(self, image="mariadb:latest", **kwargs):
-        super(MariaDbContainer, self).__init__(image, **kwargs)

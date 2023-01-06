@@ -13,7 +13,6 @@ setup(
     install_requires=[
         "docker>=4.0.0",
         "wrapt",
-        "deprecation",
     ],
     python_requires=">=3.7",
 )

@@ -15,8 +15,6 @@ import re
 import urllib
 from typing import Dict
 
-from deprecation import deprecated
-
 from testcontainers.core.container import DockerContainer
 from testcontainers.core.waiting_utils import wait_container_is_ready
 
@@ -100,9 +98,3 @@ class ElasticSearchContainer(DockerContainer):
         super().start()
         self._connect()
         return self
-
-
-@deprecated(details='Use `ElasticSearchContainer` with a capital S instead '
-                    'of `ElasticsearchContainer`.')
-class ElasticsearchContainer(ElasticSearchContainer):
-    pass

@@ -1,5 +1,4 @@
 import os
-from deprecation import deprecated
 from docker.models.containers import Container
 
 from testcontainers.core.waiting_utils import wait_container_is_ready
@@ -35,10 +34,6 @@ class DockerContainer(object):
         for port in list(ports):
             self.ports[port] = None
         return self
-
-    @deprecated(details='Use `with_kwargs`.')
-    def with_kargs(self, **kargs) -> 'DockerContainer':
-        return self.with_kwargs(**kargs)
 
     def with_kwargs(self, **kwargs) -> 'DockerContainer':
         self._kwargs = kwargs

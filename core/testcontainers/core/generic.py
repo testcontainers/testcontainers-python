@@ -13,8 +13,8 @@
 
 from testcontainers.core.container import DockerContainer
 from testcontainers.core.waiting_utils import wait_container_is_ready
-from deprecation import deprecated
 ADDITIONAL_TRANSIENT_ERRORS = []
+
 try:
     from sqlalchemy.exc import DBAPIError
     ADDITIONAL_TRANSIENT_ERRORS.append(DBAPIError)
@@ -57,9 +57,3 @@ class DbContainer(DockerContainer):
 
     def _configure(self):
         raise NotImplementedError
-
-
-class GenericContainer(DockerContainer):
-    @deprecated(details="Use `DockerContainer`.")
-    def __init__(self, image):
-        super(GenericContainer, self).__init__(image)
