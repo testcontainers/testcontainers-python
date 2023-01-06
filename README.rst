@@ -50,7 +50,7 @@ Getting Started
     >>> version
     'PostgreSQL 9.5...'
 
-The snippet above will spin up a postgres database in a container. The :code:`get_connection_url()` convenience method returns a :code:`sqlalchemy` compatible url we use to connect to the database and retrieve the database version. More extensive documentation can be found at `Read The Docs <http://testcontainers-python.readthedocs.io/>`_.
+The snippet above will spin up a postgres database in a container. The :code:`get_connection_url()` convenience method returns a :code:`sqlalchemy` compatible url we use to connect to the database and retrieve the database version.
 
 Installation
 ------------
