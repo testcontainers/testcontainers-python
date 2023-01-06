@@ -12,15 +12,7 @@
 #    under the License.
 
 
-class ContainerStartException(Exception):
-    pass
-
-
-class TimeoutException(Exception):
-    pass
-
-
-class NoSuchBrowserException(Exception):
+class ContainerStartException(RuntimeError):
     pass
 
 

@@ -11,10 +11,10 @@
 #    License for the specific language governing permissions and limitations
 #    under the License.
 
-from testcontainers.core.container import DockerContainer
-from testcontainers.core.waiting_utils import wait_container_is_ready
-ADDITIONAL_TRANSIENT_ERRORS = []
+from .container import DockerContainer
+from .waiting_utils import wait_container_is_ready
 
+ADDITIONAL_TRANSIENT_ERRORS = []
 try:
     from sqlalchemy.exc import DBAPIError
     ADDITIONAL_TRANSIENT_ERRORS.append(DBAPIError)

@@ -1,10 +1,10 @@
 import os
 from docker.models.containers import Container
 
-from testcontainers.core.waiting_utils import wait_container_is_ready
-from testcontainers.core.docker_client import DockerClient
-from testcontainers.core.exceptions import ContainerStartException
-from testcontainers.core.utils import setup_logger, inside_container, is_arm
+from .waiting_utils import wait_container_is_ready
+from .docker_client import DockerClient
+from .exceptions import ContainerStartException
+from .utils import setup_logger, inside_container, is_arm
 
 logger = setup_logger(__name__)
 

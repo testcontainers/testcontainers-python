@@ -17,9 +17,7 @@ import docker
 from docker.errors import NotFound
 from docker.models.containers import Container
 
-from testcontainers.core.utils import inside_container
-from testcontainers.core.utils import default_gateway_ip
-from testcontainers.core.utils import setup_logger
+from .utils import default_gateway_ip, inside_container, setup_logger
 
 
 LOGGER = setup_logger(__name__)

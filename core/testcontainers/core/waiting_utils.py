@@ -18,9 +18,8 @@ import traceback
 
 import wrapt
 
-from testcontainers.core import config
-from testcontainers.core.exceptions import TimeoutException
-from testcontainers.core.utils import setup_logger
+from . import config
+from .utils import setup_logger
 
 logger = setup_logger(__name__)
 
@@ -59,7 +58,7 @@ def wait_container_is_ready(*transient_exceptions):
                              f"failed: {traceback.format_exc()}")
                 time.sleep(config.SLEEP_TIME)
                 exception = e
-        raise TimeoutException(
+        raise TimeoutError(
             f'Wait time ({config.MAX_TRIES * config.SLEEP_TIME}s) exceeded for {wrapped.__name__}'
             f'(args: {args}, kwargs {kwargs}). Exception: {exception}'
         )
