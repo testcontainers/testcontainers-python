@@ -3,7 +3,6 @@ PYTHON_VERSION ?= 3.10
 IMAGE = testcontainers-python:${PYTHON_VERSION}
 REQUIREMENTS = $(addprefix requirements/,${PYTHON_VERSIONS:=.txt})
 RUN = docker run --rm -it
-TWINE_REPOSITORY ?= testpypi
 # Get all directories that contain a setup.py and get the directory name.
 PACKAGES = $(subst /,,$(dir $(wildcard */setup.py)))
 
@@ -34,8 +33,13 @@ ${LINT} : %/lint :
 	flake8 $*
 
 # Targets to publish packages.
+upload : ${UPLOAD}
 ${UPLOAD} : %/upload :
-	twine upload --non-interactive --repository=${TWINE_REPOSITORY} --skip-existing $*/dist/*
+	if [ ${TWINE_REPOSITORY}-$* = testpypi-meta ]; then \
+		echo "Cannot upload meta package to testpypi because of missing permissions."; \
+	else \
+		twine upload --non-interactive --skip-existing $*/dist/*; \
+	fi
 
 # Targets to build docker images
 image: requirements/${PYTHON_VERSION}.txt
