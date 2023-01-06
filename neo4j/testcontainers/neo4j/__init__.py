@@ -13,7 +13,7 @@
 
 import os
 
-from neo4j import GraphDatabase
+from neo4j import Driver, GraphDatabase
 
 from testcontainers.core.generic import DbContainer
 from testcontainers.core.waiting_utils import wait_container_is_ready, wait_for_logs
@@ -38,29 +38,25 @@ class Neo4jContainer(DbContainer):
 
     # The official image requires a change of password on startup.
     NEO4J_ADMIN_PASSWORD = os.environ.get("NEO4J_ADMIN_PASSWORD", "password")
-
     # Default port for the binary Bolt protocol.
     DEFAULT_BOLT_PORT = 7687
-
     AUTH_FORMAT = "neo4j/{password}"
-
     NEO4J_STARTUP_TIMEOUT_SECONDS = 10
-
     NEO4J_USER = "neo4j"
 
-    def __init__(self, image="neo4j:latest", **kwargs):
+    def __init__(self, image: str = "neo4j:latest", **kwargs) -> None:
         super(Neo4jContainer, self).__init__(image, **kwargs)
         self.bolt_port = Neo4jContainer.DEFAULT_BOLT_PORT
         self.with_exposed_ports(self.bolt_port)
         self._driver = None
 
-    def _configure(self):
+    def _configure(self) -> None:
         self.with_env(
             "NEO4J_AUTH",
             Neo4jContainer.AUTH_FORMAT.format(password=Neo4jContainer.NEO4J_ADMIN_PASSWORD)
         )
 
-    def get_connection_url(self):
+    def get_connection_url(self) -> str:
         return "{dialect}://{host}:{port}".format(
             dialect="bolt",
             host=self.get_container_host_ip(),
@@ -68,7 +64,7 @@ class Neo4jContainer(DbContainer):
         )
 
     @wait_container_is_ready()
-    def _connect(self):
+    def _connect(self) -> None:
         # First we wait for Neo4j to say it's listening
         wait_for_logs(
             self,
@@ -83,7 +79,7 @@ class Neo4jContainer(DbContainer):
             with driver.session() as session:
                 session.run("RETURN 1").single()
 
-    def get_driver(self, **kwargs):
+    def get_driver(self, **kwargs) -> Driver:
         return GraphDatabase.driver(
             self.get_connection_url(),
             auth=(Neo4jContainer.NEO4J_USER, Neo4jContainer.NEO4J_ADMIN_PASSWORD),
