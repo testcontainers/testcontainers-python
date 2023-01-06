@@ -1,4 +1,5 @@
 -e file:core
+flake8
 pytest
 pytest-cov
 sphinx

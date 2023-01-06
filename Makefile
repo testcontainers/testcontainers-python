@@ -73,7 +73,7 @@ ${DOCTESTS} : %/doctest :
 	sphinx-build -b doctest -c doctests $* docs/_build
 
 # Build all requirement files.
-requirements : ${PACKAGE_REQUIREMENTS}
+requirements : ${PACKAGE_REQUIREMENTS} docs/requirements.txt
 
 # Build requirement files for a given package.
 ${PACKAGE_REQUIREMENTS} : %/requirements : $$(addprefix %/requirements/,$${PYTHON_VERSIONS:=.txt})
@@ -86,6 +86,10 @@ ${REQUIREMENTS} : %.txt : $$(word 1,$$(subst /, ,%))/requirements.in $$(word 1,$
 	mkdir -p $(dir $@)
 	${RUN} -w /workspace -v `pwd`:/workspace --platform=linux/amd64 python:$(word 3,$(subst /, ,$*)) \
 		bash -c "pip install pip-tools && pip-compile --resolver=backtracking -v --upgrade -o $@ common_requirements.in $(word 1,$(subst /, ,$*))/requirements.in"
+
+docs/requirements.txt : docs/requirements.in */setup.py
+	${RUN} -w /workspace -v `pwd`:/workspace --platform=linux/amd64 python:${PYTHON_VERSION} \
+		bash -c "pip install pip-tools && pip-compile --resolver=backtracking -v --upgrade -o $@ common_requirements.in $<"
 
 # Remove any generated files.
 clean :

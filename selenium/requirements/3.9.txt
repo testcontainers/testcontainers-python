@@ -49,6 +49,8 @@ exceptiongroup==1.1.0
     # via
     #   pytest
     #   trio
+flake8==6.0.0
+    # via -r common_requirements.in
 h11==0.14.0
     # via wsproto
 idna==3.4
@@ -76,6 +78,8 @@ keyring==23.13.1
     # via twine
 markupsafe==2.1.1
     # via jinja2
+mccabe==0.7.0
+    # via flake8
 more-itertools==9.0.0
     # via jaraco-classes
 outcome==1.2.0
@@ -89,8 +93,12 @@ pkginfo==1.9.5
     # via twine
 pluggy==1.0.0
     # via pytest
+pycodestyle==2.10.0
+    # via flake8
 pycparser==2.21
     # via cffi
+pyflakes==3.0.1
+    # via flake8
 pygments==2.14.0
     # via
     #   readme-renderer
