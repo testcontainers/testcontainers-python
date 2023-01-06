@@ -1,4 +1,7 @@
-from minio import Minio
+try:  # Required for building documentation without all dependencies installed.
+    from minio import Minio
+except ModuleNotFoundError:
+    pass
 from requests import ConnectionError, Response, get
 
 from testcontainers.core.container import DockerContainer

@@ -12,8 +12,11 @@
 #    under the License.
 import os
 
-import clickhouse_driver
-from clickhouse_driver.errors import Error
+try:  # Required for building documentation without all dependencies installed.
+    import clickhouse_driver
+    from clickhouse_driver.errors import Error
+except ModuleNotFoundError:
+    pass
 
 from testcontainers.core.generic import DbContainer
 from testcontainers.core.waiting_utils import wait_container_is_ready

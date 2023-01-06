@@ -1,5 +1,8 @@
-from opensearchpy import OpenSearch
-from opensearchpy.exceptions import ConnectionError, TransportError
+try:  # Required for building documentation without all dependencies installed.
+    from opensearchpy import OpenSearch
+    from opensearchpy.exceptions import ConnectionError, TransportError
+except ModuleNotFoundError:
+    pass
 
 from testcontainers.core.container import DockerContainer
 from testcontainers.core.waiting_utils import wait_container_is_ready

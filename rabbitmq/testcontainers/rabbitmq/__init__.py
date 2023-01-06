@@ -1,7 +1,10 @@
 import os
 from typing import Optional
 
-import pika
+try:  # Required for building documentation without all dependencies installed.
+    import pika
+except ModuleNotFoundError:
+    pass
 from testcontainers.core.container import DockerContainer
 from testcontainers.core.waiting_utils import wait_container_is_ready
 

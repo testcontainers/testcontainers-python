@@ -13,7 +13,10 @@
 
 import os
 
-from neo4j import GraphDatabase
+try:  # Required for building documentation without all dependencies installed.
+    from neo4j import GraphDatabase
+except ModuleNotFoundError:
+    pass
 
 from testcontainers.core.generic import DbContainer
 from testcontainers.core.waiting_utils import wait_container_is_ready, wait_for_logs

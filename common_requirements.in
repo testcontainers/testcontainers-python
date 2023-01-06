@@ -1,0 +1,6 @@
+-e file:core
+pytest
+pytest-cov
+sphinx
+twine
+wheel

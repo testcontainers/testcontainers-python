@@ -11,7 +11,10 @@
 #    License for the specific language governing permissions and limitations
 #    under the License.
 
-import redis
+try:  # Required for building documentation without all dependencies installed.
+    import redis
+except ModuleNotFoundError:
+    pass
 from testcontainers.core.container import DockerContainer
 from testcontainers.core.waiting_utils import wait_container_is_ready
 

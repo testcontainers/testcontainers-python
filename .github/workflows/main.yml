@@ -47,11 +47,11 @@ jobs:
         with:
           python-version: ${{ matrix.python-version }}
           cache: pip
-          cache-dependency-path: ${{ format('requirements/{0}.txt', matrix.python-version) }}
+          cache-dependency-path: ${{ format('{0}/requirements/{0}.txt', matrix.component, matrix.python-version) }}
       - name: Install Python dependencies
         run: |
           pip install --upgrade pip
-          pip install -r requirements/${{ matrix.python-version }}.txt
+          pip install -r ${{ matrix.component }}/requirements/${{ matrix.python-version }}.txt
       - name: Run docker diagnostics
         if: matrix.component == 'core'
         run: |

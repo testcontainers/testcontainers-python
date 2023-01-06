@@ -13,7 +13,10 @@
 import os
 import requests
 
-from keycloak import KeycloakAdmin
+try:  # Required for building documentation without all dependencies installed.
+    from keycloak import KeycloakAdmin
+except ModuleNotFoundError:
+    pass
 
 from testcontainers.core.container import DockerContainer
 from testcontainers.core.waiting_utils import wait_container_is_ready
