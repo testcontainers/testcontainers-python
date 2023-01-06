@@ -1,3 +1,4 @@
+import re
 import sqlalchemy
 import pytest
 from testcontainers.core.utils import is_arm
@@ -20,3 +21,13 @@ def test_docker_run_mariadb():
         result = e.execute("select version()")
         for row in result:
             assert row[0].startswith('10.6.5')
+
+
+@pytest.mark.skipif(is_arm(), reason='mysql container not available for ARM')
+def test_docker_env_variables():
+    container = MySqlContainer("mariadb:10.6.5")\
+        .with_bind_ports(3306, 32785).maybe_emulate_amd64()
+    with container:
+        url = container.get_connection_url()
+        pattern = r'mysql\+pymysql:\/\/demo:test@[\w,.]+:(3306|32785)\/custom_db'
+        assert re.match(pattern, url)
