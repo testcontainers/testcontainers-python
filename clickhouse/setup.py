@@ -1,6 +1,6 @@
 from setuptools import setup, find_namespace_packages
 
-description = "Clickhouse component of testcontainers-python."
+description = "ClickHouse component of testcontainers-python."
 
 setup(
     name="testcontainers-clickhouse",

@@ -1,6 +1,6 @@
 from setuptools import setup, find_namespace_packages
 
-description = "Core component of testcontainers-python."
+description = "Azurite component of testcontainers-python."
 
 setup(
     name="testcontainers-azurite",
