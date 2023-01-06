@@ -40,4 +40,4 @@ ${TESTS} : tests/% : image/%
 # Target to build the documentation
 
 docs :
-	sphinx-build -nW docs docs/_build/html
+	sphinx-build -nW . docs/_build
