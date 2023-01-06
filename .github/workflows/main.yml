@@ -106,7 +106,11 @@ jobs:
           python setup.py bdist_wheel
           twine check dist/*
       - name: Publish the package to pypi
-        if: github.event_name == 'push' && github.ref == 'refs/heads/master' && github.repository_owner == 'testcontainers'
+        if: >
+          github.event_name == 'push'
+          && github.ref == 'refs/heads/master'
+          && github.repository_owner == 'testcontainers'
+          && matrix.python-version == '3.10'
         env:
           TWINE_USERNAME: __token__
           TWINE_PASSWORD: ${{ secrets.PYPI_TOKEN }}
