@@ -10,7 +10,9 @@
 #    WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the
 #    License for the specific language governing permissions and limitations
 #    under the License.
-
+from google.cloud import pubsub
+import grpc
+from typing import Optional
 from testcontainers.core.container import DockerContainer
 
 
@@ -34,9 +36,8 @@ class PubSubContainer(DockerContainer):
                 topic_path = publisher.topic_path(pubsub.project, "my-topic")
                 topic = publisher.create_topic(topic_path)
     """
-
-    def __init__(self, image="google/cloud-sdk:emulators",
-                 project="test-project", port=8432, **kwargs):
+    def __init__(self, image: str = "google/cloud-sdk:emulators", project: str = "test-project",
+                 port: int = 8432, **kwargs) -> None:
         super(PubSubContainer, self).__init__(image=image, **kwargs)
         self.project = project
         self.port = port
@@ -46,21 +47,19 @@ class PubSubContainer(DockerContainer):
                               project=self.project, port=self.port,
                           ))
 
-    def get_pubsub_emulator_host(self):
+    def get_pubsub_emulator_host(self) -> str:
         return "{host}:{port}".format(host=self.get_container_host_ip(),
                                       port=self.get_exposed_port(self.port))
 
-    def _get_channel(self, channel=None):
+    def _get_channel(self, channel: Optional[grpc.Channel] = None) -> grpc.Channel:
         if channel is None:
-            import grpc
             return grpc.insecure_channel(target=self.get_pubsub_emulator_host())
+        return channel
 
-    def get_publisher_client(self, **kwargs):
-        from google.cloud import pubsub
+    def get_publisher_client(self, **kwargs) -> pubsub.PublisherClient:
         kwargs['channel'] = self._get_channel(kwargs.get('channel'))
         return pubsub.PublisherClient(**kwargs)
 
-    def get_subscriber_client(self, **kwargs):
-        from google.cloud import pubsub
+    def get_subscriber_client(self, **kwargs) -> pubsub.SubscriberClient:
         kwargs['channel'] = self._get_channel(kwargs.get('channel'))
         return pubsub.SubscriberClient(**kwargs)
