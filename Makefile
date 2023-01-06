@@ -1,43 +1,66 @@
 PYTHON_VERSIONS = 3.7 3.8 3.9 3.10
+PYTHON_VERSION ?= 3.10
+IMAGE = testcontainers-python:${PYTHON_VERSION}
 REQUIREMENTS = $(addprefix requirements/,${PYTHON_VERSIONS:=.txt})
-TESTS = $(addprefix tests/,${PYTHON_VERSIONS})
-IMAGES = $(addprefix image/,${PYTHON_VERSIONS})
 RUN = docker run --rm -it
+TWINE_REPOSITORY ?= testpypi
+# Get all directories that contain a setup.py and get the directory name.
+PACKAGES = $(subst /,,$(dir $(wildcard */setup.py)))
 
-.PHONY : docs
+# All */dist folders for each of the packages.
+DISTRIBUTIONS = $(addsuffix /dist,${PACKAGES})
+UPLOAD = $(addsuffix /upload,${PACKAGES})
+# All */tests folders for each of the test suites.
+TESTS = $(addsuffix /tests,$(filter-out meta,${PACKAGES}))
+TESTS_DIND = $(addsuffix -dind,${TESTS})
+# All linting targets.
+LINT = $(addsuffix /lint,${PACKAGES})
 
-# Default target
+# Targets to build a distribution for each package.
+dist: ${DISTRIBUTIONS}
+${DISTRIBUTIONS} : %/dist : %/setup.py
+	cd $* \
+	&& python setup.py bdist_wheel \
+	&& twine check dist/*
 
-default : tests/3.8
+# Targets to run the test suite for each package.
+tests : ${TESTS}
+${TESTS} : %/tests :
+	pytest -svx --cov-report=term-missing --cov=testcontainers.$* --tb=short $*/tests
 
+# Targets to lint the code.
+lint : ${LINT}
+${LINT} : %/lint :
+	flake8 $*
+
+# Targets to publish packages.
+${UPLOAD} : %/upload :
+	twine upload --non-interactive --repository=${TWINE_REPOSITORY} --skip-existing $*/dist/*
+
+# Targets to build docker images
+image: requirements/${PYTHON_VERSION}.txt
+	docker build --build-arg version=${PYTHON_VERSION} -t ${IMAGE} .
+
+# Targets to run tests in docker containers
+tests-dind : ${TESTS_DIND}
+
+${TESTS_DIND} : %/tests-dind : image
+	${RUN} -v /var/run/docker.sock:/var/run/docker.sock ${IMAGE} \
+		bash -c "make $*/lint $*/tests"
+
+# Target to build the documentation
+docs :
+	sphinx-build -nW . docs/_build
+
+doctests :
+	sphinx-build -b doctest . docs/_build
 
 # Targets to build requirement files
-
 requirements : ${REQUIREMENTS}
-
 ${REQUIREMENTS} : requirements/%.txt : requirements.in */setup.py
 	mkdir -p $(dir $@)
 	${RUN} -w /workspace -v `pwd`:/workspace --platform=linux/amd64 python:$* bash -c \
 		"pip install pip-tools && pip-compile --resolver=backtracking -v --upgrade -o $@ $<"
 
-
-# Targets to build docker images
-
-images : ${IMAGES}
-
-${IMAGES} : image/% : requirements/%.txt
-	docker build --build-arg version=$* -t testcontainers-python:$* .
-
-
-# Targets to run tests in docker containers
-
-tests : ${TESTS}
-
-${TESTS} : tests/% : image/%
-	${RUN} -v /var/run/docker.sock:/var/run/docker.sock testcontainers-python:$* \
-		bash -c "flake8 && pytest -v ${ARGS}"
-
-# Target to build the documentation
-
-docs :
-	sphinx-build -nW . docs/_build
+# Targets that do not generate file-level artifacts.
+.PHONY : dists ${DISTRIBUTIONS} docs doctests image tests ${TESTS}

@@ -4,6 +4,8 @@
 #
 #    pip-compile --output-file=requirements/3.9.txt --resolver=backtracking requirements.in
 #
+-e file:meta
+    # via -r requirements.in
 -e file:arangodb
     # via -r requirements.in
 -e file:azurite
@@ -15,6 +17,7 @@
 -e file:core
     # via
     #   -r requirements.in
+    #   testcontainers
     #   testcontainers-arangodb
     #   testcontainers-azurite
     #   testcontainers-clickhouse
@@ -427,6 +430,8 @@ websocket-client==0.59.0
     # via
     #   docker
     #   docker-compose
+wheel==0.38.4
+    # via -r requirements.in
 wrapt==1.14.1
     # via testcontainers-core
 wsproto==1.2.0
