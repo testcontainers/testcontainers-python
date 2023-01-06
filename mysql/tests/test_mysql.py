@@ -3,6 +3,7 @@ import sqlalchemy
 import pytest
 from testcontainers.core.utils import is_arm
 from testcontainers.mysql import MySqlContainer
+from unittest import mock
 
 
 @pytest.mark.skipif(is_arm(), reason='mysql container not available for ARM')
@@ -23,11 +24,10 @@ def test_docker_run_mariadb():
             assert row[0].startswith('10.6.5')
 
 
-@pytest.mark.skipif(is_arm(), reason='mysql container not available for ARM')
 def test_docker_env_variables():
-    container = MySqlContainer("mariadb:10.6.5")\
-        .with_bind_ports(3306, 32785).maybe_emulate_amd64()
-    with container:
+    with mock.patch.dict("os.environ", MYSQL_USER="demo", MYSQL_DATABASE="custom_db"), \
+        MySqlContainer("mariadb:10.6.5").with_bind_ports(3306, 32785).maybe_emulate_amd64() \
+            as container:
         url = container.get_connection_url()
         pattern = r'mysql\+pymysql:\/\/demo:test@[\w,.]+:(3306|32785)\/custom_db'
         assert re.match(pattern, url)
