@@ -12,26 +12,26 @@ class ArangoDbContainer(DbContainer):
     """
     ArangoDB container.
 
-    Example
-    -------
-    The example will spin up a ArangoDB container.
-    You may use the :code:`get_connection_url()` method which returns a arangoclient-compatible url
-    in format :code:`scheme://host:port`. As of now, only a single host is supported (over HTTP).
+    Example:
 
-    .. doctest::
+        This example spins up an ArangoDB container. You may use the :code:`get_connection_url()`
+        method which returns a arangoclient-compatible url in format :code:`scheme://host:port`. As
+        of now, only a single host is supported (over HTTP).
 
-        >>> from testcontainers.arangodb import ArangoDbContainer
-        >>> from arango import ArangoClient
+        .. doctest::
 
-        >>> with ArangoDbContainer("arangodb:3.9.1") as arango:
-        ...    client = ArangoClient(hosts=arango.get_connection_url())
-        ...
-        ...    # Connect
-        ...    sys_db = client.db(username="root", password="passwd")
-        ...
-        ...    # Create a new database named "test".
-        ...    sys_db.create_database("test")
-        True
+            >>> from testcontainers.arangodb import ArangoDbContainer
+            >>> from arango import ArangoClient
+
+            >>> with ArangoDbContainer("arangodb:3.9.1") as arango:
+            ...    client = ArangoClient(hosts=arango.get_connection_url())
+            ...
+            ...    # Connect
+            ...    sys_db = client.db(username="root", password="passwd")
+            ...
+            ...    # Create a new database named "test".
+            ...    sys_db.create_database("test")
+            True
     """
 
     def __init__(self,
@@ -40,7 +40,7 @@ class ArangoDbContainer(DbContainer):
                  arango_root_password: str = "passwd",
                  arango_no_auth: typing.Optional[bool] = None,
                  arango_random_root_password: typing.Optional[bool] = None,
-                 **kwargs):
+                 **kwargs) -> None:
         """
         Args:
             image: Actual docker image/tag to pull.
@@ -69,23 +69,16 @@ class ArangoDbContainer(DbContainer):
             else arango_random_root_password
         ))
 
-    def _configure(self):
+    def _configure(self) -> None:
         self.with_env("ARANGO_ROOT_PASSWORD", self.arango_root_password)
         if self.arango_no_auth:
             self.with_env("ARANGO_NO_AUTH", "1")
         if self.arango_random_root_password:
             self.with_env("ARANGO_RANDOM_ROOT_PASSWORD", "1")
 
-    def get_connection_url(self):
-        # for now, single host over HTTP
-        scheme = "http"
+    def get_connection_url(self) -> str:
         port = self.get_exposed_port(self.port_to_expose)
-        url = f"{scheme}://{self.get_container_host_ip()}:{port}"
+        return f"http://{self.get_container_host_ip()}:{port}"
 
-        return url
-
-    def _connect(self):
-        wait_for_logs(
-            self,
-            predicate="is ready for business",
-            timeout=MAX_TRIES)
+    def _connect(self) -> None:
+        wait_for_logs(self, predicate="is ready for business", timeout=MAX_TRIES)

@@ -1,31 +1,27 @@
 from os import environ
-
+from typing import Optional
 from testcontainers.core.generic import DbContainer
 
 
 class SqlServerContainer(DbContainer):
     """
-    Microsoft Sql Server database container.
+    Microsoft SQL Server database container.
 
-    Example
-    -------
-    .. doctest::
+    Example:
 
-        >>> import sqlalchemy
-        >>> from testcontainers.mssql import SqlServerContainer
+        .. doctest::
 
-        >>> with SqlServerContainer() as mssql:
-        ...    e = sqlalchemy.create_engine(mssql.get_connection_url())
-        ...    result = e.execute("select @@VERSION")
+            >>> import sqlalchemy
+            >>> from testcontainers.mssql import SqlServerContainer
 
-    Notes
-    -----
-    Requires `ODBC Driver 17 for SQL Server <https://docs.microsoft.com/en-us/sql/connect/odbc/
-    linux-mac/installing-the-microsoft-odbc-driver-for-sql-server>`_.
+            >>> with SqlServerContainer() as mssql:
+            ...    e = sqlalchemy.create_engine(mssql.get_connection_url())
+            ...    result = e.execute("select @@VERSION")
     """
 
-    def __init__(self, image="mcr.microsoft.com/mssql/server:2019-latest", user="SA", password=None,
-                 port=1433, dbname="tempdb", dialect='mssql+pymssql', **kwargs):
+    def __init__(self, image: str = "mcr.microsoft.com/mssql/server:2019-latest", user: str = "SA",
+                 password: Optional[str] = None, port: int = 1433, dbname: str = "tempdb",
+                 dialect: str = 'mssql+pymssql', **kwargs) -> None:
         super(SqlServerContainer, self).__init__(image, **kwargs)
 
         self.port_to_expose = port
@@ -36,13 +32,13 @@ class SqlServerContainer(DbContainer):
         self.SQLSERVER_DBNAME = dbname
         self.dialect = dialect
 
-    def _configure(self):
+    def _configure(self) -> None:
         self.with_env("SA_PASSWORD", self.SQLSERVER_PASSWORD)
         self.with_env("SQLSERVER_USER", self.SQLSERVER_USER)
         self.with_env("SQLSERVER_DBNAME", self.SQLSERVER_DBNAME)
         self.with_env("ACCEPT_EULA", 'Y')
 
-    def get_connection_url(self):
+    def get_connection_url(self) -> str:
         return super()._create_connection_url(
             dialect=self.dialect, username=self.SQLSERVER_USER, password=self.SQLSERVER_PASSWORD,
             db_name=self.SQLSERVER_DBNAME, port=self.port_to_expose

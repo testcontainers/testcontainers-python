@@ -15,12 +15,14 @@
 import re
 import time
 import traceback
-
+from typing import Any, Callable, Iterable, Mapping, Optional, TYPE_CHECKING, Union
 import wrapt
 
-from testcontainers.core import config
-from testcontainers.core.exceptions import TimeoutException
-from testcontainers.core.utils import setup_logger
+from . import config
+from .utils import setup_logger
+
+if TYPE_CHECKING:
+    from .container import DockerContainer
 
 logger = setup_logger(__name__)
 
@@ -29,19 +31,21 @@ logger = setup_logger(__name__)
 TRANSIENT_EXCEPTIONS = (TimeoutError, ConnectionError)
 
 
-def wait_container_is_ready(*transient_exceptions):
+def wait_container_is_ready(*transient_exceptions) -> Callable:
     """
     Wait until container is ready.
-    Function that spawn container should be decorated by this method
-    Max wait is configured by config. Default is 120 sec.
-    Polling interval is 1 sec.
-    :return:
-    """
 
+    Function that spawn container should be decorated by this method Max wait is configured by
+    config. Default is 120 sec. Polling interval is 1 sec.
+
+    Args:
+        *transient_exceptions: Additional transient exceptions that should be retried if raised. Any
+            non-transient exceptions are fatal, and the exception is re-raised immediately.
+    """
     transient_exceptions = TRANSIENT_EXCEPTIONS + tuple(transient_exceptions)
 
     @wrapt.decorator
-    def wrapper(wrapped, instance, args, kwargs):
+    def wrapper(wrapped: Callable, instance: Any, args: Iterable, kwargs: Mapping) -> Any:
         from .container import DockerContainer
 
         if isinstance(instance, DockerContainer):
@@ -59,7 +63,7 @@ def wait_container_is_ready(*transient_exceptions):
                              f"failed: {traceback.format_exc()}")
                 time.sleep(config.SLEEP_TIME)
                 exception = e
-        raise TimeoutException(
+        raise TimeoutError(
             f'Wait time ({config.MAX_TRIES * config.SLEEP_TIME}s) exceeded for {wrapped.__name__}'
             f'(args: {args}, kwargs {kwargs}). Exception: {exception}'
         )
@@ -68,30 +72,25 @@ def wait_container_is_ready(*transient_exceptions):
 
 
 @wait_container_is_ready()
-def wait_for(condition):
+def wait_for(condition: Callable[..., bool]) -> bool:
     return condition()
 
 
-def wait_for_logs(container, predicate, timeout=None, interval=1):
+def wait_for_logs(container: "DockerContainer", predicate: Union[Callable, str],
+                  timeout: Optional[float] = None, interval: float = 1) -> float:
     """
     Wait for the container to emit logs satisfying the predicate.
 
-    Parameters
-    ----------
-    container : DockerContainer
-        Container whose logs to wait for.
-    predicate : callable or str
-        Predicate that should be satisfied by the logs. If a string, the it is used as the pattern
-        for a multiline regular expression search.
-    timeout : float or None
-        Number of seconds to wait for the predicate to be satisfied. Defaults to wait indefinitely.
-    interval : float
-        Interval at which to poll the logs.
+    Args:
+        container: Container whose logs to wait for.
+        predicate: Predicate that should be satisfied by the logs. If a string, the it is used as
+        the pattern for a multiline regular expression search.
+        timeout: Number of seconds to wait for the predicate to be satisfied. Defaults to wait
+            indefinitely.
+        interval: Interval at which to poll the logs.
 
-    Returns
-    -------
-    duration : float
-        Number of seconds until the predicate was satisfied.
+    Returns:
+        duration: Number of seconds until the predicate was satisfied.
     """
     if isinstance(predicate, str):
         predicate = re.compile(predicate, re.MULTILINE).search

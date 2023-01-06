@@ -14,44 +14,35 @@ class MinioContainer(DockerContainer):
     The method :code:`get_config` can be used to retrieve the endpoint, access key
     and secret key of the container.
 
-    Example
-    -------
-    .. doctest::
+    Example:
 
-        >>> import io
-        >>> from testcontainers.minio import MinioContainer
+        .. doctest::
 
-        >>> with MinioContainer() as minio:
-        ...   client = minio.get_client()
-        ...   client.make_bucket("test")
-        ...   test_content = b"Hello World"
-        ...   write_result = client.put_object(
-        ...       "test",
-        ...       "testfile.txt",
-        ...       io.BytesIO(test_content),
-        ...       length=len(test_content),
-        ...   )
-        ...   retrieved_content = client.get_object("test", "testfile.txt").data
+            >>> import io
+            >>> from testcontainers.minio import MinioContainer
+
+            >>> with MinioContainer() as minio:
+            ...   client = minio.get_client()
+            ...   client.make_bucket("test")
+            ...   test_content = b"Hello World"
+            ...   write_result = client.put_object(
+            ...       "test",
+            ...       "testfile.txt",
+            ...       io.BytesIO(test_content),
+            ...       length=len(test_content),
+            ...   )
+            ...   retrieved_content = client.get_object("test", "testfile.txt").data
     """
 
-    def __init__(
-        self,
-        image="minio/minio:RELEASE.2022-12-02T19-19-22Z",
-        port_to_expose=9000,
-        access_key="minioadmin",
-        secret_key="minioadmin",
-        **kwargs,
-    ):
+    def __init__(self, image: str = "minio/minio:RELEASE.2022-12-02T19-19-22Z",
+                 port_to_expose: int = 9000, access_key: str = "minioadmin",
+                 secret_key: str = "minioadmin", **kwargs) -> None:
         """
         Args:
-            image (str, optional): The Docker image to use for the Minio container.
-                                   Defaults to "minio/minio:RELEASE.2022-12-02T19-19-22Z".
-            port_to_expose (int, optional): The port to expose on the container.
-                                            Defaults to 9000.
-            access_key (str, optional): The access key for client connections.
-                                        Defaults to "minioadmin".
-            secret_key (str, optional): The secret key for client connections.
-                                        Defaults to "minioadmin".
+            image: Docker image to use for the MinIO container.
+            port_to_expose: Port to expose on the container.
+            access_key: Access key for client connections.
+            secret_key: Secret key for client connections.
         """
         super(MinioContainer, self).__init__(image, **kwargs)
         self.port_to_expose = port_to_expose
@@ -96,14 +87,14 @@ class MinioContainer(DockerContainer):
         }
 
     @wait_container_is_ready(ConnectionError)
-    def _healthcheck(self):
+    def _healthcheck(self) -> None:
         """This is an internal method used to check if the Minio container
         is healthy and ready to receive requests."""
         url = f"http://{self.get_config()['endpoint']}/minio/health/live"
         response: Response = get(url)
         response.raise_for_status()
 
-    def start(self):
+    def start(self) -> "MinioContainer":
         """This method starts the Minio container and runs the healthcheck
         to verify that the container is ready to use."""
         super().start()

@@ -14,19 +14,20 @@ class KafkaContainer(DockerContainer):
     """
     Kafka container.
 
-    Example
-    -------
-    .. doctest::
+    Example:
 
-        >>> from testcontainers.kafka import KafkaContainer
+        .. doctest::
 
-        >>> with KafkaContainer() as kafka:
-        ...    connection = kafka.get_bootstrap_server()
+            >>> from testcontainers.kafka import KafkaContainer
+
+            >>> with KafkaContainer() as kafka:
+            ...    connection = kafka.get_bootstrap_server()
     """
     KAFKA_PORT = 9093
     TC_START_SCRIPT = '/tc-start.sh'
 
-    def __init__(self, image="confluentinc/cp-kafka:5.4.3", port_to_expose=KAFKA_PORT, **kwargs):
+    def __init__(self, image: str = "confluentinc/cp-kafka:5.4.3", port_to_expose: int = KAFKA_PORT,
+                 **kwargs) -> None:
         super(KafkaContainer, self).__init__(image, **kwargs)
         self.port_to_expose = port_to_expose
         self.with_exposed_ports(self.port_to_expose)
@@ -42,19 +43,19 @@ class KafkaContainer(DockerContainer):
         self.with_env('KAFKA_LOG_FLUSH_INTERVAL_MESSAGES', '10000000')
         self.with_env('KAFKA_GROUP_INITIAL_REBALANCE_DELAY_MS', '0')
 
-    def get_bootstrap_server(self):
+    def get_bootstrap_server(self) -> str:
         host = self.get_container_host_ip()
         port = self.get_exposed_port(self.port_to_expose)
         return '{}:{}'.format(host, port)
 
     @wait_container_is_ready(UnrecognizedBrokerVersion, NoBrokersAvailable, KafkaError, ValueError)
-    def _connect(self):
+    def _connect(self) -> None:
         bootstrap_server = self.get_bootstrap_server()
         consumer = KafkaConsumer(group_id='test', bootstrap_servers=[bootstrap_server])
         if not consumer.bootstrap_connected():
             raise KafkaError("Unable to connect with kafka container!")
 
-    def tc_start(self):
+    def tc_start(self) -> None:
         host = self.get_container_host_ip()
         port = self.get_exposed_port(self.port_to_expose)
         listeners = 'PLAINTEXT://{}:{},BROKER://$(hostname -i):9092'.format(host, port)
@@ -78,7 +79,7 @@ class KafkaContainer(DockerContainer):
         )
         self.create_file(data, KafkaContainer.TC_START_SCRIPT)
 
-    def start(self):
+    def start(self) -> "KafkaContainer":
         script = KafkaContainer.TC_START_SCRIPT
         command = 'sh -c "while [ ! -f {} ]; do sleep 0.1; done; sh {}"'.format(script, script)
         self.with_command(command)
@@ -87,7 +88,7 @@ class KafkaContainer(DockerContainer):
         self._connect()
         return self
 
-    def create_file(self, content: bytes, path: str):
+    def create_file(self, content: bytes, path: str) -> None:
         with BytesIO() as archive, tarfile.TarFile(fileobj=archive, mode="w") as tar:
             tarinfo = tarfile.TarInfo(name=path)
             tarinfo.size = len(content)

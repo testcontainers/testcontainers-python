@@ -17,8 +17,10 @@ Selenium containers
 Allows to spin up selenium containers for testing with browsers.
 """
 
+from selenium import webdriver
 from testcontainers.core.container import DockerContainer
 from testcontainers.core.waiting_utils import wait_container_is_ready
+from typing import Optional
 import urllib3
 
 
@@ -28,7 +30,7 @@ IMAGES = {
 }
 
 
-def get_image_name(capabilities):
+def get_image_name(capabilities: str) -> str:
     return IMAGES[capabilities['browserName']]
 
 
@@ -36,20 +38,20 @@ class BrowserWebDriverContainer(DockerContainer):
     """
     Selenium browser container for Chrome or Firefox.
 
-    Example
-    -------
-    .. doctest::
+    Example:
 
-        >>> from testcontainers.selenium import BrowserWebDriverContainer
-        >>> from selenium.webdriver import DesiredCapabilities
+        .. doctest::
 
-        >>> with BrowserWebDriverContainer(DesiredCapabilities.CHROME) as chrome:
-        ...    webdriver = chrome.get_driver()
+            >>> from testcontainers.selenium import BrowserWebDriverContainer
+            >>> from selenium.webdriver import DesiredCapabilities
 
-    You can easily change browser by passing :code:`DesiredCapabilities.FIREFOX` instead.
+            >>> with BrowserWebDriverContainer(DesiredCapabilities.CHROME) as chrome:
+            ...    webdriver = chrome.get_driver()
+
+        You can easily change browser by passing :code:`DesiredCapabilities.FIREFOX` instead.
     """
 
-    def __init__(self, capabilities, image=None, **kwargs):
+    def __init__(self, capabilities: str, image: Optional[str] = None, **kwargs) -> None:
         self.capabilities = capabilities
         self.image = image or get_image_name(capabilities)
         self.port_to_expose = 4444
@@ -57,21 +59,20 @@ class BrowserWebDriverContainer(DockerContainer):
         super(BrowserWebDriverContainer, self).__init__(image=self.image, **kwargs)
         self.with_exposed_ports(self.port_to_expose, self.vnc_port_to_expose)
 
-    def _configure(self):
+    def _configure(self) -> None:
         self.with_env("no_proxy", "localhost")
         self.with_env("HUB_ENV_no_proxy", "localhost")
 
     @wait_container_is_ready(urllib3.exceptions.HTTPError)
-    def _connect(self):
-        from selenium import webdriver
+    def _connect(self) -> webdriver.Remote:
         return webdriver.Remote(
             command_executor=(self.get_connection_url()),
             desired_capabilities=self.capabilities)
 
-    def get_driver(self):
+    def get_driver(self) -> webdriver.Remote:
         return self._connect()
 
     def get_connection_url(self) -> str:
         ip = self.get_container_host_ip()
         port = self.get_exposed_port(self.port_to_expose)
-        return 'http://{}:{}/wd/hub'.format(ip, port)
+        return f'http://{ip}:{port}/wd/hub'

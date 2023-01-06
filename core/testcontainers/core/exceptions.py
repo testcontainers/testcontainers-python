@@ -12,17 +12,9 @@
 #    under the License.
 
 
-class ContainerStartException(Exception):
+class ContainerStartException(RuntimeError):
     pass
 
 
-class TimeoutException(Exception):
-    pass
-
-
-class NoSuchBrowserException(Exception):
-    pass
-
-
-class NoSuchPortExposed(Exception):
+class NoSuchPortExposed(RuntimeError):
     pass

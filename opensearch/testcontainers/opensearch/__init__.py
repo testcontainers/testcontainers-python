@@ -7,42 +7,33 @@ from testcontainers.core.waiting_utils import wait_container_is_ready
 
 class OpenSearchContainer(DockerContainer):
     """
-    The following example demonstrates how to create a new index in an OpenSearch container
-    and add a document to it. It also shows how to search within the created index. The refresh
-    step in between makes sure that the newly created document is available for search.
+    The following example demonstrates how to create a new index in an OpenSearch container and add
+    a document to it. It also shows how to search within the created index. The refresh step in
+    between makes sure that the newly created document is available for search.
 
-    The method :code:`get_client` can be used to create a OpenSearch Python Client.
-    The method :code:`get_config` can be used to retrieve the host, port, user
-    and password of the container.
+    The method :code:`get_client` can be used to create a OpenSearch Python Client. The method
+    :code:`get_config` can be used to retrieve the host, port, user, and password of the container.
 
-    Example
-    -------
-    .. doctest::
+    Example:
 
-        >>> from testcontainers.opensearch import OpenSearchContainer
+        .. doctest::
 
-        >>> with OpenSearchContainer() as opensearch:
-        ...   client = opensearch.get_client()
-        ...   creation_result = client.index(index="test", body={"test": "test"})
-        ...   refresh_result = client.indices.refresh(index="test")
-        ...   search_result = client.search(index="test", body={"query": {"match_all": {}}})
+            >>> from testcontainers.opensearch import OpenSearchContainer
+
+            >>> with OpenSearchContainer() as opensearch:
+            ...   client = opensearch.get_client()
+            ...   creation_result = client.index(index="test", body={"test": "test"})
+            ...   refresh_result = client.indices.refresh(index="test")
+            ...   search_result = client.search(index="test", body={"query": {"match_all": {}}})
     """
 
-    def __init__(
-        self,
-        image="opensearchproject/opensearch:2.4.0",
-        port_to_expose=9200,
-        security_enabled=False,
-        **kwargs,
-    ):
+    def __init__(self, image: str = "opensearchproject/opensearch:2.4.0",
+                 port_to_expose: int = 9200, security_enabled: bool = False, **kwargs) -> None:
         """
         Args:
-            image (str, optional): The Docker image to use for the container.
-                                   Defaults to "opensearchproject/opensearch:2.4.0".
-            port_to_expose (int, optional): The port to expose on the container.
-                                            Defaults to 9200.
-            security_enabled (bool, optional): `False` disables the security plugin in OpenSearch.
-                                                Defaults to False.
+            image: Docker image to use for the container.
+            port_to_expose: Port to expose on the container.
+            security_enabled: :code:`False` disables the security plugin in OpenSearch.
         """
         super(OpenSearchContainer, self).__init__(image, **kwargs)
         self.port_to_expose = port_to_expose
@@ -54,7 +45,7 @@ class OpenSearchContainer(DockerContainer):
         if security_enabled:
             self.with_env("plugins.security.allow_default_init_securityindex", "true")
 
-    def get_config(self):
+    def get_config(self) -> dict:
         """This method returns the configuration of the OpenSearch container,
         including the host, port, user, and password.
 
@@ -91,13 +82,13 @@ class OpenSearchContainer(DockerContainer):
         )
 
     @wait_container_is_ready(ConnectionError, TransportError)
-    def _healthcheck(self):
+    def _healthcheck(self) -> None:
         """This is an internal method used to check if the OpenSearch container
         is healthy and ready to receive requests."""
         client: OpenSearchContainer = self.get_client()
         client.cluster.health(wait_for_status="green")
 
-    def start(self):
+    def start(self) -> "OpenSearchContainer":
         """This method starts the OpenSearch container and runs the healthcheck
         to verify that the container is ready to use."""
         super().start()

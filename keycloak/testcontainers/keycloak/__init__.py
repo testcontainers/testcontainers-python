@@ -23,45 +23,45 @@ class KeycloakContainer(DockerContainer):
     """
     Keycloak container.
 
-    Example
-    -------
-    .. doctest::
+    Example:
 
-        >>> from testcontainers.keycloak import KeycloakContainer
+        .. doctest::
 
-        >>> with KeycloakContainer() as kc:
-        ...    keycloak = kc.get_client()
+            >>> from testcontainers.keycloak import KeycloakContainer
+
+            >>> with KeycloakContainer() as kc:
+            ...    keycloak = kc.get_client()
     """
     KEYCLOAK_USER = os.environ.get("KEYCLOAK_USER", "test")
     KEYCLOAK_PASSWORD = os.environ.get("KEYCLOAK_PASSWORD", "test")
 
-    def __init__(self, image="jboss/keycloak:latest"):
+    def __init__(self, image="jboss/keycloak:latest") -> None:
         super(KeycloakContainer, self).__init__(image=image)
         self.port_to_expose = 8080
         self.with_exposed_ports(self.port_to_expose)
 
-    def _configure(self):
+    def _configure(self) -> None:
         self.with_env("KEYCLOAK_USER", self.KEYCLOAK_USER)
         self.with_env("KEYCLOAK_PASSWORD", self.KEYCLOAK_PASSWORD)
 
-    def get_url(self):
+    def get_url(self) -> str:
         host = self.get_container_host_ip()
         port = self.get_exposed_port(self.port_to_expose)
         return "http://{}:{}".format(host, port)
 
     @wait_container_is_ready(requests.exceptions.ConnectionError, requests.exceptions.ReadTimeout)
-    def _connect(self):
+    def _connect(self) -> None:
         url = self.get_url()
         response = requests.get("{}/auth".format(url), timeout=1)
         response.raise_for_status()
 
-    def start(self):
+    def start(self) -> "KeycloakContainer":
         self._configure()
         super().start()
         self._connect()
         return self
 
-    def get_client(self, **kwargs):
+    def get_client(self, **kwargs) -> KeycloakAdmin:
         default_kwargs = dict(
             server_url="{}/auth/".format(self.get_url()),
             username=self.KEYCLOAK_USER,

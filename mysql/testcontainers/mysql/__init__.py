@@ -11,7 +11,7 @@
 #    License for the specific language governing permissions and limitations
 #    under the License.
 from os import environ
-
+from typing import Optional
 from testcontainers.core.generic import DbContainer
 
 
@@ -19,30 +19,27 @@ class MySqlContainer(DbContainer):
     """
     MySql database container.
 
-    Example
-    -------
-    The example will spin up a MySql database to which you can connect with the credentials passed
-    in the constructor. Alternatively, you may use the :code:`get_connection_url()` method which
-    returns a sqlalchemy-compatible url in format
-    :code:`dialect+driver://username:password@host:port/database`.
-    .. doctest::
+    Example:
 
-        >>> import sqlalchemy
-        >>> from testcontainers.mysql import MySqlContainer
+        The example will spin up a MySql database to which you can connect with the credentials
+        passed in the constructor. Alternatively, you may use the :code:`get_connection_url()`
+        method which returns a sqlalchemy-compatible url in format
+        :code:`dialect+driver://username:password@host:port/database`.
 
-        >>> with MySqlContainer('mysql:5.7.17') as mysql:
-        ...     e = sqlalchemy.create_engine(mysql.get_connection_url())
-        ...     result = e.execute("select version()")
-        ...     version, = result.fetchone()
+        .. doctest::
+
+            >>> import sqlalchemy
+            >>> from testcontainers.mysql import MySqlContainer
+
+            >>> with MySqlContainer('mysql:5.7.17') as mysql:
+            ...     e = sqlalchemy.create_engine(mysql.get_connection_url())
+            ...     result = e.execute("select version()")
+            ...     version, = result.fetchone()
     """
 
-    def __init__(self,
-                 image="mysql:latest",
-                 MYSQL_USER=None,
-                 MYSQL_ROOT_PASSWORD=None,
-                 MYSQL_PASSWORD=None,
-                 MYSQL_DATABASE=None,
-                 **kwargs):
+    def __init__(self, image: str = "mysql:latest", MYSQL_USER: Optional[str] = None,
+                 MYSQL_ROOT_PASSWORD: Optional[str] = None, MYSQL_PASSWORD: Optional[str] = None,
+                 MYSQL_DATABASE: Optional[str] = None, **kwargs) -> None:
         super(MySqlContainer, self).__init__(image, **kwargs)
         self.port_to_expose = 3306
         self.with_exposed_ports(self.port_to_expose)
@@ -54,7 +51,7 @@ class MySqlContainer(DbContainer):
         if self.MYSQL_USER == 'root':
             self.MYSQL_ROOT_PASSWORD = self.MYSQL_PASSWORD
 
-    def _configure(self):
+    def _configure(self) -> None:
         self.with_env("MYSQL_ROOT_PASSWORD", self.MYSQL_ROOT_PASSWORD)
         self.with_env("MYSQL_DATABASE", self.MYSQL_DATABASE)
 
@@ -62,7 +59,7 @@ class MySqlContainer(DbContainer):
             self.with_env("MYSQL_USER", self.MYSQL_USER)
             self.with_env("MYSQL_PASSWORD", self.MYSQL_PASSWORD)
 
-    def get_connection_url(self):
+    def get_connection_url(self) -> str:
         return super()._create_connection_url(dialect="mysql+pymysql",
                                               username=self.MYSQL_USER,
                                               password=self.MYSQL_PASSWORD,
