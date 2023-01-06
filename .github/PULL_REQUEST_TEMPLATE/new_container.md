@@ -1,9 +1,8 @@
-You have implemented a new container and would like to contribute it? Great! Here are the necessary steps:
+You have implemented a new container and would like to contribute it? Great! Here are the necessary steps.
 
-- [ ] You have added the new container as a module in the `testcontainers` directory (such as `testcontainers/my_fancy_container.py`).
-- [ ] You have added any new python dependencies in the `extras_require` section of `setup.py`.
-- [ ] You have added the `extra_requires` key to `requirements.in`.
-- [ ] You have updated all python requirements by running `make requirements` from the root directory.
-- [ ] You have added tests for the new container in the `tests` directory, e.g. `tests/test_my_fancy_container.py`.
-- [ ] You have added the name of the container (such as `my_fancy_container`) to the `test-components` matrix in `.github/workflows/main.yml` to ensure the tests are run.
-- [ ] You have rebased your development branch on `master` (or merged `master` into your development branch).
+- [ ] Create a new feature directory and populate it with the package structure [described in the documentation](https://testcontainers-python.readthedocs.io/en/latest/#package-structure). Copying one of the existing features is likely the best way to get started.
+- [ ] Implement the new feature (typically in `__init__.py`) and corresponding tests.
+- [ ] Add a line `-e file:[feature name]` to `requirements.in` and run `make requirements`. This command will find any new requirements and generate lock files to ensure reproducible builds (see the [pip-tools documentation](https://pip-tools.readthedocs.io/en/latest/) for details). Then run `pip install -r requirements/[your python version].txt` to install the new requirements.
+- [ ] Update the feature `README.rst` and add it to the table of contents (`toctree` directive) in the top-level `README.rst`.
+- [ ] Add a line `[feature name]` to the list of components in the  GitHub Action workflow in `.github/workflows/main.yml` to run tests, build, and publish your package when pushed to the `master` branch.
+- [ ] Rebase your development branch on `master` (or merge `master` into your development branch).
