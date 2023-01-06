@@ -16,7 +16,7 @@ try:  # Required for building documentation without all dependencies installed.
     import clickhouse_driver
     from clickhouse_driver.errors import Error
 except ModuleNotFoundError:
-    pass
+    Error = Exception
 
 from testcontainers.core.generic import DbContainer
 from testcontainers.core.waiting_utils import wait_container_is_ready
