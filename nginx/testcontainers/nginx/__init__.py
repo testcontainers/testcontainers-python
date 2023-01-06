@@ -14,7 +14,7 @@ from testcontainers.core.container import DockerContainer
 
 
 class NginxContainer(DockerContainer):
-    def __init__(self, image="nginx:latest", port_to_expose=80, **kwargs):
+    def __init__(self, image: str = "nginx:latest", port_to_expose: int = 80, **kwargs) -> None:
         super(NginxContainer, self).__init__(image, **kwargs)
         self.port_to_expose = port_to_expose
         self.with_exposed_ports(self.port_to_expose)
