@@ -11,7 +11,7 @@
 #    License for the specific language governing permissions and limitations
 #    under the License.
 from os import environ
-
+from typing import Optional
 from testcontainers.core.generic import DbContainer
 
 
@@ -36,13 +36,9 @@ class MySqlContainer(DbContainer):
         ...     version, = result.fetchone()
     """
 
-    def __init__(self,
-                 image="mysql:latest",
-                 MYSQL_USER=None,
-                 MYSQL_ROOT_PASSWORD=None,
-                 MYSQL_PASSWORD=None,
-                 MYSQL_DATABASE=None,
-                 **kwargs):
+    def __init__(self, image: str = "mysql:latest", MYSQL_USER: Optional[str] = None,
+                 MYSQL_ROOT_PASSWORD: Optional[str] = None, MYSQL_PASSWORD: Optional[str] = None,
+                 MYSQL_DATABASE: Optional[str] = None, **kwargs) -> None:
         super(MySqlContainer, self).__init__(image, **kwargs)
         self.port_to_expose = 3306
         self.with_exposed_ports(self.port_to_expose)
@@ -54,7 +50,7 @@ class MySqlContainer(DbContainer):
         if self.MYSQL_USER == 'root':
             self.MYSQL_ROOT_PASSWORD = self.MYSQL_PASSWORD
 
-    def _configure(self):
+    def _configure(self) -> None:
         self.with_env("MYSQL_ROOT_PASSWORD", self.MYSQL_ROOT_PASSWORD)
         self.with_env("MYSQL_DATABASE", self.MYSQL_DATABASE)
 
@@ -62,7 +58,7 @@ class MySqlContainer(DbContainer):
             self.with_env("MYSQL_USER", self.MYSQL_USER)
             self.with_env("MYSQL_PASSWORD", self.MYSQL_PASSWORD)
 
-    def get_connection_url(self):
+    def get_connection_url(self) -> str:
         return super()._create_connection_url(dialect="mysql+pymysql",
                                               username=self.MYSQL_USER,
                                               password=self.MYSQL_PASSWORD,
