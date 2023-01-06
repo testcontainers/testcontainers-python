@@ -18,7 +18,7 @@ import traceback
 
 import wrapt
 
-from testcontainers.core.container import DockerContainer
+from .import container
 from testcontainers.core import config
 from testcontainers.core.exceptions import TimeoutException
 from testcontainers.core.utils import setup_logger
@@ -42,7 +42,7 @@ def wait_container_is_ready(*transient_exceptions):
     transient_exceptions = TRANSIENT_EXCEPTIONS + tuple(transient_exceptions)
 
     @wrapt.decorator
-    def wrapper(wrapped, instance: DockerContainer, args, kwargs):
+    def wrapper(wrapped, instance: "container.DockerContainer", args, kwargs):
         exception = None
         logger.info("Waiting for container %s with image %s to be ready...", instance._container,
                     instance.image)
