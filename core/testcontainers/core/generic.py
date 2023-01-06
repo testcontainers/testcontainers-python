@@ -10,8 +10,10 @@
 #    WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the
 #    License for the specific language governing permissions and limitations
 #    under the License.
+from typing import Optional
 
 from .container import DockerContainer
+from .exceptions import ContainerStartException
 from .waiting_utils import wait_container_is_ready
 
 ADDITIONAL_TRANSIENT_ERRORS = []
@@ -23,24 +25,24 @@ except ImportError:
 
 
 class DbContainer(DockerContainer):
-    def __init__(self, image, **kwargs):
-        super(DbContainer, self).__init__(image, **kwargs)
-
+    """
+    Generic database container.
+    """
     @wait_container_is_ready(*ADDITIONAL_TRANSIENT_ERRORS)
-    def _connect(self):
+    def _connect(self) -> None:
         import sqlalchemy
         engine = sqlalchemy.create_engine(self.get_connection_url())
         engine.connect()
 
-    def get_connection_url(self):
+    def get_connection_url(self) -> str:
         raise NotImplementedError
 
-    def _create_connection_url(self, dialect, username, password,
-                               host=None, port=None, db_name=None):
+    def _create_connection_url(self, dialect: str, username: str, password: str,
+                               host: Optional[str] = None, port: Optional[int] = None,
+                               db_name: Optional[str] = None) -> str:
         if self._container is None:
-            raise RuntimeError("container has not been started")
-        if not host:
-            host = self.get_container_host_ip()
+            raise ContainerStartException("container has not been started")
+        host = host or self.get_container_host_ip()
         port = self.get_exposed_port(port)
         url = "{dialect}://{username}:{password}@{host}:{port}".format(
             dialect=dialect, username=username, password=password, host=host, port=port
@@ -49,11 +51,11 @@ class DbContainer(DockerContainer):
             url += '/' + db_name
         return url
 
-    def start(self):
+    def start(self) -> 'DbContainer':
         self._configure()
         super().start()
         self._connect()
         return self
 
-    def _configure(self):
+    def _configure(self) -> None:
         raise NotImplementedError

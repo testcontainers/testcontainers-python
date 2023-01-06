@@ -16,5 +16,5 @@ class ContainerStartException(RuntimeError):
     pass
 
 
-class NoSuchPortExposed(Exception):
+class NoSuchPortExposed(RuntimeError):
     pass

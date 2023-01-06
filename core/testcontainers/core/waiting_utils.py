@@ -15,6 +15,7 @@
 import re
 import time
 import traceback
+from typing import Any, Callable, Iterable, Mapping, Optional
 
 import wrapt
 
@@ -28,19 +29,21 @@ logger = setup_logger(__name__)
 TRANSIENT_EXCEPTIONS = (TimeoutError, ConnectionError)
 
 
-def wait_container_is_ready(*transient_exceptions):
+def wait_container_is_ready(*transient_exceptions) -> Callable:
     """
     Wait until container is ready.
-    Function that spawn container should be decorated by this method
-    Max wait is configured by config. Default is 120 sec.
-    Polling interval is 1 sec.
-    :return:
-    """
 
+    Function that spawn container should be decorated by this method Max wait is configured by
+    config. Default is 120 sec. Polling interval is 1 sec.
+
+    Args:
+        *transient_exceptions: Additional transient exceptions that should be retried if raised. Any
+            non-transient exceptions are fatal, and the exception is re-raised immediately.
+    """
     transient_exceptions = TRANSIENT_EXCEPTIONS + tuple(transient_exceptions)
 
     @wrapt.decorator
-    def wrapper(wrapped, instance, args, kwargs):
+    def wrapper(wrapped: Callable, instance: Any, args: Iterable, kwargs: Mapping) -> Any:
         from .container import DockerContainer
 
         if isinstance(instance, DockerContainer):
@@ -67,11 +70,12 @@ def wait_container_is_ready(*transient_exceptions):
 
 
 @wait_container_is_ready()
-def wait_for(condition):
+def wait_for(condition: Callable[..., bool]) -> bool:
     return condition()
 
 
-def wait_for_logs(container, predicate, timeout=None, interval=1):
+def wait_for_logs(container, predicate: Callable, timeout: Optional[float] = None,
+                  interval: float = 1) -> float:
     """
     Wait for the container to emit logs satisfying the predicate.
 

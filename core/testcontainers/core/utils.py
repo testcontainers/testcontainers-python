@@ -9,7 +9,7 @@ MAC = "mac"
 WIN = "win"
 
 
-def setup_logger(name):
+def setup_logger(name: str) -> logging.Logger:
     logger = logging.getLogger(name)
     logger.setLevel(logging.INFO)
     handler = logging.StreamHandler()
@@ -18,7 +18,7 @@ def setup_logger(name):
     return logger
 
 
-def os_name():
+def os_name() -> str:
     pl = sys.platform
     if pl == "linux" or pl == "linux2":
         return LINUX
@@ -28,23 +28,23 @@ def os_name():
         return WIN
 
 
-def is_mac():
+def is_mac() -> bool:
     return MAC == os_name()
 
 
-def is_linux():
+def is_linux() -> bool:
     return LINUX == os_name()
 
 
-def is_windows():
+def is_windows() -> bool:
     return WIN == os_name()
 
 
-def is_arm():
+def is_arm() -> bool:
     return platform.machine() in ('arm64', 'aarch64')
 
 
-def inside_container():
+def inside_container() -> bool:
     """
     Returns true if we are running inside a container.
 
@@ -53,7 +53,7 @@ def inside_container():
     return os.path.exists('/.dockerenv')
 
 
-def default_gateway_ip():
+def default_gateway_ip() -> str:
     """
     Returns gateway IP address of the host that testcontainer process is
     running on

@@ -12,7 +12,7 @@ from testcontainers.core.waiting_utils import wait_container_is_ready
 from testcontainers.core.exceptions import NoSuchPortExposed
 
 
-class DockerCompose(object):
+class DockerCompose:
     """
     Manage docker compose environments.
 
