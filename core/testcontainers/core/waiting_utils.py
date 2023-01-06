@@ -15,12 +15,14 @@
 import re
 import time
 import traceback
-from typing import Any, Callable, Iterable, Mapping, Optional
-
+from typing import Any, Callable, Iterable, Mapping, Optional, TYPE_CHECKING
 import wrapt
 
 from . import config
 from .utils import setup_logger
+
+if TYPE_CHECKING:
+    from .container import DockerContainer
 
 logger = setup_logger(__name__)
 
@@ -74,8 +76,8 @@ def wait_for(condition: Callable[..., bool]) -> bool:
     return condition()
 
 
-def wait_for_logs(container, predicate: Callable, timeout: Optional[float] = None,
-                  interval: float = 1) -> float:
+def wait_for_logs(container: "DockerContainer", predicate: Callable,
+                  timeout: Optional[float] = None, interval: float = 1) -> float:
     """
     Wait for the container to emit logs satisfying the predicate.
 
