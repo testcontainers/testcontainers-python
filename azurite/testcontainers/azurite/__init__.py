@@ -12,6 +12,7 @@
 #    under the License.
 import os
 import socket
+from typing import Iterable, Optional
 
 from testcontainers.core.container import DockerContainer
 from testcontainers.core.waiting_utils import wait_container_is_ready
@@ -48,21 +49,14 @@ class AzuriteContainer(DockerContainer):
     _QUEUE_SERVICE_PORT = 10_001
     _TABLE_SERVICE_PORT = 10_002
 
-    def __init__(
-            self,
-            image="mcr.microsoft.com/azure-storage/azurite:latest",
-            ports_to_expose=None,
-            **kwargs
-    ):
+    def __init__(self, image: str = "mcr.microsoft.com/azure-storage/azurite:latest",
+                 ports_to_expose: Optional[Iterable[int]] = None, **kwargs) -> None:
         """ Constructs an AzuriteContainer.
 
-        Parameters
-        ----------
-        image: str
-            Expects an image with tag.
-        ports_to_expose: List[int]
-            Expects a list with port numbers to expose.
-        kwargs
+        Args:
+            image: Expects an image with tag.
+            ports_to_expose: List with port numbers to expose.
+            **kwargs: Keyword arguments passed to super class.
         """
         super().__init__(image=image, **kwargs)
 
@@ -80,7 +74,7 @@ class AzuriteContainer(DockerContainer):
         self.with_env("AZURITE_ACCOUNTS",
                       f"{self._AZURITE_ACCOUNT_NAME}:{self._AZURITE_ACCOUNT_KEY}")
 
-    def get_connection_string(self):
+    def get_connection_string(self) -> str:
         host_ip = self.get_container_host_ip()
         connection_string = f"DefaultEndpointsProtocol=http;" \
                             f"AccountName={self._AZURITE_ACCOUNT_NAME};" \
@@ -103,13 +97,13 @@ class AzuriteContainer(DockerContainer):
 
         return connection_string
 
-    def start(self):
+    def start(self) -> 'AzuriteContainer':
         super().start()
         self._connect()
         return self
 
     @wait_container_is_ready(OSError)
-    def _connect(self):
+    def _connect(self) -> None:
         with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as s:
             s.connect((self.get_container_host_ip(),
                        int(self.get_exposed_port(next(iter(self.ports))))))
