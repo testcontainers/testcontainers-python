@@ -72,7 +72,7 @@ class ElasticSearchContainer(DockerContainer):
         '8.3.3'
     """
 
-    def __init__(self, image="elasticsearch", port_to_expose=9200, **kwargs):
+    def __init__(self, image="elasticsearch", port_to_expose=9200, **kwargs) -> None:
         super(ElasticSearchContainer, self).__init__(image, **kwargs)
         self.port_to_expose = port_to_expose
         self.with_exposed_ports(self.port_to_expose)
@@ -84,17 +84,17 @@ class ElasticSearchContainer(DockerContainer):
             self.with_env(key, value)
 
     @wait_container_is_ready()
-    def _connect(self):
+    def _connect(self) -> None:
         res = urllib.request.urlopen(self.get_url())
         if res.status != 200:
             raise Exception()
 
-    def get_url(self):
+    def get_url(self) -> str:
         host = self.get_container_host_ip()
         port = self.get_exposed_port(self.port_to_expose)
         return 'http://{}:{}'.format(host, port)
 
-    def start(self):
+    def start(self) -> "ElasticSearchContainer":
         super().start()
         self._connect()
         return self
