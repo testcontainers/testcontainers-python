@@ -29,7 +29,7 @@ class RedisContainer(DockerContainer):
             >>> with RedisContainer() as redis_container:
             ...     redis_client = redis_container.get_client()
         """
-    def __init__(self, image="redis:latest", port_to_expose=6379, password=None, **kwargs):
+    def __init__(self, image="redis:latest", port_to_expose=6379, password=None, **kwargs) -> None:
         super(RedisContainer, self).__init__(image, **kwargs)
         self.port_to_expose = port_to_expose
         self.password = password
@@ -38,23 +38,20 @@ class RedisContainer(DockerContainer):
             self.with_command(f"redis-server --requirepass {self.password}")
 
     @wait_container_is_ready(redis.exceptions.ConnectionError)
-    def _connect(self):
+    def _connect(self) -> None:
         client = self.get_client()
         if not client.ping():
             raise redis.exceptions.ConnectionError("Could not connect to Redis")
 
-    def get_client(self, **kwargs):
-        """get redis client
+    def get_client(self, **kwargs) -> redis.Redis:
+        """
+        Get a redis client.
 
-        Parameters
-        ----------
-        kwargs: dict
-            Keyword arguments passed to `redis.Redis`.
+        Args:
+            **kwargs: Keyword arguments passed to `redis.Redis`.
 
-        Returns
-        -------
-        client: redis.Redis
-            Redis client to connect to the container.
+        Returns:
+            client: Redis client to connect to the container.
         """
         return redis.Redis(
             host=self.get_container_host_ip(),
@@ -63,7 +60,7 @@ class RedisContainer(DockerContainer):
             **kwargs,
         )
 
-    def start(self):
+    def start(self) -> "RedisContainer":
         super().start()
         self._connect()
         return self
