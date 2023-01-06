@@ -7,7 +7,7 @@ try:  # Required for building documentation without all dependencies installed.
     from kafka import KafkaConsumer
     from kafka.errors import KafkaError, UnrecognizedBrokerVersion, NoBrokersAvailable
 except ModuleNotFoundError:
-    pass
+    UnrecognizedBrokerVersion = NoBrokersAvailable = KafkaError = None
 
 from testcontainers.core.container import DockerContainer
 from testcontainers.core.waiting_utils import wait_container_is_ready
