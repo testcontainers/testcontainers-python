@@ -12,7 +12,8 @@ class OpenSearchContainer(DockerContainer):
     between makes sure that the newly created document is available for search.
 
     The method :code:`get_client` can be used to create a OpenSearch Python Client. The method
-    :code:`get_config` can be used to retrieve the host, port, user, and password of the container.
+    :code:`get_config` can be used to retrieve the host, port, username, and password of the
+    container.
 
     Example:
 
@@ -47,16 +48,16 @@ class OpenSearchContainer(DockerContainer):
 
     def get_config(self) -> dict:
         """This method returns the configuration of the OpenSearch container,
-        including the host, port, user, and password.
+        including the host, port, username, and password.
 
         Returns:
-            dict: {`host`: str, `port`: str, `user`: str, `password`: str}
+            dict: {`host`: str, `port`: str, `username`: str, `password`: str}
         """
 
         return {
             "host": self.get_container_host_ip(),
             "port": self.get_exposed_port(self.port_to_expose),
-            "user": "admin",
+            "username": "admin",
             "password": "admin",
         }
 
@@ -75,7 +76,7 @@ class OpenSearchContainer(DockerContainer):
                     "port": config["port"],
                 }
             ],
-            http_auth=(config["user"], config["password"]),
+            http_auth=(config["username"], config["password"]),
             use_ssl=self.security_enabled,
             verify_certs=verify_certs,
             **kwargs,
