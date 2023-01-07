@@ -23,10 +23,9 @@ class KafkaContainer(DockerContainer):
             >>> with KafkaContainer() as kafka:
             ...    connection = kafka.get_bootstrap_server()
     """
-    KAFKA_PORT = 9093
     TC_START_SCRIPT = '/tc-start.sh'
 
-    def __init__(self, image: str = "confluentinc/cp-kafka:5.4.3", port_to_expose: int = KAFKA_PORT,
+    def __init__(self, image: str = "confluentinc/cp-kafka:5.4.3", port_to_expose: int = 9093,
                  **kwargs) -> None:
         super(KafkaContainer, self).__init__(image, **kwargs)
         self.port_to_expose = port_to_expose
