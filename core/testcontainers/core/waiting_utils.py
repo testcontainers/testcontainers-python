@@ -61,7 +61,7 @@ def wait_container_is_ready(*transient_exceptions) -> Callable:
             except transient_exceptions as e:
                 logger.debug(f"Connection attempt '{attempt_no + 1}' of '{config.MAX_TRIES + 1}' "
                              f"failed: {traceback.format_exc()}")
-                time.sleep(config.SLEEP_TIME)
+                time.sleep(config.POLLING_INTERVAL)
                 exception = e
         raise TimeoutError(
             f'Wait time ({config.MAX_TRIES * config.SLEEP_TIME}s) exceeded for {wrapped.__name__}'
