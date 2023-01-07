@@ -9,7 +9,7 @@ from testcontainers.arangodb import ArangoDbContainer
 ARANGODB_IMAGE_NAME = 'arangodb'
 
 
-def arango_test_ops(arango_client, expeced_version, db_user='root', db_pass=''):
+def arango_test_ops(arango_client, expeced_version, username='root', db_pass=''):
     """
     Basic ArangoDB operations to test DB really up and running.
     """
@@ -17,14 +17,14 @@ def arango_test_ops(arango_client, expeced_version, db_user='root', db_pass=''):
 
     # Taken from https://github.com/ArangoDB-Community/python-arango/blob/main/README.md
     # Connect to "_system" database as root user.
-    sys_db = arango_client.db("_system", username=db_user, password=db_pass)
+    sys_db = arango_client.db("_system", username=username, password=db_pass)
     assert sys_db.version() == expeced_version
 
     # Create a new database named "test".
     sys_db.create_database("test")
 
     # Connect to "test" database as root user.
-    database = arango_client.db("test", username=db_user, password=db_pass)
+    database = arango_client.db("test", username=username, password=db_pass)
 
     # Create a new collection named "students".
     students = database.create_collection("students")
