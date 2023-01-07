@@ -15,8 +15,10 @@ import os
 
 from neo4j import Driver, GraphDatabase
 
+from testcontainers.core.config import TIMEOUT
 from testcontainers.core.generic import DbContainer
 from testcontainers.core.waiting_utils import wait_container_is_ready, wait_for_logs
+from typing import Optional
 
 
 class Neo4jContainer(DbContainer):
@@ -35,26 +37,17 @@ class Neo4jContainer(DbContainer):
             ...     result = session.run("MATCH (n) RETURN n LIMIT 1")
             ...     record = result.single()
     """
-
-    # The official image requires a change of password on startup.
-    NEO4J_ADMIN_PASSWORD = os.environ.get("NEO4J_ADMIN_PASSWORD", "password")
-    # Default port for the binary Bolt protocol.
-    DEFAULT_BOLT_PORT = 7687
-    AUTH_FORMAT = "neo4j/{password}"
-    NEO4J_STARTUP_TIMEOUT_SECONDS = 10
-    NEO4J_USER = "neo4j"
-
-    def __init__(self, image: str = "neo4j:latest", **kwargs) -> None:
+    def __init__(self, image: str = "neo4j:latest", *, bolt_port: int = 7687,
+                 password: Optional[str] = None, username: Optional[str] = None, **kwargs) -> None:
         super(Neo4jContainer, self).__init__(image, **kwargs)
-        self.bolt_port = Neo4jContainer.DEFAULT_BOLT_PORT
+        self.username = username or os.environ.get("NEO4J_USER", "password")
+        self.password = password or os.environ.get("NEO4J_PASSWORD", "password")
+        self.bolt_port = bolt_port
         self.with_exposed_ports(self.bolt_port)
         self._driver = None
 
     def _configure(self) -> None:
-        self.with_env(
-            "NEO4J_AUTH",
-            Neo4jContainer.AUTH_FORMAT.format(password=Neo4jContainer.NEO4J_ADMIN_PASSWORD)
-        )
+        self.with_env("NEO4J_AUTH", f"neo4j/{self.password}")
 
     def get_connection_url(self) -> str:
         return "{dialect}://{host}:{port}".format(
@@ -65,12 +58,7 @@ class Neo4jContainer(DbContainer):
 
     @wait_container_is_ready()
     def _connect(self) -> None:
-        # First we wait for Neo4j to say it's listening
-        wait_for_logs(
-            self,
-            "Remote interface available at",
-            Neo4jContainer.NEO4J_STARTUP_TIMEOUT_SECONDS,
-        )
+        wait_for_logs(self, "Remote interface available at", TIMEOUT)
 
         # Then we actually check that the container really is listening
         with self.get_driver() as driver:
@@ -81,6 +69,6 @@ class Neo4jContainer(DbContainer):
     def get_driver(self, **kwargs) -> Driver:
         return GraphDatabase.driver(
             self.get_connection_url(),
-            auth=(Neo4jContainer.NEO4J_USER, Neo4jContainer.NEO4J_ADMIN_PASSWORD),
+            auth=(self.username, self.password),
             **kwargs
         )
