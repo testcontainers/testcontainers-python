@@ -64,8 +64,8 @@ def wait_container_is_ready(*transient_exceptions) -> Callable:
                 time.sleep(config.SLEEP_TIME)
                 exception = e
         raise TimeoutError(
-            f'Wait time ({config.MAX_TRIES * config.SLEEP_TIME}s) exceeded for {wrapped.__name__}'
-            f'(args: {args}, kwargs {kwargs}). Exception: {exception}'
+            f'Wait time ({config.TIMEOUT}s) exceeded for {wrapped.__name__}(args: {args}, kwargs '
+            f'{kwargs}). Exception: {exception}'
         )
 
     return wrapper
