@@ -58,7 +58,6 @@ class MongoDbContainer(DbContainer):
         self.dbname = dbname or os.environ.get("MONGO_DB", "test")
         self.port = port
         self.with_exposed_ports(self.port)
-        self.with_command("mongo")
 
     def _configure(self) -> None:
         self.with_env("MONGO_INITDB_ROOT_USERNAME", self.username)
