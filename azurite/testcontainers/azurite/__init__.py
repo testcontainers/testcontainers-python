@@ -39,18 +39,11 @@ class AzuriteContainer(DockerContainer):
                 ...        api_version="2019-12-12"
                 ...   )
         """
-
-    _AZURITE_ACCOUNT_NAME = os.environ.get("AZURITE_ACCOUNT_NAME", "devstoreaccount1")
-    _AZURITE_ACCOUNT_KEY = os.environ.get("AZURITE_ACCOUNT_KEY", "Eby8vdM02xNOcqFlqUwJPLlmEtlCDX"
-                                          "J1OUzFT50uSRZ6IFsuFq2UVErCz4I6"
-                                          "tq/K1SZFPTOtr/KBHBeksoGMGw==")
-
-    _BLOB_SERVICE_PORT = 10_000
-    _QUEUE_SERVICE_PORT = 10_001
-    _TABLE_SERVICE_PORT = 10_002
-
-    def __init__(self, image: str = "mcr.microsoft.com/azure-storage/azurite:latest",
-                 ports_to_expose: Optional[Iterable[int]] = None, **kwargs) -> None:
+    def __init__(self, image: str = "mcr.microsoft.com/azure-storage/azurite:latest", *,
+                 ports_to_expose: Optional[Iterable[int]] = None, blob_service_port: int = 10_000,
+                 queue_service_port: int = 10_001, table_service_port: int = 10_002,
+                 account_name: Optional[str] = None, account_key: Optional[str] = None, **kwargs) \
+            -> None:
         """ Constructs an AzuriteContainer.
 
         Args:
@@ -59,41 +52,41 @@ class AzuriteContainer(DockerContainer):
             **kwargs: Keyword arguments passed to super class.
         """
         super().__init__(image=image, **kwargs)
+        self.account_name = account_name or os.environ.get(
+            "AZURITE_ACCOUNT_NAME", "devstoreaccount1")
+        self.account_key = account_key or os.environ.get(
+            "AZURITE_ACCOUNT_KEY", "Eby8vdM02xNOcqFlqUwJPLlmEtlCDXJ1OUzFT50uSRZ6IFsuFq2UVErCz4I6tq/"
+            "K1SZFPTOtr/KBHBeksoGMGw==")
 
-        if ports_to_expose is None:
-            ports_to_expose = [
-                self._BLOB_SERVICE_PORT,
-                self._QUEUE_SERVICE_PORT,
-                self._TABLE_SERVICE_PORT
-            ]
-
-        if len(ports_to_expose) == 0:
-            raise ValueError("Expected a list with port numbers to expose")
+        self.blob_service_port = blob_service_port
+        self.queue_service_port = queue_service_port
+        self.table_service_port = table_service_port
+        if not ports_to_expose:
+            ports_to_expose = [blob_service_port, queue_service_port, table_service_port]
 
         self.with_exposed_ports(*ports_to_expose)
-        self.with_env("AZURITE_ACCOUNTS",
-                      f"{self._AZURITE_ACCOUNT_NAME}:{self._AZURITE_ACCOUNT_KEY}")
+        self.with_env("AZURITE_ACCOUNTS", f"{self.account_name}:{self.account_key}")
 
     def get_connection_string(self) -> str:
         host_ip = self.get_container_host_ip()
         connection_string = f"DefaultEndpointsProtocol=http;" \
-                            f"AccountName={self._AZURITE_ACCOUNT_NAME};" \
-                            f"AccountKey={self._AZURITE_ACCOUNT_KEY};"
+                            f"AccountName={self.account_name};" \
+                            f"AccountKey={self.account_key};"
 
-        if self._BLOB_SERVICE_PORT in self.ports:
+        if self.blob_service_port in self.ports:
             connection_string += f"BlobEndpoint=http://{host_ip}:" \
-                                 f"{self.get_exposed_port(self._BLOB_SERVICE_PORT)}" \
-                                 f"/{self._AZURITE_ACCOUNT_NAME};"
+                                 f"{self.get_exposed_port(self.blob_service_port)}" \
+                                 f"/{self.account_name};"
 
-        if self._QUEUE_SERVICE_PORT in self.ports:
+        if self.queue_service_port in self.ports:
             connection_string += f"QueueEndpoint=http://{host_ip}:" \
-                                 f"{self.get_exposed_port(self._QUEUE_SERVICE_PORT)}" \
-                                 f"/{self._AZURITE_ACCOUNT_NAME};"
+                                 f"{self.get_exposed_port(self.queue_service_port)}" \
+                                 f"/{self.account_name};"
 
-        if self._TABLE_SERVICE_PORT in self.ports:
+        if self.table_service_port in self.ports:
             connection_string += f"TableEndpoint=http://{host_ip}:" \
-                                 f"{self.get_exposed_port(self._TABLE_SERVICE_PORT)}" \
-                                 f"/{self._AZURITE_ACCOUNT_NAME};"
+                                 f"{self.get_exposed_port(self.table_service_port)}" \
+                                 f"/{self.account_name};"
 
         return connection_string
 
