@@ -44,11 +44,9 @@ class DbContainer(DockerContainer):
             raise ContainerStartException("container has not been started")
         host = host or self.get_container_host_ip()
         port = self.get_exposed_port(port)
-        url = "{dialect}://{username}:{password}@{host}:{port}".format(
-            dialect=dialect, username=username, password=password, host=host, port=port
-        )
+        url = f"{dialect}://{username}:{password}@{host}:{port}"
         if db_name:
-            url += '/' + db_name
+            url = f"{url}/{db_name}"
         return url
 
     def start(self) -> 'DbContainer':

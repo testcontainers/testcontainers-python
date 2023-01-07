@@ -50,11 +50,7 @@ class Neo4jContainer(DbContainer):
         self.with_env("NEO4J_AUTH", f"neo4j/{self.password}")
 
     def get_connection_url(self) -> str:
-        return "{dialect}://{host}:{port}".format(
-            dialect="bolt",
-            host=self.get_container_host_ip(),
-            port=self.get_exposed_port(self.bolt_port),
-        )
+        return f"bolt://{self.get_container_host_ip()}:{self.get_exposed_port(self.bolt_port)}"
 
     @wait_container_is_ready()
     def _connect(self) -> None:

@@ -93,7 +93,7 @@ class ElasticSearchContainer(DockerContainer):
     def get_url(self) -> str:
         host = self.get_container_host_ip()
         port = self.get_exposed_port(self.port_to_expose)
-        return 'http://{}:{}'.format(host, port)
+        return f'http://{host}:{port}'
 
     def start(self) -> "ElasticSearchContainer":
         super().start()

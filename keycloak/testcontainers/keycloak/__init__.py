@@ -48,12 +48,12 @@ class KeycloakContainer(DockerContainer):
     def get_url(self) -> str:
         host = self.get_container_host_ip()
         port = self.get_exposed_port(self.port_to_expose)
-        return "http://{}:{}".format(host, port)
+        return f"http://{host}:{port}"
 
     @wait_container_is_ready(requests.exceptions.ConnectionError, requests.exceptions.ReadTimeout)
     def _connect(self) -> None:
         url = self.get_url()
-        response = requests.get("{}/auth".format(url), timeout=1)
+        response = requests.get(f"{url}/auth", timeout=1)
         response.raise_for_status()
 
     def start(self) -> "KeycloakContainer":
@@ -64,7 +64,7 @@ class KeycloakContainer(DockerContainer):
 
     def get_client(self, **kwargs) -> KeycloakAdmin:
         default_kwargs = dict(
-            server_url="{}/auth/".format(self.get_url()),
+            server_url=f"{self.get_url()}/auth/",
             username=self.username,
             password=self.password,
             realm_name="master",
