@@ -40,7 +40,7 @@ class Neo4jContainer(DbContainer):
     def __init__(self, image: str = "neo4j:latest", *, bolt_port: int = 7687,
                  password: Optional[str] = None, username: Optional[str] = None, **kwargs) -> None:
         super(Neo4jContainer, self).__init__(image, **kwargs)
-        self.username = username or os.environ.get("NEO4J_USER", "password")
+        self.username = username or os.environ.get("NEO4J_USER", "neo4j")
         self.password = password or os.environ.get("NEO4J_PASSWORD", "password")
         self.bolt_port = bolt_port
         self.with_exposed_ports(self.bolt_port)
