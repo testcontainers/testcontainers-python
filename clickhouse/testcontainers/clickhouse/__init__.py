@@ -53,7 +53,7 @@ class ClickHouseContainer(DbContainer):
             raise ValueError("use `username` instead")
         self.username = username or os.environ.get("CLICKHOUSE_USER", "test")
         self.password = password or os.environ.get("CLICKHOUSE_PASSWORD", "test")
-        self.dbname = dbname or self.os.environ.get("CLICKHOUSE_DB", "test")
+        self.dbname = dbname or os.environ.get("CLICKHOUSE_DB", "test")
         self.port_to_expose = port
         self.with_exposed_ports(self.port_to_expose)
 
