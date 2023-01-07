@@ -47,16 +47,18 @@ class MongoDbContainer(DbContainer):
             ...    # Find the restaurant document
             ...    cursor = db.restaurants.find({"borough": "Manhattan"})
     """
-    def __init__(self, image: str = "mongo:latest", port_to_expose: int = 27017,
+    def __init__(self, image: str = "mongo:latest", port: int = 27017,
                  username: Optional[str] = None, password: Optional[str] = None,
-                 dbname: Optional[str] = None, **kwargs) -> None:
+                 dbname: Optional[str] = None, port_to_expose: None = None, **kwargs) -> None:
+        if port_to_expose:
+            raise ValueError("use `port` instead of `port_to_expose`")
         super(MongoDbContainer, self).__init__(image=image, **kwargs)
         self.username = username or os.environ.get("MONGO_INITDB_ROOT_USERNAME", "test")
         self.password = password or os.environ.get("MONGO_INITDB_ROOT_PASSWORD", "test")
         self.dbname = dbname or os.environ.get("MONGO_DB", "test")
-        self.command = "mongo"
-        self.port_to_expose = port_to_expose
-        self.with_exposed_ports(self.port_to_expose)
+        self.port = port
+        self.with_exposed_ports(self.port)
+        self.with_command("mongo")
 
     def _configure(self) -> None:
         self.with_env("MONGO_INITDB_ROOT_USERNAME", self.username)
@@ -68,7 +70,7 @@ class MongoDbContainer(DbContainer):
             dialect='mongodb',
             username=self.username,
             password=self.password,
-            port=self.port_to_expose,
+            port=self.port,
         )
 
     @wait_container_is_ready()

@@ -9,8 +9,9 @@ from testcontainers.mongodb import MongoDbContainer
 def test_docker_generic_db():
     with DockerContainer("mongo:latest").with_bind_ports(27017, 27017) as mongo_container:
         def connect():
-            return MongoClient("mongodb://{}:{}".format(mongo_container.get_container_host_ip(),
-                                                        mongo_container.get_exposed_port(27017)))
+            host = mongo_container.get_container_host_ip()
+            port = mongo_container.get_exposed_port(27017)
+            return MongoClient(f"mongodb://{host}:{port}")
 
         db = wait_for(connect).primer
         result = db.restaurants.insert_one(
@@ -55,8 +56,8 @@ def test_docker_run_mongodb():
 
 def test_docker_run_mongodb_connect_without_credentials():
     with MongoDbContainer() as mongo:
-        connection_url = "mongodb://{}:{}".format(mongo.get_container_host_ip(),
-                                                  mongo.get_exposed_port(mongo.port_to_expose))
+        connection_url = f"mongodb://{mongo.get_container_host_ip()}:" \
+            f"{mongo.get_exposed_port(mongo.port)}"
         db = MongoClient(connection_url).test
         with pytest.raises(OperationFailure):
             db.restaurants.insert_one({})

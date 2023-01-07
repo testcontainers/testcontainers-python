@@ -35,24 +35,26 @@ class MinioContainer(DockerContainer):
     """
 
     def __init__(self, image: str = "minio/minio:RELEASE.2022-12-02T19-19-22Z",
-                 port_to_expose: int = 9000, access_key: str = "minioadmin",
-                 secret_key: str = "minioadmin", **kwargs) -> None:
+                 port: int = 9000, access_key: str = "minioadmin",
+                 secret_key: str = "minioadmin", port_to_expose: None = None, **kwargs) -> None:
         """
         Args:
             image: Docker image to use for the MinIO container.
-            port_to_expose: Port to expose on the container.
+            port: Port to expose on the container.
             access_key: Access key for client connections.
             secret_key: Secret key for client connections.
         """
+        if port_to_expose:
+            raise ValueError("use `port` instead of `port_to_expose`")
         super(MinioContainer, self).__init__(image, **kwargs)
-        self.port_to_expose = port_to_expose
+        self.port = port
         self.access_key = access_key
         self.secret_key = secret_key
 
-        self.with_exposed_ports(self.port_to_expose)
+        self.with_exposed_ports(self.port)
         self.with_env("MINIO_ACCESS_KEY", self.access_key)
         self.with_env("MINIO_SECRET_KEY", self.secret_key)
-        self.with_command(f"server /data --address :{self.port_to_expose}")
+        self.with_command(f"server /data --address :{self.port}")
 
     def get_client(self, **kwargs) -> Minio:
         """Returns a Minio client to connect to the container.
@@ -62,7 +64,7 @@ class MinioContainer(DockerContainer):
                    https://min.io/docs/minio/linux/developers/python/API.html
         """
         host_ip = self.get_container_host_ip()
-        exposed_port = self.get_exposed_port(self.port_to_expose)
+        exposed_port = self.get_exposed_port(self.port)
         return Minio(
             f"{host_ip}:{exposed_port}",
             access_key=self.access_key,
@@ -79,7 +81,7 @@ class MinioContainer(DockerContainer):
             dict: {`endpoint`: str, `access_key`: str, `secret_key`: str}
         """
         host_ip = self.get_container_host_ip()
-        exposed_port = self.get_exposed_port(self.port_to_expose)
+        exposed_port = self.get_exposed_port(self.port)
         return {
             "endpoint": f"{host_ip}:{exposed_port}",
             "access_key": self.access_key,

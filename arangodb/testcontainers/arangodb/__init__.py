@@ -36,15 +36,16 @@ class ArangoDbContainer(DbContainer):
 
     def __init__(self,
                  image: str = "arangodb:latest",
-                 port_to_expose: int = 8529,
+                 port: int = 8529,
                  arango_root_password: str = "passwd",
                  arango_no_auth: typing.Optional[bool] = None,
                  arango_random_root_password: typing.Optional[bool] = None,
+                 port_to_expose: None = None,
                  **kwargs) -> None:
         """
         Args:
             image: Actual docker image/tag to pull.
-            port_to_expose: Port the container needs to expose.
+            port: Port the container needs to expose.
             arango_root_password: Start ArangoDB with the given password for root. Defaults to the
                 environment variable `ARANGO_ROOT_PASSWORD` if `None`.
             arango_no_auth: Disable authentication completely. Defaults to the environment variable
@@ -53,9 +54,11 @@ class ArangoDbContainer(DbContainer):
                 the environment variable `ARANGO_NO_AUTH` if `None` or `False` if the environment
                 variable is not available.
         """
+        if port_to_expose:
+            raise ValueError("use `port` instead of `port_to_expose`")
         super().__init__(image=image, **kwargs)
-        self.port_to_expose = port_to_expose
-        self.with_exposed_ports(self.port_to_expose)
+        self.port = port
+        self.with_exposed_ports(self.port)
 
         # See https://www.arangodb.com/docs/stable/deployment-single-instance-manual-start.html for
         # details. We convert to int then to bool because Arango uses the string literal "1" to
@@ -77,7 +80,7 @@ class ArangoDbContainer(DbContainer):
             self.with_env("ARANGO_RANDOM_ROOT_PASSWORD", "1")
 
     def get_connection_url(self) -> str:
-        port = self.get_exposed_port(self.port_to_expose)
+        port = self.get_exposed_port(self.port)
         return f"http://{self.get_container_host_ip()}:{port}"
 
     def _connect(self) -> None:

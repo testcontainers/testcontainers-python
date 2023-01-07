@@ -14,7 +14,10 @@ from testcontainers.core.container import DockerContainer
 
 
 class NginxContainer(DockerContainer):
-    def __init__(self, image: str = "nginx:latest", port_to_expose: int = 80, **kwargs) -> None:
+    def __init__(self, image: str = "nginx:latest", port: int = 80, port_to_expose: None = None,
+                 **kwargs) -> None:
+        if port_to_expose:
+            raise ValueError("use `port` instead of `port_to_expose`")
         super(NginxContainer, self).__init__(image, **kwargs)
-        self.port_to_expose = port_to_expose
-        self.with_exposed_ports(self.port_to_expose)
+        self.port = port
+        self.with_exposed_ports(self.port)

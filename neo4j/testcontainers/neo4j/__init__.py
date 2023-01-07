@@ -37,20 +37,23 @@ class Neo4jContainer(DbContainer):
             ...     result = session.run("MATCH (n) RETURN n LIMIT 1")
             ...     record = result.single()
     """
-    def __init__(self, image: str = "neo4j:latest", *, bolt_port: int = 7687,
-                 password: Optional[str] = None, username: Optional[str] = None, **kwargs) -> None:
+    def __init__(self, image: str = "neo4j:latest", *, port: int = 7687,
+                 password: Optional[str] = None, username: Optional[str] = None,
+                 bolt_port: None = None, **kwargs) -> None:
+        if bolt_port:
+            raise ValueError("use `port` instead of `bolt_port`")
         super(Neo4jContainer, self).__init__(image, **kwargs)
         self.username = username or os.environ.get("NEO4J_USER", "neo4j")
         self.password = password or os.environ.get("NEO4J_PASSWORD", "password")
-        self.bolt_port = bolt_port
-        self.with_exposed_ports(self.bolt_port)
+        self.port = port
+        self.with_exposed_ports(self.port)
         self._driver = None
 
     def _configure(self) -> None:
         self.with_env("NEO4J_AUTH", f"neo4j/{self.password}")
 
     def get_connection_url(self) -> str:
-        return f"bolt://{self.get_container_host_ip()}:{self.get_exposed_port(self.bolt_port)}"
+        return f"bolt://{self.get_container_host_ip()}:{self.get_exposed_port(self.port)}"
 
     @wait_container_is_ready()
     def _connect(self) -> None:

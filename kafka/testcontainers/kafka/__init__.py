@@ -25,12 +25,14 @@ class KafkaContainer(DockerContainer):
     """
     TC_START_SCRIPT = '/tc-start.sh'
 
-    def __init__(self, image: str = "confluentinc/cp-kafka:5.4.3", port_to_expose: int = 9093,
-                 **kwargs) -> None:
+    def __init__(self, image: str = "confluentinc/cp-kafka:5.4.3", port: int = 9093,
+                 port_to_expose: None = None, **kwargs) -> None:
+        if port_to_expose:
+            raise ValueError("use `port` instead of `port_to_expose`")
         super(KafkaContainer, self).__init__(image, **kwargs)
-        self.port_to_expose = port_to_expose
-        self.with_exposed_ports(self.port_to_expose)
-        listeners = f'PLAINTEXT://0.0.0.0:{port_to_expose},BROKER://0.0.0.0:9092'
+        self.port = port
+        self.with_exposed_ports(self.port)
+        listeners = f'PLAINTEXT://0.0.0.0:{self.port},BROKER://0.0.0.0:9092'
         self.with_env('KAFKA_LISTENERS', listeners)
         self.with_env('KAFKA_LISTENER_SECURITY_PROTOCOL_MAP',
                       'BROKER:PLAINTEXT,PLAINTEXT:PLAINTEXT')
@@ -44,7 +46,7 @@ class KafkaContainer(DockerContainer):
 
     def get_bootstrap_server(self) -> str:
         host = self.get_container_host_ip()
-        port = self.get_exposed_port(self.port_to_expose)
+        port = self.get_exposed_port(self.port)
         return f'{host}:{port}'
 
     @wait_container_is_ready(UnrecognizedBrokerVersion, NoBrokersAvailable, KafkaError, ValueError)
@@ -56,7 +58,7 @@ class KafkaContainer(DockerContainer):
 
     def tc_start(self) -> None:
         host = self.get_container_host_ip()
-        port = self.get_exposed_port(self.port_to_expose)
+        port = self.get_exposed_port(self.port)
         listeners = f'PLAINTEXT://{host}:{port},BROKER://$(hostname -i):9092'
         data = (
             dedent(

@@ -29,18 +29,21 @@ class OpenSearchContainer(DockerContainer):
     """
 
     def __init__(self, image: str = "opensearchproject/opensearch:2.4.0",
-                 port_to_expose: int = 9200, security_enabled: bool = False, **kwargs) -> None:
+                 port: int = 9200, security_enabled: bool = False, port_to_expose: None = None,
+                 **kwargs) -> None:
         """
         Args:
             image: Docker image to use for the container.
-            port_to_expose: Port to expose on the container.
+            port: Port to expose on the container.
             security_enabled: :code:`False` disables the security plugin in OpenSearch.
         """
+        if port_to_expose:
+            raise ValueError("use `port` instead of `port_to_expose`")
         super(OpenSearchContainer, self).__init__(image, **kwargs)
-        self.port_to_expose = port_to_expose
+        self.port = port
         self.security_enabled = security_enabled
 
-        self.with_exposed_ports(self.port_to_expose)
+        self.with_exposed_ports(self.port)
         self.with_env("discovery.type", "single-node")
         self.with_env("plugins.security.disabled", "false" if security_enabled else "true")
         if security_enabled:
@@ -56,7 +59,7 @@ class OpenSearchContainer(DockerContainer):
 
         return {
             "host": self.get_container_host_ip(),
-            "port": self.get_exposed_port(self.port_to_expose),
+            "port": self.get_exposed_port(self.port),
             "username": "admin",
             "password": "admin",
         }
