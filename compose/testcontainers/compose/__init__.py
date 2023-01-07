@@ -1,10 +1,3 @@
-"""
-Docker Compose Support
-======================
-
-Allows to spin up services configured via :code:`docker-compose.yml`.
-"""
-
 import requests
 import subprocess
 from typing import Iterable, List, Optional, Tuple, Union

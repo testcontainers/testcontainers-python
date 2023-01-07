@@ -10,12 +10,6 @@
 #    WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the
 #    License for the specific language governing permissions and limitations
 #    under the License.
-"""
-Selenium containers
-===================
-
-Allows to spin up selenium containers for testing with browsers.
-"""
 
 from selenium import webdriver
 from testcontainers.core.container import DockerContainer
