@@ -14,24 +14,28 @@
 import redis
 from testcontainers.core.container import DockerContainer
 from testcontainers.core.waiting_utils import wait_container_is_ready
+from typing import Optional
 
 
 class RedisContainer(DockerContainer):
     """
-        Redis container.
+    Redis container.
 
-        Example:
+    Example:
 
-            .. doctest::
+        .. doctest::
 
-                >>> from testcontainers.redis import RedisContainer
+            >>> from testcontainers.redis import RedisContainer
 
-                >>> with RedisContainer() as redis_container:
-                ...     redis_client = redis_container.get_client()
-        """
-    def __init__(self, image="redis:latest", port_to_expose=6379, password=None, **kwargs) -> None:
+            >>> with RedisContainer() as redis_container:
+            ...     redis_client = redis_container.get_client()
+    """
+    def __init__(self, image: str = "redis:latest", port: int = 6379,
+                 password: Optional[str] = None, port_to_expose: None = None, **kwargs) -> None:
+        if port_to_expose:
+            raise ValueError("use `port` instead of `port_to_expose`")
         super(RedisContainer, self).__init__(image, **kwargs)
-        self.port_to_expose = port_to_expose
+        self.port_to_expose = port
         self.password = password
         self.with_exposed_ports(self.port_to_expose)
         if self.password:

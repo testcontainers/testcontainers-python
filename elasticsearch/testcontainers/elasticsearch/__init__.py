@@ -73,9 +73,12 @@ class ElasticSearchContainer(DockerContainer):
             '8.3.3'
     """
 
-    def __init__(self, image="elasticsearch", port_to_expose=9200, **kwargs) -> None:
+    def __init__(self, image: str = "elasticsearch", port: int = 9200, port_to_expose: None = None,
+                 **kwargs) -> None:
+        if port_to_expose:
+            raise ValueError("use `port` instead of `port_to_expose`")
         super(ElasticSearchContainer, self).__init__(image, **kwargs)
-        self.port_to_expose = port_to_expose
+        self.port_to_expose = port
         self.with_exposed_ports(self.port_to_expose)
         self.with_env('transport.host', '127.0.0.1')
         self.with_env('http.host', '0.0.0.0')
