@@ -17,6 +17,7 @@ import clickhouse_driver
 from clickhouse_driver.errors import Error
 
 from testcontainers.core.generic import DbContainer
+from testcontainers.core.utils import raise_for_deprecated_parameter
 from testcontainers.core.waiting_utils import wait_container_is_ready
 
 
@@ -39,18 +40,11 @@ class ClickHouseContainer(DbContainer):
             ...     client.execute("select 'working'")
             [('working',)]
     """
-    def __init__(
-            self,
-            image: str = "clickhouse/clickhouse-server:latest",
-            port: int = 9000,
-            username: Optional[str] = None,
-            password: Optional[str] = None,
-            dbname: Optional[str] = None,
-            user: None = None,
-    ) -> None:
-        super().__init__(image=image)
-        if user:
-            raise ValueError("use `username` instead")
+    def __init__(self, image: str = "clickhouse/clickhouse-server:latest", port: int = 9000,
+                 username: Optional[str] = None, password: Optional[str] = None,
+                 dbname: Optional[str] = None, **kwargs) -> None:
+        raise_for_deprecated_parameter(kwargs, "user", "username")
+        super().__init__(image=image, **kwargs)
         self.username = username or os.environ.get("CLICKHOUSE_USER", "test")
         self.password = password or os.environ.get("CLICKHOUSE_PASSWORD", "test")
         self.dbname = dbname or os.environ.get("CLICKHOUSE_DB", "test")

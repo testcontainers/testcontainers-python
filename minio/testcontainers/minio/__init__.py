@@ -2,6 +2,7 @@ from minio import Minio
 from requests import ConnectionError, Response, get
 
 from testcontainers.core.container import DockerContainer
+from testcontainers.core.utils import raise_for_deprecated_parameter
 from testcontainers.core.waiting_utils import wait_container_is_ready
 
 
@@ -36,7 +37,7 @@ class MinioContainer(DockerContainer):
 
     def __init__(self, image: str = "minio/minio:RELEASE.2022-12-02T19-19-22Z",
                  port: int = 9000, access_key: str = "minioadmin",
-                 secret_key: str = "minioadmin", port_to_expose: None = None, **kwargs) -> None:
+                 secret_key: str = "minioadmin", **kwargs) -> None:
         """
         Args:
             image: Docker image to use for the MinIO container.
@@ -44,8 +45,7 @@ class MinioContainer(DockerContainer):
             access_key: Access key for client connections.
             secret_key: Secret key for client connections.
         """
-        if port_to_expose:
-            raise ValueError("use `port` instead of `port_to_expose`")
+        raise_for_deprecated_parameter(kwargs, "port_to_expose", "port")
         super(MinioContainer, self).__init__(image, **kwargs)
         self.port = port
         self.access_key = access_key

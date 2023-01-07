@@ -7,6 +7,7 @@ from kafka import KafkaConsumer
 from kafka.errors import KafkaError, UnrecognizedBrokerVersion, NoBrokersAvailable
 
 from testcontainers.core.container import DockerContainer
+from testcontainers.core.utils import raise_for_deprecated_parameter
 from testcontainers.core.waiting_utils import wait_container_is_ready
 
 
@@ -25,10 +26,9 @@ class KafkaContainer(DockerContainer):
     """
     TC_START_SCRIPT = '/tc-start.sh'
 
-    def __init__(self, image: str = "confluentinc/cp-kafka:5.4.3", port: int = 9093,
-                 port_to_expose: None = None, **kwargs) -> None:
-        if port_to_expose:
-            raise ValueError("use `port` instead of `port_to_expose`")
+    def __init__(self, image: str = "confluentinc/cp-kafka:5.4.3", port: int = 9093, **kwargs) \
+            -> None:
+        raise_for_deprecated_parameter(kwargs, "port_to_expose", "port")
         super(KafkaContainer, self).__init__(image, **kwargs)
         self.port = port
         self.with_exposed_ports(self.port)

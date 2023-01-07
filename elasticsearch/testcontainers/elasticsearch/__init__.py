@@ -17,6 +17,7 @@ from typing import Dict
 from urllib.error import URLError
 
 from testcontainers.core.container import DockerContainer
+from testcontainers.core.utils import raise_for_deprecated_parameter
 from testcontainers.core.waiting_utils import wait_container_is_ready
 
 _FALLBACK_VERSION = 8
@@ -73,10 +74,8 @@ class ElasticSearchContainer(DockerContainer):
             '8.3.3'
     """
 
-    def __init__(self, image: str = "elasticsearch", port: int = 9200, port_to_expose: None = None,
-                 **kwargs) -> None:
-        if port_to_expose:
-            raise ValueError("use `port` instead of `port_to_expose`")
+    def __init__(self, image: str = "elasticsearch", port: int = 9200, **kwargs) -> None:
+        raise_for_deprecated_parameter(kwargs, "port_to_expose", "port")
         super(ElasticSearchContainer, self).__init__(image, **kwargs)
         self.port_to_expose = port
         self.with_exposed_ports(self.port_to_expose)

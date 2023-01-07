@@ -4,6 +4,7 @@ ArangoDB container support.
 from os import environ
 from testcontainers.core.config import TIMEOUT
 from testcontainers.core.generic import DbContainer
+from testcontainers.core.utils import raise_for_deprecated_parameter
 from testcontainers.core.waiting_utils import wait_for_logs
 import typing
 
@@ -40,7 +41,6 @@ class ArangoDbContainer(DbContainer):
                  arango_root_password: str = "passwd",
                  arango_no_auth: typing.Optional[bool] = None,
                  arango_random_root_password: typing.Optional[bool] = None,
-                 port_to_expose: None = None,
                  **kwargs) -> None:
         """
         Args:
@@ -54,8 +54,7 @@ class ArangoDbContainer(DbContainer):
                 the environment variable `ARANGO_NO_AUTH` if `None` or `False` if the environment
                 variable is not available.
         """
-        if port_to_expose:
-            raise ValueError("use `port` instead of `port_to_expose`")
+        raise_for_deprecated_parameter(kwargs, "port_to_expose", "port")
         super().__init__(image=image, **kwargs)
         self.port = port
         self.with_exposed_ports(self.port)

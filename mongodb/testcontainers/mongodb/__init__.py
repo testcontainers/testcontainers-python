@@ -13,6 +13,7 @@
 import os
 from pymongo import MongoClient
 from testcontainers.core.generic import DbContainer
+from testcontainers.core.utils import raise_for_deprecated_parameter
 from testcontainers.core.waiting_utils import wait_container_is_ready
 from typing import Optional
 
@@ -49,9 +50,8 @@ class MongoDbContainer(DbContainer):
     """
     def __init__(self, image: str = "mongo:latest", port: int = 27017,
                  username: Optional[str] = None, password: Optional[str] = None,
-                 dbname: Optional[str] = None, port_to_expose: None = None, **kwargs) -> None:
-        if port_to_expose:
-            raise ValueError("use `port` instead of `port_to_expose`")
+                 dbname: Optional[str] = None, **kwargs) -> None:
+        raise_for_deprecated_parameter(kwargs, "port_to_expose", "port")
         super(MongoDbContainer, self).__init__(image=image, **kwargs)
         self.username = username or os.environ.get("MONGO_INITDB_ROOT_USERNAME", "test")
         self.password = password or os.environ.get("MONGO_INITDB_ROOT_PASSWORD", "test")

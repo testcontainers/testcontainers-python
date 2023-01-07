@@ -2,6 +2,7 @@ from opensearchpy import OpenSearch
 from opensearchpy.exceptions import ConnectionError, TransportError
 
 from testcontainers.core.container import DockerContainer
+from testcontainers.core.utils import raise_for_deprecated_parameter
 from testcontainers.core.waiting_utils import wait_container_is_ready
 
 
@@ -29,16 +30,14 @@ class OpenSearchContainer(DockerContainer):
     """
 
     def __init__(self, image: str = "opensearchproject/opensearch:2.4.0",
-                 port: int = 9200, security_enabled: bool = False, port_to_expose: None = None,
-                 **kwargs) -> None:
+                 port: int = 9200, security_enabled: bool = False, **kwargs) -> None:
         """
         Args:
             image: Docker image to use for the container.
             port: Port to expose on the container.
             security_enabled: :code:`False` disables the security plugin in OpenSearch.
         """
-        if port_to_expose:
-            raise ValueError("use `port` instead of `port_to_expose`")
+        raise_for_deprecated_parameter(kwargs, "port_to_expose", "port")
         super(OpenSearchContainer, self).__init__(image, **kwargs)
         self.port = port
         self.security_enabled = security_enabled

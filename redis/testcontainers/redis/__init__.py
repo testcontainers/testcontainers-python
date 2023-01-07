@@ -13,6 +13,7 @@
 
 import redis
 from testcontainers.core.container import DockerContainer
+from testcontainers.core.utils import raise_for_deprecated_parameter
 from testcontainers.core.waiting_utils import wait_container_is_ready
 from typing import Optional
 
@@ -31,9 +32,8 @@ class RedisContainer(DockerContainer):
             ...     redis_client = redis_container.get_client()
     """
     def __init__(self, image: str = "redis:latest", port: int = 6379,
-                 password: Optional[str] = None, port_to_expose: None = None, **kwargs) -> None:
-        if port_to_expose:
-            raise ValueError("use `port` instead of `port_to_expose`")
+                 password: Optional[str] = None, **kwargs) -> None:
+        raise_for_deprecated_parameter(kwargs, "port_to_expose", "port")
         super(RedisContainer, self).__init__(image, **kwargs)
         self.port_to_expose = port
         self.password = password

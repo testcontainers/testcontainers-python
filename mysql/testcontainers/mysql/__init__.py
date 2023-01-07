@@ -13,6 +13,7 @@
 from os import environ
 from typing import Optional
 from testcontainers.core.generic import DbContainer
+from testcontainers.core.utils import raise_for_deprecated_parameter
 
 
 class MySqlContainer(DbContainer):
@@ -39,18 +40,12 @@ class MySqlContainer(DbContainer):
     """
     def __init__(self, image: str = "mysql:latest", username: Optional[str] = None,
                  root_password: Optional[str] = None, password: Optional[str] = None,
-                 dbname: Optional[str] = None, port: int = 3306, MYSQL_USER: None = None,
-                 MYSQL_ROOT_PASSWORD: None = None, MYSQL_PASSWORD: None = None,
-                 MYSQL_DATABASE: None = None, **kwargs) -> None:
+                 dbname: Optional[str] = None, port: int = 3306, **kwargs) -> None:
+        raise_for_deprecated_parameter(kwargs, "MYSQL_USER", "username")
+        raise_for_deprecated_parameter(kwargs, "MYSQL_ROOT_PASSWORD", "root_password")
+        raise_for_deprecated_parameter(kwargs, "MYSQL_PASSWORD", "password")
+        raise_for_deprecated_parameter(kwargs, "MYSQL_DATABASE", "dbname")
         super(MySqlContainer, self).__init__(image, **kwargs)
-        if MYSQL_USER:
-            raise ValueError("use `username` instead of `MYSQL_USER`")
-        if MYSQL_ROOT_PASSWORD:
-            raise ValueError("use `root_password` instead of `MYSQL_ROOT_PASSWORD`")
-        if MYSQL_PASSWORD:
-            raise ValueError("use `password` instead of `MYSQL_PASSWORD`")
-        if MYSQL_DATABASE:
-            raise ValueError("use `dbname` instead of `MYSQL_DATABASE`")
 
         self.port_to_expose = port
         self.with_exposed_ports(self.port_to_expose)

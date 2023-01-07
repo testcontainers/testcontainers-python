@@ -13,6 +13,7 @@
 import os
 from typing import Optional
 from testcontainers.core.generic import DbContainer
+from testcontainers.core.utils import raise_for_deprecated_parameter
 
 
 class PostgresContainer(DbContainer):
@@ -40,10 +41,8 @@ class PostgresContainer(DbContainer):
     """
     def __init__(self, image: str = "postgres:latest", port: int = 5432,
                  username: Optional[str] = None, password: Optional[str] = None,
-                 dbname: Optional[str] = None, driver: str = "psycopg2", user: None = None,
-                 **kwargs) -> None:
-        if user:
-            raise ValueError("use `username` instead of `user`")
+                 dbname: Optional[str] = None, driver: str = "psycopg2", **kwargs) -> None:
+        raise_for_deprecated_parameter(kwargs, "user", "username")
         super(PostgresContainer, self).__init__(image=image, **kwargs)
         self.username = username or os.environ.get("POSTGRES_USER", "test")
         self.password = password or os.environ.get("POSTGRES_PASSWORD", "test")

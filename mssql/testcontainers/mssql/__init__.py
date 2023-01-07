@@ -1,6 +1,7 @@
 from os import environ
 from typing import Optional
 from testcontainers.core.generic import DbContainer
+from testcontainers.core.utils import raise_for_deprecated_parameter
 
 
 class SqlServerContainer(DbContainer):
@@ -22,11 +23,9 @@ class SqlServerContainer(DbContainer):
 
     def __init__(self, image: str = "mcr.microsoft.com/mssql/server:2019-latest",
                  username: str = "SA", password: Optional[str] = None, port: int = 1433,
-                 dbname: str = "tempdb", dialect: str = 'mssql+pymssql', user: None = None,
-                 **kwargs) -> None:
+                 dbname: str = "tempdb", dialect: str = 'mssql+pymssql', **kwargs) -> None:
+        raise_for_deprecated_parameter(kwargs, "user", "username")
         super(SqlServerContainer, self).__init__(image, **kwargs)
-        if user:
-            raise ValueError("use `username` instead")
 
         self.port_to_expose = port
         self.with_exposed_ports(self.port_to_expose)
