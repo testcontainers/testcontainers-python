@@ -72,7 +72,7 @@ class ClickHouseContainer(DbContainer):
             dialect="clickhouse",
             username=self.username,
             password=self.password,
-            db_name=self.dbname,
+            dbname=self.dbname,
             host=host,
             port=self.port_to_expose,
         )

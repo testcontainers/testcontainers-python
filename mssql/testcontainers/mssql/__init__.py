@@ -45,5 +45,5 @@ class SqlServerContainer(DbContainer):
     def get_connection_url(self) -> str:
         return super()._create_connection_url(
             dialect=self.dialect, username=self.username, password=self.password,
-            db_name=self.dbname, port=self.port_to_expose
+            dbname=self.dbname, port=self.port_to_expose
         )

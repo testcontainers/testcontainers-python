@@ -61,6 +61,6 @@ class PostgresContainer(DbContainer):
     def get_connection_url(self, host=None) -> str:
         return super()._create_connection_url(
             dialect=f"postgresql+{self.driver}", username=self.username,
-            password=self.password, db_name=self.dbname, host=host,
+            password=self.password, dbname=self.dbname, host=host,
             port=self.port_to_expose,
         )

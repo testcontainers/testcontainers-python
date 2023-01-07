@@ -39,14 +39,16 @@ class DbContainer(DockerContainer):
 
     def _create_connection_url(self, dialect: str, username: str, password: str,
                                host: Optional[str] = None, port: Optional[int] = None,
-                               db_name: Optional[str] = None) -> str:
+                               dbname: Optional[str] = None, db_name: None = None) -> str:
+        if db_name:
+            raise ValueError("use `dbname` instead of `db_name`")
         if self._container is None:
             raise ContainerStartException("container has not been started")
         host = host or self.get_container_host_ip()
         port = self.get_exposed_port(port)
         url = f"{dialect}://{username}:{password}@{host}:{port}"
-        if db_name:
-            url = f"{url}/{db_name}"
+        if dbname:
+            url = f"{url}/{dbname}"
         return url
 
     def start(self) -> 'DbContainer':

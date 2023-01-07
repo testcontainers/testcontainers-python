@@ -74,5 +74,5 @@ class MySqlContainer(DbContainer):
         return super()._create_connection_url(dialect="mysql+pymysql",
                                               username=self.username,
                                               password=self.password,
-                                              db_name=self.dbname,
+                                              dbname=self.dbname,
                                               port=self.port_to_expose)
