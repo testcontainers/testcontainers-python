@@ -13,7 +13,9 @@ setup(
     install_requires=[
         "testcontainers-core",
         "sqlalchemy",
+        # TODO: convert these to extras
         "pymssql",
+        "pyodbc",
     ],
     python_requires=">=3.7",
 )

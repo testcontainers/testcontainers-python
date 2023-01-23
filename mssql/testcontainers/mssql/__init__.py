@@ -1,5 +1,5 @@
 from os import environ
-from typing import Optional
+from typing import Optional, Literal
 from testcontainers.core.generic import DbContainer
 
 
@@ -21,7 +21,8 @@ class SqlServerContainer(DbContainer):
 
     def __init__(self, image: str = "mcr.microsoft.com/mssql/server:2019-latest", user: str = "SA",
                  password: Optional[str] = None, port: int = 1433, dbname: str = "tempdb",
-                 dialect: str = 'mssql+pymssql', **kwargs) -> None:
+                 dialect: Literal['mssql+pymssql', 'mssql+pyodbc'] = 'mssql+pymssql', **kwargs) -> None:
+        # TODO: add documentation about dialect
         super(SqlServerContainer, self).__init__(image, **kwargs)
 
         self.port_to_expose = port
@@ -39,7 +40,12 @@ class SqlServerContainer(DbContainer):
         self.with_env("ACCEPT_EULA", 'Y')
 
     def get_connection_url(self) -> str:
-        return super()._create_connection_url(
+        url = super()._create_connection_url(
             dialect=self.dialect, username=self.SQLSERVER_USER, password=self.SQLSERVER_PASSWORD,
             db_name=self.SQLSERVER_DBNAME, port=self.port_to_expose
         )
+        if self.dialect == "mssql+pyodbc":
+            # TODO: get ODBC version from installed package
+            url += "?driver=ODBC+Driver+17+for+SQL+Server"
+        return url
+
