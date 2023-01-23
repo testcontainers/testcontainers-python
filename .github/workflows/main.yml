@@ -19,6 +19,7 @@ jobs:
           - arangodb
           - azurite
           - clickhouse
+          - cockroachdb
           - compose
           - core
           - elasticsearch

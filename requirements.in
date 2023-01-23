@@ -1,6 +1,7 @@
 -e file:arangodb
 -e file:azurite
 -e file:clickhouse
+-e file:cockroachdb
 -e file:core
 -e file:compose
 -e file:elasticsearch
