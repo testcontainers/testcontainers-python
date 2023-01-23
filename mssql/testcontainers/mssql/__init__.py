@@ -59,7 +59,16 @@ class SqlServerContainer(DbContainer):
             db_name=self.SQLSERVER_DBNAME, port=self.port_to_expose
         )
         if self.dialect == "mssql+pyodbc":
-            # TODO: get ODBC version from installed package
-            url += "?driver=ODBC+Driver+17+for+SQL+Server"
+            import pyodbc
+            import re
+            r = re.compile('ODBC Driver \d{1,2} for SQL Server')
+            # We sort drivers in reversed order to get the latest
+            drivers = sorted(list(filter(r.match, pyodbc.drivers())), reverse=True)
+
+            if len(drivers) > 0:
+                driver_str = drivers[0].replace(" ", "+")
+            else:
+                raise ImportError(f"No driver available for using dialect {self.dialect}")
+            url += f"?driver={driver_str}"
         return url
 
