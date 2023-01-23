@@ -22,6 +22,21 @@ class SqlServerContainer(DbContainer):
     def __init__(self, image: str = "mcr.microsoft.com/mssql/server:2019-latest", user: str = "SA",
                  password: Optional[str] = None, port: int = 1433, dbname: str = "tempdb",
                  dialect: Literal['mssql+pymssql', 'mssql+pyodbc'] = 'mssql+pymssql', **kwargs) -> None:
+        """
+        Initialize SqlServerContainer
+
+        Args:
+            image: MSSQL Server image. For example, use a specific version
+            user: DB user name
+            password: DB password
+            port: Port to be exposed
+            dbname: Database name
+            dialect: SQLAlchemy database dialect. Allowed values are
+                * 'mssql+pymssql': Uses `pymssql <https://github.com/pymssql/pymssql>`_ driver
+                * 'mssql+pyodbc': Uses `pyodbc <https://github.com/mkleehammer/pyodbc>`_ driver
+                This also defines the driver that is used to connect to the database.
+            kwargs: Keyword arguments passed to initialization of underlying docker container
+        """
         # TODO: add documentation about dialect
         super(SqlServerContainer, self).__init__(image, **kwargs)
 
