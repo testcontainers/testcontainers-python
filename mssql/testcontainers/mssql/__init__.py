@@ -37,7 +37,6 @@ class SqlServerContainer(DbContainer):
                 This also defines the driver that is used to connect to the database.
             kwargs: Keyword arguments passed to initialization of underlying docker container
         """
-        # TODO: add documentation about dialect
         super(SqlServerContainer, self).__init__(image, **kwargs)
 
         self.port_to_expose = port
