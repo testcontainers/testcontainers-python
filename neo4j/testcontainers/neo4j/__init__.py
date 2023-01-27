@@ -76,8 +76,7 @@ class Neo4jContainer(DbContainer):
         with self.get_driver() as driver:
             # Drivers may or may not be lazy
             # force them to do a round trip to confirm neo4j is working
-            with driver.session() as session:
-                session.run("RETURN 1").single()
+            driver.verify_connectivity()
 
     def get_driver(self, **kwargs) -> Driver:
         return GraphDatabase.driver(
