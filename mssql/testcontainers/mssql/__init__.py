@@ -19,9 +19,16 @@ class SqlServerContainer(DbContainer):
             ...    result = e.execute("select @@VERSION")
     """
 
-    def __init__(self, image: str = "mcr.microsoft.com/mssql/server:2019-latest", user: str = "SA",
-                 password: Optional[str] = None, port: int = 1433, dbname: str = "tempdb",
-                 dialect: Literal['mssql+pymssql', 'mssql+pyodbc'] = 'mssql+pymssql', **kwargs) -> None:
+    def __init__(
+        self,
+        image: str = "mcr.microsoft.com/mssql/server:2019-latest",
+        user: str = "SA",
+        password: Optional[str] = None,
+        port: int = 1433,
+        dbname: str = "tempdb",
+        dialect: Literal["mssql+pymssql", "mssql+pyodbc"] = "mssql+pymssql",
+        **kwargs,
+    ) -> None:
         """
         Initialize SqlServerContainer
 
@@ -42,7 +49,9 @@ class SqlServerContainer(DbContainer):
         self.port_to_expose = port
         self.with_exposed_ports(self.port_to_expose)
 
-        self.SQLSERVER_PASSWORD = password or environ.get("SQLSERVER_PASSWORD", "1Secure*Password1")
+        self.SQLSERVER_PASSWORD = password or environ.get(
+            "SQLSERVER_PASSWORD", "1Secure*Password1"
+        )
         self.SQLSERVER_USER = user
         self.SQLSERVER_DBNAME = dbname
         self.dialect = dialect
@@ -51,24 +60,30 @@ class SqlServerContainer(DbContainer):
         self.with_env("SA_PASSWORD", self.SQLSERVER_PASSWORD)
         self.with_env("SQLSERVER_USER", self.SQLSERVER_USER)
         self.with_env("SQLSERVER_DBNAME", self.SQLSERVER_DBNAME)
-        self.with_env("ACCEPT_EULA", 'Y')
+        self.with_env("ACCEPT_EULA", "Y")
 
     def get_connection_url(self) -> str:
         url = super()._create_connection_url(
-            dialect=self.dialect, username=self.SQLSERVER_USER, password=self.SQLSERVER_PASSWORD,
-            db_name=self.SQLSERVER_DBNAME, port=self.port_to_expose
+            dialect=self.dialect,
+            username=self.SQLSERVER_USER,
+            password=self.SQLSERVER_PASSWORD,
+            db_name=self.SQLSERVER_DBNAME,
+            port=self.port_to_expose,
         )
         if self.dialect == "mssql+pyodbc":
-            import pyodbc
-            import re
-            r = re.compile('ODBC Driver \d{1,2} for SQL Server')
-            # We sort drivers in reversed order to get the latest
-            drivers = sorted(list(filter(r.match, pyodbc.drivers())), reverse=True)
-
-            if len(drivers) > 0:
-                driver_str = drivers[0].replace(" ", "+")
-            else:
-                raise ImportError(f"No driver available for using dialect {self.dialect}")
-            url += f"?driver={driver_str}"
+            url += f"?driver={self._get_url_suffix_for_latest_pyodbc_version()}"
         return url
 
+    def _get_url_suffix_for_latest_pyodbc_version(self):
+        import pyodbc
+        import re
+
+        r = re.compile("ODBC Driver \d{1,2} for SQL Server")
+        # We sort drivers in reversed order to get the latest
+        drivers = sorted(list(filter(r.match, pyodbc.drivers())), reverse=True)
+        if len(drivers) > 0:
+            driver_str = drivers[0].replace(" ", "+")
+        else:
+            raise ImportError(f"No driver available for using dialect {self.dialect}")
+
+        return driver_str
