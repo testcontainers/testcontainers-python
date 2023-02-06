@@ -29,7 +29,7 @@ def test_get_url_suffix_for_latest_pyodbc_version():
     container = SqlServerContainer()
 
     version_numbers = [10, 8]
-    with patch("pyodbc.drivers", return_value=[f'ODBC Driver {v} for SQL Server' for v in version_numbers]) as mock_method:
+    with patch("pyodbc.drivers", return_value=[f'ODBC Driver {v} for SQL Server' for v in version_numbers]):
          driver_str = container._get_url_suffix_for_latest_pyodbc_version()
          latest_version = int(re.findall('\d{1,2}', driver_str)[0])
     assert latest_version == max(version_numbers)

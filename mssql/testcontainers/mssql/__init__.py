@@ -81,8 +81,10 @@ class SqlServerContainer(DbContainer):
         r = re.compile("ODBC Driver \d{1,2} for SQL Server")
         # We sort drivers in reversed order to get the latest
         drivers = sorted(list(filter(r.match, pyodbc.drivers())), reverse=True)
+        version_numbers = [int(v) for v in re.findall("\d{1,2}", "".join(drivers))]
+        max_version_index = version_numbers.index(max(version_numbers))
         if len(drivers) > 0:
-            driver_str = drivers[0].replace(" ", "+")
+            driver_str = drivers[max_version_index].replace(" ", "+")
         else:
             raise ImportError(f"No driver available for using dialect {self.dialect}")
 
