@@ -49,9 +49,7 @@ class SqlServerContainer(DbContainer):
         self.port_to_expose = port
         self.with_exposed_ports(self.port_to_expose)
 
-        self.SQLSERVER_PASSWORD = password or environ.get(
-            "SQLSERVER_PASSWORD", "1Secure*Password1"
-        )
+        self.SQLSERVER_PASSWORD = password or environ.get("SQLSERVER_PASSWORD", "1Secure*Password1")
         self.SQLSERVER_USER = user
         self.SQLSERVER_DBNAME = dbname
         self.dialect = dialect
@@ -78,10 +76,10 @@ class SqlServerContainer(DbContainer):
         import pyodbc
         import re
 
-        r = re.compile("ODBC Driver \d{1,2} for SQL Server")
+        r = re.compile(r"ODBC Driver \d{1,2} for SQL Server")
         # We sort drivers in reversed order to get the latest
         drivers = sorted(list(filter(r.match, pyodbc.drivers())), reverse=True)
-        version_numbers = [int(v) for v in re.findall("\d{1,2}", "".join(drivers))]
+        version_numbers = [int(v) for v in re.findall(r"\d{1,2}", "".join(drivers))]
         max_version_index = version_numbers.index(max(version_numbers))
         if len(drivers) > 0:
             driver_str = drivers[max_version_index].replace(" ", "+")
