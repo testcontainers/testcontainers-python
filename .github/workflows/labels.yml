@@ -15,8 +15,6 @@ jobs:
   add-label:
     if: ${{ github.event.issue.user.login != 'tillahoffmann' }}
     runs-on: ubuntu-latest
-    permissions:
-      issues: write
     steps:
     - name: Add label
       uses: actions-ecosystem/action-add-labels@v1
@@ -25,8 +23,6 @@ jobs:
   remove-label:
     if: ${{ github.event.issue.user.login == 'tillahoffmann' }}
     runs-on: ubuntu-latest
-    permissions:
-      issues: write
     steps:
     - name: Remove label
       uses: actions-ecosystem/action-remove-labels@v1
