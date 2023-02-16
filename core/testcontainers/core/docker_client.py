@@ -97,16 +97,18 @@ class DockerClient:
         host = os.environ.get('TC_HOST')
         if host:
             return host
+
         try:
             url = urllib.parse.urlparse(self.client.api.base_url)
-
         except ValueError:
             return None
+
         if 'http' in url.scheme or 'tcp' in url.scheme:
             return url.hostname
-        if 'unix' in url.scheme or 'npipe' in url.scheme:
+        if 'unix' in url.scheme or 'npipe' in url.scheme or 'http+docker' in url.scheme:
             if inside_container():
                 ip_address = default_gateway_ip()
                 if ip_address:
                     return ip_address
+
         return "localhost"
