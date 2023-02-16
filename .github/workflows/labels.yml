@@ -4,11 +4,11 @@ on:
     types:
       - created
 jobs:
-  show-login:
+  show-metadata:
     runs-on: ubuntu-latest
     steps:
     - name: Show metadata
-      run: echo ${{ github.event }}
+      run: echo ${{ toJson(github.event) }}
   add-label:
     if: ${{ github.event.actor.login != 'tillahoffmann' }}
     runs-on: ubuntu-latest
