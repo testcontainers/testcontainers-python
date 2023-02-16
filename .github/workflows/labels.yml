@@ -4,6 +4,11 @@ on:
     types:
       - created
 jobs:
+  show-login:
+    runs-on: ubuntu-latest
+    steps:
+    - name: Show login
+      run: echo ${{ github.event.actor.login }}
   add-label:
     if: ${{ github.event.actor.login != 'tillahoffmann' }}
     runs-on: ubuntu-latest
