@@ -13,7 +13,7 @@ jobs:
       env:
         JSON: ${{ toJson(github.event) }}
   add-label:
-    if: ${{ github.event.issue.user.login != 'tillahoffmann' }}
+    if: ${{ github.event.user.login != 'tillahoffmann' }}
     runs-on: ubuntu-latest
     steps:
     - name: Add label
@@ -21,7 +21,7 @@ jobs:
       with:
         labels: requires-attention
   remove-label:
-    if: ${{ github.event.issue.user.login == 'tillahoffmann' }}
+    if: ${{ github.event.user.login == 'tillahoffmann' }}
     runs-on: ubuntu-latest
     steps:
     - name: Remove label
