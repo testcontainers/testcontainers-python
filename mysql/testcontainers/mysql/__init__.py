@@ -34,7 +34,7 @@ class MySqlContainer(DbContainer):
             >>> with MySqlContainer('mysql:5.7.17') as mysql:
             ...     engine = sqlalchemy.create_engine(mysql.get_connection_url())
             ...     with engine.begin() as connection:
-            ...         result = connection.execute("select version()")
+            ...         result = connection.execute(sqlalchemy.text("select version()"))
             ...         version, = result.fetchone()
     """
 

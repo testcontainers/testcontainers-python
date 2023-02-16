@@ -8,13 +8,13 @@ def test_docker_run_mssql():
     with SqlServerContainer(image, dialect=dialect) as mssql:
         engine = sqlalchemy.create_engine(mssql.get_connection_url())
         with engine.begin() as connection:
-            result = connection.execute('select @@servicename')
+            result = connection.execute(sqlalchemy.text('select @@servicename'))
             for row in result:
                 assert row[0] == 'MSSQLSERVER'
 
     with SqlServerContainer(image, password="1Secure*Password2", dialect=dialect) as mssql:
         engine = sqlalchemy.create_engine(mssql.get_connection_url())
         with engine.begin() as connection:
-            result = connection.execute('select @@servicename')
+            result = connection.execute(sqlalchemy.text('select @@servicename'))
             for row in result:
                 assert row[0] == 'MSSQLSERVER'

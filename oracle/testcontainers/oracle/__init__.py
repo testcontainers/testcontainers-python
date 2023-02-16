@@ -15,7 +15,7 @@ class OracleDbContainer(DbContainer):
             >>> with OracleDbContainer() as oracle:
             ...     engine = sqlalchemy.create_engine(oracle.get_connection_url())
             ...     with engine.begin() as connection:
-            ...         result = connection.execute("select * from V$VERSION")
+            ...         result = connection.execute(sqlalchemy.text("select * from V$VERSION"))
     """
 
     def __init__(self, image: str = "wnameless/oracle-xe-11g-r2:latest", **kwargs) -> None:

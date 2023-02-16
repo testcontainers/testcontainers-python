@@ -13,5 +13,5 @@ def test_docker_run_oracle():
     with OracleDbContainer() as oracledb:
         engine = sqlalchemy.create_engine(oracledb.get_connection_url())
         with engine.begin() as connection:
-            result = connection.execute("select * from V$VERSION")
+            result = connection.execute(sqlalchemy.text("select * from V$VERSION"))
             assert {row[0] for row in result} == versions
