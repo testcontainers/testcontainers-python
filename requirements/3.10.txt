@@ -126,7 +126,7 @@ coverage[toml]==7.0.3
     # via
     #   codecov
     #   pytest-cov
-cryptography==36.0.2
+cryptography==39.0.1
     # via
     #   -r requirements.in
     #   azure-storage-blob
