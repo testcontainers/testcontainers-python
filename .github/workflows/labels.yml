@@ -7,10 +7,13 @@ jobs:
   show-metadata:
     runs-on: ubuntu-latest
     steps:
+    # Use environment variable to print the metadata (cf. https://github.com/actions/runner/issues/1656#issuecomment-1030077729).
     - name: Show metadata
-      run: echo ${{ toJson(github.event) }}
+      run: echo $JSON
+      env:
+        JSON: ${{ toJson(github.event) }}
   add-label:
-    if: ${{ github.event.actor.login != 'tillahoffmann' }}
+    if: ${{ github.event.user.login != 'tillahoffmann' }}
     runs-on: ubuntu-latest
     permissions:
       issues: write
@@ -20,7 +23,7 @@ jobs:
       with:
         labels: requires-attention
   remove-label:
-    if: ${{ github.event.actor.login == 'tillahoffmann' }}
+    if: ${{ github.event.user.login == 'tillahoffmann' }}
     runs-on: ubuntu-latest
     permissions:
       issues: write
