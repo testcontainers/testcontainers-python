@@ -19,7 +19,7 @@ jobs:
     - name: Add label
       uses: actions-ecosystem/action-add-labels@v1
       with:
-        labels: requires-attention
+        labels: '👀 requires attention'
   remove-label:
     if: ${{ github.event.comment.user.login == 'tillahoffmann' }}
     runs-on: ubuntu-latest
@@ -27,4 +27,4 @@ jobs:
     - name: Remove label
       uses: actions-ecosystem/action-remove-labels@v1
       with:
-        labels: requires-attention
+        labels: '👀 requires attention'
