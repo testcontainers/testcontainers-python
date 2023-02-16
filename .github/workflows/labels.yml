@@ -7,8 +7,8 @@ jobs:
   show-login:
     runs-on: ubuntu-latest
     steps:
-    - name: Show login
-      run: echo ${{ github.event.actor.login }}
+    - name: Show metadata
+      run: echo ${{ github.event }}
   add-label:
     if: ${{ github.event.actor.login != 'tillahoffmann' }}
     runs-on: ubuntu-latest
