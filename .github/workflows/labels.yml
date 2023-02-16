@@ -1,0 +1,26 @@
+name: Automatically add or remove labels
+on:
+  issue_comment:
+    types:
+      - created
+jobs:
+  add-label:
+    if: github.event.actor.login != 'tillahoffmann'
+    runs-on: ubuntu-latest
+    permissions:
+      issues: write
+    steps:
+    - name: Add label
+      uses: actions-ecosystem/action-add-labels@v1
+      with:
+        labels: requires-attention
+  remove-label:
+    if: github.event.actor.login == 'tillahoffmann'
+    runs-on: ubuntu-latest
+    permissions:
+      issues: write
+    steps:
+    - name: Remove label
+      uses: actions-ecosystem/action-remove-labels@v1
+      with:
+        labels: requires-attention
