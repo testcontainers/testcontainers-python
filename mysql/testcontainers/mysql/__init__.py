@@ -32,9 +32,10 @@ class MySqlContainer(DbContainer):
             >>> from testcontainers.mysql import MySqlContainer
 
             >>> with MySqlContainer('mysql:5.7.17') as mysql:
-            ...     e = sqlalchemy.create_engine(mysql.get_connection_url())
-            ...     result = e.execute("select version()")
-            ...     version, = result.fetchone()
+            ...     engine = sqlalchemy.create_engine(mysql.get_connection_url())
+            ...     with engine.begin() as connection:
+            ...         result = connection.execute("select version()")
+            ...         version, = result.fetchone()
     """
 
     def __init__(self, image: str = "mysql:latest", MYSQL_USER: Optional[str] = None,

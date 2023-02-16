@@ -15,8 +15,9 @@ class SqlServerContainer(DbContainer):
             >>> from testcontainers.mssql import SqlServerContainer
 
             >>> with SqlServerContainer() as mssql:
-            ...    e = sqlalchemy.create_engine(mssql.get_connection_url())
-            ...    result = e.execute("select @@VERSION")
+            ...    engine = sqlalchemy.create_engine(mssql.get_connection_url())
+            ...    with engine.begin() as connection:
+            ...        result = connection.execute("select @@VERSION")
     """
 
     def __init__(self, image: str = "mcr.microsoft.com/mssql/server:2019-latest", user: str = "SA",

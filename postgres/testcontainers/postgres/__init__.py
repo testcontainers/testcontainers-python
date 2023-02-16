@@ -31,9 +31,10 @@ class PostgresContainer(DbContainer):
 
             >>> postgres_container = PostgresContainer("postgres:9.5")
             >>> with postgres_container as postgres:
-            ...     e = sqlalchemy.create_engine(postgres.get_connection_url())
-            ...     result = e.execute("select version()")
-            ...     version, = result.fetchone()
+            ...     engine = sqlalchemy.create_engine(postgres.get_connection_url())
+            ...     with engine.begin() as connection:
+            ...         result = connection.execute("select version()")
+            ...         version, = result.fetchone()
             >>> version
             'PostgreSQL 9.5...'
     """
