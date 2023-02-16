@@ -5,7 +5,7 @@ on:
       - created
 jobs:
   add-label:
-    if: github.event.actor.login != 'tillahoffmann'
+    if: ${{ github.event.actor.login != 'tillahoffmann' }}
     runs-on: ubuntu-latest
     permissions:
       issues: write
@@ -15,7 +15,7 @@ jobs:
       with:
         labels: requires-attention
   remove-label:
-    if: github.event.actor.login == 'tillahoffmann'
+    if: ${{ github.event.actor.login == 'tillahoffmann' }}
     runs-on: ubuntu-latest
     permissions:
       issues: write
