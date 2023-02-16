@@ -14,6 +14,7 @@ import logging
 import re
 import urllib
 from typing import Dict
+from urllib.error import URLError
 
 from testcontainers.core.container import DockerContainer
 from testcontainers.core.waiting_utils import wait_container_is_ready
@@ -83,7 +84,7 @@ class ElasticSearchContainer(DockerContainer):
         for key, value in _environment_by_version(major_version).items():
             self.with_env(key, value)
 
-    @wait_container_is_ready()
+    @wait_container_is_ready(URLError)
     def _connect(self) -> None:
         res = urllib.request.urlopen(self.get_url())
         if res.status != 200:
