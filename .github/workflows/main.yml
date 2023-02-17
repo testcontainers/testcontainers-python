@@ -53,6 +53,9 @@ jobs:
           python-version: ${{ matrix.environment.python-version }}
           cache: pip
           cache-dependency-path: ${{ format('requirements/{0}.txt', matrix.environment.python-version) }}
+      - name: Enable experimental mode on Windows
+        if: ${{ matrix.environment.runs-on == 'windows-latest' }}
+        run: dockerd --experimental
       - name: Install Python dependencies
         run: |
           pip install --upgrade pip
