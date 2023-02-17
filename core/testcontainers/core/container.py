@@ -1,3 +1,4 @@
+from docker.errors import ImageNotFound
 from docker.models.containers import Container
 import os
 from typing import Iterable, Optional, Tuple
@@ -56,8 +57,13 @@ class DockerContainer:
         return self
 
     def start(self) -> 'DockerContainer':
-        logger.info("Pulling image %s", self.image)
         docker_client = self.get_docker_client()
+        try:
+            docker_client.client.images.get(self.image)
+        except ImageNotFound:
+            logger.info("Pulling image %s", self.image)
+            docker_client.client.images.pull(self.image)
+
         self._container = docker_client.run(
             self.image, command=self._command, detach=True, environment=self.env, ports=self.ports,
             name=self._name, volumes=self.volumes, **self._kwargs
