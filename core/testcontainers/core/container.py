@@ -58,11 +58,12 @@ class DockerContainer:
 
     def start(self) -> 'DockerContainer':
         docker_client = self.get_docker_client()
+        image_parts = self.image.split(":")
         try:
-            docker_client.client.images.get(self.image)
+            docker_client.client.images.get(image_parts)
         except ImageNotFound:
             logger.info("Pulling image %s", self.image)
-            docker_client.client.images.pull(self.image)
+            docker_client.client.images.pull(*image_parts)
 
         self._container = docker_client.run(
             self.image, command=self._command, detach=True, environment=self.env, ports=self.ports,
