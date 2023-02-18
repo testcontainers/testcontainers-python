@@ -63,7 +63,7 @@ class AzuriteContainer(DockerContainer):
         self.queue_service_port = queue_service_port
         self.table_service_port = table_service_port
 
-        self.with_exposed_ports(*blob_service_port, queue_service_port, table_service_port)
+        self.with_exposed_ports(blob_service_port, queue_service_port, table_service_port)
         self.with_env("AZURITE_ACCOUNTS", f"{self.account_name}:{self.account_key}")
 
     def get_connection_string(self) -> str:
