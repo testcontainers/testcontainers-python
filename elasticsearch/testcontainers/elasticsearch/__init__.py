@@ -77,8 +77,8 @@ class ElasticSearchContainer(DockerContainer):
     def __init__(self, image: str = "elasticsearch", port: int = 9200, **kwargs) -> None:
         raise_for_deprecated_parameter(kwargs, "port_to_expose", "port")
         super(ElasticSearchContainer, self).__init__(image, **kwargs)
-        self.port_to_expose = port
-        self.with_exposed_ports(self.port_to_expose)
+        self.port = port
+        self.with_exposed_ports(self.port)
         self.with_env('transport.host', '127.0.0.1')
         self.with_env('http.host', '0.0.0.0')
 
@@ -94,7 +94,7 @@ class ElasticSearchContainer(DockerContainer):
 
     def get_url(self) -> str:
         host = self.get_container_host_ip()
-        port = self.get_exposed_port(self.port_to_expose)
+        port = self.get_exposed_port(self.port)
         return f'http://{host}:{port}'
 
     def start(self) -> "ElasticSearchContainer":

@@ -35,9 +35,9 @@ class RedisContainer(DockerContainer):
                  password: Optional[str] = None, **kwargs) -> None:
         raise_for_deprecated_parameter(kwargs, "port_to_expose", "port")
         super(RedisContainer, self).__init__(image, **kwargs)
-        self.port_to_expose = port
+        self.port = port
         self.password = password
-        self.with_exposed_ports(self.port_to_expose)
+        self.with_exposed_ports(self.port)
         if self.password:
             self.with_command(f"redis-server --requirepass {self.password}")
 
@@ -59,7 +59,7 @@ class RedisContainer(DockerContainer):
         """
         return redis.Redis(
             host=self.get_container_host_ip(),
-            port=self.get_exposed_port(self.port_to_expose),
+            port=self.get_exposed_port(self.port),
             password=self.password,
             **kwargs,
         )

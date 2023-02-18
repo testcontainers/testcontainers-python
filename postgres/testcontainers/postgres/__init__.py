@@ -47,10 +47,10 @@ class PostgresContainer(DbContainer):
         self.username = username or os.environ.get("POSTGRES_USER", "test")
         self.password = password or os.environ.get("POSTGRES_PASSWORD", "test")
         self.dbname = dbname or os.environ.get("POSTGRES_DB", "test")
-        self.port_to_expose = port
+        self.port = port
         self.driver = driver
 
-        self.with_exposed_ports(self.port_to_expose)
+        self.with_exposed_ports(self.port)
 
     def _configure(self) -> None:
         self.with_env("POSTGRES_USER", self.username)
@@ -61,5 +61,5 @@ class PostgresContainer(DbContainer):
         return super()._create_connection_url(
             dialect=f"postgresql+{self.driver}", username=self.username,
             password=self.password, dbname=self.dbname, host=host,
-            port=self.port_to_expose,
+            port=self.port,
         )

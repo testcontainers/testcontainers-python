@@ -27,8 +27,8 @@ class SqlServerContainer(DbContainer):
         raise_for_deprecated_parameter(kwargs, "user", "username")
         super(SqlServerContainer, self).__init__(image, **kwargs)
 
-        self.port_to_expose = port
-        self.with_exposed_ports(self.port_to_expose)
+        self.port = port
+        self.with_exposed_ports(self.port)
 
         self.password = password or environ.get("SQLSERVER_PASSWORD", "1Secure*Password1")
         self.username = username
@@ -44,5 +44,5 @@ class SqlServerContainer(DbContainer):
     def get_connection_url(self) -> str:
         return super()._create_connection_url(
             dialect=self.dialect, username=self.username, password=self.password,
-            dbname=self.dbname, port=self.port_to_expose
+            dbname=self.dbname, port=self.port
         )

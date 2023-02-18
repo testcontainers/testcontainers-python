@@ -47,8 +47,8 @@ class MySqlContainer(DbContainer):
         raise_for_deprecated_parameter(kwargs, "MYSQL_DATABASE", "dbname")
         super(MySqlContainer, self).__init__(image, **kwargs)
 
-        self.port_to_expose = port
-        self.with_exposed_ports(self.port_to_expose)
+        self.port = port
+        self.with_exposed_ports(self.port)
         self.username = username or environ.get('MYSQL_USER', 'test')
         self.root_password = root_password or environ.get('MYSQL_ROOT_PASSWORD', 'test')
         self.password = password or environ.get('MYSQL_PASSWORD', 'test')
@@ -70,4 +70,4 @@ class MySqlContainer(DbContainer):
                                               username=self.username,
                                               password=self.password,
                                               dbname=self.dbname,
-                                              port=self.port_to_expose)
+                                              port=self.port)

@@ -38,8 +38,8 @@ class KeycloakContainer(DockerContainer):
         super(KeycloakContainer, self).__init__(image=image)
         self.username = username or os.environ.get("KEYCLOAK_USER", "test")
         self.password = password or os.environ.get("KEYCLOAK_PASSWORD", "test")
-        self.port_to_expose = port
-        self.with_exposed_ports(self.port_to_expose)
+        self.port = port
+        self.with_exposed_ports(self.port)
 
     def _configure(self) -> None:
         self.with_env("KEYCLOAK_USER", self.username)
@@ -47,7 +47,7 @@ class KeycloakContainer(DockerContainer):
 
     def get_url(self) -> str:
         host = self.get_container_host_ip()
-        port = self.get_exposed_port(self.port_to_expose)
+        port = self.get_exposed_port(self.port)
         return f"http://{host}:{port}"
 
     @wait_container_is_ready(requests.exceptions.ConnectionError, requests.exceptions.ReadTimeout)

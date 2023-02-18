@@ -48,8 +48,8 @@ class ClickHouseContainer(DbContainer):
         self.username = username or os.environ.get("CLICKHOUSE_USER", "test")
         self.password = password or os.environ.get("CLICKHOUSE_PASSWORD", "test")
         self.dbname = dbname or os.environ.get("CLICKHOUSE_DB", "test")
-        self.port_to_expose = port
-        self.with_exposed_ports(self.port_to_expose)
+        self.port = port
+        self.with_exposed_ports(self.port)
 
     @wait_container_is_ready(Error, EOFError)
     def _connect(self) -> None:
@@ -68,5 +68,5 @@ class ClickHouseContainer(DbContainer):
             password=self.password,
             dbname=self.dbname,
             host=host,
-            port=self.port_to_expose,
+            port=self.port,
         )
