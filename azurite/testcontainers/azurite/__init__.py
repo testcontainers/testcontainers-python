@@ -12,43 +12,43 @@
 #    under the License.
 import os
 import socket
-from typing import Iterable, Optional
+from typing import Optional
 
 from testcontainers.core.container import DockerContainer
+from testcontainers.core.utils import raise_for_deprecated_parameter
 from testcontainers.core.waiting_utils import wait_container_is_ready
 
 
 class AzuriteContainer(DockerContainer):
     """
-        The example below spins up an Azurite container and
-        shows an example to create a Blob service client with the container. The method
-        :code:`get_connection_string` can be used to create a client for Blob service, Queue service
-        and Table service.
+    The example below spins up an Azurite container and
+    shows an example to create a Blob service client with the container. The method
+    :code:`get_connection_string` can be used to create a client for Blob service, Queue service
+    and Table service.
 
-        Example:
+    Example:
 
-            .. doctest::
+        .. doctest::
 
-                >>> from testcontainers.azurite import AzuriteContainer
-                >>> from azure.storage.blob import BlobServiceClient
+            >>> from testcontainers.azurite import AzuriteContainer
+            >>> from azure.storage.blob import BlobServiceClient
 
-                >>> with AzuriteContainer() as azurite_container:
-                ...   connection_string = azurite_container.get_connection_string()
-                ...   client = BlobServiceClient.from_connection_string(
-                ...        connection_string,
-                ...        api_version="2019-12-12"
-                ...   )
-        """
+            >>> with AzuriteContainer() as azurite_container:
+            ...   connection_string = azurite_container.get_connection_string()
+            ...   client = BlobServiceClient.from_connection_string(
+            ...        connection_string,
+            ...        api_version="2019-12-12"
+            ...   )
+    """
     def __init__(self, image: str = "mcr.microsoft.com/azure-storage/azurite:latest", *,
-                 ports_to_expose: Optional[Iterable[int]] = None, blob_service_port: int = 10_000,
-                 queue_service_port: int = 10_001, table_service_port: int = 10_002,
-                 account_name: Optional[str] = None, account_key: Optional[str] = None, **kwargs) \
+                 blob_service_port: int = 10_000, queue_service_port: int = 10_001,
+                 table_service_port: int = 10_002, account_name: Optional[str] = None,
+                 account_key: Optional[str] = None, **kwargs) \
             -> None:
         """ Constructs an AzuriteContainer.
 
         Args:
             image: Expects an image with tag.
-            ports_to_expose: List with port numbers to expose.
             **kwargs: Keyword arguments passed to super class.
         """
         super().__init__(image=image, **kwargs)
@@ -58,13 +58,12 @@ class AzuriteContainer(DockerContainer):
             "AZURITE_ACCOUNT_KEY", "Eby8vdM02xNOcqFlqUwJPLlmEtlCDXJ1OUzFT50uSRZ6IFsuFq2UVErCz4I6tq/"
             "K1SZFPTOtr/KBHBeksoGMGw==")
 
+        raise_for_deprecated_parameter(kwargs, "ports_to_expose", "container.with_exposed_ports")
         self.blob_service_port = blob_service_port
         self.queue_service_port = queue_service_port
         self.table_service_port = table_service_port
-        if not ports_to_expose:
-            ports_to_expose = [blob_service_port, queue_service_port, table_service_port]
 
-        self.with_exposed_ports(*ports_to_expose)
+        self.with_exposed_ports(*blob_service_port, queue_service_port, table_service_port)
         self.with_env("AZURITE_ACCOUNTS", f"{self.account_name}:{self.account_key}")
 
     def get_connection_string(self) -> str:
