@@ -3,93 +3,116 @@ testcontainers-python
 
 .. image:: https://github.com/testcontainers/testcontainers-python/workflows/testcontainers-python/badge.svg
    :target: https://github.com/testcontainers/testcontainers-python/actions/workflows/main.yml
-.. image:: https://img.shields.io/pypi/v/testcontainers.svg?style=flat-square
+.. image:: https://img.shields.io/pypi/v/testcontainers.svg
    :target: https://pypi.python.org/pypi/testcontainers
 .. image:: https://readthedocs.org/projects/testcontainers-python/badge/?version=latest
    :target: http://testcontainers-python.readthedocs.io/en/latest/?badge=latest
 
-Python port for testcontainers-java that allows using docker containers for functional and integration testing. Testcontainers-python provides capabilities to spin up docker containers (such as a database, Selenium web browser, or any other container) for testing.
+testcontainers-python facilitates the use of Docker containers for functional and integration testing. The collection of packages currently supports the following features.
 
-Currently available features:
+.. toctree::
 
-* Selenium Grid containers
-* Selenium Standalone containers
-* MySql Db container
-* MariaDb container
-* Neo4j container
-* OracleDb container
-* PostgreSQL Db container
-* ClickHouse container
-* Microsoft SQL Server container
-* Generic docker containers
-* ArangoDB container
-* LocalStack
-* RabbitMQ
-* Keycloak
-* Azurite container
+    core/README
+    arangodb/README
+    azurite/README
+    clickhouse/README
+    compose/README
+    elasticsearch/README
+    google/README
+    kafka/README
+    keycloak/README
+    localstack/README
+    minio/README
+    mongodb/README
+    mssql/README
+    mysql/README
+    neo4j/README
+    nginx/README
+    opensearch/README
+    oracle/README
+    postgres/README
+    rabbitmq/README
+    redis/README
+    selenium/README
 
-Installation
-------------
-
-The testcontainers package is available from `PyPI <https://pypi.org/project/testcontainers/>`_, and it can be installed using :code:`pip`. Depending on which containers are needed, you can specify additional dependencies as `extras <https://setuptools.readthedocs.io/en/latest/setuptools.html#declaring-extras-optional-features-with-their-own-dependencies>`_:
-
-.. code-block:: bash
-
-    # Install without extras
-    pip install testcontainers
-    # Install with one or more extras
-    pip install testcontainers[mysql]
-    pip install testcontainers[mysql,oracle]
-
-Basic usage
------------
+Getting Started
+---------------
 
 .. doctest::
 
     >>> from testcontainers.postgres import PostgresContainer
     >>> import sqlalchemy
 
-    >>> postgres_container = PostgresContainer("postgres:9.5")
-    >>> with postgres_container as postgres:
-    ...     e = sqlalchemy.create_engine(postgres.get_connection_url())
-    ...     result = e.execute("select version()")
+    >>> with PostgresContainer("postgres:9.5") as postgres:
+    ...     engine = sqlalchemy.create_engine(postgres.get_connection_url())
+    ...     result = engine.execute("select version()")
     ...     version, = result.fetchone()
     >>> version
     'PostgreSQL 9.5...'
 
-The snippet above will spin up a Postgres database in a container. The :code:`get_connection_url()` convenience method returns a :code:`sqlalchemy` compatible url we use to connect to the database and retrieve the database version.
+The snippet above will spin up a postgres database in a container. The :code:`get_connection_url()` convenience method returns a :code:`sqlalchemy` compatible url we use to connect to the database and retrieve the database version.
 
-More extensive documentation can be found at `Read The Docs <http://testcontainers-python.readthedocs.io/>`_.
+Installation
+------------
 
-Usage within Docker (e.g., in a CI)
------------------------------------
+The suite of testcontainers packages is available on `PyPI <https://pypi.org/project/testcontainers/>`_, and individual packages can be installed using :code:`pip`. We recommend installing the package you need by running :code:`pip install testcontainers-<feature>`, e.g., :code:`pip install testcontainers-postgres`.
 
-When trying to launch a testcontainer from within a Docker container two things have to be provided:
+.. note::
+
+    For backwards compatibility, packages can also be installed by specifying `extras <https://setuptools.readthedocs.io/en/latest/setuptools.html#declaring-extras-optional-features-with-their-own-dependencies>`__, e.g., :code:`pip install testcontainers[postgres]`.
+
+
+Docker in Docker (DinD)
+-----------------------
+
+When trying to launch a testcontainer from within a Docker container, e.g., in continuous integration testing, two things have to be provided:
 
 1. The container has to provide a docker client installation. Either use an image that has docker pre-installed (e.g. the `official docker images <https://hub.docker.com/_/docker>`_) or install the client from within the `Dockerfile` specification.
 2. The container has to have access to the docker daemon which can be achieved by mounting `/var/run/docker.sock` or setting the `DOCKER_HOST` environment variable as part of your `docker run` command.
 
+Development and Contributing
+----------------------------
 
-Setting up a development environment
-------------------------------------
-
-We recommend you use a `virtual environment <https://virtualenv.pypa.io/en/stable/>`_ for development. Note that a python version :code:`>=3.6` is required. After setting up your virtual environment, you can install all dependencies and test the installation by running the following snippet.
+We recommend you use a `virtual environment <https://virtualenv.pypa.io/en/stable/>`_ for development (:code:`python>=3.7` is required). After setting up your virtual environment, you can install all dependencies and test the installation by running the following snippet.
 
 .. code-block:: bash
 
-    pip install -r requirements/$(python -c 'import sys; print("%d.%d" % sys.version_info[:2])').txt
+    pip install -r requirements/[your python version].txt
     pytest -s
 
-Adding requirements
-^^^^^^^^^^^^^^^^^^^
+Package Structure
+^^^^^^^^^^^^^^^^^
 
-We use :code:`pip-tools` to resolve and manage dependencies. If you need to add a dependency to testcontainers or one of the extras, modify the :code:`setup.py` as well as the :code:`requirements.in` accordingly and then run :code:`pip install pip-tools` followed by :code:`make requirements` to update the requirements files.
+Testcontainers is a collection of `implicit namespace packages <https://peps.python.org/pep-0420/>`__ to decouple the development of different extensions, e.g., :code:`testcontainers-mysql` and :code:`testcontainers-postgres` for MySQL and PostgreSQL database containers, respectively. The folder structure is as follows.
 
-Contributing a new container
-^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+.. code-block:: bash
 
-You can contribute a new container in three steps:
+    # One folder per feature.
+    [feature name]
+        # Folder without __init__.py for implicit namespace packages.
+        testcontainers
+            # Implementation as namespace package with __init__.py.
+            [feature name]
+                __init__.py
+                # Other files for this
+                ...
+        # Tests for the feature.
+        tests
+            test_[feature_name].py
+            ...
+        # README for this feature.
+        README.rst
+        # Setup script for this feature.
+        setup.py
 
-1. Create a new module at :code:`testcontainers/[my fancy container].py` that implements the new functionality.
-2. Create a new test module at :code:`tests/test_[my fancy container].py` that tests the new functionality.
-3. Add :code:`[my fancy container]` to the list of test components in the GitHub Action configuration at :code:`.github/workflows/main.yml`.
+Contributing a New Feature
+^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+You want to contribute a new feature or container? Great! You can do that in six steps.
+
+1. Create a new feature directory and populate it with the [package structure]_ as described above. Copying one of the existing features is likely the best way to get started.
+2. Implement the new feature (typically in :code:`__init__.py`) and corresponding tests.
+3. Add a line :code:`-e file:[feature name]` to :code:`requirements.in` and run :code:`make requirements`. This command will find any new requirements and generate lock files to ensure reproducible builds (see the `pip-tools <https://pip-tools.readthedocs.io/en/latest/>`__ documentation for details). Then run :code:`pip install -r requirements/[your python version].txt` to install the new requirements.
+4. Update the feature :code:`README.rst` and add it to the table of contents (:code:`toctree` directive) in the top-level :code:`README.rst`.
+5. Add a line :code:`[feature name]` to the list of components in the  GitHub Action workflow in :code:`.github/workflows/main.yml` to run tests, build, and publish your package when pushed to the :code:`master` branch.
+6. Rebase your development branch on :code:`master` (or merge :code:`master` into your development branch).

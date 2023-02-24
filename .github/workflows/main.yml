@@ -1,58 +1,58 @@
-name: testcontainers-python
+name: testcontainers packages
 on:
   push:
-    branches: [ master ]
+    branches: [master]
   pull_request:
-    branches: [ master ]
+    branches: [master]
 
 jobs:
   build:
     strategy:
-      fail-fast: false
       matrix:
         python-version:
           - "3.7"
           - "3.8"
           - "3.9"
           - "3.10"
-        test-component:
+        component:
+          - arangodb
+          - azurite
+          - clickhouse
+          - compose
           - core
-          - clickhouse.py
-          - elasticsearch.py
-          - google.py
-          - kafka.py
-          - localstack.py
-          - mongodb.py
-          - neo4j.py
-          - nginx.py
-          - rabbitmq.py
-          - redis.py
-          - selenium.py
-          - webdriver.py
-          - keycloak.py
-          - arangodb.py
-          - azurite.py
+          - elasticsearch
+          - google
+          - kafka
+          - keycloak
+          - localstack
+          - meta
+          - minio
+          - mongodb
+          - mssql
+          - mysql
+          - neo4j
+          - nginx
+          - opensearch
+          - oracle
+          - postgres
+          - rabbitmq
+          - redis
+          - selenium
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v2
+      - uses: actions/checkout@v3
       - name: Setup python ${{ matrix.python-version }}
-        uses: actions/setup-python@v2
+        uses: actions/setup-python@v4
         with:
           python-version: ${{ matrix.python-version }}
-      - name: Cache Python dependencies
-        uses: actions/cache@v2
-        with:
-          path: ~/.cache/pip
-          key: ${{ runner.os }}-pip-${{ hashFiles(format('requirements/{0}.txt', matrix.python-version)) }}
-          restore-keys: |
-            ${{ runner.os }}-pip-
-            ${{ runner.os }}-
+          cache: pip
+          cache-dependency-path: ${{ format('requirements/{0}.txt', matrix.python-version) }}
       - name: Install Python dependencies
         run: |
-          python -m pip install --upgrade pip
-          pip install wheel
+          pip install --upgrade pip
           pip install -r requirements/${{ matrix.python-version }}.txt
       - name: Run docker diagnostics
+        if: matrix.component == 'core'
         run: |
           echo "Build minimal container for docker-in-docker diagnostics"
           docker build -f Dockerfile.diagnostics -t testcontainers-python .
@@ -62,13 +62,23 @@ jobs:
           docker run --rm -v /var/run/docker.sock:/var/run/docker.sock --network=bridge testcontainers-python python diagnostics.py
           echo "Container diagnostics with host network"
           docker run --rm -v /var/run/docker.sock:/var/run/docker.sock --network=host testcontainers-python python diagnostics.py
-      - name: Build documentation
-        run: sphinx-build -nW docs docs/_build/html
-      - name: Run doctests
-        run: sphinx-build -b doctest docs docs/_build/html
       - name: Lint the code
-        run: flake8
+        run: make ${{ matrix.component }}/lint
       - name: Run tests
-        run: |
-          py.test -svx --cov-config .coveragerc --cov-report html:skip-covered --cov-report term:skip-covered --cov=testcontainers --tb=short tests/test_${{ matrix.test-component }}
-          codecov
+        if: matrix.component != 'meta'
+        run: make ${{ matrix.component }}/tests
+      - name: Run doctests
+        if: matrix.component != 'meta'
+        run: make ${{ matrix.component }}/doctest
+      - name: Build the package
+        run: make ${{ matrix.component }}/dist
+      - name: Upload the package to pypi
+        if: >
+          github.event_name == 'push'
+          && github.ref == 'refs/heads/master'
+          && github.repository_owner == 'testcontainers'
+          && matrix.python-version == '3.10'
+        env:
+          TWINE_USERNAME: __token__
+          TWINE_PASSWORD: ${{ secrets.PYPI_TOKEN }}
+        run: make ${{ matrix.component }}/upload
