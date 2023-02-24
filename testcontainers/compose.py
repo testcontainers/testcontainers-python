@@ -22,6 +22,9 @@ class DockerCompose(object):
         The relative directory containing the docker compose configuration file
     compose_file_name: str
         The file name of the docker compose configuration file
+    compose_command: str
+        The command to use for docker compose. If not specified, a call to docker compose --help will be made to determine
+        the correct command to use. If docker compose is not installed, docker-compose will be used.
     pull: bool
         Attempts to pull images before launching environment
     build: bool
@@ -72,6 +75,7 @@ class DockerCompose(object):
             self,
             filepath,
             compose_file_name="docker-compose.yml",
+            compose_command=None,
             pull=False,
             build=False,
             env_file=None):
@@ -82,6 +86,7 @@ class DockerCompose(object):
         self.pull = pull
         self.build = build
         self.env_file = env_file
+        self._user_defined_compose_command = compose_command.split(" ") if compose_command else None
 
     def __enter__(self):
         self.start()
@@ -100,6 +105,9 @@ class DockerCompose(object):
         list[str]
             The docker compose command parts
         """
+        if self._user_defined_compose_command:
+            return self._user_defined_compose_command
+
         return ["docker","compose"] if subprocess.run(["docker", "compose", "--help"], stdout=subprocess.DEVNULL,
         stderr=subprocess.STDOUT).returncode == 0 else ["docker-compose"]
 
