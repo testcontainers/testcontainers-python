@@ -29,7 +29,7 @@ class K3SContainer(DockerContainer):
             >>> from testcontainers.k3s import K3SContainer
 
             >>> with K3SContainer() as k3s:
-            >>> k3s.config_yaml()
+            ...     config_yaml = k3s.config_yaml()
     """
 
     KUBE_SECURE_PORT = 6443
@@ -54,6 +54,7 @@ class K3SContainer(DockerContainer):
 
     def config_yaml(self) -> str:
         output = self.get_wrapped_container().exec_run(['cat', '/etc/rancher/k3s/k3s.yaml'])
-        config_yaml = output.output.decode('utf-8').replace('https://127.0.0.1:6443', 'https://localhost:{}'.format(
-            self.get_exposed_port(self.KUBE_SECURE_PORT)))
+        config_yaml = output.output.decode('utf-8') \
+            .replace('https://127.0.0.1:{}'.format(self.KUBE_SECURE_PORT), 'https://localhost:{}'
+                     .format(self.get_exposed_port(self.KUBE_SECURE_PORT)))
         return config_yaml

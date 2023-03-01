@@ -38,6 +38,7 @@ jobs:
           - rabbitmq
           - redis
           - selenium
+          - k3s
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v3
