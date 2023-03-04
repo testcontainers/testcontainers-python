@@ -2,6 +2,9 @@ from docker.models.containers import Container
 import os
 from typing import Iterable, Optional, Tuple
 
+
+from .reaper import Reaper, REAPER_IMAGE
+from .labels import LABEL_SESSION_ID, SESSION_ID, create_labels
 from .waiting_utils import wait_container_is_ready
 from .docker_client import DockerClient
 from .exceptions import ContainerStartException
@@ -26,6 +29,7 @@ class DockerContainer:
         self.env = {}
         self.ports = {}
         self.volumes = {}
+        self.ryuk = False
         self.image = image
         self._docker = DockerClient(**(docker_client_kw or {}))
         self._container = None
@@ -46,6 +50,10 @@ class DockerContainer:
             self.ports[port] = None
         return self
 
+    def with_ryuk(self, value: bool) -> 'DockerContainer':
+        self.ryuk = value
+        return self
+
     def with_kwargs(self, **kwargs) -> 'DockerContainer':
         self._kwargs = kwargs
         return self
@@ -56,11 +64,14 @@ class DockerContainer:
         return self
 
     def start(self) -> 'DockerContainer':
+        if self.ryuk and not self.image == REAPER_IMAGE:
+            logger.debug("Creating Ryuk container")
+            Reaper.get_instance()
         logger.info("Pulling image %s", self.image)
         docker_client = self.get_docker_client()
         self._container = docker_client.run(
             self.image, command=self._command, detach=True, environment=self.env, ports=self.ports,
-            name=self._name, volumes=self.volumes, **self._kwargs
+            name=self._name, volumes=self.volumes, cleanup_on_exit=not self.ryuk, **self._kwargs
         )
         logger.info("Container started: %s", self._container.short_id)
         return self
@@ -76,9 +87,9 @@ class DockerContainer:
 
     def __del__(self) -> None:
         """
-        Try to remove the container in all circumstances
+        Try to remove the container if Ryuk is not active
         """
-        if self._container is not None:
+        if self._container is not None and not self.ryuk:
             try:
                 self.stop()
             except:  # noqa: E722

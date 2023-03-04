@@ -19,6 +19,8 @@ import os
 from typing import List, Optional, Union
 import urllib
 
+
+from .labels import create_labels
 from .utils import default_gateway_ip, inside_container, setup_logger
 
 
@@ -44,14 +46,14 @@ class DockerClient:
 
     @ft.wraps(ContainerCollection.run)
     def run(self, image: str, command: Union[str, List[str]] = None,
-            environment: Optional[dict] = None, ports: Optional[dict] = None,
+            environment: Optional[dict] = None, ports: Optional[dict] = None, labels: Optional[dict] = None,
             detach: bool = False, stdout: bool = True, stderr: bool = False, remove: bool = False,
-            **kwargs) -> Container:
+            cleanup_on_exit: bool = True, **kwargs) -> Container:
         container = self.client.containers.run(
             image, command=command, stdout=stdout, stderr=stderr, remove=remove, detach=detach,
-            environment=environment, ports=ports, **kwargs
+            environment=environment, ports=ports, labels=create_labels(image, labels), **kwargs
         )
-        if detach:
+        if detach and cleanup_on_exit:
             atexit.register(_stop_container, container)
         return container
 
