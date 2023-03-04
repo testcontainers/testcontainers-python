@@ -50,8 +50,8 @@ class DockerContainer:
             self.ports[port] = None
         return self
 
-    def with_ryuk(self, value: bool) -> 'DockerContainer':
-        self.ryuk = value
+    def with_ryuk(self, enabled: bool) -> 'DockerContainer':
+        self.ryuk = enabled
         return self
 
     def with_kwargs(self, **kwargs) -> 'DockerContainer':
