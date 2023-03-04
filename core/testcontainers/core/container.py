@@ -4,7 +4,6 @@ from typing import Iterable, Optional, Tuple
 
 
 from .reaper import Reaper, REAPER_IMAGE
-from .labels import LABEL_SESSION_ID, SESSION_ID, create_labels
 from .waiting_utils import wait_container_is_ready
 from .docker_client import DockerClient
 from .exceptions import ContainerStartException
