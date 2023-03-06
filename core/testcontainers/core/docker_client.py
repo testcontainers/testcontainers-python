@@ -21,6 +21,7 @@ import urllib
 
 
 from .labels import create_labels
+from .labels import SESSION_ID
 from .utils import default_gateway_ip, inside_container, setup_logger
 
 
@@ -43,6 +44,7 @@ class DockerClient:
     """
     def __init__(self, **kwargs) -> None:
         self.client = docker.from_env(**kwargs)
+        self.client.api.headers["x-tc-sid"] = SESSION_ID
 
     @ft.wraps(ContainerCollection.run)
     def run(self, image: str, command: Union[str, List[str]] = None,
