@@ -20,8 +20,7 @@ from typing import List, Optional, Union
 import urllib
 
 
-from .labels import create_labels
-from .labels import SESSION_ID
+from .labels import create_labels, SESSION_ID
 from .utils import default_gateway_ip, inside_container, setup_logger
 
 
