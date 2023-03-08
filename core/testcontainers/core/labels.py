@@ -1,7 +1,7 @@
 from uuid import uuid4
 from typing import Optional
 
-from .reaper import REAPER_IMAGE
+from .images import REAPER_IMAGE
 
 SESSION_ID: str = str(uuid4())
 LABEL_SESSION_ID = "org.testcontainers.session-id"
