@@ -26,20 +26,19 @@ class Reaper:
             Reaper._instance = Reaper._create_instance()
 
         return Reaper._instance
-    
+
     @classmethod
     def delete_instance(cls) -> None:
-        if not Reaper._socket is None:
+        if Reaper._socket is not None:
             Reaper._socket.close()
             Reaper._socket = None
-        
-        if not Reaper._container is None:
+
+        if Reaper._container is not None:
             Reaper._container.stop()
             Reaper._container = None
 
-        if not Reaper._instance is None:
+        if Reaper._instance is not None:
             Reaper._instance = None
-        
 
     @classmethod
     def _create_instance(cls) -> "Reaper":
@@ -70,5 +69,3 @@ class Reaper:
         Reaper._instance = Reaper()
 
         return Reaper._instance
-    
-
