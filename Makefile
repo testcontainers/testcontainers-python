@@ -1,4 +1,4 @@
-PYTHON_VERSIONS = 3.7 3.8 3.9 3.10
+PYTHON_VERSIONS = 3.7 3.8 3.9 3.10 3.11
 PYTHON_VERSION ?= 3.10
 IMAGE = testcontainers-python:${PYTHON_VERSION}
 REQUIREMENTS = $(addprefix requirements/,${PYTHON_VERSIONS:=.txt})
