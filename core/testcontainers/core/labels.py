@@ -10,7 +10,9 @@ LABEL_SESSION_ID = "org.testcontainers.session-id"
 
 def create_labels(image: str, labels: Optional[dict]) -> dict:
     if labels is None:
-        labels = {}
+        labels = {
+            "org.testcontainers.lang": "python",
+        }
 
     if image == REAPER_IMAGE:
         return labels
