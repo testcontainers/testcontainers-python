@@ -57,10 +57,11 @@ class K3SContainer(DockerContainer):
 
     def config_yaml(self) -> str:
         """This function returns the kubernetes config yaml which can be used
-        to initialise python client
+        to initialise k8s client
         """
         execution = self.get_wrapped_container().exec_run(['cat', '/etc/rancher/k3s/k3s.yaml'])
         config_yaml = execution.output.decode('utf-8') \
             .replace(f'https://127.0.0.1:{self.KUBE_SECURE_PORT}',
-                     f'https://localhost:{self.get_exposed_port(self.KUBE_SECURE_PORT)}')
+                     f'https://{self.get_container_host_ip()}:'
+                     f'{self.get_exposed_port(self.KUBE_SECURE_PORT)}')
         return config_yaml
