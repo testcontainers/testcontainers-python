@@ -29,7 +29,9 @@ class K3SContainer(DockerContainer):
             >>> from testcontainers.k3s import K3SContainer
 
             >>> with K3SContainer() as k3s:
-            ...     config_yaml = k3s.config_yaml()
+            ...     config.load_kube_config_from_dict(yaml.safe_load(k3s.config_yaml()))
+            ...     pod = client.CoreV1Api().list_pod_for_all_namespaces(limit=1)
+            ...     assert len(pod.items) > 0, "Unable to get running nodes from k3s cluster"
     """
 
     KUBE_SECURE_PORT = 6443
@@ -38,8 +40,7 @@ class K3SContainer(DockerContainer):
     def __init__(self, image="rancher/k3s:latest", **kwargs) -> None:
         super(K3SContainer, self).__init__(image, **kwargs)
         self.with_exposed_ports(self.KUBE_SECURE_PORT, self.RANCHER_WEBHOOK_PORT)
-        self.with_env("K3S_URL",
-                      'https://localhost:{}'.format(self.KUBE_SECURE_PORT))
+        self.with_env("K3S_URL", f'https://{self.get_container_host_ip()}:{self.KUBE_SECURE_PORT}')
         self.with_command("server --disable traefik --tls-san=" + self.get_container_host_ip())
         self.with_kwargs(privileged=True, tmpfs={"/run": "", "/var/run": ""})
         self.with_volume_mapping("/sys/fs/cgroup", "/sys/fs/cgroup", "rw")
@@ -53,8 +54,11 @@ class K3SContainer(DockerContainer):
         return self
 
     def config_yaml(self) -> str:
-        output = self.get_wrapped_container().exec_run(['cat', '/etc/rancher/k3s/k3s.yaml'])
-        config_yaml = output.output.decode('utf-8') \
-            .replace('https://127.0.0.1:{}'.format(self.KUBE_SECURE_PORT), 'https://localhost:{}'
-                     .format(self.get_exposed_port(self.KUBE_SECURE_PORT)))
+        """This function returns the kubernetes config yaml which can be used
+        to initialise python client
+        """
+        execution = self.get_wrapped_container().exec_run(['cat', '/etc/rancher/k3s/k3s.yaml'])
+        config_yaml = execution.output.decode('utf-8') \
+            .replace(f'https://127.0.0.1:{self.KUBE_SECURE_PORT}',
+                     f'https://localhost:{self.get_exposed_port(self.KUBE_SECURE_PORT)}')
         return config_yaml
