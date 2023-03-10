@@ -26,7 +26,9 @@ class K3SContainer(DockerContainer):
 
             >>> import json
             >>> import urllib
+            >>> import yaml
             >>> from testcontainers.k3s import K3SContainer
+            >>> from kubernetes import client, config
 
             >>> with K3SContainer() as k3s:
             ...     config.load_kube_config_from_dict(yaml.safe_load(k3s.config_yaml()))
