@@ -30,12 +30,18 @@ class ClickHouseContainer(DbContainer):
 
     .. doctest::
 
-        >>> import clickhouse_driver
         >>> from testcontainers.clickhouse import ClickHouseContainer
 
+        >>> import clickhouse_driver
         >>> with ClickHouseContainer("clickhouse/clickhouse-server:21.8") as clickhouse:
         ...     client = clickhouse_driver.Client.from_url(clickhouse.get_connection_url())
         ...     client.execute("select 'working'")
+        [('working',)]
+
+        >>> import clickhouse_connect
+        >>> with ClickHouseContainer("clickhouse/clickhouse-server:21.8", port=8123) as clickhouse:
+        ...     client = clickhouse_connect.get_client(dsn=self.get_connection_url())
+        ...     client.command("select 'working'")
         [('working',)]
     """
 
