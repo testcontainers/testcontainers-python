@@ -11,6 +11,7 @@
 #    License for the specific language governing permissions and limitations
 #    under the License.
 import os
+from typing import Optional
 
 import clickhouse_connect
 from clickhouse_connect.driver.exceptions import Error as ClickhouseConnectError
@@ -52,12 +53,12 @@ class ClickHouseContainer(DbContainer):
 
     def __init__(
             self,
-            image="clickhouse/clickhouse-server:latest",
-            port=9000,
-            user=None,
-            password=None,
-            dbname=None
-    ):
+            image: str = "clickhouse/clickhouse-server:latest",
+            port: int = 9000,
+            user: Optional[str] = None,
+            password: Optional[str] = None,
+            dbname: Optional[str] = None
+    ) -> None:
         super().__init__(image=image)
 
         self.CLICKHOUSE_USER = user or self.CLICKHOUSE_USER
@@ -76,12 +77,12 @@ class ClickHouseContainer(DbContainer):
                 client.execute("SELECT version()")
 
 
-    def _configure(self):
+    def _configure(self) -> None:
         self.with_env("CLICKHOUSE_USER", self.CLICKHOUSE_USER)
         self.with_env("CLICKHOUSE_PASSWORD", self.CLICKHOUSE_PASSWORD)
         self.with_env("CLICKHOUSE_DB", self.CLICKHOUSE_DB)
 
-    def get_connection_url(self, host=None):
+    def get_connection_url(self, host: Optional[str] = None) -> str:
         return self._create_connection_url(
             dialect="clickhouse",
             username=self.CLICKHOUSE_USER,
