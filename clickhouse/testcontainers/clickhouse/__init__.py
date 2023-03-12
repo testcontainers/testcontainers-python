@@ -13,8 +13,9 @@
 import os
 
 import clickhouse_connect
+from clickhouse_connect.driver.exceptions import Error as ClickhouseConnectError
 import clickhouse_driver
-from clickhouse_connect.driver.exceptions import Error
+from clickhouse_driver.errors import Error as ClickhouseDriverError
 
 from testcontainers.core.generic import DbContainer
 from testcontainers.core.waiting_utils import wait_container_is_ready
@@ -66,7 +67,7 @@ class ClickHouseContainer(DbContainer):
         self.port_to_expose = port
         self.with_exposed_ports(self.port_to_expose)
 
-    @wait_container_is_ready(Error, EOFError)
+    @wait_container_is_ready(ClickhouseDriverError, ClickhouseConnectError, EOFError)
     def _connect(self):
         if self.port_to_expose == 8123:
             with clickhouse_connect.get_client(dsn=self.get_connection_url()) as client:
