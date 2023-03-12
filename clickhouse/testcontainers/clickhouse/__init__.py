@@ -9,12 +9,11 @@
 #    distributed under the License is distributed on an "AS IS" BASIS, WITHOUT
 #    WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the
 #    License for the specific language governing permissions and limitations
-#    under the License.
-import os
-from typing import Optional
+#    under the License.import os
 
+import clickhouse_connect
 import clickhouse_driver
-from clickhouse_driver.errors import Error
+from clickhouse_connect.driver.exceptions import Error
 
 from testcontainers.core.generic import DbContainer
 from testcontainers.core.waiting_utils import wait_container_is_ready
@@ -24,20 +23,20 @@ class ClickHouseContainer(DbContainer):
     """
     ClickHouse database container.
 
-    Example:
+    Example
+    -------
+    The example spins up a ClickHouse database and connects to it
+    using the :code:`clickhouse-driver`.
 
-        The example spins up a ClickHouse database and connects to it using the
-        :code:`clickhouse-driver`.
+    .. doctest::
 
-        .. doctest::
+        >>> import clickhouse_driver
+        >>> from testcontainers.clickhouse import ClickHouseContainer
 
-            >>> import clickhouse_driver
-            >>> from testcontainers.clickhouse import ClickHouseContainer
-
-            >>> with ClickHouseContainer("clickhouse/clickhouse-server:21.8") as clickhouse:
-            ...     client = clickhouse_driver.Client.from_url(clickhouse.get_connection_url())
-            ...     client.execute("select 'working'")
-            [('working',)]
+        >>> with ClickHouseContainer("clickhouse/clickhouse-server:21.8") as clickhouse:
+        ...     client = clickhouse_driver.Client.from_url(clickhouse.get_connection_url())
+        ...     client.execute("select 'working'")
+        [('working',)]
     """
 
     CLICKHOUSE_USER = os.environ.get("CLICKHOUSE_USER", "test")
@@ -46,12 +45,12 @@ class ClickHouseContainer(DbContainer):
 
     def __init__(
             self,
-            image: str = "clickhouse/clickhouse-server:latest",
-            port: int = 9000,
-            user: Optional[str] = None,
-            password: Optional[str] = None,
-            dbname: Optional[str] = None
-    ) -> None:
+            image="clickhouse/clickhouse-server:latest",
+            port=9000,
+            user=None,
+            password=None,
+            dbname=None
+    ):
         super().__init__(image=image)
 
         self.CLICKHOUSE_USER = user or self.CLICKHOUSE_USER
@@ -61,16 +60,21 @@ class ClickHouseContainer(DbContainer):
         self.with_exposed_ports(self.port_to_expose)
 
     @wait_container_is_ready(Error, EOFError)
-    def _connect(self) -> None:
-        with clickhouse_driver.Client.from_url(self.get_connection_url()) as client:
-            client.execute("SELECT version()")
+    def _connect(self):
+        if self.port_to_expose == 8123:
+            with clickhouse_connect.get_client(dsn=self.get_connection_url()) as client:
+                client.command("SELECT version()")
+        else:
+            with clickhouse_driver.Client.from_url(self.get_connection_url()) as client:
+                client.execute("SELECT version()")
 
-    def _configure(self) -> None:
+
+    def _configure(self):
         self.with_env("CLICKHOUSE_USER", self.CLICKHOUSE_USER)
         self.with_env("CLICKHOUSE_PASSWORD", self.CLICKHOUSE_PASSWORD)
         self.with_env("CLICKHOUSE_DB", self.CLICKHOUSE_DB)
 
-    def get_connection_url(self, host: Optional[str] = None) -> str:
+    def get_connection_url(self, host=None):
         return self._create_connection_url(
             dialect="clickhouse",
             username=self.CLICKHOUSE_USER,
