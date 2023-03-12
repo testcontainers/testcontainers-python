@@ -68,7 +68,7 @@ class ClickHouseContainer(DbContainer):
         self.with_exposed_ports(self.port_to_expose)
 
     @wait_container_is_ready(ClickhouseDriverError, ClickhouseConnectError, EOFError)
-    def _connect(self):
+    def _connect(self) -> None:
         if self.port_to_expose == 8123:
             with clickhouse_connect.get_client(dsn=self.get_connection_url()) as client:
                 client.command("SELECT version()")
