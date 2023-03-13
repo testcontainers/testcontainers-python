@@ -41,6 +41,7 @@ class PostgresContainer(DbContainer):
     POSTGRES_USER = os.environ.get("POSTGRES_USER", "test")
     POSTGRES_PASSWORD = os.environ.get("POSTGRES_PASSWORD", "test")
     POSTGRES_DB = os.environ.get("POSTGRES_DB", "test")
+    DEFAULT_DRIVER = "psycopg2"
 
     def __init__(self, image: str = "postgres:latest", port: int = 5432, user: Optional[str] = None,
                  password: Optional[str] = None, dbname: Optional[str] = None,
@@ -59,9 +60,12 @@ class PostgresContainer(DbContainer):
         self.with_env("POSTGRES_PASSWORD", self.POSTGRES_PASSWORD)
         self.with_env("POSTGRES_DB", self.POSTGRES_DB)
 
-    def get_connection_url(self, host=None) -> str:
+    def get_connection_url(self, host=None, driver: str = None) -> str:
+        if not driver:
+            driver = self.driver
+
         return super()._create_connection_url(
-            dialect="postgresql+{}".format(self.driver), username=self.POSTGRES_USER,
+            dialect="postgresql+{}".format(driver), username=self.POSTGRES_USER,
             password=self.POSTGRES_PASSWORD, db_name=self.POSTGRES_DB, host=host,
             port=self.port_to_expose,
         )
