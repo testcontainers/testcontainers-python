@@ -13,6 +13,14 @@
 import os
 from typing import Optional
 from testcontainers.core.generic import DbContainer
+from testcontainers.core.waiting_utils import wait_container_is_ready
+
+ADDITIONAL_TRANSIENT_ERRORS = []
+try:
+    from sqlalchemy.exc import DBAPIError
+    ADDITIONAL_TRANSIENT_ERRORS.append(DBAPIError)
+except ImportError:
+    pass
 
 
 class PostgresContainer(DbContainer):
@@ -45,7 +53,10 @@ class PostgresContainer(DbContainer):
 
     def __init__(self, image: str = "postgres:latest", port: int = 5432, user: Optional[str] = None,
                  password: Optional[str] = None, dbname: Optional[str] = None,
-                 driver: str = "psycopg2", **kwargs) -> None:
+                 driver: Optional[str] = None, **kwargs) -> None:
+        if driver is None:
+            driver = self.DEFAULT_DRIVER
+
         super(PostgresContainer, self).__init__(image=image, **kwargs)
         self.POSTGRES_USER = user or self.POSTGRES_USER
         self.POSTGRES_PASSWORD = password or self.POSTGRES_PASSWORD
@@ -55,13 +66,20 @@ class PostgresContainer(DbContainer):
 
         self.with_exposed_ports(self.port_to_expose)
 
+    @wait_container_is_ready(*ADDITIONAL_TRANSIENT_ERRORS)
+    def _connect(self) -> None:
+        import sqlalchemy
+        engine = sqlalchemy.create_engine(self.get_connection_url(driver=self.DEFAULT_DRIVER))
+        conn = engine.connect()
+        conn.close()
+
     def _configure(self) -> None:
         self.with_env("POSTGRES_USER", self.POSTGRES_USER)
         self.with_env("POSTGRES_PASSWORD", self.POSTGRES_PASSWORD)
         self.with_env("POSTGRES_DB", self.POSTGRES_DB)
 
-    def get_connection_url(self, host=None, driver: str = None) -> str:
-        if not driver:
+    def get_connection_url(self, host: Optional[str] = None, driver: Optional[str] = None) -> str:
+        if driver is None:
             driver = self.driver
 
         return super()._create_connection_url(

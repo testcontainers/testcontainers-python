@@ -29,15 +29,14 @@ class DbContainer(DockerContainer):
     Generic database container.
     """
 
-    DEFAULT_DRIVER = None
-
     @wait_container_is_ready(*ADDITIONAL_TRANSIENT_ERRORS)
-    def _connect(self, driver: Optional[str] = None) -> None:
+    def _connect(self) -> None:
         import sqlalchemy
-        engine = sqlalchemy.create_engine(self.get_connection_url(driver=driver))
-        engine.connect()
+        engine = sqlalchemy.create_engine(self.get_connection_url())
+        conn = engine.connect()
+        conn.close()
 
-    def get_connection_url(self, host=None, driver=None) -> str:
+    def get_connection_url(self) -> str:
         raise NotImplementedError
 
     def _create_connection_url(self, dialect: str, username: str, password: str,
@@ -57,7 +56,7 @@ class DbContainer(DockerContainer):
     def start(self) -> 'DbContainer':
         self._configure()
         super().start()
-        self._connect(self.DEFAULT_DRIVER)
+        self._connect()
         return self
 
     def _configure(self) -> None:
