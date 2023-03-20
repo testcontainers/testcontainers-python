@@ -23,8 +23,8 @@ class Db2Container(DbContainer):
             >>> import sqlalchemy
             >>> from testcontainers.db2 import Db2Container
             >>> from testcontainers.core.waiting_utils import wait_for_logs
-            >>> with Db2ontainer() as db2:
-            >>>     wait_for_logs(es, "(*) Setup has completed")
+            >>> with Db2Container() as db2:
+            >>>     wait_for_logs(db2, "(*) Setup has completed")
             ...     engine = sqlalchemy.create_engine(db2.get_connection_url())
             ...     with engine.begin() as connection:
             ...         result = connection.execute(sqlalchemy.text("SELECT SERVICE_LEVEL FROM SYSIBMADM.ENV_INST_INFO"))
