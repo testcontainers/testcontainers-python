@@ -12,7 +12,9 @@
 #    under the License.
 import os
 from typing import Optional
+
 from testcontainers.core.generic import DbContainer
+from testcontainers.core.waiting_utils import wait_for_logs
 
 class Db2Container(DbContainer):
     """
@@ -20,19 +22,28 @@ class Db2Container(DbContainer):
 
     Example:
 
+        .. doctest::
+
+            >>> import tempfile
             >>> import sqlalchemy
             >>> from testcontainers.db2 import Db2Container
-            >>> from testcontainers.core.waiting_utils import wait_for_logs
-            >>> with Db2Container() as db2:
-            >>>     wait_for_logs(db2, "(*) Setup has completed")
-            ...     engine = sqlalchemy.create_engine(db2.get_connection_url())
-            ...     with engine.begin() as connection:
-            ...         result = connection.execute(sqlalchemy.text("SELECT SERVICE_LEVEL FROM SYSIBMADM.ENV_INST_INFO"))
-            ...         version, = result.fetchone()
+
+            >>> with tempfile.TemporaryDirectory() as tempdir:
+            >>>     container = Db2Container(privileged=True)
+            ...     with container.with_volume_mapping(tempdir, "/database", mode="rw") as db2:
+            ...         engine = sqlalchemy.create_engine(db2.get_connection_url())
+            ...         with engine.connect() as conn:
+            ...             query = sqlalchemy.text("SELECT SERVICE_LEVEL FROM SYSIBMADM.ENV_INST_INFO")
+            ...             result = conn.execute(query)
+            ...             version = result.scalar()
+            >>> version.startswith("DB2 v")
+            True
+            
     """
     DB2_USER = os.environ.get("DB2_USER", "test")
     DB2_PASSWORD = os.environ.get("DB2_PASSWORD", "test")
     DB2_DATABASE = os.environ.get("DB2_DATABASE", "test")
+    TIMEOUT = 1_000
 
     def __init__(
         self, 
@@ -48,7 +59,6 @@ class Db2Container(DbContainer):
         self.DB2_PASSWORD = password or self.DB2_PASSWORD
         self.DB2_DATABASE = database or self.DB2_DATABASE
         self.port_to_expose = port
-
         self.with_exposed_ports(self.port_to_expose)
 
     def _configure(self) -> None:
@@ -56,9 +66,8 @@ class Db2Container(DbContainer):
         self.with_env("DB2INST1_PASSWORD", self.DB2_PASSWORD)
         self.with_env("DBNAME", self.DB2_DATABASE)
         self.with_env("LICENSE", "accept")
-        # the following settings reduce container start-up time
-        self.with_env("ARCHIVE_LOGS", "false")
-        self.with_env("AUTOCONFIG", "false")
+        self.with_env("ARCHIVE_LOGS", "false") # reduces start-up time
+        self.with_env("AUTOCONFIG", "false") # reduces start-up time
 
     def get_connection_url(self, host=None) -> str:
         return super()._create_connection_url(
@@ -69,3 +78,7 @@ class Db2Container(DbContainer):
             host=host,
             port=self.port_to_expose,
         )
+    
+    def _connect(self) -> None:
+        wait_for_logs(self, "Setup has completed", self.TIMEOUT)
+        super()._connect()

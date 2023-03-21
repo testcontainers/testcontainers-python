@@ -12,7 +12,7 @@ setup(
     url="https://github.com/testcontainers/testcontainers-python",
     install_requires=[
         "testcontainers-core",
-        "sqlalchemy",
+        "sqlalchemy<2",
         "ibm_db_sa",
     ],
     python_requires=">=3.7",
