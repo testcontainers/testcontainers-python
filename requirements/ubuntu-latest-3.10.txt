@@ -27,6 +27,7 @@
     #   testcontainers-kafka
     #   testcontainers-keycloak
     #   testcontainers-localstack
+    #   testcontainers-memcached
     #   testcontainers-minio
     #   testcontainers-mongodb
     #   testcontainers-mssql
@@ -48,6 +49,8 @@
 -e file:keycloak
     # via -r requirements.in
 -e file:localstack
+    # via -r requirements.in
+-e file:memcached
     # via -r requirements.in
 -e file:minio
     # via -r requirements.in

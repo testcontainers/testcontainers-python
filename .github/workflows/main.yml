@@ -31,6 +31,7 @@ jobs:
         - kafka
         - keycloak
         - localstack
+        - memcached
         - meta
         - minio
         - mongodb

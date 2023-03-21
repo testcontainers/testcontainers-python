@@ -8,6 +8,7 @@
 -e file:kafka
 -e file:keycloak
 -e file:localstack
+-e file:memcached
 -e file:meta
 -e file:minio
 -e file:mongodb

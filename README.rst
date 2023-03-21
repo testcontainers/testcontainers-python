@@ -22,6 +22,7 @@ testcontainers-python facilitates the use of Docker containers for functional an
     kafka/README
     keycloak/README
     localstack/README
+    memcached/README
     minio/README
     mongodb/README
     mssql/README
