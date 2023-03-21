@@ -387,7 +387,7 @@ sphinxcontrib-qthelp==1.0.3
     # via sphinx
 sphinxcontrib-serializinghtml==1.1.5
     # via sphinx
-sqlalchemy==1.4.47
+sqlalchemy==2.0.7
     # via
     #   ibm-db-sa
     #   testcontainers-db2
@@ -413,6 +413,7 @@ typing-extensions==4.5.0
     # via
     #   azure-core
     #   azure-storage-blob
+    #   sqlalchemy
 tzdata==2022.7
     # via pytz-deprecation-shim
 tzlocal==4.3
