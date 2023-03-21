@@ -40,31 +40,29 @@ class Db2Container(DbContainer):
             True
             
     """
-    DB2_USER = os.environ.get("DB2_USER", "test")
-    DB2_PASSWORD = os.environ.get("DB2_PASSWORD", "test")
-    DB2_DATABASE = os.environ.get("DB2_DATABASE", "test")
+
     TIMEOUT = 1_000
 
     def __init__(
         self, 
         image: str = "ibmcom/db2:latest", 
-        user: Optional[str] = None,
+        username: Optional[str] = None,
         password: Optional[str] = None,
         database: Optional[str] = None, 
         port: int = 50_000, 
         **kwargs
     ) -> None:
         super(Db2Container, self).__init__(image=image, **kwargs)
-        self.DB2_USER = user or self.DB2_USER
-        self.DB2_PASSWORD = password or self.DB2_PASSWORD
-        self.DB2_DATABASE = database or self.DB2_DATABASE
+        self.username = username or os.environ.get("DB2_USER", "test")
+        self.password = password or os.environ.get("DB2_PASSWORD", "test")
+        self.database = database or os.environ.get("DB2_DATABASE", "test")
         self.port_to_expose = port
         self.with_exposed_ports(self.port_to_expose)
 
     def _configure(self) -> None:
-        self.with_env("DB2INSTANCE", self.DB2_USER)
-        self.with_env("DB2INST1_PASSWORD", self.DB2_PASSWORD)
-        self.with_env("DBNAME", self.DB2_DATABASE)
+        self.with_env("DB2INSTANCE", self.username)
+        self.with_env("DB2INST1_PASSWORD", self.password)
+        self.with_env("DBNAME", self.database)
         self.with_env("LICENSE", "accept")
         self.with_env("ARCHIVE_LOGS", "false") # reduces start-up time
         self.with_env("AUTOCONFIG", "false") # reduces start-up time
@@ -72,9 +70,9 @@ class Db2Container(DbContainer):
     def get_connection_url(self, host=None) -> str:
         return super()._create_connection_url(
             dialect="db2", 
-            username=self.DB2_USER, 
-            password=self.DB2_PASSWORD, 
-            db_name=self.DB2_DATABASE, 
+            username=self.username, 
+            password=self.password, 
+            db_name=self.database, 
             host=host,
             port=self.port_to_expose,
         )
