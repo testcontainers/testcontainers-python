@@ -40,7 +40,6 @@ class Db2Container(DbContainer):
             True
             
     """
-
     TIMEOUT = 1_000
 
     def __init__(

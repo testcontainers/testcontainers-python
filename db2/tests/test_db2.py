@@ -4,7 +4,6 @@ import sqlalchemy
 from testcontainers.core.utils import is_arm
 from testcontainers.db2 import Db2Container
 
-
 @pytest.mark.skipif(is_arm(), reason='ibm_db_sa adapter not compatible with ARM64')
 def test_docker_run_db2():
     with tempfile.TemporaryDirectory() as tempdir:
