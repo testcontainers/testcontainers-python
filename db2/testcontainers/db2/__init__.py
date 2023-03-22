@@ -29,15 +29,15 @@ class Db2Container(DbContainer):
             >>> from testcontainers.db2 import Db2Container
 
             >>> with tempfile.TemporaryDirectory() as tempdir:
-            >>>     container = Db2Container(privileged=True)
+            >>>     container = Db2Container("ibmcom/db2:11.5.7.0", privileged=True)
             ...     with container.with_volume_mapping(tempdir, "/database", mode="rw") as db2:
             ...         engine = sqlalchemy.create_engine(db2.get_connection_url())
             ...         with engine.connect() as conn:
             ...             query = sqlalchemy.text("SELECT SERVICE_LEVEL FROM SYSIBMADM.ENV_INST_INFO")
             ...             result = conn.execute(query)
             ...             version = result.scalar()
-            >>> version.startswith("DB2 v")
-            True
+            >>> version
+            'DB2 v11.5.7.0'
             
     """
     TIMEOUT = 1_000
