@@ -1,6 +1,6 @@
 from docker.models.containers import Container
 import os
-from typing import Iterable, Optional, Tuple
+from typing import Iterable, Optional, Tuple, Any, Dict
 
 from .waiting_utils import wait_container_is_ready
 from .docker_client import DockerClient
@@ -14,6 +14,28 @@ class DockerContainer:
     """
     Basic container object to spin up Docker instances.
 
+    Parameters
+    ----------
+    image:
+        The name of the image to start.
+    docker_client_kw:
+        Dictionary with arguments that will be passed to the
+        docker.DockerClient init.
+    command:
+        Optional execution command for the container.
+    name:
+        Optional name for the container.
+    ports:
+        Ports to be exposed by the container. The port number will be
+        automatically assigned on the host, use :code:`get_exposed_port(PORT)`
+        method to get the port number on the host.
+    volumes:
+        Volumes to mount into the container. Each entry should be a tuple with
+        three values:
+        #. host path
+        #. container path
+        #. mode (default 'ro').
+
     .. doctest::
 
         >>> from testcontainers.core.container import DockerContainer
@@ -22,15 +44,40 @@ class DockerContainer:
         >>> with DockerContainer("hello-world") as container:
         ...    delay = wait_for_logs(container, "Hello from Docker!")
     """
-    def __init__(self, image: str, docker_client_kw: Optional[dict] = None, **kwargs) -> None:
-        self.env = {}
-        self.ports = {}
-        self.volumes = {}
+    def __init__(
+        self,
+        image: str,
+        docker_client_kw: Optional[Dict[str, Any]] = None,
+        command: Optional[str] = None
+        env: Optional[Dict[str, str]] = None,
+        name: Optional[str] = None,
+        ports = Optional[List[int]] = None,
+        volumes = Optional[List[Tuple[str, str, str]]] = None,
+        **kwargs
+    ) -> None:
+
         self.image = image
         self._docker = DockerClient(**(docker_client_kw or {}))
+
+        self._command = command
+
+        self.env = {}
+        if env:
+            for variable, value in env.items():
+                self.with_env(key, value)
+
+        self._name = name
+
+        self.ports = {}
+        if ports:
+            self.with_exposed_ports(*ports)
+
+        self.volumes = {}
+        if volumes:
+            for vol in volumes:
+                self.with_volume_mapping(*vol)
+
         self._container = None
-        self._command = None
-        self._name = None
         self._kwargs = kwargs
 
     def with_env(self, key: str, value: str) -> 'DockerContainer':
