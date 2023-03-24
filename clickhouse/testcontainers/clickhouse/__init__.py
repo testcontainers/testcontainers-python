@@ -41,10 +41,11 @@ class ClickHouseContainer(DbContainer):
             [('working',)]
 
             >>> import clickhouse_connect
-            >>> with ClickHouseContainer("clickhouse/clickhouse-server:21.8", port=8123) as clickhouse:
-            ...     client = clickhouse_connect.get_client(dsn=self.get_connection_url())
+            >>> with ClickHouseContainer("clickhouse/clickhouse-server:21.8",
+            ...                          port=8123) as clickhouse:
+            ...     client = clickhouse_connect.get_client(dsn=clickhouse.get_connection_url())
             ...     client.command("select 'working'")
-            [('working',)]
+            'working'
     """
 
     CLICKHOUSE_USER = os.environ.get("CLICKHOUSE_USER", "test")
@@ -75,7 +76,6 @@ class ClickHouseContainer(DbContainer):
         else:
             with clickhouse_driver.Client.from_url(self.get_connection_url()) as client:
                 client.execute("SELECT version()")
-
 
     def _configure(self) -> None:
         self.with_env("CLICKHOUSE_USER", self.CLICKHOUSE_USER)
