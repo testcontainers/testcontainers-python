@@ -50,7 +50,7 @@ class ClickHouseContainer(DbContainer):
             >>> import clickhouse_connect
             >>> # If you want to use the HTTP interface, port 8123 needs to be exposed
             >>> with ClickHouseContainer(port=8123) as clickhouse:
-            ...     client = clickhouse_connect.get_client(dsn=self.get_connection_url())
+            ...     client = clickhouse_connect.get_client(dsn=clickhouse.get_connection_url())
             ...     client.command("select 'working'")
             [('working',)]
     """
