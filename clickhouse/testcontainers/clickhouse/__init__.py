@@ -28,11 +28,11 @@ class ClickHouseContainer(DbContainer):
     ClickHouse. If you want to use the HTTP interface, specify port 8123 to be exposed.
 
     Example:
-    
+
         This example shows how to spin up ClickHouse.
         It demonstrates how to connect to the *TCP* interface using :code:`clickhouse-driver`
         and how to connect to the *HTTP* interface using :code:`clickhouse-connect`, the
-        official client library. 
+        official client library.
 
         .. doctest::
 
