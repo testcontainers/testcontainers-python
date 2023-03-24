@@ -24,23 +24,31 @@ from testcontainers.core.waiting_utils import wait_container_is_ready
 
 class ClickHouseContainer(DbContainer):
     """
-    ClickHouse database container.
+    ClickHouse database container. This testcontainer defaults to exposing the TCP port of
+    ClickHouse. If you want to use the HTTP interface, specify port 8123 to be exposed.
 
     Example:
-        The example spins up a ClickHouse database and connects to it
-        using the :code:`clickhouse-driver`.
+    
+        This example shows how to spin up ClickHouse.
+        It demonstrates how to connect to the *TCP* interface using :code:`clickhouse-driver`
+        and how to connect to the *HTTP* interface using :code:`clickhouse-connect`, the
+        official client library. 
 
         .. doctest::
 
             >>> from testcontainers.clickhouse import ClickHouseContainer
 
+            >>> # clickhouse_driver is a client lib that uses the TCP interface
             >>> import clickhouse_driver
-            >>> with ClickHouseContainer("clickhouse/clickhouse-server:21.8") as clickhouse:
+            >>> # ClickHouseContainer exports the TCP port by default
+            >>> with ClickHouseContainer(image="clickhouse/clickhouse-server:21.8") as clickhouse:
             ...     client = clickhouse_driver.Client.from_url(clickhouse.get_connection_url())
             ...     client.execute("select 'working'")
             [('working',)]
 
+            >>> # clickhouse_connect is the official client lib, based on the HTTP interface
             >>> import clickhouse_connect
+            >>> # If you want to use the HTTP interface, port 8123 needs to be exposed
             >>> with ClickHouseContainer(port=8123) as clickhouse:
             ...     client = clickhouse_connect.get_client(dsn=self.get_connection_url())
             ...     client.command("select 'working'")
