@@ -24,18 +24,15 @@ class Db2Container(DbContainer):
 
         .. doctest::
 
-            >>> import tempfile
             >>> import sqlalchemy
             >>> from testcontainers.db2 import Db2Container
 
-            >>> with tempfile.TemporaryDirectory() as tempdir:
-            >>>     container = Db2Container("ibmcom/db2:11.5.7.0", privileged=True)
-            ...     with container.with_volume_mapping(tempdir, "/database", mode="rw") as db2:
-            ...         engine = sqlalchemy.create_engine(db2.get_connection_url())
-            ...         with engine.connect() as conn:
-            ...             query = sqlalchemy.text("SELECT SERVICE_LEVEL FROM SYSIBMADM.ENV_INST_INFO")
-            ...             result = conn.execute(query)
-            ...             version = result.scalar()
+            >>> with Db2Container("ibmcom/db2:11.5.7.0", privileged=True) as db2:
+            ...     engine = sqlalchemy.create_engine(db2.get_connection_url())
+            ...     with engine.connect() as conn:
+            ...         query = sqlalchemy.text("SELECT SERVICE_LEVEL FROM SYSIBMADM.ENV_INST_INFO")
+            ...         result = conn.execute(query)
+            ...         version = result.scalar()
             >>> version
             'DB2 v11.5.7.0'
             
@@ -63,6 +60,7 @@ class Db2Container(DbContainer):
         self.with_env("DB2INST1_PASSWORD", self.password)
         self.with_env("DBNAME", self.database)
         self.with_env("LICENSE", "accept")
+        self.with_env("PERSISTENT_HOME", "false")
         self.with_env("ARCHIVE_LOGS", "false") # reduces start-up time
         self.with_env("AUTOCONFIG", "false") # reduces start-up time
 
