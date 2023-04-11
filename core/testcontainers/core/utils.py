@@ -76,5 +76,5 @@ def raise_for_deprecated_parameter(kwargs: dict, name: str, replacement: str) ->
     Raise an error if a dictionary of keyword arguments contains a key and suggest the replacement.
     """
     if kwargs.pop(name, None):
-        raise ValueError(f"use `{replacement}` instead of `{name}`")
+        raise ValueError(f"Use `{replacement}` instead of `{name}`")
     return kwargs

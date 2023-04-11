@@ -42,7 +42,7 @@ class DbContainer(DockerContainer):
                                host: Optional[str] = None, port: Optional[int] = None,
                                dbname: Optional[str] = None, **kwargs) -> str:
         if raise_for_deprecated_parameter(kwargs, "db_name", "dbname"):
-            raise ValueError(f"unexpected arguments: {','.join(kwargs)}")
+            raise ValueError(f"Unexpected arguments: {','.join(kwargs)}")
         if self._container is None:
             raise ContainerStartException("container has not been started")
         host = host or self.get_container_host_ip()
