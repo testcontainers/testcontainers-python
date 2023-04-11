@@ -64,8 +64,8 @@ def wait_container_is_ready(*transient_exceptions) -> Callable:
                 time.sleep(config.SLEEP_TIME)
                 exception = e
         raise TimeoutError(
-            f'Wait time ({config.MAX_TRIES * config.SLEEP_TIME}s) exceeded for {wrapped.__name__}'
-            f'(args: {args}, kwargs {kwargs}). Exception: {exception}'
+            f'Wait time ({config.TIMEOUT}s) exceeded for {wrapped.__name__}(args: {args}, kwargs: '
+            f'{kwargs}). Exception: {exception}'
         )
 
     return wrapper
@@ -102,6 +102,6 @@ def wait_for_logs(container: "DockerContainer", predicate: Union[Callable, str],
         if predicate(stdout) or predicate(stderr):
             return duration
         if timeout and duration > timeout:
-            raise TimeoutError("container did not emit logs satisfying predicate in %.3f seconds"
-                               % timeout)
+            raise TimeoutError(f"Container did not emit logs satisfying predicate in {timeout:.3f} "
+                               "seconds")
         time.sleep(interval)

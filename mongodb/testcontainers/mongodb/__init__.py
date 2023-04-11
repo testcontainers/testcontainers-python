@@ -13,7 +13,9 @@
 import os
 from pymongo import MongoClient
 from testcontainers.core.generic import DbContainer
+from testcontainers.core.utils import raise_for_deprecated_parameter
 from testcontainers.core.waiting_utils import wait_container_is_ready
+from typing import Optional
 
 
 class MongoDbContainer(DbContainer):
@@ -46,27 +48,28 @@ class MongoDbContainer(DbContainer):
             ...    # Find the restaurant document
             ...    cursor = db.restaurants.find({"borough": "Manhattan"})
     """
-    MONGO_INITDB_ROOT_USERNAME = os.environ.get("MONGO_INITDB_ROOT_USERNAME", "test")
-    MONGO_INITDB_ROOT_PASSWORD = os.environ.get("MONGO_INITDB_ROOT_PASSWORD", "test")
-    MONGO_DB = os.environ.get("MONGO_DB", "test")
-
-    def __init__(self, image: str = "mongo:latest", port_to_expose: int = 27017, **kwargs) -> None:
+    def __init__(self, image: str = "mongo:latest", port: int = 27017,
+                 username: Optional[str] = None, password: Optional[str] = None,
+                 dbname: Optional[str] = None, **kwargs) -> None:
+        raise_for_deprecated_parameter(kwargs, "port_to_expose", "port")
         super(MongoDbContainer, self).__init__(image=image, **kwargs)
-        self.command = "mongo"
-        self.port_to_expose = port_to_expose
-        self.with_exposed_ports(self.port_to_expose)
+        self.username = username or os.environ.get("MONGO_INITDB_ROOT_USERNAME", "test")
+        self.password = password or os.environ.get("MONGO_INITDB_ROOT_PASSWORD", "test")
+        self.dbname = dbname or os.environ.get("MONGO_DB", "test")
+        self.port = port
+        self.with_exposed_ports(self.port)
 
     def _configure(self) -> None:
-        self.with_env("MONGO_INITDB_ROOT_USERNAME", self.MONGO_INITDB_ROOT_USERNAME)
-        self.with_env("MONGO_INITDB_ROOT_PASSWORD", self.MONGO_INITDB_ROOT_PASSWORD)
-        self.with_env("MONGO_DB", self.MONGO_DB)
+        self.with_env("MONGO_INITDB_ROOT_USERNAME", self.username)
+        self.with_env("MONGO_INITDB_ROOT_PASSWORD", self.password)
+        self.with_env("MONGO_DB", self.dbname)
 
     def get_connection_url(self) -> str:
         return self._create_connection_url(
             dialect='mongodb',
-            username=self.MONGO_INITDB_ROOT_USERNAME,
-            password=self.MONGO_INITDB_ROOT_PASSWORD,
-            port=self.port_to_expose,
+            username=self.username,
+            password=self.password,
+            port=self.port,
         )
 
     @wait_container_is_ready()

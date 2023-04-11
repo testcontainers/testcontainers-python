@@ -2,6 +2,7 @@ from opensearchpy import OpenSearch
 from opensearchpy.exceptions import ConnectionError, TransportError
 
 from testcontainers.core.container import DockerContainer
+from testcontainers.core.utils import raise_for_deprecated_parameter
 from testcontainers.core.waiting_utils import wait_container_is_ready
 
 
@@ -12,7 +13,8 @@ class OpenSearchContainer(DockerContainer):
     between makes sure that the newly created document is available for search.
 
     The method :code:`get_client` can be used to create a OpenSearch Python Client. The method
-    :code:`get_config` can be used to retrieve the host, port, user, and password of the container.
+    :code:`get_config` can be used to retrieve the host, port, username, and password of the
+    container.
 
     Example:
 
@@ -28,18 +30,19 @@ class OpenSearchContainer(DockerContainer):
     """
 
     def __init__(self, image: str = "opensearchproject/opensearch:2.4.0",
-                 port_to_expose: int = 9200, security_enabled: bool = False, **kwargs) -> None:
+                 port: int = 9200, security_enabled: bool = False, **kwargs) -> None:
         """
         Args:
             image: Docker image to use for the container.
-            port_to_expose: Port to expose on the container.
+            port: Port to expose on the container.
             security_enabled: :code:`False` disables the security plugin in OpenSearch.
         """
+        raise_for_deprecated_parameter(kwargs, "port_to_expose", "port")
         super(OpenSearchContainer, self).__init__(image, **kwargs)
-        self.port_to_expose = port_to_expose
+        self.port = port
         self.security_enabled = security_enabled
 
-        self.with_exposed_ports(self.port_to_expose)
+        self.with_exposed_ports(self.port)
         self.with_env("discovery.type", "single-node")
         self.with_env("plugins.security.disabled", "false" if security_enabled else "true")
         if security_enabled:
@@ -47,16 +50,16 @@ class OpenSearchContainer(DockerContainer):
 
     def get_config(self) -> dict:
         """This method returns the configuration of the OpenSearch container,
-        including the host, port, user, and password.
+        including the host, port, username, and password.
 
         Returns:
-            dict: {`host`: str, `port`: str, `user`: str, `password`: str}
+            dict: {`host`: str, `port`: str, `username`: str, `password`: str}
         """
 
         return {
             "host": self.get_container_host_ip(),
-            "port": self.get_exposed_port(self.port_to_expose),
-            "user": "admin",
+            "port": self.get_exposed_port(self.port),
+            "username": "admin",
             "password": "admin",
         }
 
@@ -75,7 +78,7 @@ class OpenSearchContainer(DockerContainer):
                     "port": config["port"],
                 }
             ],
-            http_auth=(config["user"], config["password"]),
+            http_auth=(config["username"], config["password"]),
             use_ssl=self.security_enabled,
             verify_certs=verify_certs,
             **kwargs,
