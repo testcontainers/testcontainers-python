@@ -32,9 +32,9 @@ class Neo4jContainer(DbContainer):
 
             >>> from testcontainers.neo4j import Neo4jContainer
 
-            >>> with Neo4jContainer() as neo4j, \
-                        neo4j.get_driver() as driver, \
-                        driver.session() as session:
+            >>> with Neo4jContainer() as neo4j, \\
+            ...         neo4j.get_driver() as driver, \\
+            ...         driver.session() as session:
             ...     result = session.run("MATCH (n) RETURN n LIMIT 1")
             ...     record = result.single()
     """
