@@ -8,7 +8,16 @@ testcontainers-python
 .. image:: https://readthedocs.org/projects/testcontainers-python/badge/?version=latest
    :target: http://testcontainers-python.readthedocs.io/en/latest/?badge=latest
 
-testcontainers-python facilitates the use of Docker containers for functional and integration testing. The collection of packages currently supports the following features.
+testcontainers-python facilitates the use of Docker containers for functional and integration testing.
+
+.. note::
+
+    testcontainers-python version 4.0.0 introduces several breaking changes. To use an older version, add :code:`testcontainers-python<4` :code:`install_requires` in your :code:`setup.py` if you are building a package or your :code:`requirements.txt` for pinned dependencies.
+
+    - Container arguments, such as user name, database name, and ports have been unified across containers in `testcontainers/testcontainers-python#296 <https://github.com/testcontainers/testcontainers-python/pull/296>`__. You may have to update your code if you modify the default values. The unified arguments are :code:`username`, :code:`password`, :code:`dbname`, and :code:`port`. If a container exposes more than one port, the port name is :code:`[specific_name]_port`.
+    - Class-level configuration variables have been removed in `testcontainers/testcontainers-python#296 <https://github.com/testcontainers/testcontainers-python/pull/296>`__, and configuration variables should be specified using environment variables (as before) or specified in the constructor.
+
+The collection of packages currently supports the following features.
 
 .. toctree::
 

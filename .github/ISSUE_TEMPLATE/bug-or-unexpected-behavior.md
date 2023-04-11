@@ -7,6 +7,8 @@ assignees: ''
 
 ---
 
+⚠️ testcontainers-python version 4.0.0 introduces breaking changes. Please review the note in the documentation (https://testcontainers-python.readthedocs.io/) before filing a bug.
+
 **Describe the bug**
 
 A clear and concise description of what the bug is. What did you expect to happen? What happened instead?
@@ -24,7 +26,7 @@ raise RuntimeError("something went wrong")
 Provide a summary of your runtime environment. Which operating system, python version, and docker version are you using? What is the version of `testcontainers-python` you are using? You can run the following commands to get the relevant information.
 
 ```bash
-# Get the operating system information (on a unix os).
+# Get the operating system information (e.g., on a unix os).
 $ uname -a
 # Get the python version.
 $ python --version
