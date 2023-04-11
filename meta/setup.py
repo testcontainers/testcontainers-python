@@ -20,7 +20,7 @@ long_description = f"{description} See https://testcontainers-python.readthedocs
 
 setuptools.setup(
     name="testcontainers",
-    version="4.0.0rc1",
+    version="4.0.0",
     description=description,
     long_description=long_description,
     long_description_content_type="text/x-rst",

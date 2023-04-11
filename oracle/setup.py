@@ -4,7 +4,7 @@ description = "Oracle component of testcontainers-python."
 
 setup(
     name="testcontainers-oracle",
-    version="0.0.1rc1",
+    version="0.1.0",
     packages=find_namespace_packages(),
     description=description,
     long_description=description,
