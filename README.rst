@@ -17,6 +17,7 @@ testcontainers-python facilitates the use of Docker containers for functional an
     azurite/README
     clickhouse/README
     compose/README
+    db2/README
     elasticsearch/README
     google/README
     kafka/README

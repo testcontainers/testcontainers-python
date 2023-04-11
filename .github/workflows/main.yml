@@ -20,6 +20,7 @@ jobs:
           - clickhouse
           - compose
           - core
+          - db2
           - elasticsearch
           - google
           - kafka
