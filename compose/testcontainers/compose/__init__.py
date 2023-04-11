@@ -1,10 +1,3 @@
-"""
-Docker Compose Support
-======================
-
-Allows to spin up services configured via :code:`docker-compose.yml`.
-"""
-
 import requests
 import subprocess
 from typing import Iterable, List, Optional, Tuple, Union
@@ -36,13 +29,13 @@ class DockerCompose:
                 host = compose.get_service_host("hub", 4444)
                 port = compose.get_service_port("hub", 4444)
                 driver = webdriver.Remote(
-                    command_executor=("http://{}:{}/wd/hub".format(host,port)),
+                    command_executor=(f"http://{host}:{port}/wd/hub"),
                     desired_capabilities=CHROME,
                 )
                 driver.get("http://automation-remarks.com")
                 stdout, stderr = compose.get_logs()
                 if stderr:
-                    print("Errors\\n:{}".format(stderr))
+                    print(f"Errors\\n:{stderr}")
 
         .. code-block:: yaml
 

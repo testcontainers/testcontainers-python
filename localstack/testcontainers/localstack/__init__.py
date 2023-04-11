@@ -62,7 +62,7 @@ class LocalStackContainer(DockerContainer):
         """
         host = self.get_container_host_ip()
         port = self.get_exposed_port(self.edge_port)
-        return 'http://{}:{}'.format(host, port)
+        return f'http://{host}:{port}'
 
     def start(self, timeout: float = 60) -> "LocalStackContainer":
         super().start()

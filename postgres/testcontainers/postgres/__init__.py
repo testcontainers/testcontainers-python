@@ -13,6 +13,7 @@
 import os
 from typing import Optional
 from testcontainers.core.generic import DbContainer
+from testcontainers.core.utils import raise_for_deprecated_parameter
 
 
 class PostgresContainer(DbContainer):
@@ -38,30 +39,27 @@ class PostgresContainer(DbContainer):
             >>> version
             'PostgreSQL 9.5...'
     """
-    POSTGRES_USER = os.environ.get("POSTGRES_USER", "test")
-    POSTGRES_PASSWORD = os.environ.get("POSTGRES_PASSWORD", "test")
-    POSTGRES_DB = os.environ.get("POSTGRES_DB", "test")
-
-    def __init__(self, image: str = "postgres:latest", port: int = 5432, user: Optional[str] = None,
-                 password: Optional[str] = None, dbname: Optional[str] = None,
-                 driver: str = "psycopg2", **kwargs) -> None:
+    def __init__(self, image: str = "postgres:latest", port: int = 5432,
+                 username: Optional[str] = None, password: Optional[str] = None,
+                 dbname: Optional[str] = None, driver: str = "psycopg2", **kwargs) -> None:
+        raise_for_deprecated_parameter(kwargs, "user", "username")
         super(PostgresContainer, self).__init__(image=image, **kwargs)
-        self.POSTGRES_USER = user or self.POSTGRES_USER
-        self.POSTGRES_PASSWORD = password or self.POSTGRES_PASSWORD
-        self.POSTGRES_DB = dbname or self.POSTGRES_DB
-        self.port_to_expose = port
+        self.username = username or os.environ.get("POSTGRES_USER", "test")
+        self.password = password or os.environ.get("POSTGRES_PASSWORD", "test")
+        self.dbname = dbname or os.environ.get("POSTGRES_DB", "test")
+        self.port = port
         self.driver = driver
 
-        self.with_exposed_ports(self.port_to_expose)
+        self.with_exposed_ports(self.port)
 
     def _configure(self) -> None:
-        self.with_env("POSTGRES_USER", self.POSTGRES_USER)
-        self.with_env("POSTGRES_PASSWORD", self.POSTGRES_PASSWORD)
-        self.with_env("POSTGRES_DB", self.POSTGRES_DB)
+        self.with_env("POSTGRES_USER", self.username)
+        self.with_env("POSTGRES_PASSWORD", self.password)
+        self.with_env("POSTGRES_DB", self.dbname)
 
     def get_connection_url(self, host=None) -> str:
         return super()._create_connection_url(
-            dialect="postgresql+{}".format(self.driver), username=self.POSTGRES_USER,
-            password=self.POSTGRES_PASSWORD, db_name=self.POSTGRES_DB, host=host,
-            port=self.port_to_expose,
+            dialect=f"postgresql+{self.driver}", username=self.username,
+            password=self.password, dbname=self.dbname, host=host,
+            port=self.port,
         )

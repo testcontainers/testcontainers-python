@@ -42,14 +42,12 @@ class PubSubContainer(DockerContainer):
         self.project = project
         self.port = port
         self.with_exposed_ports(self.port)
-        self.with_command("gcloud beta emulators pubsub start --project="
-                          "{project} --host-port=0.0.0.0:{port}".format(
-                              project=self.project, port=self.port,
-                          ))
+        self.with_command(
+            f"gcloud beta emulators pubsub start --project={project} --host-port=0.0.0.0:{port}"
+        )
 
     def get_pubsub_emulator_host(self) -> str:
-        return "{host}:{port}".format(host=self.get_container_host_ip(),
-                                      port=self.get_exposed_port(self.port))
+        return f"{self.get_container_host_ip()}:{self.get_exposed_port(self.port)}"
 
     def _get_channel(self, channel: Optional[grpc.Channel] = None) -> grpc.Channel:
         if channel is None:

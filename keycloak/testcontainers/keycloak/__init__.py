@@ -17,6 +17,7 @@ from keycloak import KeycloakAdmin
 
 from testcontainers.core.container import DockerContainer
 from testcontainers.core.waiting_utils import wait_container_is_ready
+from typing import Optional
 
 
 class KeycloakContainer(DockerContainer):
@@ -32,27 +33,27 @@ class KeycloakContainer(DockerContainer):
             >>> with KeycloakContainer() as kc:
             ...    keycloak = kc.get_client()
     """
-    KEYCLOAK_USER = os.environ.get("KEYCLOAK_USER", "test")
-    KEYCLOAK_PASSWORD = os.environ.get("KEYCLOAK_PASSWORD", "test")
-
-    def __init__(self, image="jboss/keycloak:latest") -> None:
+    def __init__(self, image="jboss/keycloak:latest", username: Optional[str] = None,
+                 password: Optional[str] = None, port: int = 8080) -> None:
         super(KeycloakContainer, self).__init__(image=image)
-        self.port_to_expose = 8080
-        self.with_exposed_ports(self.port_to_expose)
+        self.username = username or os.environ.get("KEYCLOAK_USER", "test")
+        self.password = password or os.environ.get("KEYCLOAK_PASSWORD", "test")
+        self.port = port
+        self.with_exposed_ports(self.port)
 
     def _configure(self) -> None:
-        self.with_env("KEYCLOAK_USER", self.KEYCLOAK_USER)
-        self.with_env("KEYCLOAK_PASSWORD", self.KEYCLOAK_PASSWORD)
+        self.with_env("KEYCLOAK_USER", self.username)
+        self.with_env("KEYCLOAK_PASSWORD", self.password)
 
     def get_url(self) -> str:
         host = self.get_container_host_ip()
-        port = self.get_exposed_port(self.port_to_expose)
-        return "http://{}:{}".format(host, port)
+        port = self.get_exposed_port(self.port)
+        return f"http://{host}:{port}"
 
     @wait_container_is_ready(requests.exceptions.ConnectionError, requests.exceptions.ReadTimeout)
     def _connect(self) -> None:
         url = self.get_url()
-        response = requests.get("{}/auth".format(url), timeout=1)
+        response = requests.get(f"{url}/auth", timeout=1)
         response.raise_for_status()
 
     def start(self) -> "KeycloakContainer":
@@ -63,9 +64,9 @@ class KeycloakContainer(DockerContainer):
 
     def get_client(self, **kwargs) -> KeycloakAdmin:
         default_kwargs = dict(
-            server_url="{}/auth/".format(self.get_url()),
-            username=self.KEYCLOAK_USER,
-            password=self.KEYCLOAK_PASSWORD,
+            server_url=f"{self.get_url()}/auth/",
+            username=self.username,
+            password=self.password,
             realm_name="master",
             verify=True,
         )

@@ -23,11 +23,6 @@ class RabbitMqContainer(DockerContainer):
             ...    connection = pika.BlockingConnection(rabbitmq.get_connection_params())
             ...    channel = connection.channel()
     """
-
-    RABBITMQ_NODE_PORT = os.environ.get("RABBITMQ_NODE_PORT", 5672)
-    RABBITMQ_DEFAULT_USER = os.environ.get("RABBITMQ_DEFAULT_USER", "guest")
-    RABBITMQ_DEFAULT_PASS = os.environ.get("RABBITMQ_DEFAULT_PASS", "guest")
-
     def __init__(self, image: str = "rabbitmq:latest", port: Optional[int] = None,
                  username: Optional[str] = None, password: Optional[str] = None, **kwargs) -> None:
         """Initialize the RabbitMQ test container.
@@ -39,14 +34,14 @@ class RabbitMqContainer(DockerContainer):
             password: RabbitMQ password.
         """
         super(RabbitMqContainer, self).__init__(image=image, **kwargs)
-        self.RABBITMQ_NODE_PORT = port or int(self.RABBITMQ_NODE_PORT)
-        self.RABBITMQ_DEFAULT_USER = username or self.RABBITMQ_DEFAULT_USER
-        self.RABBITMQ_DEFAULT_PASS = password or self.RABBITMQ_DEFAULT_PASS
+        self.port = port or int(os.environ.get("RABBITMQ_NODE_PORT", 5672))
+        self.username = username or os.environ.get("RABBITMQ_DEFAULT_USER", "guest")
+        self.password = password or os.environ.get("RABBITMQ_DEFAULT_PASS", "guest")
 
-        self.with_exposed_ports(self.RABBITMQ_NODE_PORT)
-        self.with_env("RABBITMQ_NODE_PORT", self.RABBITMQ_NODE_PORT)
-        self.with_env("RABBITMQ_DEFAULT_USER", self.RABBITMQ_DEFAULT_USER)
-        self.with_env("RABBITMQ_DEFAULT_PASS", self.RABBITMQ_DEFAULT_PASS)
+        self.with_exposed_ports(self.port)
+        self.with_env("RABBITMQ_NODE_PORT", self.port)
+        self.with_env("RABBITMQ_DEFAULT_USER", self.username)
+        self.with_env("RABBITMQ_DEFAULT_PASS", self.password)
 
     @wait_container_is_ready(pika.exceptions.IncompatibleProtocolError)
     def readiness_probe(self) -> bool:
@@ -63,12 +58,11 @@ class RabbitMqContainer(DockerContainer):
         For more details see:
         https://pika.readthedocs.io/en/latest/modules/parameters.html
         """
-        credentials = pika.PlainCredentials(username=self.RABBITMQ_DEFAULT_USER,
-                                            password=self.RABBITMQ_DEFAULT_PASS)
+        credentials = pika.PlainCredentials(username=self.username, password=self.password)
 
         return pika.ConnectionParameters(
             host=self.get_container_host_ip(),
-            port=self.get_exposed_port(self.RABBITMQ_NODE_PORT),
+            port=self.get_exposed_port(self.port),
             credentials=credentials,
         )
 
