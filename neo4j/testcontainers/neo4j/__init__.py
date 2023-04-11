@@ -38,7 +38,7 @@ class Neo4jContainer(DbContainer):
             ...     result = session.run("MATCH (n) RETURN n LIMIT 1")
             ...     record = result.single()
     """
-    def __init__(self, image: str = "neo4j:latest", *, port: int = 7687,
+    def __init__(self, image: str = "neo4j:latest", port: int = 7687,
                  password: Optional[str] = None, username: Optional[str] = None, **kwargs) -> None:
         raise_for_deprecated_parameter(kwargs, "bolt_port", "port")
         super(Neo4jContainer, self).__init__(image, **kwargs)
