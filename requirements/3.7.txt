@@ -119,8 +119,7 @@ charset-normalizer==3.1.0
 clickhouse-driver==0.2.5
     # via testcontainers-clickhouse
 coverage[toml]==7.2.3
-    # via
-    #   pytest-cov
+    # via pytest-cov
 cryptography==36.0.2
     # via
     #   -r requirements.in
@@ -164,7 +163,7 @@ google-api-core[grpc]==2.11.0
     # via google-cloud-pubsub
 google-auth==2.17.2
     # via google-api-core
-google-cloud-pubsub==1.7.2
+google-cloud-pubsub==2.16.0
     # via testcontainers-gcp
 googleapis-common-protos[grpc]==1.59.0
     # via
@@ -178,11 +177,14 @@ grpc-google-iam-v1==0.12.6
 grpcio==1.53.0
     # via
     #   google-api-core
+    #   google-cloud-pubsub
     #   googleapis-common-protos
     #   grpc-google-iam-v1
     #   grpcio-status
-grpcio-status==1.48.2
-    # via google-api-core
+grpcio-status==1.53.0
+    # via
+    #   google-api-core
+    #   google-cloud-pubsub
 h11==0.14.0
     # via wsproto
 idna==3.4
@@ -241,7 +243,7 @@ opensearch-py==2.2.0
     # via testcontainers-opensearch
 outcome==1.2.0
     # via trio
-packaging==23.0
+packaging==23.1
     # via
     #   deprecation
     #   docker
@@ -257,13 +259,16 @@ pkginfo==1.9.6
     # via twine
 pluggy==1.0.0
     # via pytest
-protobuf==3.20.3
+proto-plus==1.22.2
+    # via google-cloud-pubsub
+protobuf==4.22.1
     # via
     #   google-api-core
     #   google-cloud-pubsub
     #   googleapis-common-protos
     #   grpc-google-iam-v1
     #   grpcio-status
+    #   proto-plus
 psycopg2-binary==2.9.6
     # via testcontainers-postgres
 pyasn1==0.4.8
@@ -348,7 +353,7 @@ requests-toolbelt==0.10.1
     #   twine
 rfc3986==2.0.0
     # via twine
-rich==13.3.3
+rich==13.3.4
     # via twine
 rsa==4.9
     # via

@@ -11,9 +11,10 @@
 #    License for the specific language governing permissions and limitations
 #    under the License.
 from google.cloud import pubsub
-import grpc
-from typing import Optional
+import os
 from testcontainers.core.container import DockerContainer
+from typing import Type
+from unittest.mock import patch
 
 
 class PubSubContainer(DockerContainer):
@@ -49,15 +50,12 @@ class PubSubContainer(DockerContainer):
     def get_pubsub_emulator_host(self) -> str:
         return f"{self.get_container_host_ip()}:{self.get_exposed_port(self.port)}"
 
-    def _get_channel(self, channel: Optional[grpc.Channel] = None) -> grpc.Channel:
-        if channel is None:
-            return grpc.insecure_channel(target=self.get_pubsub_emulator_host())
-        return channel
+    def _get_client(self, cls: Type, **kwargs) -> dict:
+        with patch.dict(os.environ, PUBSUB_EMULATOR_HOST=self.get_pubsub_emulator_host()):
+            return cls(**kwargs)
 
     def get_publisher_client(self, **kwargs) -> pubsub.PublisherClient:
-        kwargs['channel'] = self._get_channel(kwargs.get('channel'))
-        return pubsub.PublisherClient(**kwargs)
+        return self._get_client(pubsub.PublisherClient, **kwargs)
 
     def get_subscriber_client(self, **kwargs) -> pubsub.SubscriberClient:
-        kwargs['channel'] = self._get_channel(kwargs.get('channel'))
-        return pubsub.SubscriberClient(**kwargs)
+        return self._get_client(pubsub.SubscriberClient, **kwargs)
