@@ -55,20 +55,27 @@ class ClickHouseContainer(DbContainer):
             ...     client.query("select 'working'").result_rows
             [('working',)]
     """
-    def __init__(self, image: str = "clickhouse/clickhouse-server:latest", port: int = 9000,
-                 username: Optional[str] = None, password: Optional[str] = None,
-                 dbname: Optional[str] = None, **kwargs) -> None:
+
+    def __init__(
+        self,
+        image: str = "clickhouse/clickhouse-server:latest",
+        port: int = 9000,
+        username: Optional[str] = None,
+        password: Optional[str] = None,
+        dbname: Optional[str] = None,
+        **kwargs
+    ) -> None:
         raise_for_deprecated_parameter(kwargs, "user", "username")
         super().__init__(image=image, **kwargs)
-        self.username = username or os.environ.get("CLICKHOUSE_USER", "test")
-        self.password = password or os.environ.get("CLICKHOUSE_PASSWORD", "test")
-        self.dbname = dbname or os.environ.get("CLICKHOUSE_DB", "test")
+        self.username: str = username or os.environ.get("CLICKHOUSE_USER", "test")
+        self.password: str = password or os.environ.get("CLICKHOUSE_PASSWORD", "test")
+        self.dbname: str = dbname or os.environ.get("CLICKHOUSE_DB", "test")
         self.port = port
         self.with_exposed_ports(self.port)
 
     @wait_container_is_ready(ClickhouseDriverError, ClickhouseConnectError, EOFError)
     def _connect(self) -> None:
-        if self.port_to_expose == 8123:
+        if self.port == 8123:
             with clickhouse_connect.get_client(dsn=self.get_connection_url()) as client:
                 client.command("SELECT version()")
         else:
