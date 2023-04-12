@@ -8,8 +8,8 @@ def test_kafka_producer_consumer():
 
 
 def test_kafka_producer_consumer_custom_port():
-    with KafkaContainer(port_to_expose=9888) as container:
-        assert container.port_to_expose == 9888
+    with KafkaContainer(port=9888) as container:
+        assert container.port == 9888
         produce_and_consume_kafka_message(container)
 
 

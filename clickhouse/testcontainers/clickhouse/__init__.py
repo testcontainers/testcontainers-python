@@ -19,6 +19,7 @@ import clickhouse_driver
 from clickhouse_driver.errors import Error as ClickhouseDriverError
 
 from testcontainers.core.generic import DbContainer
+from testcontainers.core.utils import raise_for_deprecated_parameter
 from testcontainers.core.waiting_utils import wait_container_is_ready
 
 
@@ -54,26 +55,16 @@ class ClickHouseContainer(DbContainer):
             ...     client.query("select 'working'").result_rows
             [('working',)]
     """
-
-    CLICKHOUSE_USER = os.environ.get("CLICKHOUSE_USER", "test")
-    CLICKHOUSE_PASSWORD = os.environ.get("CLICKHOUSE_PASSWORD", "test")
-    CLICKHOUSE_DB = os.environ.get("CLICKHOUSE_DB", "test")
-
-    def __init__(
-            self,
-            image: str = "clickhouse/clickhouse-server:latest",
-            port: int = 9000,
-            user: Optional[str] = None,
-            password: Optional[str] = None,
-            dbname: Optional[str] = None
-    ) -> None:
-        super().__init__(image=image)
-
-        self.CLICKHOUSE_USER = user or self.CLICKHOUSE_USER
-        self.CLICKHOUSE_PASSWORD = password or self.CLICKHOUSE_PASSWORD
-        self.CLICKHOUSE_DB = dbname or self.CLICKHOUSE_DB
-        self.port_to_expose = port
-        self.with_exposed_ports(self.port_to_expose)
+    def __init__(self, image: str = "clickhouse/clickhouse-server:latest", port: int = 9000,
+                 username: Optional[str] = None, password: Optional[str] = None,
+                 dbname: Optional[str] = None, **kwargs) -> None:
+        raise_for_deprecated_parameter(kwargs, "user", "username")
+        super().__init__(image=image, **kwargs)
+        self.username = username or os.environ.get("CLICKHOUSE_USER", "test")
+        self.password = password or os.environ.get("CLICKHOUSE_PASSWORD", "test")
+        self.dbname = dbname or os.environ.get("CLICKHOUSE_DB", "test")
+        self.port = port
+        self.with_exposed_ports(self.port)
 
     @wait_container_is_ready(ClickhouseDriverError, ClickhouseConnectError, EOFError)
     def _connect(self) -> None:
@@ -85,16 +76,16 @@ class ClickHouseContainer(DbContainer):
                 client.execute("SELECT version()")
 
     def _configure(self) -> None:
-        self.with_env("CLICKHOUSE_USER", self.CLICKHOUSE_USER)
-        self.with_env("CLICKHOUSE_PASSWORD", self.CLICKHOUSE_PASSWORD)
-        self.with_env("CLICKHOUSE_DB", self.CLICKHOUSE_DB)
+        self.with_env("CLICKHOUSE_USER", self.username)
+        self.with_env("CLICKHOUSE_PASSWORD", self.password)
+        self.with_env("CLICKHOUSE_DB", self.dbname)
 
     def get_connection_url(self, host: Optional[str] = None) -> str:
         return self._create_connection_url(
             dialect="clickhouse",
-            username=self.CLICKHOUSE_USER,
-            password=self.CLICKHOUSE_PASSWORD,
-            db_name=self.CLICKHOUSE_DB,
+            username=self.username,
+            password=self.password,
+            dbname=self.dbname,
             host=host,
-            port=self.port_to_expose,
+            port=self.port,
         )
