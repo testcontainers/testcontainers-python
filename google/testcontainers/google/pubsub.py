@@ -30,6 +30,8 @@ class PubSubContainer(DockerContainer):
 
         .. doctest::
 
+            >>> from testcontainers.google import PubSubContainer
+
             >>> config = PubSubContainer('google/cloud-sdk:emulators')
             >>> with config as pubsub:
             ...    publisher = pubsub.get_publisher()
