@@ -30,12 +30,11 @@ class PubSubContainer(DockerContainer):
 
         .. doctest::
 
-            def test_docker_run_pubsub():
-                config = PubSubContainer('google/cloud-sdk:emulators')
-                with config as pubsub:
-                    publisher = pubsub.get_publisher()
-                    topic_path = publisher.topic_path(pubsub.project, "my-topic")
-                    topic = publisher.create_topic(topic_path)
+            >>> config = PubSubContainer('google/cloud-sdk:emulators')
+            >>> with config as pubsub:
+            ...    publisher = pubsub.get_publisher()
+            ...    topic_path = publisher.topic_path(pubsub.project, "my-topic")
+            ...    topic = publisher.create_topic(name=topic_path)
     """
     def __init__(self, image: str = "google/cloud-sdk:emulators", project: str = "test-project",
                  port: int = 8432, **kwargs) -> None:

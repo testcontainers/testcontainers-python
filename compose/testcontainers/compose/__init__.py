@@ -23,19 +23,20 @@ class DockerCompose:
 
         .. doctest::
 
-            compose_filename = ["docker-compose-1.yml", "docker-compose-2.yml"]
-            with DockerCompose("/home/project", compose_file_name=compose_file_name, pull=True) as \
-                    compose:
-                host = compose.get_service_host("hub", 4444)
-                port = compose.get_service_port("hub", 4444)
-                driver = webdriver.Remote(
-                    command_executor=(f"http://{host}:{port}/wd/hub"),
-                    desired_capabilities=CHROME,
-                )
-                driver.get("http://automation-remarks.com")
-                stdout, stderr = compose.get_logs()
-                if stderr:
-                    print(f"Errors\\n:{stderr}")
+            >>> compose_filename = ["docker-compose-1.yml", "docker-compose-2.yml"]
+            >>> compose = DockerCompose("/home/project", compose_file_name=compose_file_name,
+            ...                         pull=True)
+            ... with compose:
+            ...     host = compose.get_service_host("hub", 4444)
+            ...     port = compose.get_service_port("hub", 4444)
+            ...     driver = webdriver.Remote(
+            ...         command_executor=(f"http://{host}:{port}/wd/hub"),
+            ...         desired_capabilities=CHROME,
+            ...     )
+            ...     driver.get("http://automation-remarks.com")
+            ...     stdout, stderr = compose.get_logs()
+            ...     if stderr:
+            ...         print(f"Errors\\n:{stderr}")
 
         .. code-block:: yaml
 
