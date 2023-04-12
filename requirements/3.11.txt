@@ -115,11 +115,8 @@ charset-normalizer==3.1.0
     # via requests
 clickhouse-driver==0.2.5
     # via testcontainers-clickhouse
-codecov==2.1.12
-    # via -r requirements.in
 coverage[toml]==7.2.1
     # via
-    #   codecov
     #   pytest-cov
 cryptography==36.0.2
     # via
@@ -309,7 +306,6 @@ redis==4.5.1
 requests==2.28.2
     # via
     #   azure-core
-    #   codecov
     #   docker
     #   docker-compose
     #   google-api-core
