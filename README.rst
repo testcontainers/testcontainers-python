@@ -16,6 +16,7 @@ testcontainers-python facilitates the use of Docker containers for functional an
 
     - Container arguments, such as user name, database name, and ports have been unified across containers in `testcontainers/testcontainers-python#296 <https://github.com/testcontainers/testcontainers-python/pull/296>`__. You may have to update your code if you modify the default values. The unified arguments are :code:`username`, :code:`password`, :code:`dbname`, and :code:`port`. If a container exposes more than one port, the port name is :code:`[specific_name]_port`.
     - Class-level configuration variables have been removed in `testcontainers/testcontainers-python#296 <https://github.com/testcontainers/testcontainers-python/pull/296>`__, and configuration variables should be specified using environment variables (as before) or specified in the constructor.
+    - The Google Cloud Pub/Sub client library was updated to v2 in `testcontainers/testcontainers-python#333 <https://github.com/testcontainers/testcontainers-python/pull/333>`__. This may result in breaking changes for users of the :class:`testcontainers.google.PubSubContainer`.
 
 The collection of packages currently supports the following features.
 
