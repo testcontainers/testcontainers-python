@@ -27,6 +27,7 @@ flake8<3.8.0  # 3.8.0 adds a dependency on importlib-metadata which conflicts wi
 pg8000
 pytest
 pytest-cov
+pytest-asyncio
 sphinx
 twine
 wheel

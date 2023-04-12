@@ -15,7 +15,6 @@ setup(
         "sqlalchemy",
         "psycopg2-binary",
         "asyncpg",
-        "pytest-asyncio",
     ],
     python_requires=">=3.7",
 )
