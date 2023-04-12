@@ -31,5 +31,5 @@ jobs:
       - name: Store requirements as artifact
         uses: actions/upload-artifact@v3
         with:
-          name: requirements/${{ matrix.python-version }}.txt
+          name: requirements-${{ matrix.python-version }}.txt
           path: requirements/${{ matrix.python-version }}.txt
