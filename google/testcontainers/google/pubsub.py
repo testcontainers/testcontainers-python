@@ -32,9 +32,9 @@ class PubSubContainer(DockerContainer):
 
             >>> from testcontainers.google import PubSubContainer
 
-            >>> config = PubSubContainer('google/cloud-sdk:emulators')
+            >>> config = PubSubContainer()
             >>> with config as pubsub:
-            ...    publisher = pubsub.get_publisher()
+            ...    publisher = pubsub.get_publisher_client()
             ...    topic_path = publisher.topic_path(pubsub.project, "my-topic")
             ...    topic = publisher.create_topic(name=topic_path)
     """
