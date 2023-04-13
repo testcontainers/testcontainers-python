@@ -101,7 +101,7 @@ bcrypt==4.0.1
 bleach==6.0.0
     # via readme-renderer
 boto3==1.26.112
-    # via -r requirements.in
+    # via testcontainers-localstack
 botocore==1.29.112
     # via
     #   boto3

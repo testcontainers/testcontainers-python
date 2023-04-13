@@ -11,6 +11,7 @@ setup(
     long_description_content_type="text/x-rst",
     url="https://github.com/testcontainers/testcontainers-python",
     install_requires=[
+        "boto3",
         "testcontainers-core",
     ],
     python_requires=">=3.7",
