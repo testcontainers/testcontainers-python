@@ -21,6 +21,7 @@
 -e file:rabbitmq
 -e file:redis
 -e file:selenium
+boto3  # Required for localstack doctest.
 cryptography<37
 flake8<3.8.0  # 3.8.0 adds a dependency on importlib-metadata which conflicts with other packages.
 pg8000

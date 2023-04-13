@@ -88,7 +88,7 @@ attrs==22.2.0
     #   trio
 azure-core==1.26.4
     # via azure-storage-blob
-azure-storage-blob==12.15.0
+azure-storage-blob==12.16.0
     # via testcontainers-azurite
 babel==2.12.1
     # via sphinx
@@ -100,6 +100,12 @@ bcrypt==4.0.1
     # via paramiko
 bleach==6.0.0
     # via readme-renderer
+boto3==1.26.112
+    # via -r requirements.in
+botocore==1.29.112
+    # via
+    #   boto3
+    #   s3transfer
 cachetools==5.3.0
     # via google-auth
 certifi==2022.12.7
@@ -159,7 +165,7 @@ flake8==3.7.9
     # via -r requirements.in
 google-api-core[grpc]==2.11.0
     # via google-cloud-pubsub
-google-auth==2.17.2
+google-auth==2.17.3
     # via google-api-core
 google-cloud-pubsub==2.16.0
     # via testcontainers-gcp
@@ -210,6 +216,10 @@ jeepney==0.8.0
     #   secretstorage
 jinja2==3.1.2
     # via sphinx
+jmespath==1.0.1
+    # via
+    #   boto3
+    #   botocore
 jsonschema==3.2.0
     # via docker-compose
 kafka-python==2.0.2
@@ -252,7 +262,7 @@ pluggy==1.0.0
     # via pytest
 proto-plus==1.22.2
     # via google-cloud-pubsub
-protobuf==4.22.1
+protobuf==4.22.3
     # via
     #   google-api-core
     #   google-cloud-pubsub
@@ -304,6 +314,7 @@ python-arango==7.5.7
     # via testcontainers-arangodb
 python-dateutil==2.8.2
     # via
+    #   botocore
     #   opensearch-py
     #   pg8000
 python-dotenv==0.21.1
@@ -350,6 +361,8 @@ rsa==4.9
     # via
     #   google-auth
     #   python-jose
+s3transfer==0.6.0
+    # via boto3
 scramp==1.4.4
     # via pg8000
 secretstorage==3.3.3
@@ -420,6 +433,7 @@ tzlocal==4.3
     # via clickhouse-driver
 urllib3[socks]==1.26.15
     # via
+    #   botocore
     #   docker
     #   minio
     #   opensearch-py

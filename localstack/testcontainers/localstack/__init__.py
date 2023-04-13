@@ -32,6 +32,7 @@ class LocalStackContainer(DockerContainer):
 
         .. doctest::
 
+            >>> import boto3
             >>> from testcontainers.localstack import LocalStackContainer
 
             >>> with LocalStackContainer(image="localstack/localstack:0.11.4") as localstack:
