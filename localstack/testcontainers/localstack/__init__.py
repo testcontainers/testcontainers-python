@@ -37,7 +37,8 @@ class LocalStackContainer(DockerContainer):
 
             >>> with LocalStackContainer(image="localstack/localstack:0.11.4") as localstack:
             ...     dynamo_endpoint = localstack.get_url()
-            ...     dynamo_client = boto3.client("dynamodb", endpoint_url=dynamo_endpoint)
+            ...     dynamo_client = boto3.client("dynamodb", endpoint_url=dynamo_endpoint,
+            ...                                  region_name="us-west-1")
             ...     scan_result = dynamo_client.scan(TableName='foo')
     """
     def __init__(self, image: str = 'localstack/localstack:0.11.4', edge_port: int = 4566,
