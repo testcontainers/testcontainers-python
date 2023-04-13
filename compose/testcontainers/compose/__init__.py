@@ -23,38 +23,20 @@ class DockerCompose:
 
         .. doctest::
 
-            compose_filename = ["docker-compose-1.yml", "docker-compose-2.yml"]
-            with DockerCompose("/home/project", compose_file_name=compose_file_name, pull=True) as \
-                    compose:
-                host = compose.get_service_host("hub", 4444)
-                port = compose.get_service_port("hub", 4444)
-                driver = webdriver.Remote(
-                    command_executor=(f"http://{host}:{port}/wd/hub"),
-                    desired_capabilities=CHROME,
-                )
-                driver.get("http://automation-remarks.com")
-                stdout, stderr = compose.get_logs()
-                if stderr:
-                    print(f"Errors\\n:{stderr}")
+            >>> from testcontainers.compose import DockerCompose
+
+            >>> compose = DockerCompose("compose/tests", compose_file_name="docker-compose-4.yml",
+            ...                         pull=True)
+            >>> with compose:
+            ...     stdout, stderr = compose.get_logs()
+            >>> b"Hello from Docker!" in stdout
+            True
 
         .. code-block:: yaml
 
-            hub:
-            image: selenium/hub
-            ports:
-            - "4444:4444"
-            firefox:
-            image: selenium/node-firefox
-            links:
-                - hub
-            expose:
-                - "5555"
-            chrome:
-            image: selenium/node-chrome
-            links:
-                - hub
-            expose:
-                - "5555"
+            services:
+              hello-world:
+                image: "hello-world"
     """
     def __init__(
             self,

@@ -10,8 +10,12 @@
 #    WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the
 #    License for the specific language governing permissions and limitations
 #    under the License.
+import boto3
+import functools as ft
+import os
 from testcontainers.core.waiting_utils import wait_for_logs
 from testcontainers.core.container import DockerContainer
+from typing import Any, Optional
 
 
 class LocalStackContainer(DockerContainer):
@@ -24,23 +28,21 @@ class LocalStackContainer(DockerContainer):
 
             >>> from testcontainers.localstack import LocalStackContainer
 
-            >>> with LocalStackContainer(image="localstack/localstack:0.11.4") as localstack:
-            ...     localstack.with_services("dynamodb", "lambda")
-            ...     dynamo_endpoint = localstack.get_url()
-            <testcontainers.localstack.LocalStackContainer object at 0x...>
-
-        The endpoint can be used to create a client with the boto3 library:
-        .. doctest::
-
-            dynamo_client = boto3.client("dynamodb", endpoint_url=dynamo_endpoint)
-            scan_result = dynamo_client.scan(TableName='foo')
-            # Do something with the scan result
+            >>> with LocalStackContainer(image="localstack/localstack:2.0.1") as localstack:
+            ...     dynamo_client = localstack.get_client("dynamodb")
+            ...     tables = dynamo_client.list_tables()
+            >>> tables
+            {'TableNames': [], ...}
     """
-    def __init__(self, image: str = 'localstack/localstack:0.11.4', edge_port: int = 4566,
-                 **kwargs) -> None:
+    def __init__(self, image: str = 'localstack/localstack:2.0.1', edge_port: int = 4566,
+                 region_name: Optional[str] = None, **kwargs) -> None:
         super(LocalStackContainer, self).__init__(image, **kwargs)
         self.edge_port = edge_port
+        self.region_name = region_name or os.environ.get("AWS_DEFAULT_REGION", "us-west-1")
         self.with_exposed_ports(self.edge_port)
+        self.with_env("AWS_DEFAULT_REGION", self.region_name)
+        self.with_env("AWS_ACCESS_KEY_ID", "testcontainers-localstack")
+        self.with_env("AWS_SECRET_ACCESS_KEY", "testcontainers-localstack")
 
     def with_services(self, *services) -> "LocalStackContainer":
         """
@@ -63,6 +65,17 @@ class LocalStackContainer(DockerContainer):
         host = self.get_container_host_ip()
         port = self.get_exposed_port(self.edge_port)
         return f'http://{host}:{port}'
+
+    @ft.wraps(boto3.client)
+    def get_client(self, name, **kwargs) -> Any:
+        kwargs_ = {
+            "endpoint_url": self.get_url(),
+            "region_name": self.region_name,
+            "aws_access_key_id": "testcontainers-localstack",
+            "aws_secret_access_key": "testcontainers-localstack",
+        }
+        kwargs_.update(kwargs)
+        return boto3.client(name, **kwargs_)
 
     def start(self, timeout: float = 60) -> "LocalStackContainer":
         super().start()
