@@ -1,9 +1,10 @@
-import requests
 import subprocess
 from typing import Iterable, List, Optional, Tuple, Union
 
-from testcontainers.core.waiting_utils import wait_container_is_ready
+import requests
+
 from testcontainers.core.exceptions import NoSuchPortExposed
+from testcontainers.core.waiting_utils import wait_container_is_ready
 
 
 class DockerCompose:
@@ -38,19 +39,23 @@ class DockerCompose:
               hello-world:
                 image: "hello-world"
     """
+
     def __init__(
             self,
             filepath: str,
             compose_file_name: Union[str, Iterable] = "docker-compose.yml",
             pull: bool = False,
             build: bool = False,
-            env_file: Optional[str] = None) -> None:
+            env_file: Optional[str] = None,
+            services: Optional[List[str]] = None
+    ) -> None:
         self.filepath = filepath
         self.compose_file_names = [compose_file_name] if isinstance(compose_file_name, str) else \
             list(compose_file_name)
         self.pull = pull
         self.build = build
         self.env_file = env_file
+        self.services = services
 
     def __enter__(self) -> "DockerCompose":
         self.start()
@@ -84,6 +89,8 @@ class DockerCompose:
         up_cmd = self.docker_compose_command() + ['up', '-d']
         if self.build:
             up_cmd.append('--build')
+        if self.services:
+            up_cmd.extend(self.services)
 
         self._call_command(cmd=up_cmd)
 
