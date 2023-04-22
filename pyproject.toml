@@ -79,7 +79,6 @@ pymysql = { version = "*", extras = ["rsa"], optional = true }
 neo4j = { version = "*", optional = true }
 opensearch-py = { version = "*", optional = true }
 cx_Oracle = { version = "*", optional = true }
-psycopg2-binary = { version = "*", optional = true }
 pika = { version = "*", optional = true }
 redis = { version = "*", optional = true }
 selenium = { version = "*", optional = true }
@@ -102,7 +101,7 @@ neo4j = ["neo4j"]
 nginx = []
 opensearch = ["opensearch-py"]
 oracle = ["sqlalchemy", "cx_Oracle"]
-postgres = ["sqlalchemy", "psycopg2-binary"]
+postgres = []
 rabbitmq = ["pika"]
 redis = ["redis"]
 selenium = ["selenium"]
@@ -110,12 +109,15 @@ selenium = ["selenium"]
 [tool.poetry.group.dev.dependencies]
 mypy = "1.7.1"
 pre-commit = "^3.6"
-pg8000 = "*"
 pytest = "7.4.3"
 pytest-cov = "4.1.0"
 sphinx = "^7.2.6"
 twine = "^4.0.2"
 anyio = "^4.3.0"
+# for tests only
+psycopg2-binary = "*"
+pg8000 = "*"
+
 
 [[tool.poetry.source]]
 name = "PyPI"
