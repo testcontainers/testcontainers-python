@@ -20,27 +20,40 @@ from .waiting_utils import wait_container_is_ready
 ADDITIONAL_TRANSIENT_ERRORS = []
 try:
     from sqlalchemy.exc import DBAPIError
+
     ADDITIONAL_TRANSIENT_ERRORS.append(DBAPIError)
 except ImportError:
     pass
 
 
-class DbContainer(DockerContainer):
+class DependencyFreeDbContainer(DockerContainer):
     """
-    Generic database container.
+    A generic database without any package dependencies
     """
-    @wait_container_is_ready(*ADDITIONAL_TRANSIENT_ERRORS)
-    def _connect(self) -> None:
-        import sqlalchemy
-        engine = sqlalchemy.create_engine(self.get_connection_url())
-        engine.connect()
 
-    def get_connection_url(self) -> str:
+    def start(self) -> "DbContainer":
+        self._configure()
+        super().start()
+        self._verify_status()
+        return self
+
+    def _verify_status(self) -> "DependencyFreeDbContainer":
+        """override this method to ensure the database is running and accepting connections"""
         raise NotImplementedError
 
-    def _create_connection_url(self, dialect: str, username: str, password: str,
-                               host: Optional[str] = None, port: Optional[int] = None,
-                               dbname: Optional[str] = None, **kwargs) -> str:
+    def _configure(self) -> None:
+        raise NotImplementedError
+
+    def _create_connection_url(
+        self,
+        dialect: str,
+        username: str,
+        password: str,
+        host: Optional[str] = None,
+        port: Optional[int] = None,
+        dbname: Optional[str] = None,
+        **kwargs,
+    ) -> str:
         if raise_for_deprecated_parameter(kwargs, "db_name", "dbname"):
             raise ValueError(f"Unexpected arguments: {','.join(kwargs)}")
         if self._container is None:
@@ -52,7 +65,44 @@ class DbContainer(DockerContainer):
             url = f"{url}/{dbname}"
         return url
 
-    def start(self) -> 'DbContainer':
+
+class DbContainer(DockerContainer):
+    """
+    Generic database container.
+    """
+
+    @wait_container_is_ready(*ADDITIONAL_TRANSIENT_ERRORS)
+    def _connect(self) -> None:
+        import sqlalchemy
+
+        engine = sqlalchemy.create_engine(self.get_connection_url())
+        engine.connect()
+
+    def get_connection_url(self) -> str:
+        raise NotImplementedError
+
+    def _create_connection_url(
+        self,
+        dialect: str,
+        username: str,
+        password: str,
+        host: Optional[str] = None,
+        port: Optional[int] = None,
+        dbname: Optional[str] = None,
+        **kwargs,
+    ) -> str:
+        if raise_for_deprecated_parameter(kwargs, "db_name", "dbname"):
+            raise ValueError(f"Unexpected arguments: {','.join(kwargs)}")
+        if self._container is None:
+            raise ContainerStartException("container has not been started")
+        host = host or self.get_container_host_ip()
+        port = self.get_exposed_port(port)
+        url = f"{dialect}://{username}:{password}@{host}:{port}"
+        if dbname:
+            url = f"{url}/{dbname}"
+        return url
+
+    def start(self) -> "DbContainer":
         self._configure()
         super().start()
         self._connect()

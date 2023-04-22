@@ -11,12 +11,17 @@
 #    License for the specific language governing permissions and limitations
 #    under the License.
 import os
+from time import sleep
 from typing import Optional
-from testcontainers.core.generic import DbContainer
+
+from testcontainers.core.config import MAX_TRIES, SLEEP_TIME
+from testcontainers.core.generic import DependencyFreeDbContainer
 from testcontainers.core.utils import raise_for_deprecated_parameter
+from testcontainers.core.waiting_utils import (wait_container_is_ready,
+                                               wait_for_logs)
 
 
-class PostgresContainer(DbContainer):
+class PostgresContainer(DependencyFreeDbContainer):
     """
     Postgres database container.
 
@@ -41,14 +46,14 @@ class PostgresContainer(DbContainer):
     """
     def __init__(self, image: str = "postgres:latest", port: int = 5432,
                  username: Optional[str] = None, password: Optional[str] = None,
-                 dbname: Optional[str] = None, driver: str = "psycopg2", **kwargs) -> None:
+                 dbname: Optional[str] = None, driver: str | None = "psycopg2", **kwargs) -> None:
         raise_for_deprecated_parameter(kwargs, "user", "username")
         super(PostgresContainer, self).__init__(image=image, **kwargs)
-        self.username = username or os.environ.get("POSTGRES_USER", "test")
-        self.password = password or os.environ.get("POSTGRES_PASSWORD", "test")
-        self.dbname = dbname or os.environ.get("POSTGRES_DB", "test")
+        self.username: str = username or os.environ.get("POSTGRES_USER", "test")
+        self.password: str = password or os.environ.get("POSTGRES_PASSWORD", "test")
+        self.dbname: str = dbname or os.environ.get("POSTGRES_DB", "test")
         self.port = port
-        self.driver = driver
+        self.driver = f"+{driver}" if driver else ""
 
         self.with_exposed_ports(self.port)
 
@@ -59,7 +64,22 @@ class PostgresContainer(DbContainer):
 
     def get_connection_url(self, host=None) -> str:
         return super()._create_connection_url(
-            dialect=f"postgresql+{self.driver}", username=self.username,
+            dialect=f"postgresql{self.driver}", username=self.username,
             password=self.password, dbname=self.dbname, host=host,
             port=self.port,
         )
+
+    @wait_container_is_ready()
+    def _verify_status(self) -> None:
+        wait_for_logs(self, ".*database system is ready to accept connections.*", MAX_TRIES, SLEEP_TIME)
+
+        count = 0
+        while count < MAX_TRIES:
+            status, _ = self.exec(f"pg_isready -hlocalhost -p{self.port} -U{self.username}")
+            if status == 0:
+                return
+
+            sleep(SLEEP_TIME)
+            count += 1
+
+        raise RuntimeError("Postgres could not get into a ready state")
