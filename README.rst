@@ -43,14 +43,30 @@ Getting Started
     >>> from testcontainers.postgres import PostgresContainer
     >>> import sqlalchemy
 
-    >>> with PostgresContainer("postgres:9.5") as postgres:
-    ...     engine = sqlalchemy.create_engine(postgres.get_connection_url())
+    >>> with PostgresContainer("postgres:latest") as postgres:
+    ...     psql_url = postgres.get_connection_url() # postgresql+psycopg2://test:test@localhost:61472/test
+    ...     engine = sqlalchemy.create_engine(psql_url)
     ...     result = engine.execute("select version()")
     ...     version, = result.fetchone()
     >>> version
-    'PostgreSQL 9.5...'
+    'PostgreSQL ......'
 
-The snippet above will spin up a postgres database in a container. The :code:`get_connection_url()` convenience method returns a :code:`sqlalchemy` compatible url we use to connect to the database and retrieve the database version.
+The snippet above will spin up a postgres database in a container. The :code:`get_connection_url()` convenience method returns a :code:`sqlalchemy` compatible url we use to connect to the database and retrieve the database version. 
+
+.. doctest::
+
+    >>> import asyncpg
+    >>> from testcontainers.postgres import PostgresContainer
+
+    >>> with PostgresContainer("postgres:latest", driver=None) as postgres:
+    ...     psql_url = container.get_connection_url() # postgresql://test:test@localhost:61472/test
+    ...     with asyncpg.create_pool(dsn=psql_url,server_settings={"jit": "off"}) as pool:
+    ...         conn = await pool.acquire()
+    ...         ret = await conn.fetchval("SELECT 1")
+    ...         assert ret == 1
+
+This snippet does the same, however the driver is set to None, to influence the :code:`get_connection_url()` convenience method. Note, that the :code:`sqlalchemy` package is no longer a dependency to launch the Postgres container, so your project must provide support for the specified driver.
+
 
 Installation
 ------------
