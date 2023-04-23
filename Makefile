@@ -26,7 +26,7 @@ ${DISTRIBUTIONS} : %/dist : %/setup.py
 # Targets to run the test suite for each package.
 tests : ${TESTS}
 ${TESTS} : %/tests :
-	pytest -svx --cov-report=term-missing --cov=testcontainers.$* --tb=short $*/tests
+	pytest -svx --cov-report=term-missing --cov=testcontainers.$* --tb=short $*/tests --doctest-modules $*
 
 # Targets to lint the code.
 lint : ${LINT}
