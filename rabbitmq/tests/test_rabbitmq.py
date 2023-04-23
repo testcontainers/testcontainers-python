@@ -52,3 +52,6 @@ def test_docker_run_rabbitmq(
         _, _, body = channel.basic_get(queue=QUEUE)
         received_message = json.loads(body.decode())
         assert received_message == MESSAGE
+
+
+test_rabbitmq_docs = pytest.shared.build_doctests("testcontainers.rabbitmq")

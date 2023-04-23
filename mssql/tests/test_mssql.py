@@ -1,3 +1,4 @@
+import pytest
 import sqlalchemy
 from testcontainers.mssql import SqlServerContainer
 
@@ -18,3 +19,6 @@ def test_docker_run_mssql():
             result = connection.execute(sqlalchemy.text('select @@servicename'))
             for row in result:
                 assert row[0] == 'MSSQLSERVER'
+
+
+test_mssql_docs = pytest.shared.build_doctests("testcontainers.mssql")

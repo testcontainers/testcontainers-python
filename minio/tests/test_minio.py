@@ -1,5 +1,5 @@
 import io
-
+import pytest
 from testcontainers.minio import MinioContainer
 
 
@@ -19,3 +19,6 @@ def test_docker_run_minio():
         assert client.get_object("test", "testfile.txt").data == test_content
         assert minio.get_config()["access_key"] == config.access_key
         assert minio.get_config()["secret_key"] == config.secret_key
+
+
+test_minio_docs = pytest.shared.build_doctests("testcontainers.minio")

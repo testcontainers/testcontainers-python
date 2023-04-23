@@ -61,3 +61,6 @@ def test_docker_run_mongodb_connect_without_credentials():
         db = MongoClient(connection_url).test
         with pytest.raises(OperationFailure):
             db.restaurants.insert_one({})
+
+
+test_mongodb_docs = pytest.shared.build_doctests("testcontainers.mongodb")

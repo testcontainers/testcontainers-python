@@ -1,5 +1,5 @@
+import pytest
 import requests
-
 from testcontainers.nginx import NginxContainer
 
 
@@ -10,3 +10,6 @@ def test_docker_run_nginx():
         r = requests.get(url)
         assert (r.status_code == 200)
         assert ('Welcome to nginx!' in r.text)
+
+
+test_nginx_docs = pytest.shared.build_doctests("testcontainers.nginx")

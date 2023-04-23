@@ -1,3 +1,4 @@
+import pytest
 from testcontainers.opensearch import OpenSearchContainer
 
 
@@ -34,3 +35,6 @@ def test_search():
         client.indices.refresh(index="test")
         result = client.search(index="test", body={"query": {"match_all": {}}})
         assert result["hits"]["total"]["value"] == 1
+
+
+test_opensearch_docs = pytest.shared.build_doctests("testcontainers.opensearch")

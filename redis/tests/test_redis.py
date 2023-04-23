@@ -1,6 +1,6 @@
-import time
-
+import pytest
 from testcontainers.redis import RedisContainer
+import time
 
 
 def test_docker_run_redis():
@@ -34,3 +34,6 @@ def wait_for_message(pubsub, timeout=1, ignore_subscribe_messages=True):
         time.sleep(0.01)
         now = time.time()
     return None
+
+
+test_redis_docs = pytest.shared.build_doctests("testcontainers.redis")

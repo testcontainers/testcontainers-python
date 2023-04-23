@@ -32,7 +32,6 @@
 # ones.
 extensions = [
     'sphinx.ext.autodoc',
-    'sphinx.ext.doctest',
     'sphinx.ext.napoleon',
 ]
 

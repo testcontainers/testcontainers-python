@@ -1,7 +1,7 @@
 import json
-import urllib
-
+import pytest
 from testcontainers.localstack import LocalStackContainer
+import urllib
 
 
 def test_docker_run_localstack():
@@ -16,9 +16,10 @@ def test_docker_run_localstack():
 
 
 def test_localstack_boto3():
-    from testcontainers.localstack import LocalStackContainer
-
     with LocalStackContainer(image="localstack/localstack:2.0.1") as localstack:
         dynamo_client = localstack.get_client("dynamodb")
         tables = dynamo_client.list_tables()
     assert tables["TableNames"] == []
+
+
+test_localstack_docs = pytest.shared.build_doctests("testcontainers.localstack")

@@ -33,3 +33,6 @@ def test_docker_env_variables():
         url = container.get_connection_url()
         pattern = r'mysql\+pymysql:\/\/demo:test@[\w,.]+:(3306|32785)\/custom_db'
         assert re.match(pattern, url)
+
+
+test_mysql_docs = pytest.shared.build_doctests("testcontainers.mysql")

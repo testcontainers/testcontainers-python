@@ -1,4 +1,5 @@
 from kafka import KafkaConsumer, KafkaProducer, TopicPartition
+import pytest
 from testcontainers.kafka import KafkaContainer
 
 
@@ -33,3 +34,6 @@ def produce_and_consume_kafka_message(container):
     consumer.seek_to_beginning()
     assert consumer.end_offsets([tp])[tp] == 1, \
         "Expected exactly one test message to be present on test topic !"
+
+
+test_kafka_docs = pytest.shared.build_doctests("testcontainers.kafka")

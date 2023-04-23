@@ -26,7 +26,7 @@ ${DISTRIBUTIONS} : %/dist : %/setup.py
 # Targets to run the test suite for each package.
 tests : ${TESTS}
 ${TESTS} : %/tests :
-	pytest -svx --cov-report=term-missing --cov=testcontainers.$* --tb=short $*/tests --doctest-modules $*
+	pytest -svx --cov-report=term-missing --cov=testcontainers.$* --tb=short $*/tests $*
 
 # Targets to lint the code.
 lint : ${LINT}
@@ -56,12 +56,6 @@ ${TESTS_DIND} : %/tests-dind : image
 # Target to build the documentation
 docs :
 	sphinx-build -nW . docs/_build
-
-doctest : ${DOCTESTS}
-	sphinx-build -b doctest . docs/_build
-
-${DOCTESTS} : %/doctest :
-	sphinx-build -b doctest -c doctests $* docs/_build
 
 # Targets to build requirement files
 requirements : ${REQUIREMENTS}

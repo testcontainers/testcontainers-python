@@ -1,5 +1,6 @@
-from testcontainers.azurite import AzuriteContainer
 from azure.storage.blob import BlobServiceClient
+import pytest
+from testcontainers.azurite import AzuriteContainer
 
 
 def test_docker_run_azurite():
@@ -10,3 +11,6 @@ def test_docker_run_azurite():
         )
 
         blob_service_client.create_container("test-container")
+
+
+test_azurite_docs = pytest.shared.build_doctests("testcontainers.azurite")

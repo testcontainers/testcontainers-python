@@ -1,3 +1,4 @@
+import pytest
 import sqlalchemy
 from testcontainers.postgres import PostgresContainer
 
@@ -18,3 +19,6 @@ def test_docker_run_postgres_with_driver_pg8000():
         engine = sqlalchemy.create_engine(postgres.get_connection_url())
         with engine.begin() as connection:
             connection.execute(sqlalchemy.text("select 1=1"))
+
+
+test_postgres_docs = pytest.shared.build_doctests("testcontainers.postgres")

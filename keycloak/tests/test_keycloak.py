@@ -1,5 +1,4 @@
 import pytest
-
 from testcontainers.keycloak import KeycloakContainer
 
 
@@ -7,3 +6,6 @@ from testcontainers.keycloak import KeycloakContainer
 def test_docker_run_keycloak(version: str):
     with KeycloakContainer(f'jboss/keycloak:{version}') as kc:
         kc.get_client().users_count()
+
+
+test_keycloak_docs = pytest.shared.build_doctests("testcontainers.keycloak")
