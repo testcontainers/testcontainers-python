@@ -10,12 +10,6 @@
 #    WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the
 #    License for the specific language governing permissions and limitations
 #    under the License.
-"""
-Selenium containers
-===================
-
-Allows to spin up selenium containers for testing with browsers.
-"""
 
 from selenium import webdriver
 from testcontainers.core.container import DockerContainer
@@ -51,13 +45,14 @@ class BrowserWebDriverContainer(DockerContainer):
         You can easily change browser by passing :code:`DesiredCapabilities.FIREFOX` instead.
     """
 
-    def __init__(self, capabilities: str, image: Optional[str] = None, **kwargs) -> None:
+    def __init__(self, capabilities: str, image: Optional[str] = None, port: int = 4444,
+                 vnc_port: int = 5900, **kwargs) -> None:
         self.capabilities = capabilities
         self.image = image or get_image_name(capabilities)
-        self.port_to_expose = 4444
-        self.vnc_port_to_expose = 5900
+        self.port = port
+        self.vnc_port = vnc_port
         super(BrowserWebDriverContainer, self).__init__(image=self.image, **kwargs)
-        self.with_exposed_ports(self.port_to_expose, self.vnc_port_to_expose)
+        self.with_exposed_ports(self.port, self.vnc_port)
 
     def _configure(self) -> None:
         self.with_env("no_proxy", "localhost")
@@ -74,5 +69,5 @@ class BrowserWebDriverContainer(DockerContainer):
 
     def get_connection_url(self) -> str:
         ip = self.get_container_host_ip()
-        port = self.get_exposed_port(self.port_to_expose)
+        port = self.get_exposed_port(self.port)
         return f'http://{ip}:{port}/wd/hub'

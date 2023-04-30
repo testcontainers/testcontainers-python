@@ -14,6 +14,7 @@ from typing import Optional
 
 from .container import DockerContainer
 from .exceptions import ContainerStartException
+from .utils import raise_for_deprecated_parameter
 from .waiting_utils import wait_container_is_ready
 
 ADDITIONAL_TRANSIENT_ERRORS = []
@@ -41,16 +42,16 @@ class DbContainer(DockerContainer):
 
     def _create_connection_url(self, dialect: str, username: str, password: str,
                                host: Optional[str] = None, port: Optional[int] = None,
-                               db_name: Optional[str] = None) -> str:
+                               dbname: Optional[str] = None, **kwargs) -> str:
+        if raise_for_deprecated_parameter(kwargs, "db_name", "dbname"):
+            raise ValueError(f"Unexpected arguments: {','.join(kwargs)}")
         if self._container is None:
             raise ContainerStartException("container has not been started")
         host = host or self.get_container_host_ip()
         port = self.get_exposed_port(port)
-        url = "{dialect}://{username}:{password}@{host}:{port}".format(
-            dialect=dialect, username=username, password=password, host=host, port=port
-        )
-        if db_name:
-            url += '/' + db_name
+        url = f"{dialect}://{username}:{password}@{host}:{port}"
+        if dbname:
+            url = f"{url}/{dbname}"
         return url
 
     def start(self) -> 'DbContainer':

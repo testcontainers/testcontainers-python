@@ -13,6 +13,7 @@
 import os
 from typing import Optional
 from testcontainers.core.generic import DbContainer
+from testcontainers.core.utils import raise_for_deprecated_parameter
 from testcontainers.core.waiting_utils import wait_container_is_ready
 
 ADDITIONAL_TRANSIENT_ERRORS = []
@@ -46,25 +47,23 @@ class PostgresContainer(DbContainer):
             >>> version
             'PostgreSQL 9.5...'
     """
-    POSTGRES_USER = os.environ.get("POSTGRES_USER", "test")
-    POSTGRES_PASSWORD = os.environ.get("POSTGRES_PASSWORD", "test")
-    POSTGRES_DB = os.environ.get("POSTGRES_DB", "test")
+
     DEFAULT_DRIVER = "psycopg2"
 
-    def __init__(self, image: str = "postgres:latest", port: int = 5432, user: Optional[str] = None,
-                 password: Optional[str] = None, dbname: Optional[str] = None,
-                 driver: Optional[str] = None, **kwargs) -> None:
+    def __init__(self, image: str = "postgres:latest", port: int = 5432,
+                 username: Optional[str] = None, password: Optional[str] = None,
+                 dbname: Optional[str] = None, driver: Optional[str] = None, **kwargs) -> None:
+        raise_for_deprecated_parameter(kwargs, "user", "username")
         if driver is None:
             driver = self.DEFAULT_DRIVER
-
         super(PostgresContainer, self).__init__(image=image, **kwargs)
-        self.POSTGRES_USER = user or self.POSTGRES_USER
-        self.POSTGRES_PASSWORD = password or self.POSTGRES_PASSWORD
-        self.POSTGRES_DB = dbname or self.POSTGRES_DB
-        self.port_to_expose = port
+        self.username = username or os.environ.get("POSTGRES_USER", "test")
+        self.password = password or os.environ.get("POSTGRES_PASSWORD", "test")
+        self.dbname = dbname or os.environ.get("POSTGRES_DB", "test")
+        self.port = port
         self.driver = driver
 
-        self.with_exposed_ports(self.port_to_expose)
+        self.with_exposed_ports(self.port)
 
     @wait_container_is_ready(*ADDITIONAL_TRANSIENT_ERRORS)
     def _connect(self) -> None:
@@ -74,16 +73,16 @@ class PostgresContainer(DbContainer):
         conn.close()
 
     def _configure(self) -> None:
-        self.with_env("POSTGRES_USER", self.POSTGRES_USER)
-        self.with_env("POSTGRES_PASSWORD", self.POSTGRES_PASSWORD)
-        self.with_env("POSTGRES_DB", self.POSTGRES_DB)
+        self.with_env("POSTGRES_USER", self.username)
+        self.with_env("POSTGRES_PASSWORD", self.password)
+        self.with_env("POSTGRES_DB", self.dbname)
 
     def get_connection_url(self, host: Optional[str] = None, driver: Optional[str] = None) -> str:
         if driver is None:
             driver = self.driver
 
         return super()._create_connection_url(
-            dialect="postgresql+{}".format(driver), username=self.POSTGRES_USER,
-            password=self.POSTGRES_PASSWORD, db_name=self.POSTGRES_DB, host=host,
-            port=self.port_to_expose,
+            dialect=f"postgresql+{driver}", username=self.username,
+            password=self.password, dbname=self.dbname, host=host,
+            port=self.port,
         )

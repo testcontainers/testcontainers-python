@@ -13,27 +13,31 @@
 
 import redis
 from testcontainers.core.container import DockerContainer
+from testcontainers.core.utils import raise_for_deprecated_parameter
 from testcontainers.core.waiting_utils import wait_container_is_ready
+from typing import Optional
 
 
 class RedisContainer(DockerContainer):
     """
-        Redis container.
+    Redis container.
 
-        Example:
+    Example:
 
-            .. doctest::
+        .. doctest::
 
-                >>> from testcontainers.redis import RedisContainer
+            >>> from testcontainers.redis import RedisContainer
 
-                >>> with RedisContainer() as redis_container:
-                ...     redis_client = redis_container.get_client()
-        """
-    def __init__(self, image="redis:latest", port_to_expose=6379, password=None, **kwargs) -> None:
+            >>> with RedisContainer() as redis_container:
+            ...     redis_client = redis_container.get_client()
+    """
+    def __init__(self, image: str = "redis:latest", port: int = 6379,
+                 password: Optional[str] = None, **kwargs) -> None:
+        raise_for_deprecated_parameter(kwargs, "port_to_expose", "port")
         super(RedisContainer, self).__init__(image, **kwargs)
-        self.port_to_expose = port_to_expose
+        self.port = port
         self.password = password
-        self.with_exposed_ports(self.port_to_expose)
+        self.with_exposed_ports(self.port)
         if self.password:
             self.with_command(f"redis-server --requirepass {self.password}")
 
@@ -55,7 +59,7 @@ class RedisContainer(DockerContainer):
         """
         return redis.Redis(
             host=self.get_container_host_ip(),
-            port=self.get_exposed_port(self.port_to_expose),
+            port=self.get_exposed_port(self.port),
             password=self.password,
             **kwargs,
         )
