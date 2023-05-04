@@ -12,6 +12,7 @@ setup(
     url="https://github.com/testcontainers/testcontainers-python",
     install_requires=[
         "docker>=4.0.0",
+        "urllib3<2.0",  # https://github.com/docker/docker-py/issues/3113#issuecomment-1533389349
         "wrapt",
     ],
     python_requires=">=3.7",
