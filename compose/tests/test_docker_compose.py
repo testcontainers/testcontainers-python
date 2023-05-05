@@ -57,7 +57,7 @@ def test_can_specify_services():
     [False],
 ])
 def test_can_run_specific_services(should_run_hub: bool):
-    # compose V2 will improve this test by being able to assert that "firefox" also has started and exited
+    # compose V2 will improve this test by being able to assert that "firefox" also started/exited
     services = ["firefox"]
     if should_run_hub:
         services.append("hub")
