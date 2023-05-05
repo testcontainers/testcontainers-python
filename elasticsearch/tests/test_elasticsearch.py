@@ -11,3 +11,6 @@ def test_docker_run_elasticsearch(version):
     with ElasticSearchContainer(f'elasticsearch:{version}') as es:
         resp = urllib.request.urlopen(es.get_url())
         assert json.loads(resp.read().decode())['version']['number'] == version
+
+
+test_elasticsearch_docs = pytest.shared.build_doctests("testcontainers.elasticsearch")

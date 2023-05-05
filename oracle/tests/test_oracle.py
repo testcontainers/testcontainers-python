@@ -15,3 +15,6 @@ def test_docker_run_oracle():
         with engine.begin() as connection:
             result = connection.execute(sqlalchemy.text("select * from V$VERSION"))
             assert {row[0] for row in result} == versions
+
+
+test_oracle_docs = pytest.shared.build_doctests("testcontainers.oracle")

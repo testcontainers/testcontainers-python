@@ -118,3 +118,6 @@ def test_docker_run_arango_random_root_password():
         with pytest.raises(ServerVersionError):
             sys_db = client.db("_system", username='root', password=arango_root_password)
             assert sys_db.version() == image_version
+
+
+test_arangodb_docs = pytest.shared.build_doctests("testcontainers.arangodb")

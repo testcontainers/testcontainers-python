@@ -20,3 +20,6 @@ def test_can_get_logs():
         wait_for_logs(container, "Hello from Docker!")
         stdout, stderr = container.get_logs()
         assert stdout, 'There should be something on stdout'
+
+
+test_core_docs = pytest.shared.build_doctests("testcontainers.core")

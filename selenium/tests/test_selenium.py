@@ -20,3 +20,6 @@ def test_selenium_custom_image():
     chrome = BrowserWebDriverContainer(DesiredCapabilities.CHROME, image=image)
     assert "image" in dir(chrome), "`image` attribute was not instantialized."
     assert chrome.image == image, "`image` attribute was not set to the user provided value"
+
+
+test_selenium_docs = pytest.shared.build_doctests("testcontainers.selenium")

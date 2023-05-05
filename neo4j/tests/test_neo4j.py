@@ -1,3 +1,4 @@
+import pytest
 from testcontainers.neo4j import Neo4jContainer
 
 
@@ -14,3 +15,6 @@ def test_docker_run_neo4j_latest():
                     """)
                 record = result.single()
                 assert record["name"].startswith("Neo4j")
+
+
+test_neo4j_docs = pytest.shared.build_doctests("testcontainers.neo4j")

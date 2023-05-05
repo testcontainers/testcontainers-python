@@ -68,9 +68,6 @@ jobs:
       - name: Run tests
         if: matrix.component != 'meta'
         run: make ${{ matrix.component }}/tests
-      - name: Run doctests
-        if: matrix.component != 'meta'
-        run: make ${{ matrix.component }}/doctest
       - name: Build the package
         run: make ${{ matrix.component }}/dist
       - name: Upload the package to pypi

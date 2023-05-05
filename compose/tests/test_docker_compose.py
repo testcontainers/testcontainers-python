@@ -92,3 +92,6 @@ def test_can_exec_commands():
         assert result[0] == 'my_test\n', "The echo should be successful"
         assert result[1] == '', "stderr should be empty"
         assert result[2] == 0, 'The exit code should be successful'
+
+
+test_compose_docs = pytest.shared.build_doctests("testcontainers.compose")
