@@ -9,49 +9,54 @@ jobs:
   build:
     strategy:
       matrix:
-        python-version:
-          - "3.7"
-          - "3.8"
-          - "3.9"
-          - "3.10"
-          - "3.11"
+        runtime:
+        - machine: ubuntu-latest
+          python-version: "3.7"
+        - machine: ubuntu-latest
+          python-version: "3.8"
+        - machine: ubuntu-latest
+          python-version: "3.9"
+        - machine: ubuntu-latest
+          python-version: "3.10"
+        - machine: ubuntu-latest
+          python-version: "3.11"
         component:
-          - arangodb
-          - azurite
-          - clickhouse
-          - compose
-          - core
-          - elasticsearch
-          - google
-          - kafka
-          - keycloak
-          - localstack
-          - meta
-          - minio
-          - mongodb
-          - mssql
-          - mysql
-          - neo4j
-          - nginx
-          - opensearch
-          - oracle
-          - postgres
-          - rabbitmq
-          - redis
-          - selenium
-    runs-on: ubuntu-latest
+        - arangodb
+        - azurite
+        - clickhouse
+        - compose
+        - core
+        - elasticsearch
+        - google
+        - kafka
+        - keycloak
+        - localstack
+        - meta
+        - minio
+        - mongodb
+        - mssql
+        - mysql
+        - neo4j
+        - nginx
+        - opensearch
+        - oracle
+        - postgres
+        - rabbitmq
+        - redis
+        - selenium
+    runs-on: ${{ matrix.runtime.machine }}
     steps:
       - uses: actions/checkout@v3
-      - name: Setup python ${{ matrix.python-version }}
+      - name: Setup python ${{ matrix.runtime.python-version }}
         uses: actions/setup-python@v4
         with:
-          python-version: ${{ matrix.python-version }}
+          python-version: ${{ matrix.runtime.python-version }}
           cache: pip
           cache-dependency-path: ${{ format('requirements/{0}.txt', matrix.python-version) }}
       - name: Install Python dependencies
         run: |
           pip install --upgrade pip
-          pip install -r requirements/${{ matrix.python-version }}.txt
+          pip install -r requirements/${{ matrix.runtime.machine }}-${{ matrix.runtime.python-version }}.txt
       - name: Run docker diagnostics
         if: matrix.component == 'core'
         run: |
@@ -78,7 +83,8 @@ jobs:
           github.event_name == 'push'
           && github.ref == 'refs/heads/main'
           && github.repository_owner == 'testcontainers'
-          && matrix.python-version == '3.10'
+          && matrix.runtime.python-version == '3.10'
+          && matrix.runtime.machine == 'ubuntu-latest'
         env:
           TWINE_USERNAME: __token__
           TWINE_PASSWORD: ${{ secrets.PYPI_TOKEN }}
