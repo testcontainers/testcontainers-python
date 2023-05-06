@@ -48,6 +48,9 @@ jobs:
         - selenium
     runs-on: ${{ matrix.runtime.machine }}
     steps:
+      - uses: docker-practice/actions-setup-docker@master
+        timeout-minutes: 15
+        if: matrix.runtime.machine == 'macos-latest'
       - uses: actions/checkout@v3
       - name: Setup python ${{ matrix.runtime.python-version }}
         uses: actions/setup-python@v4
