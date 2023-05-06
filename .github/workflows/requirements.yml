@@ -22,6 +22,8 @@ jobs:
           python-version: "3.11"
         - machine: windows-latest
           python-version: "3.10"
+        - machine: macos-latest
+          python-version: "3.10"
     runs-on: ${{ matrix.runtime.machine }}
     steps:
       - uses: actions/checkout@v3
