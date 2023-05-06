@@ -20,6 +20,8 @@ jobs:
           python-version: "3.10"
         - machine: ubuntu-latest
           python-version: "3.11"
+        - machine: macos-latest
+          python-version: "3.10"
         component:
         - arangodb
         - azurite
