@@ -52,7 +52,7 @@ jobs:
         with:
           python-version: ${{ matrix.runtime.python-version }}
           cache: pip
-          cache-dependency-path: ${{ format('requirements/{0}.txt', matrix.python-version) }}
+          cache-dependency-path: ${{ format('requirements/{0}-{1}.txt', matrix.runtime.machine, matrix.runtime.python-version) }}
       - name: Install Python dependencies
         run: |
           pip install --upgrade pip
