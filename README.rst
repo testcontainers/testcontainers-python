@@ -114,5 +114,5 @@ You want to contribute a new feature or container? Great! You can do that in six
 2. Implement the new feature (typically in :code:`__init__.py`) and corresponding tests.
 3. Add a line :code:`-e file:[feature name]` to :code:`requirements.in` and run :code:`make requirements`. This command will find any new requirements and generate lock files to ensure reproducible builds (see the `pip-tools <https://pip-tools.readthedocs.io/en/latest/>`__ documentation for details). Then run :code:`pip install -r requirements/[your python version].txt` to install the new requirements.
 4. Update the feature :code:`README.rst` and add it to the table of contents (:code:`toctree` directive) in the top-level :code:`README.rst`.
-5. Add a line :code:`[feature name]` to the list of components in the  GitHub Action workflow in :code:`.github/workflows/main.yml` to run tests, build, and publish your package when pushed to the :code:`master` branch.
-6. Rebase your development branch on :code:`master` (or merge :code:`master` into your development branch).
+5. Add a line :code:`[feature name]` to the list of components in the  GitHub Action workflow in :code:`.github/workflows/main.yml` to run tests, build, and publish your package when pushed to the :code:`main` branch.
+6. Rebase your development branch on :code:`main` (or merge :code:`main` into your development branch).
