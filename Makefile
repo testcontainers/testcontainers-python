@@ -1,7 +1,6 @@
 PYTHON_VERSIONS = 3.7 3.8 3.9 3.10 3.11
 PYTHON_VERSION ?= 3.10
 IMAGE = testcontainers-python:${PYTHON_VERSION}
-REQUIREMENTS = $(addprefix requirements/ubuntu-latest-,${PYTHON_VERSIONS:=.txt})
 RUN = docker run --rm -it
 # Get all directories that contain a setup.py and get the directory name.
 PACKAGES = $(subst /,,$(dir $(wildcard */setup.py)))
@@ -43,7 +42,7 @@ ${UPLOAD} : %/upload :
 	fi
 
 # Targets to build docker images
-image: requirements/${PYTHON_VERSION}.txt
+image: requirements/ubunut-latest-${PYTHON_VERSION}.txt
 	docker build --build-arg version=${PYTHON_VERSION} -t ${IMAGE} .
 
 # Targets to run tests in docker containers
@@ -62,13 +61,6 @@ doctest : ${DOCTESTS}
 
 ${DOCTESTS} : %/doctest :
 	sphinx-build -b doctest -c doctests $* docs/_build
-
-# Targets to build requirement files
-requirements : ${REQUIREMENTS}
-${REQUIREMENTS} : requirements/%.txt : requirements.in */setup.py
-	mkdir -p $(dir $@)
-	${RUN} -w /workspace -v `pwd`:/workspace --platform=linux/amd64 python:$* bash -c \
-		"pip install pip-tools && pip-compile --resolver=backtracking -v --upgrade -o $@ $<"
 
 # Remove any generated files.
 clean :

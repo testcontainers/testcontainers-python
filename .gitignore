@@ -72,3 +72,4 @@ venv
 .DS_Store
 .python-version
 .env
+.github-token

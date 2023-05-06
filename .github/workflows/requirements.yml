@@ -8,6 +8,7 @@ on:
 jobs:
   requirements:
     strategy:
+      fail-fast: false
       matrix:
         runtime:
         - machine: ubuntu-latest
