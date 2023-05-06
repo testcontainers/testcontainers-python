@@ -1,9 +1,9 @@
 name: testcontainers packages
 on:
   push:
-    branches: [master]
+    branches: [main]
   pull_request:
-    branches: [master]
+    branches: [main]
 
 jobs:
   build:
@@ -76,7 +76,7 @@ jobs:
       - name: Upload the package to pypi
         if: >
           github.event_name == 'push'
-          && github.ref == 'refs/heads/master'
+          && github.ref == 'refs/heads/main'
           && github.repository_owner == 'testcontainers'
           && matrix.python-version == '3.10'
         env:
