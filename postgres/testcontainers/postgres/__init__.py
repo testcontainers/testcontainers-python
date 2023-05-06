@@ -17,8 +17,7 @@ from typing import Optional
 from testcontainers.core.config import MAX_TRIES, SLEEP_TIME
 from testcontainers.core.generic import DependencyFreeDbContainer
 from testcontainers.core.utils import raise_for_deprecated_parameter
-from testcontainers.core.waiting_utils import (wait_container_is_ready,
-                                               wait_for_logs)
+from testcontainers.core.waiting_utils import wait_container_is_ready, wait_for_logs
 
 
 class PostgresContainer(DependencyFreeDbContainer):
@@ -44,9 +43,17 @@ class PostgresContainer(DependencyFreeDbContainer):
             >>> version
             'PostgreSQL 9.5...'
     """
-    def __init__(self, image: str = "postgres:latest", port: int = 5432,
-                 username: Optional[str] = None, password: Optional[str] = None,
-                 dbname: Optional[str] = None, driver: str | None = "psycopg2", **kwargs) -> None:
+
+    def __init__(
+        self,
+        image: str = "postgres:latest",
+        port: int = 5432,
+        username: Optional[str] = None,
+        password: Optional[str] = None,
+        dbname: Optional[str] = None,
+        driver: str | None = "psycopg2",
+        **kwargs,
+    ) -> None:
         raise_for_deprecated_parameter(kwargs, "user", "username")
         super(PostgresContainer, self).__init__(image=image, **kwargs)
         self.username: str = username or os.environ.get("POSTGRES_USER", "test")
@@ -64,14 +71,19 @@ class PostgresContainer(DependencyFreeDbContainer):
 
     def get_connection_url(self, host=None) -> str:
         return super()._create_connection_url(
-            dialect=f"postgresql{self.driver}", username=self.username,
-            password=self.password, dbname=self.dbname, host=host,
+            dialect=f"postgresql{self.driver}",
+            username=self.username,
+            password=self.password,
+            dbname=self.dbname,
+            host=host,
             port=self.port,
         )
 
     @wait_container_is_ready()
     def _verify_status(self) -> None:
-        wait_for_logs(self, ".*database system is ready to accept connections.*", MAX_TRIES, SLEEP_TIME)
+        wait_for_logs(
+            self, ".*database system is ready to accept connections.*", MAX_TRIES, SLEEP_TIME
+        )
 
         count = 0
         while count < MAX_TRIES:

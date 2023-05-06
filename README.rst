@@ -43,8 +43,8 @@ Getting Started
     >>> from testcontainers.postgres import PostgresContainer
     >>> import sqlalchemy
 
-    >>> with PostgresContainer("postgres:latest") as postgres:
-    ...     psql_url = postgres.get_connection_url() # postgresql+psycopg2://test:test@localhost:61472/test
+    >>> with PostgresContainer("postgres:9.5") as postgres:
+    ...     psql_url = postgres.get_connection_url()
     ...     engine = sqlalchemy.create_engine(psql_url)
     ...     result = engine.execute("select version()")
     ...     version, = result.fetchone()
@@ -58,8 +58,8 @@ The snippet above will spin up a postgres database in a container. The :code:`ge
     >>> import asyncpg
     >>> from testcontainers.postgres import PostgresContainer
 
-    >>> with PostgresContainer("postgres:latest", driver=None) as postgres:
-    ...     psql_url = container.get_connection_url() # postgresql://test:test@localhost:61472/test
+    >>> with PostgresContainer("postgres:9.5", driver=None) as postgres:
+    ...     psql_url = container.get_connection_url()
     ...     with asyncpg.create_pool(dsn=psql_url,server_settings={"jit": "off"}) as pool:
     ...         conn = await pool.acquire()
     ...         ret = await conn.fetchval("SELECT 1")

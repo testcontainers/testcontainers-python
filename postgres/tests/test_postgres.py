@@ -8,8 +8,9 @@ def test_docker_run_postgres():
     for version in supported_versions:
         postgres_container = PostgresContainer(f"postgres:{version}")
         with postgres_container as postgres:
-            status, msg = postgres.exec(f"pg_isready -hlocalhost -p{postgres.port} -U{postgres.username}")
+            status, msg = postgres.exec(
+                f"pg_isready -hlocalhost -p{postgres.port} -U{postgres.username}"
+            )
 
             assert msg.decode("utf-8").endswith("accepting connections\n")
             assert status == 0
-
