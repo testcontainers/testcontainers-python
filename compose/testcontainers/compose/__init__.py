@@ -17,7 +17,7 @@ class DockerCompose:
         pull: Pull images before launching environment.
         build: Build images referenced in the configuration file.
         env_file: Path to an env file containing environment variables to pass to docker compose.
-        services: The list of services to be run when starting this DockerCompose.
+        services: List of services to start.
 
     Example:
 
