@@ -8,7 +8,6 @@ from testcontainers.core.docker_client import DockerClient
 from testcontainers.core.exceptions import NoSuchPortExposed
 from testcontainers.core.waiting_utils import wait_for_logs
 
-
 ROOT = os.path.dirname(__file__)
 
 
@@ -38,6 +37,38 @@ def test_can_build_images_before_spawning_service_via_compose():
     assert "docker-compose" in docker_compose_cmd
     assert "up" in docker_compose_cmd
     assert "--build" in docker_compose_cmd
+
+
+def test_can_specify_services():
+    with patch.object(DockerCompose, "_call_command") as call_mock:
+        with DockerCompose(ROOT, services=["hub", "firefox"]) as compose:
+            ...
+
+    assert compose.services
+    docker_compose_cmd = call_mock.call_args_list[0][1]["cmd"]
+    services_at_the_end = docker_compose_cmd[-2:]
+    assert "firefox" in services_at_the_end
+    assert "hub" in services_at_the_end
+    assert "chrome" not in docker_compose_cmd
+
+
+@pytest.mark.parametrize("should_run_hub", [
+    [True],
+    [False],
+])
+def test_can_run_specific_services(should_run_hub: bool):
+    # compose V2 will improve this test by being able to assert that "firefox" also started/exited
+    services = ["firefox"]
+    if should_run_hub:
+        services.append("hub")
+
+    with DockerCompose(ROOT, services=services) as compose:
+        if should_run_hub:
+            assert compose.get_service_host("hub", 4444)
+            assert compose.get_service_port("hub", 4444)
+        else:
+            with pytest.raises(NoSuchPortExposed):
+                assert compose.get_service_host("hub", 4444)
 
 
 def test_can_throw_exception_if_no_port_exposed():
