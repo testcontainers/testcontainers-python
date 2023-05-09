@@ -23,10 +23,10 @@ def __main__() -> None:
     elif (path := pathlib.Path(".github-token")).is_file():
         token = path.read_text().strip()
     else:
-        token = input("we need a GitHub access token to fetch the requirements; please visit "
+        token = input("We need a GitHub access token to fetch the requirements. Please visit "
                       "https://github.com/settings/tokens/new, create a token with `public_repo` "
                       "scope, and paste it here: ").strip()
-        cache = input("do you want to cache the token in a `.github-token` file [Ny]? ")
+        cache = input("Do you want to cache the token in a `.github-token` file [Ny]? ")
         if cache.lower().startswith("y"):
             path.write_text(token)
 
@@ -38,13 +38,13 @@ def __main__() -> None:
     if args.run:  # Run id was specified.
         run = args.run
     elif args.pr:  # PR was specified, let's get the most recent run id.
-        print(f"fetching most recent commit for PR #{args.pr}")
+        print(f"Fetching most recent commit for PR #{args.pr}.")
         response = requests.get(f"{base_url}/pulls/{args.pr}", headers=headers)
         response.raise_for_status()
         response = response.json()
         head_sha = response["head"]["sha"]
     else:  # Nothing was specified, let's get the most recent run id on the main branch.
-        print(f"fetching most recent commit for branch `{args.branch}`")
+        print(f"Fetching most recent commit for branch `{args.branch}`.")
         response = requests.get(f"{base_url}/branches/{args.branch}", headers=headers)
         response.raise_for_status()
         response = response.json()
@@ -61,8 +61,12 @@ def __main__() -> None:
     # Get the requirements run.
     runs = [run for run in response["workflow_runs"] if
             run["path"].endswith("requirements.yml")]
+    if not runs:
+        raise RuntimeError("Could not find a workflow. Has the GitHub Action run completed? If you"
+                           "are a first-time contributor, a contributor has to approve your changes"
+                           "before Actions can run.")
     if len(runs) != 1:
-        raise RuntimeError(f"could not identify unique workflow run: {runs}")
+        raise RuntimeError(f"Could not identify unique workflow run: {runs}")
     run = runs[0]["id"]
 
     # Get all the artifacts.
@@ -72,13 +76,13 @@ def __main__() -> None:
     response.raise_for_status()
     response = response.json()
     artifacts = response["artifacts"]
-    print(f"discovered {len(artifacts)} artifacts")
+    print(f"Discovered {len(artifacts)} artifacts.")
 
     # Get the content for each artifact and save it.
     for artifact in artifacts:
         name: str = artifact["name"]
         name = name.removeprefix("requirements-")
-        print(f"fetching artifact {name} ...")
+        print(f"Fetching artifact {name} ...")
         response = requests.get(artifact["archive_download_url"], headers=headers)
         response.raise_for_status()
         with zipfile.ZipFile(io.BytesIO(response.content)) as zip, \
@@ -87,7 +91,7 @@ def __main__() -> None:
             shutil.move(pathlib.Path(tempdir) / "requirements.txt",
                         pathlib.Path("requirements") / name)
 
-    print("done")
+    print("Done.")
 
 
 if __name__ == "__main__":
