@@ -13,8 +13,10 @@
 import os
 from typing import Optional
 
+import clickhouse_connect
+from clickhouse_connect.driver.exceptions import Error as ClickhouseConnectError
 import clickhouse_driver
-from clickhouse_driver.errors import Error
+from clickhouse_driver.errors import Error as ClickhouseDriverError
 
 from testcontainers.core.generic import DbContainer
 from testcontainers.core.utils import raise_for_deprecated_parameter
@@ -23,38 +25,62 @@ from testcontainers.core.waiting_utils import wait_container_is_ready
 
 class ClickHouseContainer(DbContainer):
     """
-    ClickHouse database container.
+    ClickHouse database container. This testcontainer defaults to exposing the TCP port of
+    ClickHouse. If you want to use the HTTP interface, specify port 8123 to be exposed.
 
     Example:
 
-        The example spins up a ClickHouse database and connects to it using the
-        :code:`clickhouse-driver`.
+        This example shows how to spin up ClickHouse.
+        It demonstrates how to connect to the *TCP* interface using :code:`clickhouse-driver`
+        and how to connect to the *HTTP* interface using :code:`clickhouse-connect`, the
+        official client library.
 
         .. doctest::
 
-            >>> import clickhouse_driver
             >>> from testcontainers.clickhouse import ClickHouseContainer
 
-            >>> with ClickHouseContainer("clickhouse/clickhouse-server:21.8") as clickhouse:
+            >>> # clickhouse_driver is a client lib that uses the TCP interface
+            >>> import clickhouse_driver
+            >>> # ClickHouseContainer exports the TCP port by default
+            >>> with ClickHouseContainer(image="clickhouse/clickhouse-server:21.8") as clickhouse:
             ...     client = clickhouse_driver.Client.from_url(clickhouse.get_connection_url())
             ...     client.execute("select 'working'")
             [('working',)]
+
+            >>> # clickhouse_connect is the official client lib, based on the HTTP interface
+            >>> import clickhouse_connect
+            >>> # If you want to use the HTTP interface, port 8123 needs to be exposed
+            >>> with ClickHouseContainer(port=8123) as clickhouse:
+            ...     client = clickhouse_connect.get_client(dsn=clickhouse.get_connection_url())
+            ...     client.query("select 'working'").result_rows
+            [('working',)]
     """
-    def __init__(self, image: str = "clickhouse/clickhouse-server:latest", port: int = 9000,
-                 username: Optional[str] = None, password: Optional[str] = None,
-                 dbname: Optional[str] = None, **kwargs) -> None:
+
+    def __init__(
+        self,
+        image: str = "clickhouse/clickhouse-server:latest",
+        port: int = 9000,
+        username: Optional[str] = None,
+        password: Optional[str] = None,
+        dbname: Optional[str] = None,
+        **kwargs
+    ) -> None:
         raise_for_deprecated_parameter(kwargs, "user", "username")
         super().__init__(image=image, **kwargs)
-        self.username = username or os.environ.get("CLICKHOUSE_USER", "test")
-        self.password = password or os.environ.get("CLICKHOUSE_PASSWORD", "test")
-        self.dbname = dbname or os.environ.get("CLICKHOUSE_DB", "test")
+        self.username: str = username or os.environ.get("CLICKHOUSE_USER", "test")
+        self.password: str = password or os.environ.get("CLICKHOUSE_PASSWORD", "test")
+        self.dbname: str = dbname or os.environ.get("CLICKHOUSE_DB", "test")
         self.port = port
         self.with_exposed_ports(self.port)
 
-    @wait_container_is_ready(Error, EOFError)
+    @wait_container_is_ready(ClickhouseDriverError, ClickhouseConnectError, EOFError)
     def _connect(self) -> None:
-        with clickhouse_driver.Client.from_url(self.get_connection_url()) as client:
-            client.execute("SELECT version()")
+        if self.port == 8123:
+            with clickhouse_connect.get_client(dsn=self.get_connection_url()) as client:
+                client.command("SELECT version()")
+        else:
+            with clickhouse_driver.Client.from_url(self.get_connection_url()) as client:
+                client.execute("SELECT version()")
 
     def _configure(self) -> None:
         self.with_env("CLICKHOUSE_USER", self.username)

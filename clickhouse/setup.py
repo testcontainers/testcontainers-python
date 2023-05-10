@@ -12,6 +12,7 @@ setup(
     url="https://github.com/testcontainers/testcontainers-python",
     install_requires=[
         "testcontainers-core",
+        "clickhouse-connect",
         "clickhouse-driver",
     ],
     python_requires=">=3.7",
