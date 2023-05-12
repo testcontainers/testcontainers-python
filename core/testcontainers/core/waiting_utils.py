@@ -83,7 +83,7 @@ def wait_for_logs(container: "DockerContainer", predicate: Union[Callable, str],
 
     Args:
         container: Container whose logs to wait for.
-        predicate: Predicate that should be satisfied by the logs. If a string, the it is used as
+        predicate: Predicate that should be satisfied by the logs. If a string, then it is used as
         the pattern for a multiline regular expression search.
         timeout: Number of seconds to wait for the predicate to be satisfied. Defaults to wait
             indefinitely.
