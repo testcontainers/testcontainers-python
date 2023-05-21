@@ -44,6 +44,7 @@ jobs:
         - rabbitmq
         - redis
         - selenium
+        - singlestore
     runs-on: ${{ matrix.runtime.machine }}
     steps:
       - uses: actions/checkout@v3
