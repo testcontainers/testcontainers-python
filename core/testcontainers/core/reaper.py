@@ -6,7 +6,7 @@ from typing import TYPE_CHECKING, Optional
 
 
 from .utils import setup_logger
-from .images import REAPER_IMAGE
+from .config import REAPER_IMAGE
 from .waiting_utils import wait_for_logs
 from .labels import LABEL_SESSION_ID, SESSION_ID
 

@@ -3,3 +3,5 @@ from os import environ
 MAX_TRIES = int(environ.get("TC_MAX_TRIES", 120))
 SLEEP_TIME = int(environ.get("TC_POOLING_INTERVAL", 1))
 TIMEOUT = MAX_TRIES * SLEEP_TIME
+
+REAPER_IMAGE = environ.get("RYUK_CONTAINER_IMAGE", "testcontainers/ryuk:0.3.4")

@@ -1,7 +1,7 @@
 from uuid import uuid4
 from typing import Optional
 
-from .images import REAPER_IMAGE
+from .config import REAPER_IMAGE
 
 
 SESSION_ID: str = str(uuid4())
