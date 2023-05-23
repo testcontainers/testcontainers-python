@@ -48,7 +48,7 @@ def test_docker_run_arango():
     """
     Test ArangoDB container with default settings.
     """
-    image_version = '3.9.1'
+    image_version = '3.10.6'
     image = f'{ARANGODB_IMAGE_NAME}:{image_version}'
     arango_root_password = 'passwd'
 
@@ -70,7 +70,7 @@ def test_docker_run_arango_without_auth():
     """
     Test ArangoDB container with ARANGO_NO_AUTH var set.
     """
-    image_version = '3.9.1'
+    image_version = '3.10.6'
     image = f'{ARANGODB_IMAGE_NAME}:{image_version}'
 
     with ArangoDbContainer(image, arango_no_auth=True) as arango:
@@ -107,7 +107,7 @@ def test_docker_run_arango_random_root_password():
     """
     Test ArangoDB container with ARANGO_RANDOM_ROOT_PASSWORD var set.
     """
-    image_version = '3.9.1'
+    image_version = '3.10.6'
     image = f'{ARANGODB_IMAGE_NAME}:{image_version}'
     arango_root_password = 'passwd'
 
