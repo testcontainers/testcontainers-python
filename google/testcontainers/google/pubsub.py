@@ -11,9 +11,10 @@
 #    License for the specific language governing permissions and limitations
 #    under the License.
 from google.cloud import pubsub
-import grpc
-from typing import Optional
+import os
 from testcontainers.core.container import DockerContainer
+from typing import Type
+from unittest.mock import patch
 
 
 class PubSubContainer(DockerContainer):
@@ -29,12 +30,13 @@ class PubSubContainer(DockerContainer):
 
         .. doctest::
 
-            def test_docker_run_pubsub():
-                config = PubSubContainer('google/cloud-sdk:emulators')
-                with config as pubsub:
-                    publisher = pubsub.get_publisher()
-                    topic_path = publisher.topic_path(pubsub.project, "my-topic")
-                    topic = publisher.create_topic(topic_path)
+            >>> from testcontainers.google import PubSubContainer
+
+            >>> config = PubSubContainer()
+            >>> with config as pubsub:
+            ...    publisher = pubsub.get_publisher_client()
+            ...    topic_path = publisher.topic_path(pubsub.project, "my-topic")
+            ...    topic = publisher.create_topic(name=topic_path)
     """
     def __init__(self, image: str = "google/cloud-sdk:emulators", project: str = "test-project",
                  port: int = 8432, **kwargs) -> None:
@@ -42,24 +44,19 @@ class PubSubContainer(DockerContainer):
         self.project = project
         self.port = port
         self.with_exposed_ports(self.port)
-        self.with_command("gcloud beta emulators pubsub start --project="
-                          "{project} --host-port=0.0.0.0:{port}".format(
-                              project=self.project, port=self.port,
-                          ))
+        self.with_command(
+            f"gcloud beta emulators pubsub start --project={project} --host-port=0.0.0.0:{port}"
+        )
 
     def get_pubsub_emulator_host(self) -> str:
-        return "{host}:{port}".format(host=self.get_container_host_ip(),
-                                      port=self.get_exposed_port(self.port))
+        return f"{self.get_container_host_ip()}:{self.get_exposed_port(self.port)}"
 
-    def _get_channel(self, channel: Optional[grpc.Channel] = None) -> grpc.Channel:
-        if channel is None:
-            return grpc.insecure_channel(target=self.get_pubsub_emulator_host())
-        return channel
+    def _get_client(self, cls: Type, **kwargs) -> dict:
+        with patch.dict(os.environ, PUBSUB_EMULATOR_HOST=self.get_pubsub_emulator_host()):
+            return cls(**kwargs)
 
     def get_publisher_client(self, **kwargs) -> pubsub.PublisherClient:
-        kwargs['channel'] = self._get_channel(kwargs.get('channel'))
-        return pubsub.PublisherClient(**kwargs)
+        return self._get_client(pubsub.PublisherClient, **kwargs)
 
     def get_subscriber_client(self, **kwargs) -> pubsub.SubscriberClient:
-        kwargs['channel'] = self._get_channel(kwargs.get('channel'))
-        return pubsub.SubscriberClient(**kwargs)
+        return self._get_client(pubsub.SubscriberClient, **kwargs)

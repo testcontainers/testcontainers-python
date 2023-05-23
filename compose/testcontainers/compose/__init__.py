@@ -1,16 +1,10 @@
-"""
-Docker Compose Support
-======================
-
-Allows to spin up services configured via :code:`docker-compose.yml`.
-"""
-
-import requests
 import subprocess
 from typing import Iterable, List, Optional, Tuple, Union
 
-from testcontainers.core.waiting_utils import wait_container_is_ready
+import requests
+
 from testcontainers.core.exceptions import NoSuchPortExposed
+from testcontainers.core.waiting_utils import wait_container_is_ready
 
 
 class DockerCompose:
@@ -23,6 +17,7 @@ class DockerCompose:
         pull: Pull images before launching environment.
         build: Build images referenced in the configuration file.
         env_file: Path to an env file containing environment variables to pass to docker compose.
+        services: List of services to start.
 
     Example:
 
@@ -30,52 +25,38 @@ class DockerCompose:
 
         .. doctest::
 
-            compose_filename = ["docker-compose-1.yml", "docker-compose-2.yml"]
-            with DockerCompose("/home/project", compose_file_name=compose_file_name, pull=True) as \
-                    compose:
-                host = compose.get_service_host("hub", 4444)
-                port = compose.get_service_port("hub", 4444)
-                driver = webdriver.Remote(
-                    command_executor=("http://{}:{}/wd/hub".format(host,port)),
-                    desired_capabilities=CHROME,
-                )
-                driver.get("http://automation-remarks.com")
-                stdout, stderr = compose.get_logs()
-                if stderr:
-                    print("Errors\\n:{}".format(stderr))
+            >>> from testcontainers.compose import DockerCompose
+
+            >>> compose = DockerCompose("compose/tests", compose_file_name="docker-compose-4.yml",
+            ...                         pull=True)
+            >>> with compose:
+            ...     stdout, stderr = compose.get_logs()
+            >>> b"Hello from Docker!" in stdout
+            True
 
         .. code-block:: yaml
 
-            hub:
-            image: selenium/hub
-            ports:
-            - "4444:4444"
-            firefox:
-            image: selenium/node-firefox
-            links:
-                - hub
-            expose:
-                - "5555"
-            chrome:
-            image: selenium/node-chrome
-            links:
-                - hub
-            expose:
-                - "5555"
+            services:
+              hello-world:
+                image: "hello-world"
     """
+
     def __init__(
             self,
             filepath: str,
             compose_file_name: Union[str, Iterable] = "docker-compose.yml",
             pull: bool = False,
             build: bool = False,
-            env_file: Optional[str] = None) -> None:
+            env_file: Optional[str] = None,
+            services: Optional[List[str]] = None
+    ) -> None:
         self.filepath = filepath
         self.compose_file_names = [compose_file_name] if isinstance(compose_file_name, str) else \
             list(compose_file_name)
         self.pull = pull
         self.build = build
         self.env_file = env_file
+        self.services = services
 
     def __enter__(self) -> "DockerCompose":
         self.start()
@@ -109,6 +90,8 @@ class DockerCompose:
         up_cmd = self.docker_compose_command() + ['up', '-d']
         if self.build:
             up_cmd.append('--build')
+        if self.services:
+            up_cmd.extend(self.services)
 
         self._call_command(cmd=up_cmd)
 

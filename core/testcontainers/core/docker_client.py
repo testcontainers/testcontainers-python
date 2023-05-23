@@ -66,7 +66,7 @@ class DockerClient:
         """
         port_mappings = self.client.api.port(container_id, port)
         if not port_mappings:
-            raise ConnectionError(f'port mapping for container {container_id} and port {port} is '
+            raise ConnectionError(f'Port mapping for container {container_id} and port {port} is '
                                   'not available')
         return port_mappings[0]["HostPort"]
 
@@ -76,7 +76,7 @@ class DockerClient:
         """
         containers = self.client.api.containers(filters={'id': container_id})
         if not containers:
-            raise RuntimeError(f'could not get container with id {container_id}')
+            raise RuntimeError(f'Could not get container with id {container_id}')
         return containers[0]
 
     def bridge_ip(self, container_id: str) -> str:
