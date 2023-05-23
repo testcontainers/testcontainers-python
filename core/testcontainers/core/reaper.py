@@ -1,3 +1,5 @@
+from __future__ import annotations
+
 from os import environ
 from socket import socket
 from typing import TYPE_CHECKING, Optional
@@ -16,12 +18,12 @@ logger = setup_logger(__name__)
 
 
 class Reaper:
-    _instance: "Optional[Reaper]" = None
+    _instance: Optional[Reaper] = None
     _container: "Optional[DockerContainer]" = None
     _socket: Optional[socket] = None
 
     @classmethod
-    def get_instance(cls) -> "Reaper":
+    def get_instance(cls) -> Reaper:
         if not Reaper._instance:
             Reaper._instance = Reaper._create_instance()
 
@@ -41,7 +43,7 @@ class Reaper:
             Reaper._instance = None
 
     @classmethod
-    def _create_instance(cls) -> "Reaper":
+    def _create_instance(cls) -> Reaper:
         from .container import DockerContainer
 
         docker_socket = environ.get(
