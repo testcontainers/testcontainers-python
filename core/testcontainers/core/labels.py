@@ -1,7 +1,7 @@
 from uuid import uuid4
 from typing import Optional
 
-from .config import REAPER_IMAGE
+from .config import RYUK_IMAGE
 
 
 SESSION_ID: str = str(uuid4())
@@ -14,7 +14,7 @@ def create_labels(image: str, labels: Optional[dict]) -> dict:
             "org.testcontainers.lang": "python",
         }
 
-    if image == REAPER_IMAGE:
+    if image == RYUK_IMAGE:
         return labels
 
     labels[LABEL_SESSION_ID] = SESSION_ID

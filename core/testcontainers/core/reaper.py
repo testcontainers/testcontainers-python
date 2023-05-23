@@ -1,12 +1,11 @@
 from __future__ import annotations
 
-from os import environ
 from socket import socket
 from typing import TYPE_CHECKING, Optional
 
 
 from .utils import setup_logger
-from .config import REAPER_IMAGE
+from .config import RYUK_IMAGE, RYUK_DOCKER_SOCKET, RYUK_PRIVILEGED
 from .waiting_utils import wait_for_logs
 from .labels import LABEL_SESSION_ID, SESSION_ID
 
@@ -46,16 +45,14 @@ class Reaper:
     def _create_instance(cls) -> Reaper:
         from .container import DockerContainer
 
-        docker_socket = environ.get(
-            "TESTCONTAINERS_DOCKER_SOCKET_OVERRIDE", "/var/run/docker.sock"
-        )
         logger.debug(f"Creating new Reaper for session: {SESSION_ID}")
 
         Reaper._container = (
-            DockerContainer(REAPER_IMAGE)
+            DockerContainer(RYUK_IMAGE)
             .with_name(f"testcontainers-ryuk-{SESSION_ID}")
             .with_exposed_ports(8080)
-            .with_volume_mapping(docker_socket, "/var/run/docker.sock", "rw")
+            .with_volume_mapping(RYUK_DOCKER_SOCKET, "/var/run/docker.sock", "rw")
+            .with_kwargs(privileged=RYUK_PRIVILEGED)
             .start()
         )
         wait_for_logs(Reaper._container, r".* Started!")
