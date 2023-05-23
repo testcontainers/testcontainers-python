@@ -10,9 +10,7 @@
 #    WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the
 #    License for the specific language governing permissions and limitations
 #    under the License.
-import atexit
 import docker
-from docker.errors import NotFound
 from docker.models.containers import Container, ContainerCollection
 import functools as ft
 import os
@@ -25,16 +23,6 @@ from .utils import default_gateway_ip, inside_container, setup_logger
 
 
 LOGGER = setup_logger(__name__)
-
-
-def _stop_container(container: Container) -> None:
-    try:
-        container.stop()
-    except NotFound:
-        pass
-    except Exception as ex:
-        LOGGER.warning("failed to shut down container %s with image %s: %s", container.id,
-                       container.image, ex)
 
 
 class DockerClient:

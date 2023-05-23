@@ -84,16 +84,6 @@ class DockerContainer:
     def __exit__(self, exc_type, exc_val, exc_tb) -> None:
         self.stop()
 
-    def __del__(self) -> None:
-        """
-        Try to remove the container if Ryuk is not active
-        """
-        if self._container is not None and not self.ryuk:
-            try:
-                self.stop()
-            except:  # noqa: E722
-                pass
-
     def get_container_host_ip(self) -> str:
         # infer from docker host
         host = self.get_docker_client().host()
