@@ -63,7 +63,7 @@ class DockerContainer:
         return self
 
     def start(self) -> 'DockerContainer':
-        if self.auto_remove and not self.image == REAPER_IMAGE:
+        if self.auto_remove and self.image != REAPER_IMAGE:
             logger.debug("Creating Ryuk container")
             Reaper.get_instance()
         logger.info("Pulling image %s", self.image)
