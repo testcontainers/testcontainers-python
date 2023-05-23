@@ -50,14 +50,12 @@ class DockerClient:
     def run(self, image: str, command: Union[str, List[str]] = None,
             environment: Optional[dict] = None, ports: Optional[dict] = None,
             labels: Optional[dict] = None, detach: bool = False, stdout: bool = True,
-            stderr: bool = False, remove: bool = False, cleanup_on_exit: bool = True,
+            stderr: bool = False, remove: bool = False,
             **kwargs) -> Container:
         container = self.client.containers.run(
             image, command=command, stdout=stdout, stderr=stderr, remove=remove, detach=detach,
             environment=environment, ports=ports, labels=create_labels(image, labels), **kwargs
         )
-        if detach and cleanup_on_exit:
-            atexit.register(_stop_container, container)
         return container
 
     def port(self, container_id: str, port: int) -> int:

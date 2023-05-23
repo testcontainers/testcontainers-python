@@ -51,7 +51,6 @@ class Reaper:
 
         Reaper._container = (
             DockerContainer(REAPER_IMAGE)
-            .with_ryuk(True)
             .with_name(f"testcontainers-ryuk-{SESSION_ID}")
             .with_exposed_ports(8080)
             .with_volume_mapping(docker_socket, "/var/run/docker.sock", "rw")

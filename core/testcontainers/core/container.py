@@ -28,7 +28,7 @@ class DockerContainer:
         self.env = {}
         self.ports = {}
         self.volumes = {}
-        self.ryuk = False
+        self.auto_remove = True
         self.image = image
         self._docker = DockerClient(**(docker_client_kw or {}))
         self._container = None
@@ -49,8 +49,8 @@ class DockerContainer:
             self.ports[port] = None
         return self
 
-    def with_ryuk(self, enabled: bool) -> 'DockerContainer':
-        self.ryuk = enabled
+    def with_auto_remove(self, enabled: bool) -> 'DockerContainer':
+        self.auto_remove = enabled
         return self
 
     def with_kwargs(self, **kwargs) -> 'DockerContainer':
@@ -63,14 +63,14 @@ class DockerContainer:
         return self
 
     def start(self) -> 'DockerContainer':
-        if self.ryuk and not self.image == REAPER_IMAGE:
+        if self.auto_remove and not self.image == REAPER_IMAGE:
             logger.debug("Creating Ryuk container")
             Reaper.get_instance()
         logger.info("Pulling image %s", self.image)
         docker_client = self.get_docker_client()
         self._container = docker_client.run(
             self.image, command=self._command, detach=True, environment=self.env, ports=self.ports,
-            name=self._name, volumes=self.volumes, cleanup_on_exit=not self.ryuk, **self._kwargs
+            name=self._name, volumes=self.volumes, **self._kwargs
         )
         logger.info("Container started: %s", self._container.short_id)
         return self
