@@ -1,23 +1,24 @@
 import time
+from testcontainers.core.waiting_utils import wait_for_logs
 
 from testcontainers.redis import RedisContainer
 
 
 def test_docker_run_redis():
-    config = RedisContainer()
-    with config as redis:
+    with RedisContainer('redis:7.0.11') as redis:
+        wait_for_logs(redis, 'Ready to accept connections')
         client = redis.get_client()
-        p = client.pubsub()
-        p.subscribe('test')
+        pubsub = client.pubsub()
+        pubsub.subscribe('test')
         client.publish('test', 'new_msg')
-        msg = wait_for_message(p)
+        msg = wait_for_message(pubsub)
         assert 'data' in msg
         assert b'new_msg', msg['data']
 
 
 def test_docker_run_redis_with_password():
-    config = RedisContainer(password="mypass")
-    with config as redis:
+    with RedisContainer('redis:7.0.11', password="mypass") as redis:
+        wait_for_logs(redis, 'Ready to accept connections')
         client = redis.get_client(decode_responses=True)
         client.set("hello", "world")
         assert client.get("hello") == "world"
