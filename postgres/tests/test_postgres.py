@@ -28,7 +28,9 @@ def test_docker_run_postgres_with_driver_pg8000():
 async def test_docker_run_postgres_with_driver_asyncio():
     postgres_container = PostgresContainer("postgres:9.5", driver="asyncpg")
     with postgres_container as postgres:
-        await sleep(1)
+        # in local test need to wait while pg container is ready
+        # else raised `ConnectionError: unexpected connection_lost() call`
+        await sleep(5)
         engine = create_async_engine(postgres.get_connection_url())
         async with engine.begin() as connection:
             await connection.execute(sqlalchemy.text("select 1=1"))
