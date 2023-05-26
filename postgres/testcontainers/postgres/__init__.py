@@ -11,7 +11,7 @@
 #    License for the specific language governing permissions and limitations
 #    under the License.
 import os
-from typing import Optional, Any
+from typing import Optional
 from testcontainers.core.generic import DbContainer, ADDITIONAL_TRANSIENT_ERRORS
 from testcontainers.core.utils import raise_for_deprecated_parameter
 from testcontainers.core.waiting_utils import wait_container_is_ready
