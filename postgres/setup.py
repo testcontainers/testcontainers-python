@@ -12,8 +12,9 @@ setup(
     url="https://github.com/testcontainers/testcontainers-python",
     install_requires=[
         "testcontainers-core",
-        "sqlalchemy",
+        "sqlalchemy[asyncio]",
         "psycopg2-binary",
+        "asyncpg"
     ],
     python_requires=">=3.7",
 )
