@@ -37,7 +37,7 @@ def _stop_container(container: Container) -> None:
 
 class DockerClient:
     """
-    Thin wrapper around :class:`docker.DockerClient` for a more functional interface.
+    Thin wrapper around :py:class:`docker.client.DockerClient` for a more functional interface.
     """
     def __init__(self, **kwargs) -> None:
         self.client = docker.from_env(**kwargs)
