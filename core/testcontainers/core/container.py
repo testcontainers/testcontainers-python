@@ -37,7 +37,7 @@ class DockerContainer:
         self._kwargs = kwargs
 
     def with_env(self, key: str, value: str) -> "DockerContainer":
-        """Set environment variable. DockerContainer stores variables as a dictionary.
+        """Set the environment variable. DockerContainer object stores variables as a dictionary.
 
         Args:
             key (str): The environment variable key.
@@ -116,6 +116,7 @@ class DockerContainer:
 
     def stop(self, force=True, delete_volume=True) -> None:
         """Stop and remove container.
+
         Arguments:
             force (bool): Force the removal of the running container.
             delete_volume (bool): Remove the volume associated with the container.
@@ -143,10 +144,10 @@ class DockerContainer:
                 pass
 
     def get_container_host_ip(self) -> str:
-        """Get the container host ip. If not set returns "localhost".
+        """Get the container host IP.
 
         Returns:
-            str: host ip address
+            str: The hostname or IP address of the Docker host.
         """
         # infer from docker host
         host = self.get_docker_client().host()
@@ -198,6 +199,7 @@ class DockerContainer:
 
     def with_name(self, name: str) -> "DockerContainer":
         """Set the name for the container.
+
         Arguments:
             name (str): The name for the container.
         Returns:

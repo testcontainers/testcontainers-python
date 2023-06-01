@@ -5,12 +5,15 @@ testcontainers-core
 
 :code:`testcontainers-core` is a utility package for spinning up Docker containers in testing environments.
 
-Container Classes
------------------
-.. autoclass:: DockerContainer()
+DockerContainer
+---------------
+.. autoclass:: DockerContainer
    :members:
 
-.. autoclass:: DockerClient()
+
+DockerClient
+------------
+.. autoclass:: DockerClient
    :members:
 
 
@@ -19,6 +22,6 @@ Exceptions
 ----------
 .. py:module:: testcontainers.core.exceptions
 
-.. autoclass:: ContainerStartException()
+.. autoclass:: ContainerStartException
 
-.. autoclass:: NoSuchPortExposed()
+.. autoclass:: NoSuchPortExposed
