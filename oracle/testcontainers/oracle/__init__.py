@@ -25,8 +25,8 @@ class OracleDbContainer(DbContainer):
 
     def get_connection_url(self) -> str:
         return super()._create_connection_url(
-            dialect="oracle+oracledb", username="system", password="oracle", port=self.container_port,
-            dbname="freepdb1"
+            dialect="oracle+oracledb", username="system", password="oracle",
+            port=self.container_port, dbname="freepdb1"
         )
 
     def _configure(self) -> None:
