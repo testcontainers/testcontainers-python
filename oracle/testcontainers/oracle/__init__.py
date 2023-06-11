@@ -32,7 +32,7 @@ class OracleDbContainer(DbContainer):
         self.oracle_password = oracle_password or environ.get("ORACLE_PASSWORD")
         self.username = username or environ.get("APP_USER")
         self.password = password or environ.get("APP_USER_PASSWORD")
-        self.dbname = dbname or environ.get("ORACLE_DATABASE")
+        self.dbname = dbname or environ.get("ORACLE_DATABASE") or "FREEPDB1"
 
     def get_connection_url(self) -> str:
         return super()._create_connection_url(
