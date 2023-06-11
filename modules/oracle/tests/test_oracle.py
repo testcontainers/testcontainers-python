@@ -1,6 +1,4 @@
-import pytest
 import sqlalchemy
-
 from testcontainers.oracle import OracleDbContainer
 
 
