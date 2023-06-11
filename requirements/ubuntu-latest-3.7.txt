@@ -132,7 +132,7 @@ cryptography==36.0.2
     #   azure-storage-blob
     #   paramiko
     #   secretstorage
-cx-oracle==8.3.0
+oracledb==1.3.1
     # via testcontainers-oracle
 deprecation==2.1.0
     # via python-keycloak
