@@ -4,7 +4,7 @@ description = "Oracle component of testcontainers-python."
 
 setup(
     name="testcontainers-oracle",
-    version="0.0.1rc1",
+    version="0.0.1rc2",
     packages=find_namespace_packages(),
     description=description,
     long_description=description,
@@ -13,7 +13,7 @@ setup(
     install_requires=[
         "testcontainers-core",
         "sqlalchemy",
-        "cx_Oracle",
+        "oracledb",
     ],
     python_requires=">=3.7",
 )
