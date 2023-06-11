@@ -8,4 +8,5 @@ def test_docker_run_oracle():
         with engine.begin() as connection:
             test_val = 1
             result = connection.execute(sqlalchemy.text("SELECT {} FROM dual".format(test_val)))
-            assert {row[0] for row in result} == test_val
+            for row in result:
+                assert row[0] == test_val
