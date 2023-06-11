@@ -38,8 +38,8 @@ class OracleDbContainer(DbContainer):
         return super()._create_connection_url(
             dialect="oracle+oracledb",
             username=self.username or "system", password=self.password or self.oracle_password,
-            port=self.port, dbname=self.dbname
-        )
+            port=self.port
+        ) + "/?service_name={}".format(self.dbname)
 
     def _configure(self) -> None:
         if self.oracle_password is not None:
