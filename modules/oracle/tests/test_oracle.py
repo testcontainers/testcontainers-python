@@ -4,7 +4,6 @@ import sqlalchemy
 from testcontainers.oracle import OracleDbContainer
 
 
-@pytest.mark.skip(reason="needs oracle client libraries unavailable on Travis")
 def test_docker_run_oracle():
     versions = {
         "Oracle Database 11g Express Edition Release 11.2.0.2.0 - 64bit Production",
