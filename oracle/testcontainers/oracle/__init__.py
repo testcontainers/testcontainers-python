@@ -32,18 +32,20 @@ class OracleDbContainer(DbContainer):
         self.oracle_password = oracle_password or environ.get("ORACLE_PASSWORD")
         self.username = username or environ.get("APP_USER")
         self.password = password or environ.get("APP_USER_PASSWORD")
-        self.dbname = dbname or environ.get("ORACLE_DATABASE") or "FREEPDB1"
+        self.dbname = dbname or environ.get("ORACLE_DATABASE")
 
     def get_connection_url(self) -> str:
         return super()._create_connection_url(
             dialect="oracle+oracledb",
-            username=self.username or "system", password=self.password or self.oracle_password,
+            username=self.username or "system",
+            password=self.password or self.oracle_password,
             port=self.port
-        ) + "/?service_name={}".format(self.dbname)
+        ) + "/?service_name={}".format(self.dbname or "FREEPDB1")  # Default DB is "FREEPDB1"
 
     def _configure(self) -> None:
         if self.oracle_password is not None:
             self.with_env("ORACLE_PASSWORD", self.oracle_password)
+        # Either ORACLE_PASSWORD or ORACLE_RANDOM_PASSWORD need to be passed on
         else:
             self.with_env("ORACLE_RANDOM_PASSWORD", "y")
 
@@ -51,5 +53,7 @@ class OracleDbContainer(DbContainer):
             self.with_env("APP_USER", self.username)
         if self.password is not None:
             self.with_env("APP_USER_PASSWORD", self.password)
-        if self.dbname is not None:
+
+        # FREE and FREEPDB1 are predefined databases, do not pass them on as ORACLE_DATABASE
+        if self.dbname is not None and self.dbname.upper() not in ("FREE", "FREEPDB1"):
             self.with_env("ORACLE_DATABASE", self.dbname)
