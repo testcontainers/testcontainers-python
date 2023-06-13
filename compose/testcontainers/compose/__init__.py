@@ -62,6 +62,7 @@ class DockerCompose:
         self.env_file = env_file
         self.services = services
         self._user_defined_compose_command = compose_command.split(" ") if compose_command else None
+        self.docker_compose = self.base_docker_compose()
 
     def __enter__(self) -> "DockerCompose":
         self.start()
@@ -108,10 +109,10 @@ class DockerCompose:
         Starts the docker compose environment.
         """
         if self.pull:
-            pull_cmd = self.docker_compose_command() + ['pull']
+            pull_cmd = self.docker_compose + ['pull']
             self._call_command(cmd=pull_cmd)
 
-        up_cmd = self.docker_compose_command() + ['up', '-d']
+        up_cmd = self.docker_compose + ['up', '-d']
         if self.build:
             up_cmd.append('--build')
         if self.services:
@@ -122,7 +123,7 @@ class DockerCompose:
         """
         Stops the docker compose environment.
         """
-        down_cmd = self.docker_compose_command() + ['down', '-v']
+        down_cmd = self.docker_compose + ['down', '-v']
         self._call_command(cmd=down_cmd)
 
     def get_logs(self) -> Tuple[str, str]:
@@ -133,7 +134,7 @@ class DockerCompose:
             stdout: Standard output stream.
             stderr: Standard error stream.
         """
-        logs_cmd = self.docker_compose_command() + ["logs"]
+        logs_cmd = self.docker_compose + ["logs"]
         result = subprocess.run(
             logs_cmd,
             cwd=self.filepath,
@@ -154,7 +155,7 @@ class DockerCompose:
             stdout: Standard output stream.
             stderr: Standard error stream.
         """
-        exec_cmd = self.docker_compose_command() + ['exec', '-T', service_name] + command
+        exec_cmd = self.docker_compose + ['exec', '-T', service_name] + command
         result = subprocess.run(
             exec_cmd,
             cwd=self.filepath,
@@ -190,7 +191,7 @@ class DockerCompose:
         return self._get_service_info(service_name, port)[0]
 
     def _get_service_info(self, service: str, port: int) -> List[str]:
-        port_cmd = self.docker_compose_command() + ["port", service, str(port)]
+        port_cmd = self.docker_compose + ["port", service, str(port)]
         try:
             output = subprocess.check_output(port_cmd, cwd=self.filepath).decode("utf-8")
         except subprocess.CalledProcessError as e:
