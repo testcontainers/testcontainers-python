@@ -39,8 +39,8 @@ def wait_container_is_ready(*transient_exceptions) -> Callable:
     config. Default is 120 sec. Polling interval is 1 sec.
 
     Args:
-        *transient_exceptions: Additional transient exceptions that should be retried if raised. Any
-            non-transient exceptions are fatal, and the exception is re-raised immediately.
+        *transient_exceptions: Additional transient exceptions that should be retried if raised.
+            Any non-transient exceptions are fatal, and the exception is re-raised immediately.
     """
     transient_exceptions = TRANSIENT_EXCEPTIONS + tuple(transient_exceptions)
 
