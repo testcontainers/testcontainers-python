@@ -61,8 +61,7 @@ class DockerCompose:
         self.build = build
         self.env_file = env_file
         self.services = services
-        self._user_defined_compose_command = compose_command.split(" ") if compose_command else None
-        self.docker_compose = self.base_docker_compose()
+        self.compose_command = self._get_compose_command(compose_command)
 
     def __enter__(self) -> "DockerCompose":
         self.start()
@@ -71,7 +70,7 @@ class DockerCompose:
     def __exit__(self, exc_type, exc_val, exc_tb) -> None:
         self.stop()
 
-    def base_docker_compose(self):
+    def _get_compose_command(self, command):
         """
         Returns the basecommand parts used for the docker compose commands
         depending on the docker compose api.
@@ -81,8 +80,8 @@ class DockerCompose:
         list[str]
             The docker compose command parts
         """
-        if self._user_defined_compose_command:
-            return self._user_defined_compose_command
+        if command:
+            return command.split(" ")
 
         if subprocess.run(["docker", "compose", "--help"], stdout=subprocess.DEVNULL,
                           stderr=subprocess.STDOUT).returncode == 0:
@@ -97,7 +96,7 @@ class DockerCompose:
         Returns:
             cmd: Docker compose command parts.
         """
-        docker_compose_cmd = self.base_docker_compose[:]
+        docker_compose_cmd = self._get_compose_command[:]
         for file in self.compose_file_names:
             docker_compose_cmd += ['-f', file]
         if self.env_file:
@@ -109,10 +108,10 @@ class DockerCompose:
         Starts the docker compose environment.
         """
         if self.pull:
-            pull_cmd = self.docker_compose + ['pull']
+            pull_cmd = self.compose_command + ['pull']
             self._call_command(cmd=pull_cmd)
 
-        up_cmd = self.docker_compose + ['up', '-d']
+        up_cmd = self.compose_command + ['up', '-d']
         if self.build:
             up_cmd.append('--build')
         if self.services:
@@ -123,7 +122,7 @@ class DockerCompose:
         """
         Stops the docker compose environment.
         """
-        down_cmd = self.docker_compose + ['down', '-v']
+        down_cmd = self.compose_command + ['down', '-v']
         self._call_command(cmd=down_cmd)
 
     def get_logs(self) -> Tuple[str, str]:
@@ -134,7 +133,7 @@ class DockerCompose:
             stdout: Standard output stream.
             stderr: Standard error stream.
         """
-        logs_cmd = self.docker_compose + ["logs"]
+        logs_cmd = self.compose_command + ["logs"]
         result = subprocess.run(
             logs_cmd,
             cwd=self.filepath,
@@ -155,7 +154,7 @@ class DockerCompose:
             stdout: Standard output stream.
             stderr: Standard error stream.
         """
-        exec_cmd = self.docker_compose + ['exec', '-T', service_name] + command
+        exec_cmd = self.compose_command + ['exec', '-T', service_name] + command
         result = subprocess.run(
             exec_cmd,
             cwd=self.filepath,
@@ -191,7 +190,7 @@ class DockerCompose:
         return self._get_service_info(service_name, port)[0]
 
     def _get_service_info(self, service: str, port: int) -> List[str]:
-        port_cmd = self.docker_compose + ["port", service, str(port)]
+        port_cmd = self.compose_command + ["port", service, str(port)]
         try:
             output = subprocess.check_output(port_cmd, cwd=self.filepath).decode("utf-8")
         except subprocess.CalledProcessError as e:
