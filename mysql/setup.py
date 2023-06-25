@@ -13,7 +13,7 @@ setup(
     install_requires=[
         "testcontainers-core",
         "sqlalchemy",
-        "pymysql"
+        "pymysql[rsa]"
     ],
     python_requires=">=3.7",
 )
