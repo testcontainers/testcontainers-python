@@ -15,7 +15,8 @@ class SqlServerContainer(DbContainer):
             >>> import sqlalchemy
             >>> from testcontainers.mssql import SqlServerContainer
 
-            >>> with SqlServerContainer('mcr.microsoft.com/azure-sql-edge') as mssql:  # Use azure-sql-edge for Apple Silicon compatibility
+            >>> # Use azure-sql-edge for Apple Silicon compatibility
+            >>> with SqlServerContainer('mcr.microsoft.com/azure-sql-edge') as mssql:
             ...    engine = sqlalchemy.create_engine(mssql.get_connection_url())
             ...    with engine.begin() as connection:
             ...        result = connection.execute(sqlalchemy.text("select @@VERSION"))
