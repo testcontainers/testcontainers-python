@@ -12,11 +12,17 @@
 #    under the License.
 from testcontainers.core.container import DockerContainer
 from testcontainers.core.utils import raise_for_deprecated_parameter
+from testcontainers.core.waiting_utils import wait_for_logs
 
 
 class NginxContainer(DockerContainer):
     def __init__(self, image: str = "nginx:latest", port: int = 80, **kwargs) -> None:
         raise_for_deprecated_parameter(kwargs, "port_to_expose", "port")
-        super(NginxContainer, self).__init__(image, **kwargs)
+        super().__init__(image, **kwargs)
         self.port = port
         self.with_exposed_ports(self.port)
+
+    def start(self) -> DockerContainer:
+        container = super().start()
+        wait_for_logs(container, 'ready for start up')
+        return container
