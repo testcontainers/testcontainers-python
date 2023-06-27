@@ -5,8 +5,8 @@ from queue import Queue
 
 def test_pubsub_container():
     pubsub: PubSubContainer
-    with PubSubContainer() as pubsub:
-        wait_for_logs(pubsub, r"Server started, listening on \d+", timeout=60)
+    with PubSubContainer("google/cloud-sdk:316.0.0-emulators") as pubsub:
+        wait_for_logs(pubsub, r"Server started, listening on \d+", timeout=120)
         # Create a new topic
         publisher = pubsub.get_publisher_client()
         topic_path = publisher.topic_path(pubsub.project, "my-topic")
