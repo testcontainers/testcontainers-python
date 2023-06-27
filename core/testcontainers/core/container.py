@@ -1,6 +1,6 @@
 from docker.models.containers import Container
 import os
-from typing import Iterable, Optional, Tuple, Any, Dict
+from typing import Iterable, Optional, Tuple, Any, Dict, List
 
 from .waiting_utils import wait_container_is_ready
 from .docker_client import DockerClient
@@ -38,11 +38,11 @@ class DockerContainer:
         self,
         image: str,
         docker_client_kw: Optional[Dict[str, Any]] = None,
-        command: Optional[str] = None
+        command: Optional[str] = None,
         env: Optional[Dict[str, str]] = None,
         name: Optional[str] = None,
-        ports = Optional[List[int]] = None,
-        volumes = Optional[List[Tuple[str, str, str]]] = None,
+        ports: Optional[List[int]] = None,
+        volumes: Optional[List[Tuple[str, str, str]]] = None,
         **kwargs
     ) -> None:
 
