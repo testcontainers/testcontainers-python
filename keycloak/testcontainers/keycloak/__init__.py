@@ -43,6 +43,7 @@ class KeycloakContainer(DockerContainer):
     def _configure(self) -> None:
         self.with_env("KEYCLOAK_ADMIN", self.username)
         self.with_env("KEYCLOAK_ADMIN_PASSWORD", self.password)
+        self.with_command("start-dev")
 
     def get_url(self) -> str:
         host = self.get_container_host_ip()
