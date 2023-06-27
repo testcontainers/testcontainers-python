@@ -15,7 +15,7 @@ class SqlServerContainer(DbContainer):
             >>> import sqlalchemy
             >>> from testcontainers.mssql import SqlServerContainer
 
-            >>> with SqlServerContainer() as mssql:
+            >>> with SqlServerContainer('mcr.microsoft.com/azure-sql-edge') as mssql:  # Use azure-sql-edge for Apple Silicon compatibility
             ...    engine = sqlalchemy.create_engine(mssql.get_connection_url())
             ...    with engine.begin() as connection:
             ...        result = connection.execute(sqlalchemy.text("select @@VERSION"))
@@ -37,6 +37,7 @@ class SqlServerContainer(DbContainer):
 
     def _configure(self) -> None:
         self.with_env("SA_PASSWORD", self.password)
+        self.with_env("MSSQL_SA_PASSWORD", self.password)
         self.with_env("SQLSERVER_USER", self.username)
         self.with_env("SQLSERVER_DBNAME", self.dbname)
         self.with_env("ACCEPT_EULA", 'Y')
