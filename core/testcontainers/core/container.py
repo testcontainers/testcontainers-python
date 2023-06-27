@@ -61,10 +61,7 @@ class DockerContainer:
 
         self._command = command
 
-        self.env = {}
-        if env:
-            for variable, value in env.items():
-                self.with_env(key, value)
+        self.env = env or {}
 
         self._name = name
 
