@@ -14,7 +14,7 @@
 import redis
 from testcontainers.core.container import DockerContainer
 from testcontainers.core.utils import raise_for_deprecated_parameter
-from testcontainers.core.waiting_utils import wait_container_is_ready
+from testcontainers.core.waiting_utils import wait_container_is_ready, wait_for_logs
 from typing import Optional
 
 
@@ -65,6 +65,7 @@ class RedisContainer(DockerContainer):
         )
 
     def start(self) -> "RedisContainer":
-        super().start()
+        container = super().start()
+        wait_for_logs(container, 'Ready to accept connections')
         self._connect()
         return self
