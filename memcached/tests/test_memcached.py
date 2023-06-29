@@ -1,6 +1,6 @@
 import socket
 
-from memcached.testcontainers.memcached import MemcachedContainer
+from testcontainers.memcached import MemcachedContainer
 
 
 def test_memcached_host_and_exposed_port():
