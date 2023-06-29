@@ -206,7 +206,7 @@ importlib-metadata==6.6.0
 iniconfig==2.0.0
     # via pytest
 isodate==0.6.1
-    # via msrest
+    # via azure-storage-blob
 jaraco-classes==3.2.3
     # via keyring
 jeepney==0.8.0
