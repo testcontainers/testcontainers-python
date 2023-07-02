@@ -17,4 +17,5 @@ setup(
     ],
     package_data={"": ["oracle/py.typed"]},
     python_requires=">=3.7",
+    zip_safe=False,
 )

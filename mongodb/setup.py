@@ -16,4 +16,5 @@ setup(
     ],
     package_data={"": ["mongodb/py.typed"]},
     python_requires=">=3.7",
+    zip_safe=False,
 )

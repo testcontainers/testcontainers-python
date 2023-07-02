@@ -15,4 +15,5 @@ setup(
     ],
     package_data={"": ["elasticsearch/py.typed"]},
     python_requires=">=3.7",
+    zip_safe=False,
 )

@@ -17,4 +17,5 @@ setup(
     ],
     package_data={"": ["mssql/py.typed"]},
     python_requires=">=3.7",
+    zip_safe=False,
 )
