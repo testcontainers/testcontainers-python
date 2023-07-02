@@ -14,5 +14,6 @@ setup(
         "testcontainers-core",
         "opensearch-py",
     ],
+    package_data={"": ["opensearch/py.typed"]},
     python_requires=">=3.7",
 )

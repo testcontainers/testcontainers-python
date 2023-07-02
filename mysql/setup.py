@@ -15,5 +15,6 @@ setup(
         "sqlalchemy",
         "pymysql[rsa]"
     ],
+    package_data={"": ["mysql/py.typed"]},
     python_requires=">=3.7",
 )

@@ -14,5 +14,6 @@ setup(
         "testcontainers-core",
         "kafka-python",
     ],
+    package_data={"": ["kafka/py.typed"]},
     python_requires=">=3.7",
 )

@@ -14,5 +14,6 @@ setup(
         "testcontainers-core",
         "redis",
     ],
+    package_data={"": ["redis/py.typed"]},
     python_requires=">=3.7",
 )

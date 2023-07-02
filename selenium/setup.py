@@ -14,5 +14,6 @@ setup(
         "testcontainers-core",
         "selenium",
     ],
+    package_data={"": ["selenium/py.typed"]},
     python_requires=">=3.7",
 )

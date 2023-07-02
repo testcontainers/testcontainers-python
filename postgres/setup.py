@@ -15,5 +15,6 @@ setup(
         "sqlalchemy",
         "psycopg2-binary",
     ],
+    package_data={"": ["postgres/py.typed"]},
     python_requires=">=3.7",
 )

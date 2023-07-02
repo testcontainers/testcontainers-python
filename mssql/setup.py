@@ -15,5 +15,6 @@ setup(
         "sqlalchemy",
         "pymssql",
     ],
+    package_data={"": ["mssql/py.typed"]},
     python_requires=">=3.7",
 )

@@ -14,5 +14,6 @@ setup(
         "testcontainers-core",
         "python-arango",
     ],
+    package_data={"": ["arangodb/py.typed"]},
     python_requires=">=3.7",
 )

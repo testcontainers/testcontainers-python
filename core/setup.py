@@ -15,5 +15,6 @@ setup(
         "urllib3<2.0",  # https://github.com/docker/docker-py/issues/3113#issuecomment-1533389349
         "wrapt",
     ],
+    package_data={"": ["core/py.typed"]},
     python_requires=">=3.7",
 )

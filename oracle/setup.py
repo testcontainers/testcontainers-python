@@ -15,5 +15,6 @@ setup(
         "sqlalchemy",
         "cx_Oracle",
     ],
+    package_data={"": ["oracle/py.typed"]},
     python_requires=">=3.7",
 )

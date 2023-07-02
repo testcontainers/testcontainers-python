@@ -14,5 +14,6 @@ setup(
         "testcontainers-core",
         "neo4j",
     ],
+    package_data={"": ["neo4j/py.typed"]},
     python_requires=">=3.7",
 )

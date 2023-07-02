@@ -14,5 +14,6 @@ setup(
         "testcontainers-core",
         "minio",
     ],
+    package_data={"": ["minio/py.typed"]},
     python_requires=">=3.7",
 )

@@ -14,5 +14,6 @@ setup(
         "boto3",
         "testcontainers-core",
     ],
+    package_data={"": ["localstack/py.typed"]},
     python_requires=">=3.7",
 )

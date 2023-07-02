@@ -13,5 +13,6 @@ setup(
     install_requires=[
         "testcontainers-core",
     ],
+    package_data={"": ["elasticsearch/py.typed"]},
     python_requires=">=3.7",
 )

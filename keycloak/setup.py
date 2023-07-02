@@ -14,5 +14,6 @@ setup(
         "testcontainers-core",
         "python-keycloak",
     ],
+    package_data={"": ["keycloak/py.typed"]},
     python_requires=">=3.7",
 )

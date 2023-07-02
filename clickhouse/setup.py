@@ -14,5 +14,6 @@ setup(
         "testcontainers-core",
         "clickhouse-driver",
     ],
+    package_data={"": ["clickhouse/py.typed"]},
     python_requires=">=3.7",
 )

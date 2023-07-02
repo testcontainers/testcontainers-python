@@ -14,5 +14,6 @@ setup(
         "testcontainers-core",
         "pika",
     ],
+    package_data={"": ["rabbitmq/py.typed"]},
     python_requires=">=3.7",
 )

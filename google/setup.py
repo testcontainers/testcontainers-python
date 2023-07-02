@@ -14,5 +14,6 @@ setup(
         "testcontainers-core",
         "google-cloud-pubsub>=2",
     ],
+    package_data={"": ["google/py.typed"]},
     python_requires=">=3.7",
 )

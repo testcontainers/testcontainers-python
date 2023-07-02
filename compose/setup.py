@@ -14,5 +14,6 @@ setup(
         "testcontainers-core",
         "docker-compose",
     ],
+    package_data={"": ["compose/py.typed"]},
     python_requires=">=3.7",
 )

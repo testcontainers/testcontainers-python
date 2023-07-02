@@ -14,5 +14,6 @@ setup(
         "testcontainers-core",
         "pymongo",
     ],
+    package_data={"": ["mongodb/py.typed"]},
     python_requires=">=3.7",
 )

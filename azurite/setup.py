@@ -14,5 +14,6 @@ setup(
         "testcontainers-core",
         "azure-storage-blob",
     ],
+    package_data={"": ["azurite/py.typed"]},
     python_requires=">=3.7",
 )
