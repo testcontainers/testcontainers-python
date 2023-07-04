@@ -13,7 +13,7 @@ def test_docker_run_vault():
 def test_docker_run_vault_act_as_root():
     config = VaultContainer()
     with config as vault:
-        client = vault.get_root_client
+        client = vault.get_root_client()
         assert client.is_authenticated()
         assert client.sys.is_initialized()
         assert not client.sys.is_sealed()
