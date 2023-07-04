@@ -43,6 +43,7 @@ jobs:
         - postgres
         - rabbitmq
         - redis
+        - vault
         - selenium
     runs-on: ${{ matrix.runtime.machine }}
     steps:

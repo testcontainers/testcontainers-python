@@ -33,6 +33,7 @@ testcontainers-python facilitates the use of Docker containers for functional an
     postgres/README
     rabbitmq/README
     redis/README
+    vault/README
     selenium/README
 
 Getting Started
