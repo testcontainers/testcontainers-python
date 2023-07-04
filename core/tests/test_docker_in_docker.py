@@ -83,7 +83,7 @@ def test_dind_inherits_network():
             }) as container:
         assert container.get_container_host_ip() == docker_host_ip
         # Check the gateways are the same, so they can talk to each other
-        assert client.gateway_ip(container.get_wrapped_container().id) == client.gateway_ip(dind.id)
+        assert container.get_docker_client().gateway_ip(container.get_wrapped_container().id) == client.gateway_ip(dind.id)
         wait_for_logs(container, "Hello from Docker!")
         stdout, stderr = container.get_logs()
         assert stdout, 'There should be something on stdout'

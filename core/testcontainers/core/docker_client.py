@@ -97,6 +97,7 @@ class DockerClient:
         Get the gateway ip address for a container.
         """
         container = self.get_container(container_id)
+        network_name = self.network_name(container_id)
         return container['NetworkSettings']['Networks'][network_name]['Gateway']
 
     def host(self) -> str:
