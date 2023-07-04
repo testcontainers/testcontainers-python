@@ -1,27 +1,39 @@
 import pytest
+import time
+import socket
 from testcontainers.core.container import DockerContainer
 from testcontainers.core.docker_client import DockerClient
 from testcontainers.core.waiting_utils import wait_for_logs
 
 
 def test_wait_for_logs_docker_in_docker():
-    # real dind isn't possible (AFAIK) in CI
-    # forwarding the socket to a container port is at least somewhat the same
+    # real dind
     client = DockerClient()
-    not_really_dind = client.run(
-        image="alpine/socat",
-        command="tcp-listen:2375,fork,reuseaddr unix-connect:/var/run/docker.sock",
-        volumes={'/var/run/docker.sock': {'bind': '/var/run/docker.sock'}},
+    dind = client.run(
+        image="docker:dind",
+        command="dockerd -H tcp://0.0.0.0:2375 --tls=false",
         detach=True,
+        privileged=True
     )
 
-    not_really_dind.start()
+    dind.start()
 
     # get ip address for DOCKER_HOST
     # avoiding DockerContainer class here to prevent code changes affecting the test
-    specs = client.get_container(not_really_dind.id)
+    specs = client.get_container(dind.id)
     docker_host_ip = specs['NetworkSettings']['Networks']['bridge']['IPAddress']
     docker_host = f"tcp://{docker_host_ip}:2375"
+    # Wait for startup
+    timeout = 10
+    start_wait = time.perf_counter()
+    while True:
+        try:
+            with socket.create_connection((docker_host_ip, 2375), timeout=timeout):
+                break
+        except ConnectionRefusedError:
+            if time.perf_counter() - start_wait > timeout:
+                raise RuntimeError('Docker in docker took longer than 10 seconds to start')
+            time.sleep(0.01)
 
     with DockerContainer(
             image="hello-world",
@@ -37,5 +49,6 @@ def test_wait_for_logs_docker_in_docker():
         stdout, stderr = container.get_logs()
         assert stdout, 'There should be something on stdout'
 
-    not_really_dind.stop()
-    not_really_dind.remove()
+    dind.stop()
+    dind.remove()
+
