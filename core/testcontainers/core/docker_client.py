@@ -79,14 +79,25 @@ class DockerClient:
         Get the bridge ip address for a container.
         """
         container = self.get_container(container_id)
-        return container['NetworkSettings']['Networks']['bridge']['IPAddress']
+        network_name = self.network_name(container_id)
+        return container['NetworkSettings']['Networks'][network_name]['IPAddress']
+
+    def network_name(self, container_id: str) -> str:
+        """
+        Get the name of the network this container runs on
+        """
+        container = self.get_container(container_id)
+        name = container['HostConfig']['NetworkMode']
+        if name == 'default':
+            return 'bridge'
+        return name
 
     def gateway_ip(self, container_id: str) -> str:
         """
         Get the gateway ip address for a container.
         """
         container = self.get_container(container_id)
-        return container['NetworkSettings']['Networks']['bridge']['Gateway']
+        return container['NetworkSettings']['Networks'][network_name]['Gateway']
 
     def host(self) -> str:
         """

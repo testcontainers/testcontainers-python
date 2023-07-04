@@ -1,4 +1,3 @@
-import pytest
 import time
 import socket
 from testcontainers.core.container import DockerContainer
@@ -9,8 +8,7 @@ from testcontainers.core.waiting_utils import wait_for_logs
 def _wait_for_dind_return_ip(client, dind):
     # get ip address for DOCKER_HOST
     # avoiding DockerContainer class here to prevent code changes affecting the test
-    specs = client.get_container(dind.id)
-    docker_host_ip = specs['NetworkSettings']['Networks']['bridge']['IPAddress']
+    docker_host_ip = client.bridge_ip(dind.id)
     # Wait for startup
     timeout = 10
     start_wait = time.perf_counter()
@@ -57,7 +55,10 @@ def test_wait_for_logs_docker_in_docker():
 
 def test_dind_inherits_network():
     client = DockerClient()
-    custom_network = client.client.networks.create("custom_network", driver="bridge")
+    try:
+        custom_network = client.client.networks.create("custom_network", driver="bridge", check_duplicate=True)
+    except:
+        custom_network = client.client.networks.list(names=["custom_network"])[0]
     dind = client.run(
         image="docker:dind",
         command="dockerd -H tcp://0.0.0.0:2375 --tls=false",
@@ -82,7 +83,7 @@ def test_dind_inherits_network():
             }) as container:
         assert container.get_container_host_ip() == docker_host_ip
         # Check the gateways are the same, so they can talk to each other
-        assert client.gateway_ip(container.id) == client.gateway_ip(dind.id)
+        assert client.gateway_ip(container.get_wrapped_container().id) == client.gateway_ip(dind.id)
         wait_for_logs(container, "Hello from Docker!")
         stdout, stderr = container.get_logs()
         assert stdout, 'There should be something on stdout'
