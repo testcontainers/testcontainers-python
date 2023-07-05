@@ -58,7 +58,6 @@ class DockerClient:
             try:
                 docker_host = ipaddress.IPv4Address(self.host())
                 for network in self.client.networks.list(filters={'type': 'custom'}):
-                    print(network.name)
                     if 'IPAM' in network.attrs:
                         for config in network.attrs['IPAM']['Config']:
                             try:

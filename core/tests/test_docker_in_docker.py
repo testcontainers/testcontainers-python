@@ -23,18 +23,18 @@ def _wait_for_dind_return_ip(client, dind):
     return docker_host_ip
 
 def test_wait_for_logs_docker_in_docker():
-    # real dind
+    # real dind isn't possible (AFAIK) in CI
+    # forwarding the socket to a container port is at least somewhat the same
     client = DockerClient()
-    dind = client.run(
-        image="docker",
-        volumes={"/var/run/docker.sock": {"bind": "/var/run/docker.sock"}},
-        command="dockerd -H tcp://0.0.0.0:2375 --tls=false",
+    not_really_dind = client.run(
+        image="alpine/socat",
+        command="tcp-listen:2375,fork,reuseaddr unix-connect:/var/run/docker.sock",
+        volumes={'/var/run/docker.sock': {'bind': '/var/run/docker.sock'}},
         detach=True,
-        privileged=True
     )
 
-    dind.start()
-    docker_host_ip = _wait_for_dind_return_ip(client, dind)
+    not_really_dind.start()
+    docker_host_ip = _wait_for_dind_return_ip(client, not_really_dind)
     docker_host = f"tcp://{docker_host_ip}:2375"
 
     with DockerContainer(
@@ -51,8 +51,8 @@ def test_wait_for_logs_docker_in_docker():
         stdout, stderr = container.get_logs()
         assert stdout, 'There should be something on stdout'
 
-    dind.stop()
-    dind.remove()
+    not_really_dind.stop()
+    not_really_dind.remove()
 
 def test_dind_inherits_network():
     client = DockerClient()
@@ -60,18 +60,16 @@ def test_dind_inherits_network():
         custom_network = client.client.networks.create("custom_network", driver="bridge", check_duplicate=True)
     except:
         custom_network = client.client.networks.list(names=["custom_network"])[0]
-    dind = client.run(
-        image="docker",
-        volumes={"/var/run/docker.sock": {"bind": "/var/run/docker.sock"}},
-        command="dockerd -H tcp://0.0.0.0:2375 --tls=false",
-        network = custom_network.name,
+    not_really_dind = client.run(
+        image="alpine/socat",
+        command="tcp-listen:2375,fork,reuseaddr unix-connect:/var/run/docker.sock",
+        volumes={'/var/run/docker.sock': {'bind': '/var/run/docker.sock'}},
         detach=True,
-        privileged=True
     )
 
-    dind.start()
+    not_really_dind.start()
 
-    docker_host_ip = _wait_for_dind_return_ip(client, dind)
+    docker_host_ip = _wait_for_dind_return_ip(client, not_really_dind)
     docker_host = f"tcp://{docker_host_ip}:2375"
 
     with DockerContainer(
@@ -85,12 +83,12 @@ def test_dind_inherits_network():
             }) as container:
         assert container.get_container_host_ip() == docker_host_ip
         # Check the gateways are the same, so they can talk to each other
-        assert container.get_docker_client().gateway_ip(container.get_wrapped_container().id) == client.gateway_ip(dind.id)
+        assert container.get_docker_client().gateway_ip(container.get_wrapped_container().id) == client.gateway_ip(not_really_dind.id)
         wait_for_logs(container, "Hello from Docker!")
         stdout, stderr = container.get_logs()
         assert stdout, 'There should be something on stdout'
 
-    dind.stop()
-    dind.remove()
+    not_really_dind.stop()
+    not_really_dind.remove()
     custom_network.remove()
 
