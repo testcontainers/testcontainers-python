@@ -18,6 +18,8 @@ import functools as ft
 import os
 from typing import List, Optional, Union
 import urllib
+import socket
+import ipaddress
 
 from .utils import default_gateway_ip, inside_container, setup_logger
 
@@ -47,6 +49,32 @@ class DockerClient:
             environment: Optional[dict] = None, ports: Optional[dict] = None,
             detach: bool = False, stdout: bool = True, stderr: bool = False, remove: bool = False,
             **kwargs) -> Container:
+        # If we're docker in docker running on a custom network, we need to inherit the
+        # network, so we can access the resulting container. Unless the user has specified
+        # a network, then we'll assume the user knows best
+        if 'network' not in kwargs and not os.getenv('DOCKER_HOST'):
+            # See if we can find the host on our networks
+            host_network = None
+            try:
+                docker_host = ipaddress.IPv4Address(self.host())
+                for network in self.client.networks.list(filters={'type': 'custom'}):
+                    print(network.name)
+                    if 'IPAM' in network.attrs:
+                        for config in network.attrs['IPAM']['Config']:
+                            try:
+                              subnet = ipaddress.IPv4Network(config['Subnet'])
+                            except ipaddress.AddressValueError:
+                                continue
+                            if docker_host in subnet:
+                                host_network = network.name
+                                break
+                        if host_network:
+                            break
+                if host_network:
+                    kwargs['network'] = host_network
+
+            except ipaddress.AddressValueError:
+                pass
         container = self.client.containers.run(
             image, command=command, stdout=stdout, stderr=stderr, remove=remove, detach=detach,
             environment=environment, ports=ports, **kwargs
