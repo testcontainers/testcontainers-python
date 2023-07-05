@@ -22,6 +22,7 @@ def _wait_for_dind_return_ip(client, dind):
             time.sleep(0.01)
     return docker_host_ip
 
+
 def test_wait_for_logs_docker_in_docker():
     # real dind isn't possible (AFAIK) in CI
     # forwarding the socket to a container port is at least somewhat the same
@@ -54,11 +55,14 @@ def test_wait_for_logs_docker_in_docker():
     not_really_dind.stop()
     not_really_dind.remove()
 
+
 def test_dind_inherits_network():
     client = DockerClient()
     try:
-        custom_network = client.client.networks.create("custom_network", driver="bridge", check_duplicate=True)
-    except:
+        custom_network = client.client.networks.create(
+            "custom_network", driver="bridge", check_duplicate=True
+        )
+    except Exception:
         custom_network = client.client.networks.list(names=["custom_network"])[0]
     not_really_dind = client.run(
         image="alpine/socat",
@@ -83,7 +87,9 @@ def test_dind_inherits_network():
             }) as container:
         assert container.get_container_host_ip() == docker_host_ip
         # Check the gateways are the same, so they can talk to each other
-        assert container.get_docker_client().gateway_ip(container.get_wrapped_container().id) == client.gateway_ip(not_really_dind.id)
+        assert container.get_docker_client().\
+            gateway_ip(container.get_wrapped_container().id) == \
+            client.gateway_ip(not_really_dind.id)
         wait_for_logs(container, "Hello from Docker!")
         stdout, stderr = container.get_logs()
         assert stdout, 'There should be something on stdout'
@@ -91,4 +97,3 @@ def test_dind_inherits_network():
     not_really_dind.stop()
     not_really_dind.remove()
     custom_network.remove()
-

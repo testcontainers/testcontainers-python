@@ -18,7 +18,6 @@ import functools as ft
 import os
 from typing import List, Optional, Union
 import urllib
-import socket
 import ipaddress
 
 from .utils import default_gateway_ip, inside_container, setup_logger
@@ -61,7 +60,7 @@ class DockerClient:
                     if 'IPAM' in network.attrs:
                         for config in network.attrs['IPAM']['Config']:
                             try:
-                              subnet = ipaddress.IPv4Network(config['Subnet'])
+                                subnet = ipaddress.IPv4Network(config['Subnet'])
                             except ipaddress.AddressValueError:
                                 continue
                             if docker_host in subnet:
