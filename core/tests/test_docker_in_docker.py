@@ -26,7 +26,8 @@ def test_wait_for_logs_docker_in_docker():
     # real dind
     client = DockerClient()
     dind = client.run(
-        image="docker:dind",
+        image="docker",
+        volumes={"/var/run/docker.sock": {"bind": "/var/run/docker.sock"}},
         command="dockerd -H tcp://0.0.0.0:2375 --tls=false",
         detach=True,
         privileged=True
@@ -60,7 +61,8 @@ def test_dind_inherits_network():
     except:
         custom_network = client.client.networks.list(names=["custom_network"])[0]
     dind = client.run(
-        image="docker:dind",
+        image="docker",
+        volumes={"/var/run/docker.sock": {"bind": "/var/run/docker.sock"}},
         command="dockerd -H tcp://0.0.0.0:2375 --tls=false",
         network = custom_network.name,
         detach=True,
