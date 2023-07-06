@@ -39,18 +39,23 @@ def wait_container_is_ready(*transient_exceptions) -> Callable:
     config. Default is 120 sec. Polling interval is 1 sec.
 
     Args:
-        *transient_exceptions: Additional transient exceptions that should be retried if raised. Any
-            non-transient exceptions are fatal, and the exception is re-raised immediately.
+        *transient_exceptions: Additional transient exceptions that should be retried if raised.
+            Any non-transient exceptions are fatal, and the exception is re-raised immediately.
     """
     transient_exceptions = TRANSIENT_EXCEPTIONS + tuple(transient_exceptions)
 
     @wrapt.decorator
-    def wrapper(wrapped: Callable, instance: Any, args: Iterable, kwargs: Mapping) -> Any:
+    def wrapper(
+        wrapped: Callable, instance: Any, args: Iterable, kwargs: Mapping
+    ) -> Any:
         from .container import DockerContainer
 
         if isinstance(instance, DockerContainer):
-            logger.info("Waiting for container %s with image %s to be ready ...",
-                        instance._container, instance.image)
+            logger.info(
+                "Waiting for container %s with image %s to be ready ...",
+                instance._container,
+                instance.image,
+            )
         else:
             logger.info("Waiting for %s to be ready ...", instance)
 
@@ -59,13 +64,15 @@ def wait_container_is_ready(*transient_exceptions) -> Callable:
             try:
                 return wrapped(*args, **kwargs)
             except transient_exceptions as e:
-                logger.debug(f"Connection attempt '{attempt_no + 1}' of '{config.MAX_TRIES + 1}' "
-                             f"failed: {traceback.format_exc()}")
+                logger.debug(
+                    f"Connection attempt '{attempt_no + 1}' of '{config.MAX_TRIES + 1}' "
+                    f"failed: {traceback.format_exc()}"
+                )
                 time.sleep(config.SLEEP_TIME)
                 exception = e
         raise TimeoutError(
-            f'Wait time ({config.TIMEOUT}s) exceeded for {wrapped.__name__}(args: {args}, kwargs: '
-            f'{kwargs}). Exception: {exception}'
+            f"Wait time ({config.TIMEOUT}s) exceeded for {wrapped.__name__}(args: {args}, kwargs: "
+            f"{kwargs}). Exception: {exception}"
         )
 
     return wrapper
@@ -76,21 +83,25 @@ def wait_for(condition: Callable[..., bool]) -> bool:
     return condition()
 
 
-def wait_for_logs(container: "DockerContainer", predicate: Union[Callable, str],
-                  timeout: Optional[float] = None, interval: float = 1) -> float:
+def wait_for_logs(
+    container: "DockerContainer",
+    predicate: Union[Callable, str],
+    timeout: Optional[float] = None,
+    interval: float = 1,
+) -> float:
     """
     Wait for the container to emit logs satisfying the predicate.
 
     Args:
         container: Container whose logs to wait for.
         predicate: Predicate that should be satisfied by the logs. If a string, then it is used as
-        the pattern for a multiline regular expression search.
+            the pattern for a multiline regular expression search.
         timeout: Number of seconds to wait for the predicate to be satisfied. Defaults to wait
             indefinitely.
         interval: Interval at which to poll the logs.
 
     Returns:
-        duration: Number of seconds until the predicate was satisfied.
+        float: Number of seconds until the predicate was satisfied.
     """
     if isinstance(predicate, str):
         predicate = re.compile(predicate, re.MULTILINE).search
@@ -102,6 +113,8 @@ def wait_for_logs(container: "DockerContainer", predicate: Union[Callable, str],
         if predicate(stdout) or predicate(stderr):
             return duration
         if timeout and duration > timeout:
-            raise TimeoutError(f"Container did not emit logs satisfying predicate in {timeout:.3f} "
-                               "seconds")
+            raise TimeoutError(
+                f"Container did not emit logs satisfying predicate in {timeout:.3f} "
+                "seconds"
+            )
         time.sleep(interval)

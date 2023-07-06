@@ -11,6 +11,7 @@ testcontainers-python
 testcontainers-python facilitates the use of Docker containers for functional and integration testing. The collection of packages currently supports the following features.
 
 .. toctree::
+    :maxdepth: 2
 
     core/README
     arangodb/README
@@ -108,4 +109,4 @@ Testcontainers is a collection of `implicit namespace packages <https://peps.pyt
 Contributing a New Feature
 ^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-You want to contribute a new feature or container? Great! You can do that in six steps as outlined `here <https://github.com/testcontainers/testcontainers-python/blob/main/.github/PULL_REQUEST_TEMPLATE/new_container.md>__`.
+You want to contribute a new feature or container? Great! You can do that in six steps as outlined `here <https://github.com/testcontainers/testcontainers-python/blob/main/.github/PULL_REQUEST_TEMPLATE/new_container.md>`__.
