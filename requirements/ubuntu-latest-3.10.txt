@@ -322,7 +322,7 @@ pytz==2023.3
     # via
     #   clickhouse-driver
     #   neo4j
-pyyaml==5.4.1
+pyyaml==5.3.1
     # via docker-compose
 readme-renderer==37.3
     # via twine
