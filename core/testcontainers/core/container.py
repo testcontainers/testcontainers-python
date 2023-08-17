@@ -67,6 +67,7 @@ class DockerContainer:
 
     def stop(self, force=True, delete_volume=True) -> None:
         self.get_wrapped_container().remove(force=force, v=delete_volume)
+        self.get_docker_client().client.close()
 
     def __enter__(self) -> 'DockerContainer':
         return self.start()
