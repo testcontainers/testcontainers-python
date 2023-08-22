@@ -28,6 +28,7 @@ jobs:
         - core
         - elasticsearch
         - google
+        - iris
         - kafka
         - keycloak
         - localstack

@@ -5,6 +5,7 @@
 # /core
 /elasticsearch @nivm @daTokenizer
 /google @tillahoffmann
+/iris @daimor
 /kafka @ash1425
 /keycloak @timbmg
 /localstack @ImFlog
