@@ -4,7 +4,7 @@ from typing import Iterable, Optional, Tuple
 
 
 from .reaper import Reaper
-from .config import RYUK_IMAGE
+from .config import RYUK_IMAGE, RYUK_DISABLED
 from .waiting_utils import wait_container_is_ready
 from .docker_client import DockerClient
 from .exceptions import ContainerStartException
@@ -64,7 +64,7 @@ class DockerContainer:
         return self
 
     def start(self) -> 'DockerContainer':
-        if self.auto_remove and self.image != RYUK_IMAGE:
+        if not RYUK_DISABLED and self.auto_remove and self.image != RYUK_IMAGE:
             logger.debug("Creating Ryuk container")
             Reaper.get_instance()
         logger.info("Pulling image %s", self.image)

@@ -70,6 +70,21 @@ When trying to launch a testcontainer from within a Docker container, e.g., in c
 1. The container has to provide a docker client installation. Either use an image that has docker pre-installed (e.g. the `official docker images <https://hub.docker.com/_/docker>`_) or install the client from within the `Dockerfile` specification.
 2. The container has to have access to the docker daemon which can be achieved by mounting `/var/run/docker.sock` or setting the `DOCKER_HOST` environment variable as part of your `docker run` command.
 
+Configuration
+-------------
+
++-------------------------------------------+-------------------------------+------------------------------------------+
+| Env Variable                              | Example                       | Description                              |
++===========================================+===============================+==========================================+
+| ``TESTCONTAINERS_DOCKER_SOCKET_OVERRIDE`` | ``/var/run/docker.sock``      | Path to Docker's socket used by ryuk     |
++-------------------------------------------+-------------------------------+------------------------------------------+
+| ``TESTCONTAINERS_RYUK_PRIVILEGED``        | ``false``                     | Run ryuk as a privileged container       |
++-------------------------------------------+-------------------------------+------------------------------------------+
+| ``TESTCONTAINERS_RYUK_DISABLED``          | ``false``                     | Disable ryuk                             |
++-------------------------------------------+-------------------------------+------------------------------------------+
+| ``RYUK_CONTAINER_IMAGE``                  | ``testcontainers/ryuk:0.5.1`` | Custom image for ryuk                    |
++-------------------------------------------+-------------------------------+------------------------------------------+
+
 Development and Contributing
 ----------------------------
 
