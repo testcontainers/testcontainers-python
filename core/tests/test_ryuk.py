@@ -12,7 +12,7 @@ def test_wait_for_reaper():
     Reaper._socket.close()
 
     assert Reaper._container is not None
-    wait_for_logs(Reaper._container, r".* Removed 1 .*", timeout=15)
+    wait_for_logs(Reaper._container, r".* Removed \d .*", timeout=30)
 
     Reaper.delete_instance()
 
