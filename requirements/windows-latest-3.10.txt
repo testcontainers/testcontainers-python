@@ -327,7 +327,7 @@ pywin32==306
     # via docker
 pywin32-ctypes==0.2.0
     # via keyring
-pyyaml==5.4.1
+pyyaml==5.3.1
     # via docker-compose
 readme-renderer==37.3
     # via twine
