@@ -318,7 +318,9 @@ pytz==2023.3
     #   clickhouse-driver
     #   neo4j
 pyyaml==5.3.1
-    # via docker-compose
+    # via
+    #   docker-compose
+    #   testcontainers-compose
 readme-renderer==37.3
     # via twine
 redis==4.5.5

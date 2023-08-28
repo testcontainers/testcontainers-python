@@ -13,6 +13,7 @@ setup(
     install_requires=[
         "testcontainers-core",
         "docker-compose",
+        "pyyaml<5.4.0",
     ],
     python_requires=">=3.7",
 )
