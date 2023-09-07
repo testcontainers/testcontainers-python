@@ -40,7 +40,22 @@ class DockerClient:
     Thin wrapper around :class:`docker.DockerClient` for a more functional interface.
     """
     def __init__(self, **kwargs) -> None:
-        self.client = docker.from_env(**kwargs)
+        docker_host = DockerClient.read_docker_host_from_properties()
+
+        if docker_host:
+            print(f"using host {docker_host}")
+            self.client = docker.DockerClient(base_url=docker_host)
+        else:
+            self.client = docker.from_env(**kwargs)
+
+    def read_docker_host_from_properties():
+        try:
+            with open(os.path.expanduser('~/.testcontainers.properties')) as f:
+                for line in f:
+                    if line.startswith('tc.host'):
+                        return line.split('=')[1].strip()
+        except FileNotFoundError:
+            return None
 
     @ft.wraps(ContainerCollection.run)
     def run(self, image: str, command: Union[str, List[str]] = None,
