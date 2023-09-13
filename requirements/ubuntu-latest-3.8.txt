@@ -86,29 +86,27 @@ attrs==23.1.0
     #   jsonschema
     #   outcome
     #   trio
-azure-core==1.26.4
+azure-core==1.27.0
     # via azure-storage-blob
 azure-storage-blob==12.16.0
     # via testcontainers-azurite
 babel==2.12.1
     # via sphinx
 backports-zoneinfo==0.2.1
-    # via
-    #   pytz-deprecation-shim
-    #   tzlocal
+    # via tzlocal
 bcrypt==4.0.1
     # via paramiko
 bleach==6.0.0
     # via readme-renderer
-boto3==1.26.129
+boto3==1.26.148
     # via testcontainers-localstack
-botocore==1.29.129
+botocore==1.29.148
     # via
     #   boto3
     #   s3transfer
-cachetools==5.3.0
+cachetools==5.3.1
     # via google-auth
-certifi==2022.12.7
+certifi==2023.5.7
     # via
     #   minio
     #   opensearch-py
@@ -122,15 +120,16 @@ charset-normalizer==3.1.0
     # via requests
 clickhouse-driver==0.2.6
     # via testcontainers-clickhouse
-coverage[toml]==7.2.5
+coverage[toml]==7.2.7
     # via pytest-cov
 cryptography==36.0.2
     # via
     #   -r requirements.in
     #   azure-storage-blob
     #   paramiko
+    #   pymysql
     #   secretstorage
-oracledb==1.3.1
+oracledb==1.4.1
     # via testcontainers-oracle
 deprecation==2.1.0
     # via python-keycloak
@@ -138,7 +137,7 @@ distro==1.8.0
     # via docker-compose
 dnspython==2.3.0
     # via pymongo
-docker[ssh]==6.1.0
+docker[ssh]==6.1.3
     # via
     #   docker-compose
     #   testcontainers-core
@@ -148,7 +147,7 @@ dockerpty==0.4.1
     # via docker-compose
 docopt==0.6.2
     # via docker-compose
-docutils==0.19
+docutils==0.20.1
     # via
     #   readme-renderer
     #   sphinx
@@ -165,9 +164,9 @@ flake8==3.7.9
     # via -r requirements.in
 google-api-core[grpc]==2.11.0
     # via google-cloud-pubsub
-google-auth==2.17.3
+google-auth==2.19.1
     # via google-api-core
-google-cloud-pubsub==2.16.1
+google-cloud-pubsub==2.17.1
     # via testcontainers-gcp
 googleapis-common-protos[grpc]==1.59.0
     # via
@@ -178,14 +177,14 @@ greenlet==2.0.2
     # via sqlalchemy
 grpc-google-iam-v1==0.12.6
     # via google-cloud-pubsub
-grpcio==1.54.0
+grpcio==1.54.2
     # via
     #   google-api-core
     #   google-cloud-pubsub
     #   googleapis-common-protos
     #   grpc-google-iam-v1
     #   grpcio-status
-grpcio-status==1.54.0
+grpcio-status==1.54.2
     # via
     #   google-api-core
     #   google-cloud-pubsub
@@ -200,6 +199,7 @@ imagesize==1.4.1
 importlib-metadata==6.6.0
     # via
     #   keyring
+    #   python-arango
     #   sphinx
     #   twine
 importlib-resources==5.12.0
@@ -228,17 +228,17 @@ keyring==23.13.1
     # via twine
 markdown-it-py==2.2.0
     # via rich
-markupsafe==2.1.2
+markupsafe==2.1.3
     # via jinja2
 mccabe==0.6.1
     # via flake8
 mdurl==0.1.2
     # via markdown-it-py
-minio==7.1.14
+minio==7.1.15
     # via testcontainers-minio
 more-itertools==9.1.0
     # via jaraco-classes
-neo4j==5.8.0
+neo4j==5.9.0
     # via testcontainers-neo4j
 opensearch-py==2.2.0
     # via testcontainers-opensearch
@@ -250,9 +250,9 @@ packaging==23.1
     #   docker
     #   pytest
     #   sphinx
-paramiko==3.1.0
+paramiko==3.2.0
     # via docker
-pg8000==1.29.4
+pg8000==1.29.6
     # via -r requirements.in
 pika==1.3.2
     # via testcontainers-rabbitmq
@@ -262,7 +262,7 @@ pluggy==1.0.0
     # via pytest
 proto-plus==1.22.2
     # via google-cloud-pubsub
-protobuf==4.22.4
+protobuf==4.23.2
     # via
     #   google-api-core
     #   google-cloud-pubsub
@@ -290,13 +290,13 @@ pygments==2.15.1
     #   readme-renderer
     #   rich
     #   sphinx
-pyjwt==2.6.0
+pyjwt==2.7.0
     # via python-arango
 pymongo==4.3.3
     # via testcontainers-mongodb
 pymssql==2.2.7
     # via testcontainers-mssql
-pymysql==1.0.3
+pymysql[rsa]==1.0.3
     # via testcontainers-mysql
 pynacl==1.5.0
     # via paramiko
@@ -308,9 +308,9 @@ pytest==7.3.1
     # via
     #   -r requirements.in
     #   pytest-cov
-pytest-cov==4.0.0
+pytest-cov==4.1.0
     # via -r requirements.in
-python-arango==7.5.7
+python-arango==7.5.8
     # via testcontainers-arangodb
 python-dateutil==2.8.2
     # via
@@ -321,22 +321,20 @@ python-dotenv==0.21.1
     # via docker-compose
 python-jose==3.3.0
     # via python-keycloak
-python-keycloak==2.16.1
+python-keycloak==3.0.0
     # via testcontainers-keycloak
 pytz==2023.3
     # via
     #   babel
     #   clickhouse-driver
     #   neo4j
-pytz-deprecation-shim==0.1.0.post0
-    # via tzlocal
 pyyaml==5.4.1
     # via docker-compose
 readme-renderer==37.3
     # via twine
-redis==4.5.4
+redis==4.5.5
     # via testcontainers-redis
-requests==2.30.0
+requests==2.31.0
     # via
     #   azure-core
     #   docker
@@ -348,14 +346,14 @@ requests==2.30.0
     #   requests-toolbelt
     #   sphinx
     #   twine
-requests-toolbelt==0.10.1
+requests-toolbelt==1.0.0
     # via
     #   python-arango
     #   python-keycloak
     #   twine
 rfc3986==2.0.0
     # via twine
-rich==13.3.5
+rich==13.4.1
     # via twine
 rsa==4.9
     # via
@@ -367,7 +365,7 @@ scramp==1.4.4
     # via pg8000
 secretstorage==3.3.3
     # via keyring
-selenium==4.9.0
+selenium==4.9.1
     # via testcontainers-selenium
 six==1.16.0
     # via
@@ -387,7 +385,7 @@ snowballstemmer==2.2.0
     # via sphinx
 sortedcontainers==2.4.0
     # via trio
-sphinx==7.0.0
+sphinx==7.0.1
     # via -r requirements.in
 sphinxcontrib-applehelp==1.0.4
     # via sphinx
@@ -401,7 +399,7 @@ sphinxcontrib-qthelp==1.0.3
     # via sphinx
 sphinxcontrib-serializinghtml==1.1.5
     # via sphinx
-sqlalchemy==2.0.12
+sqlalchemy==2.0.15
     # via
     #   testcontainers-mssql
     #   testcontainers-mysql
@@ -421,20 +419,19 @@ trio-websocket==0.10.2
     # via selenium
 twine==4.0.2
     # via -r requirements.in
-typing-extensions==4.5.0
+typing-extensions==4.6.3
     # via
     #   azure-core
     #   azure-storage-blob
     #   rich
     #   sqlalchemy
-tzdata==2023.3
-    # via pytz-deprecation-shim
-tzlocal==4.3
+tzlocal==5.0.1
     # via clickhouse-driver
-urllib3[socks]==1.26.15
+urllib3[socks]==1.26.16
     # via
     #   botocore
     #   docker
+    #   google-auth
     #   minio
     #   opensearch-py
     #   python-arango
