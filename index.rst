@@ -80,6 +80,8 @@ This snippet does the same, however using a specific version and the driver is s
 
 Note, that the :code:`sqlalchemy` and :code:`psycopg` packages are no longer a dependency of :code:`testcontainers[postgres]` and not needed to launch the Postgres container. Your project therefore needs to declare a dependency on the used driver and db access methods you use in your code.
 
+By default, Testcontainers will search for the container via the gateway IP. You can manually specify your own IP with the environment variable `TESTCONTAINERS_HOST_OVERRIDE`.
+
 
 Installation
 ------------
