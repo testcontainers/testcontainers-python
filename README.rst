@@ -70,6 +70,8 @@ When trying to launch a testcontainer from within a Docker container, e.g., in c
 1. The container has to provide a docker client installation. Either use an image that has docker pre-installed (e.g. the `official docker images <https://hub.docker.com/_/docker>`_) or install the client from within the `Dockerfile` specification.
 2. The container has to have access to the docker daemon which can be achieved by mounting `/var/run/docker.sock` or setting the `DOCKER_HOST` environment variable as part of your `docker run` command.
 
+By default, testcontainer will search for the container via the gateway IP. You can manually specify your own IP with the environment variable `TESTCONTAINERS_HOST_OVERRIDE`.
+
 Development and Contributing
 ----------------------------
 
