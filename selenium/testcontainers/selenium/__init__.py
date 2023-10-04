@@ -10,18 +10,23 @@
 #    WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the
 #    License for the specific language governing permissions and limitations
 #    under the License.
+import uuid
+from pathlib import Path
+from typing import Optional
 
+import urllib3
 from selenium import webdriver
 from selenium.webdriver.common.options import ArgOptions
 from testcontainers.core.container import DockerContainer
 from testcontainers.core.waiting_utils import wait_container_is_ready
-from typing import Optional
-import urllib3
 
+from .video import SeleniumVideoContainer
+
+EMPTY_PATH = "."
 
 IMAGES = {
-    "firefox": "selenium/standalone-firefox-debug:latest",
-    "chrome": "selenium/standalone-chrome-debug:latest"
+    "firefox": "selenium/standalone-firefox:4.13.0-20231004",
+    "chrome": "selenium/standalone-chrome:4.13.0-20231004"
 }
 
 
@@ -54,6 +59,8 @@ class BrowserWebDriverContainer(DockerContainer):
         self.vnc_port = vnc_port
         super(BrowserWebDriverContainer, self).__init__(image=self.image, **kwargs)
         self.with_exposed_ports(self.port, self.vnc_port)
+        self.video = None
+        self.network = None
 
     def _configure(self) -> None:
         self.with_env("no_proxy", "localhost")
@@ -75,3 +82,43 @@ class BrowserWebDriverContainer(DockerContainer):
         ip = self.get_container_host_ip()
         port = self.get_exposed_port(self.port)
         return f'http://{ip}:{port}/wd/hub'
+
+    def with_video(self, video_path: Path = Path.cwd()) -> 'DockerContainer':
+        self.video = SeleniumVideoContainer()
+
+        target_video_path = video_path.parent
+        if target_video_path.samefile(EMPTY_PATH):
+            target_video_path = Path.cwd()
+        self.video.save_videos(str(target_video_path))
+
+        if video_path.name:
+            self.video.set_video_name(video_path.name)
+
+        return self
+
+    def start(self) -> 'DockerContainer':
+        if self.video:
+            self.network = self._docker.client.networks.create(str(uuid.uuid1()))
+            self.set_network_name(self.network.name)
+            self.video.set_network_name(self.network.name)
+
+            super().start()
+
+            self.video.set_selenium_container_host(self.get_wrapped_container().short_id)
+            self.video.start()
+
+            return self
+
+        super().start()
+        return self
+
+    def stop(self, force=True, delete_volume=True) -> None:
+        if self.video:
+            # Video need to stop before remove
+            self.video.get_wrapped_container().stop()
+            self.video.stop(force, delete_volume)
+
+        super().stop(force, delete_volume)
+
+        if self.network:
+            self.get_docker_client().client.api.remove_network(self.network.id)
