@@ -1,0 +1,2 @@
+.. autoclass:: testcontainers.registry.DockerRegistryContainer
+    
