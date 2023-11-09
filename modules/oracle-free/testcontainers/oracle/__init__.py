@@ -27,7 +27,7 @@ class OracleDbContainer(DbContainer):
         super(OracleDbContainer, self).__init__(image=image, **kwargs)
 
         self.port = port
-        self.with_exposed_ports((self.port,))
+        self.with_exposed_ports(self.port)
 
         self.oracle_password = oracle_password or environ.get("ORACLE_PASSWORD")
         self.username = username or environ.get("APP_USER")
