@@ -16,7 +16,7 @@
 -e file:neo4j
 -e file:nginx
 -e file:opensearch
--e file:oracle
+-e file:oracle-free
 -e file:postgres
 -e file:rabbitmq
 -e file:redis

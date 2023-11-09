@@ -63,7 +63,7 @@
     # via -r requirements.in
 -e file:opensearch
     # via -r requirements.in
--e file:oracle
+-e file:oracle-free
     # via -r requirements.in
 -e file:postgres
     # via -r requirements.in
