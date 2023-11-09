@@ -14,6 +14,8 @@
     # via -r requirements.in
 -e file:compose
     # via -r requirements.in
+-e file:toxiproxy
+    # via -r requirements.in
 -e file:core
     # via
     #   -r requirements.in
