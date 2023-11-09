@@ -1,9 +1,9 @@
 from setuptools import setup, find_namespace_packages
 
-description = "Oracle component of testcontainers-python."
+description = "Oracle Database Free component of testcontainers-python."
 
 setup(
-    name="testcontainers-oracle",
+    name="testcontainers-oracle-free",
     version="0.0.1rc2",
     packages=find_namespace_packages(),
     description=description,
@@ -15,5 +15,5 @@ setup(
         "sqlalchemy",
         "oracledb",
     ],
-    python_requires=">=3.7",
+    python_requires=">=3.8",
 )
