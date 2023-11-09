@@ -63,7 +63,7 @@
     # via -r requirements.in
 -e file:opensearch
     # via -r requirements.in
--e file:oracle
+-e file:oracle-free
     # via -r requirements.in
 -e file:postgres
     # via -r requirements.in
@@ -129,7 +129,7 @@ cryptography==36.0.2
     #   paramiko
     #   pymysql
     #   secretstorage
-cx-oracle==8.3.0
+oracledb==1.4.1
     # via testcontainers-oracle
 deprecation==2.1.0
     # via python-keycloak
