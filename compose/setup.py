@@ -12,7 +12,7 @@ setup(
     url="https://github.com/testcontainers/testcontainers-python",
     install_requires=[
         "testcontainers-core",
-        "docker-compose",
+        # "docker-compose",
     ],
     python_requires=">=3.7",
 )
