@@ -10,6 +10,6 @@ from testcontainers.elasticsearch import ElasticSearchContainer
 def test_docker_run_elasticsearch(version):
     # adding the mem_limit as per: https://stackoverflow.com/a/75701019
     # could also add (but not necessary): .with_env('discovery.type', 'single-node')
-    with ElasticSearchContainer(f'elasticsearch:{version}', mem_limit='3G').with_env('discovery.type', 'single-node') as es:
+    with ElasticSearchContainer(f'elasticsearch:{version}', mem_limit='3G') as es:
         resp = urllib.request.urlopen(es.get_url())
         assert json.loads(resp.read().decode())['version']['number'] == version
