@@ -4,7 +4,9 @@ from testcontainers.selenium import BrowserWebDriverContainer
 from testcontainers.core.utils import is_arm
 
 
-@pytest.mark.parametrize("caps", [DesiredCapabilities.CHROME, DesiredCapabilities.FIREFOX], ids=['chrome', 'ff'])
+@pytest.mark.parametrize("caps",
+                         [DesiredCapabilities.CHROME, DesiredCapabilities.FIREFOX],
+                         ids=['chrome', 'ff'])
 def test_webdriver_container_container(caps):
     if is_arm():
         pytest.skip('https://github.com/SeleniumHQ/docker-selenium/issues/1076')
