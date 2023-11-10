@@ -63,7 +63,7 @@ class BrowserWebDriverContainer(DockerContainer):
     def _connect(self) -> webdriver.Remote:
         options = ArgOptions()
         caps = options.capabilities
-        for k, v in (self.capabilities or {}).items(): caps[k] = v  # noqa
+        for k, v in self.capabilities.items(): caps[k] = v  # noqa
 
         return webdriver.Remote(
             command_executor=(self.get_connection_url()),
