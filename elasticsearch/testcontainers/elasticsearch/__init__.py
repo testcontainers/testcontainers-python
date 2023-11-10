@@ -12,7 +12,7 @@
 #    under the License.
 import logging
 import re
-import urllib
+import urllib.request
 from typing import Dict
 from urllib.error import URLError
 
@@ -88,7 +88,7 @@ class ElasticSearchContainer(DockerContainer):
 
     @wait_container_is_ready(URLError)
     def _connect(self) -> None:
-        res = urllib.request.urlopen(self.get_url())
+        res = urllib.request.urlopen(self.get_url(), timeout=1)
         if res.status != 200:
             raise Exception()
 
