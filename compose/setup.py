@@ -12,6 +12,7 @@ setup(
     url="https://github.com/testcontainers/testcontainers-python",
     install_requires=[
         "testcontainers-core",
+        # docker compose support has been removed to fix dependency issues in the build
         # "docker-compose",
     ],
     python_requires=">=3.7",
