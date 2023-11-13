@@ -1,4 +1,3 @@
-"""
 import os
 from unittest.mock import patch
 
@@ -10,14 +9,9 @@ from testcontainers.core.exceptions import NoSuchPortExposed
 from testcontainers.core.waiting_utils import wait_for_logs
 
 ROOT = os.path.dirname(__file__)
-"""
 
 
-def test_can_spawn_service_via_compose():
-    assert 2 == 2
-
-
-"""
+@pytest.mark.skip(reason="docker compose support has been removed to fix dependency issues in the build")
 def test_can_spawn_service_via_compose():
     with DockerCompose(ROOT) as compose:
         host = compose.get_service_host("hub", 4444)
@@ -26,6 +20,7 @@ def test_can_spawn_service_via_compose():
         assert port == "4444"
 
 
+@pytest.mark.skip(reason="docker compose support has been removed to fix dependency issues in the build")
 def test_can_pull_images_before_spawning_service_via_compose():
     with DockerCompose(ROOT, pull=True) as compose:
         host = compose.get_service_host("hub", 4444)
@@ -34,6 +29,7 @@ def test_can_pull_images_before_spawning_service_via_compose():
         assert port == "4444"
 
 
+@pytest.mark.skip(reason="docker compose support has been removed to fix dependency issues in the build")
 def test_can_build_images_before_spawning_service_via_compose():
     with patch.object(DockerCompose, "_call_command") as call_mock:
         with DockerCompose(ROOT, build=True) as compose:
@@ -46,6 +42,7 @@ def test_can_build_images_before_spawning_service_via_compose():
     assert "--build" in docker_compose_cmd
 
 
+@pytest.mark.skip(reason="docker compose support has been removed to fix dependency issues in the build")
 def test_can_specify_services():
     with patch.object(DockerCompose, "_call_command") as call_mock:
         with DockerCompose(ROOT, services=["hub", "firefox"]) as compose:
@@ -59,6 +56,7 @@ def test_can_specify_services():
     assert "chrome" not in docker_compose_cmd
 
 
+@pytest.mark.skip(reason="docker compose support has been removed to fix dependency issues in the build")
 @pytest.mark.parametrize("should_run_hub", [
     [True],
     [False],
@@ -78,23 +76,27 @@ def test_can_run_specific_services(should_run_hub: bool):
                 assert compose.get_service_host("hub", 4444)
 
 
+@pytest.mark.skip(reason="docker compose support has been removed to fix dependency issues in the build")
 def test_can_throw_exception_if_no_port_exposed():
     with DockerCompose(ROOT) as compose:
         with pytest.raises(NoSuchPortExposed):
             compose.get_service_host("hub", 5555)
 
 
+@pytest.mark.skip(reason="docker compose support has been removed to fix dependency issues in the build")
 def test_compose_wait_for_container_ready():
     with DockerCompose(ROOT) as compose:
         docker = DockerClient()
         compose.wait_for("http://%s:4444/wd/hub" % docker.host())
 
 
+@pytest.mark.skip(reason="docker compose support has been removed to fix dependency issues in the build")
 def test_compose_can_wait_for_logs():
     with DockerCompose(filepath=ROOT, compose_file_name="docker-compose-4.yml") as compose:
         wait_for_logs(compose, "Hello from Docker!")
 
 
+@pytest.mark.skip(reason="docker compose support has been removed to fix dependency issues in the build")
 def test_can_parse_multiple_compose_files():
     with DockerCompose(filepath=ROOT,
                        compose_file_name=["docker-compose.yml", "docker-compose-2.yml"]) as compose:
@@ -109,6 +111,7 @@ def test_can_parse_multiple_compose_files():
         assert port == "4444"
 
 
+@pytest.mark.skip(reason="docker compose support has been removed to fix dependency issues in the build")
 def test_can_get_logs():
     with DockerCompose(ROOT) as compose:
         docker = DockerClient()
@@ -117,6 +120,7 @@ def test_can_get_logs():
         assert stdout, 'There should be something on stdout'
 
 
+@pytest.mark.skip(reason="docker compose support has been removed to fix dependency issues in the build")
 def test_can_pass_env_params_by_env_file():
     with DockerCompose(ROOT, compose_file_name='docker-compose-3.yml',
                        env_file='.env.test') as compose:
@@ -124,10 +128,10 @@ def test_can_pass_env_params_by_env_file():
         assert stdout.splitlines()[0], 'test_has_passed'
 
 
+@pytest.mark.skip(reason="docker compose support has been removed to fix dependency issues in the build")
 def test_can_exec_commands():
     with DockerCompose(ROOT) as compose:
         result = compose.exec_in_container('hub', ['echo', 'my_test'])
         assert result[0] == 'my_test\n', "The echo should be successful"
         assert result[1] == '', "stderr should be empty"
         assert result[2] == 0, 'The exit code should be successful'
-"""
