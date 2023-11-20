@@ -12,7 +12,7 @@
 #    under the License.
 
 from selenium import webdriver
-from selenium.webdriver.chrome.options import Options
+from selenium.webdriver.common.options import ArgOptions
 from testcontainers.core.container import DockerContainer
 from testcontainers.core.waiting_utils import wait_container_is_ready
 from typing import Optional
@@ -61,7 +61,7 @@ class BrowserWebDriverContainer(DockerContainer):
 
     @wait_container_is_ready(urllib3.exceptions.HTTPError)
     def _connect(self) -> webdriver.Remote:
-        options = Options()
+        options = ArgOptions()
         for key, value in self.capabilities.items():
             options.set_capability(key, value)
         return webdriver.Remote(
