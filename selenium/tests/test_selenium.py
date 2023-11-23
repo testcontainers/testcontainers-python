@@ -1,5 +1,6 @@
 import pytest
 from selenium.webdriver import DesiredCapabilities
+from selenium.webdriver.common.by import By
 from testcontainers.selenium import BrowserWebDriverContainer
 from testcontainers.core.utils import is_arm
 
@@ -11,8 +12,9 @@ def test_webdriver_container_container(caps):
 
     with BrowserWebDriverContainer(caps).maybe_emulate_amd64() as chrome:
         webdriver = chrome.get_driver()
-        webdriver.get("http://google.com")
-        webdriver.find_element("name", "q").send_keys("Hello")
+        webdriver.get("http://example.com")
+        header = webdriver.find_element(By.TAG_NAME, "h1").text
+        assert header == "Example Domain"
 
 
 def test_selenium_custom_image():
