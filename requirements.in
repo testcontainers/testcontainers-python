@@ -2,7 +2,6 @@
 -e file:azurite
 -e file:clickhouse
 -e file:core
--e file:compose
 -e file:elasticsearch
 -e file:google
 -e file:kafka
