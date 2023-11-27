@@ -10,6 +10,7 @@
 #    WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the
 #    License for the specific language governing permissions and limitations
 #    under the License.
+import uuid
 from typing import Optional
 
 from testcontainers.core.docker_client import DockerClient
@@ -17,11 +18,11 @@ from testcontainers.core.docker_client import DockerClient
 
 class Network(object):
     """
-    Network context manager to conveniently connect containers.
+    Network context manager for programmatically connecting containers.
     """
 
-    def __init__(self, name, docker_client_kw: Optional[dict] = None, **kwargs) -> None:
-        self.name = name
+    def __init__(self, docker_client_kw: Optional[dict] = None, **kwargs) -> None:
+        self.name = str(uuid.uuid4())
         self._docker = DockerClient(**(docker_client_kw or {}))
         self._kwargs = kwargs
 
