@@ -20,6 +20,7 @@ testcontainers-python facilitates the use of Docker containers for functional an
     clickhouse/README
     elasticsearch/README
     google/README
+    greptimedb/README
     kafka/README
     keycloak/README
     localstack/README

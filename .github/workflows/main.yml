@@ -27,6 +27,7 @@ jobs:
         - core
         - elasticsearch
         - google
+        - greptimedb
         - kafka
         - keycloak
         - localstack
