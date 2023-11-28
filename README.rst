@@ -7,6 +7,8 @@ testcontainers-python
    :target: https://pypi.python.org/pypi/testcontainers
 .. image:: https://readthedocs.org/projects/testcontainers-python/badge/?version=latest
    :target: http://testcontainers-python.readthedocs.io/en/latest/?badge=latest
+.. image:: https://github.com/codespaces/badge.svg
+   :target: https://codespaces.new/testcontainers/testcontainers-python
 
 testcontainers-python facilitates the use of Docker containers for functional and integration testing. The collection of packages currently supports the following features.
 
