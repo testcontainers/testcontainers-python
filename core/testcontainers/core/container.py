@@ -33,6 +33,7 @@ class DockerContainer:
         self._command = None
         self._name = None
         self._network: Optional[Network] = None
+        self._network_aliases: Optional[list] = None
         self._kwargs = kwargs
 
     def with_env(self, key: str, value: str) -> 'DockerContainer':
@@ -50,6 +51,10 @@ class DockerContainer:
 
     def with_network(self, network: Network) -> 'DockerContainer':
         self._network = network
+        return self
+
+    def with_network_aliases(self, *aliases) -> 'DockerContainer':
+        self._network_aliases = aliases
         return self
 
     def with_kwargs(self, **kwargs) -> 'DockerContainer':
@@ -70,7 +75,7 @@ class DockerContainer:
         )
         logger.info("Container started: %s", self._container.short_id)
         if self._network:
-            self._network.connect(self._container.id)
+            self._network.connect(self._container.id, self._network_aliases)
         return self
 
     def stop(self, force=True, delete_volume=True) -> None:
