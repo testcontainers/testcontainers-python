@@ -12,4 +12,4 @@ def test_docker_run_greptimedb():
         with engine.begin() as connection:
             result = connection.execute(sqlalchemy.text("select version()"))
             for row in result:
-                assert row[0].startswith("v0.4.3")
+                assert row[0].endswith("greptime")

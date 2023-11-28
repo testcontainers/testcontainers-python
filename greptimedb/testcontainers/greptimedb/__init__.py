@@ -42,7 +42,7 @@ class GreptimeDBContainer(DbContainer):
 
     def __init__(
         self,
-        image: str = "greptimedb:latest",
+        image: str = "greptime/greptimedb:latest",
         username: Optional[str] = None,
         password: Optional[str] = None,
         dbname: Optional[str] = None,
@@ -68,6 +68,14 @@ class GreptimeDBContainer(DbContainer):
             self.grpc_port,
             self.mysql_port,
             self.pg_port,
+        )
+
+        self.with_command(
+            "standalone start"
+            + f" --http-addr=0.0.0.0:{self.http_port}"
+            + f" --rpc-addr=0.0.0.0:{self.grpc_port}"
+            + f" --mysql-addr=0.0.0.0:{self.mysql_port}"
+            + f" --postgres-addr=0.0.0.0:{self.pg_port}"
         )
 
     def _configure(self) -> None:
