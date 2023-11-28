@@ -26,6 +26,9 @@ class Network(object):
         self._docker = DockerClient(**(docker_client_kw or {}))
         self._kwargs = kwargs
 
+    def connect(self, container_id: str):
+        self._network.connect(container_id)
+
     def remove(self) -> None:
         self._network.remove()
 

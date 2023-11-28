@@ -15,9 +15,9 @@ def test_network_gets_created_and_cleaned_up():
 def test_containers_can_communicate_over_network():
     with Network() as network:
         with DockerContainer("nginx:alpine-slim").with_name(
-                "alpine1").with_kwargs(network=network.name) as alpine1:
+                "alpine1").with_network(network) as alpine1:
             with DockerContainer("nginx:alpine-slim").with_name(
-                    "alpine2").with_kwargs(network=network.name) as alpine2:
+                    "alpine2").with_network(network) as alpine2:
                 status, output = alpine1.exec("ping -c 1 alpine2")
                 assert status == 0
                 assert "64 bytes" in str(output)

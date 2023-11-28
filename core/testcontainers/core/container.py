@@ -2,6 +2,7 @@ from docker.models.containers import Container
 import os
 from typing import Iterable, Optional, Tuple
 
+from .network import Network
 from .waiting_utils import wait_container_is_ready
 from .docker_client import DockerClient
 from .exceptions import ContainerStartException
@@ -31,6 +32,7 @@ class DockerContainer:
         self._container = None
         self._command = None
         self._name = None
+        self._network: Optional[Network] = None
         self._kwargs = kwargs
 
     def with_env(self, key: str, value: str) -> 'DockerContainer':
@@ -44,6 +46,10 @@ class DockerContainer:
     def with_exposed_ports(self, *ports: Iterable[int]) -> 'DockerContainer':
         for port in ports:
             self.ports[port] = None
+        return self
+
+    def with_network(self, network: Network) -> 'DockerContainer':
+        self._network = network
         return self
 
     def with_kwargs(self, **kwargs) -> 'DockerContainer':
@@ -63,6 +69,8 @@ class DockerContainer:
             name=self._name, volumes=self.volumes, **self._kwargs
         )
         logger.info("Container started: %s", self._container.short_id)
+        if self._network:
+            self._network.connect(self._container.id)
         return self
 
     def stop(self, force=True, delete_volume=True) -> None:
