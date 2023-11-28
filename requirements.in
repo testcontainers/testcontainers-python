@@ -2,7 +2,6 @@
 -e file:azurite
 -e file:clickhouse
 -e file:core
--e file:compose
 -e file:elasticsearch
 -e file:google
 -e file:kafka
@@ -22,7 +21,6 @@
 -e file:redis
 -e file:selenium
 -e file:k3s
-codecov>=2.1.0
 cryptography<37
 flake8<3.8.0  # 3.8.0 adds a dependency on importlib-metadata which conflicts with other packages.
 pg8000

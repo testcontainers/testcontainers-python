@@ -1,12 +1,6 @@
-import os
 from pathlib import Path
 
 from testcontainers.core.container import DockerContainer
-
-
-def setup_module(m):
-    os.environ["MYSQL_USER"] = "demo"
-    os.environ["MYSQL_DATABASE"] = "custom_db"
 
 
 def test_docker_custom_image():

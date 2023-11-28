@@ -13,6 +13,7 @@
 from os import environ
 from typing import Optional
 from testcontainers.core.generic import DbContainer
+from testcontainers.core.utils import raise_for_deprecated_parameter
 
 
 class MySqlContainer(DbContainer):
@@ -37,32 +38,36 @@ class MySqlContainer(DbContainer):
             ...         result = connection.execute(sqlalchemy.text("select version()"))
             ...         version, = result.fetchone()
     """
-
-    def __init__(self, image: str = "mysql:latest", MYSQL_USER: Optional[str] = None,
-                 MYSQL_ROOT_PASSWORD: Optional[str] = None, MYSQL_PASSWORD: Optional[str] = None,
-                 MYSQL_DATABASE: Optional[str] = None, **kwargs) -> None:
+    def __init__(self, image: str = "mysql:latest", username: Optional[str] = None,
+                 root_password: Optional[str] = None, password: Optional[str] = None,
+                 dbname: Optional[str] = None, port: int = 3306, **kwargs) -> None:
+        raise_for_deprecated_parameter(kwargs, "MYSQL_USER", "username")
+        raise_for_deprecated_parameter(kwargs, "MYSQL_ROOT_PASSWORD", "root_password")
+        raise_for_deprecated_parameter(kwargs, "MYSQL_PASSWORD", "password")
+        raise_for_deprecated_parameter(kwargs, "MYSQL_DATABASE", "dbname")
         super(MySqlContainer, self).__init__(image, **kwargs)
-        self.port_to_expose = 3306
-        self.with_exposed_ports(self.port_to_expose)
-        self.MYSQL_USER = MYSQL_USER or environ.get('MYSQL_USER', 'test')
-        self.MYSQL_ROOT_PASSWORD = MYSQL_ROOT_PASSWORD or environ.get('MYSQL_ROOT_PASSWORD', 'test')
-        self.MYSQL_PASSWORD = MYSQL_PASSWORD or environ.get('MYSQL_PASSWORD', 'test')
-        self.MYSQL_DATABASE = MYSQL_DATABASE or environ.get('MYSQL_DATABASE', 'test')
 
-        if self.MYSQL_USER == 'root':
-            self.MYSQL_ROOT_PASSWORD = self.MYSQL_PASSWORD
+        self.port = port
+        self.with_exposed_ports(self.port)
+        self.username = username or environ.get('MYSQL_USER', 'test')
+        self.root_password = root_password or environ.get('MYSQL_ROOT_PASSWORD', 'test')
+        self.password = password or environ.get('MYSQL_PASSWORD', 'test')
+        self.dbname = dbname or environ.get('MYSQL_DATABASE', 'test')
+
+        if self.username == 'root':
+            self.root_password = self.password
 
     def _configure(self) -> None:
-        self.with_env("MYSQL_ROOT_PASSWORD", self.MYSQL_ROOT_PASSWORD)
-        self.with_env("MYSQL_DATABASE", self.MYSQL_DATABASE)
+        self.with_env("MYSQL_ROOT_PASSWORD", self.root_password)
+        self.with_env("MYSQL_DATABASE", self.dbname)
 
-        if self.MYSQL_USER != "root":
-            self.with_env("MYSQL_USER", self.MYSQL_USER)
-            self.with_env("MYSQL_PASSWORD", self.MYSQL_PASSWORD)
+        if self.username != "root":
+            self.with_env("MYSQL_USER", self.username)
+            self.with_env("MYSQL_PASSWORD", self.password)
 
     def get_connection_url(self) -> str:
         return super()._create_connection_url(dialect="mysql+pymysql",
-                                              username=self.MYSQL_USER,
-                                              password=self.MYSQL_PASSWORD,
-                                              db_name=self.MYSQL_DATABASE,
-                                              port=self.port_to_expose)
+                                              username=self.username,
+                                              password=self.password,
+                                              dbname=self.dbname,
+                                              port=self.port)
