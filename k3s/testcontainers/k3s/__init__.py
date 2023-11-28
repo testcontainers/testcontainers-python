@@ -24,8 +24,6 @@ class K3SContainer(DockerContainer):
 
         .. doctest::
 
-            >>> import json
-            >>> import urllib
             >>> import yaml
             >>> from testcontainers.k3s import K3SContainer
             >>> from kubernetes import client, config
