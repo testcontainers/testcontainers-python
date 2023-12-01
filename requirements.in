@@ -4,6 +4,7 @@
 -e file:core
 -e file:elasticsearch
 -e file:google
+-e file:iris
 -e file:kafka
 -e file:keycloak
 -e file:localstack
