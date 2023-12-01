@@ -1,8 +1,8 @@
+# type: ignore
 import subprocess
 from typing import Iterable, List, Optional, Tuple, Union
 
 import requests
-
 from testcontainers.core.exceptions import NoSuchPortExposed
 from testcontainers.core.waiting_utils import wait_container_is_ready
 
@@ -14,6 +14,9 @@ class DockerCompose:
     Args:
         filepath: Relative directory containing the docker compose configuration file.
         compose_file_name: File name of the docker compose configuration file.
+        compose_command: The command to use for docker compose. If not specified, a call to
+            docker compose --help will be made to determine the correct command to use.
+            If docker compose is not installed, docker-compose will be used.
         pull: Pull images before launching environment.
         build: Build images referenced in the configuration file.
         env_file: Path to an env file containing environment variables to pass to docker compose.
@@ -45,21 +48,19 @@ class DockerCompose:
         self,
         filepath: str,
         compose_file_name: Union[str, Iterable] = "docker-compose.yml",
+        compose_command: str = None,
         pull: bool = False,
         build: bool = False,
         env_file: Optional[str] = None,
         services: Optional[List[str]] = None,
     ) -> None:
         self.filepath = filepath
-        self.compose_file_names = (
-            [compose_file_name]
-            if isinstance(compose_file_name, str)
-            else list(compose_file_name)
-        )
+        self.compose_file_names = [compose_file_name] if isinstance(compose_file_name, str) else list(compose_file_name)
         self.pull = pull
         self.build = build
         self.env_file = env_file
         self.services = services
+        self.compose_command = self._get_compose_command(compose_command)
 
     def __enter__(self) -> "DockerCompose":
         self.start()
@@ -68,6 +69,29 @@ class DockerCompose:
     def __exit__(self, exc_type, exc_val, exc_tb) -> None:
         self.stop()
 
+    def _get_compose_command(self, command):
+        """
+        Returns the basecommand parts used for the docker compose commands
+        depending on the docker compose api.
+
+        Returns
+        -------
+        list[str]
+            The docker compose command parts
+        """
+        if command:
+            return command.split(" ")
+
+        if (
+            subprocess.run(
+                ["docker", "compose", "--help"], stdout=subprocess.DEVNULL, stderr=subprocess.STDOUT
+            ).returncode
+            == 0
+        ):
+            return ["docker", "compose"]
+
+        return ["docker-compose"]
+
     def docker_compose_command(self) -> List[str]:
         """
         Returns command parts used for the docker compose commands
@@ -75,7 +99,7 @@ class DockerCompose:
         Returns:
             cmd: Docker compose command parts.
         """
-        docker_compose_cmd = ["docker-compose"]
+        docker_compose_cmd = self.compose_command.copy()
         for file in self.compose_file_names:
             docker_compose_cmd += ["-f", file]
         if self.env_file:
@@ -95,7 +119,6 @@ class DockerCompose:
             up_cmd.append("--build")
         if self.services:
             up_cmd.extend(self.services)
-
         self._call_command(cmd=up_cmd)
 
     def stop(self) -> None:
@@ -105,7 +128,7 @@ class DockerCompose:
         down_cmd = self.docker_compose_command() + ["down", "-v"]
         self._call_command(cmd=down_cmd)
 
-    def get_logs(self) -> Tuple[bytes, bytes]:
+    def get_logs(self) -> Tuple[str, str]:
         """
         Returns all log output from stdout and stderr
 
@@ -122,9 +145,7 @@ class DockerCompose:
         )
         return result.stdout, result.stderr
 
-    def exec_in_container(
-        self, service_name: str, command: List[str]
-    ) -> Tuple[str, str, int]:
+    def exec_in_container(self, service_name: str, command: List[str]) -> Tuple[str, str]:
         """
         Executes a command in the container of one of the services.
 
@@ -136,20 +157,14 @@ class DockerCompose:
             stdout: Standard output stream.
             stderr: Standard error stream.
         """
-        exec_cmd = (
-            self.docker_compose_command() + ["exec", "-T", service_name] + command
-        )
+        exec_cmd = self.docker_compose_command() + ["exec", "-T", service_name] + command
         result = subprocess.run(
             exec_cmd,
             cwd=self.filepath,
             stdout=subprocess.PIPE,
             stderr=subprocess.PIPE,
         )
-        return (
-            result.stdout.decode("utf-8"),
-            result.stderr.decode("utf-8"),
-            result.returncode,
-        )
+        return result.stdout.decode("utf-8"), result.stderr.decode("utf-8"), result.returncode
 
     def get_service_port(self, service_name: str, port: int) -> int:
         """
@@ -179,15 +194,16 @@ class DockerCompose:
 
     def _get_service_info(self, service: str, port: int) -> List[str]:
         port_cmd = self.docker_compose_command() + ["port", service, str(port)]
-        output = subprocess.check_output(port_cmd, cwd=self.filepath).decode("utf-8")
+        try:
+            output = subprocess.check_output(port_cmd, cwd=self.filepath).decode("utf-8")
+        except subprocess.CalledProcessError as e:
+            raise NoSuchPortExposed(str(e.stderr))
         result = str(output).rstrip().split(":")
         if len(result) != 2 or not all(result):
             raise NoSuchPortExposed(f"port {port} is not exposed for service {service}")
         return result
 
-    def _call_command(
-        self, cmd: Union[str, List[str]], filepath: Optional[str] = None
-    ) -> None:
+    def _call_command(self, cmd: Union[str, List[str]], filepath: Optional[str] = None) -> None:
         if filepath is None:
             filepath = self.filepath
         subprocess.call(cmd, cwd=filepath)
