@@ -41,6 +41,8 @@
     #   testcontainers-rabbitmq
     #   testcontainers-redis
     #   testcontainers-selenium
+-e file:cosmosdb
+    # via -r requirements.in
 -e file:elasticsearch
     # via -r requirements.in
 -e file:google
@@ -89,6 +91,8 @@ attrs==23.1.0
     #   outcome
     #   trio
 azure-core==1.27.0
+    # via azure-storage-blob
+azure-cosmos==4.3.0
     # via azure-storage-blob
 azure-storage-blob==12.16.0
     # via testcontainers-azurite

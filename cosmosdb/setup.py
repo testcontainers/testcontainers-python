@@ -1,9 +1,9 @@
 from setuptools import setup, find_namespace_packages
 
-description = "ToxiProxy component of testcontainers-python."
+description = "CosmoDB component of testcontainers-python."
 
 setup(
-    name="testcontainers-toxiproxy",
+    name="testcontainers-cosmosdb",
     version="0.0.1rc1",
     packages=find_namespace_packages(),
     description=description,
@@ -12,7 +12,7 @@ setup(
     url="https://github.com/jbt-omniblu/testcontainers-python",
     install_requires=[
         "testcontainers-core",
-        "toxiproxy @ git+https://github.com/jbt-omniblu/toxiproxy-python.git@update#egg=toxiproxy"
+        "cosmosdb @ git+https://github.com/jbt-omniblu/cosmosdb-python.git@update#egg=cosmosdb"
     ],
     python_requires=">=3.7",
 )

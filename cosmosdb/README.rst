@@ -1,1 +1,1 @@
-.. autoclass:: testcontainers.toxiproxy.ToxiProxyContainer
+.. autoclass:: testcontainers.cosmosdb.CosmosDbEmulatorContainer

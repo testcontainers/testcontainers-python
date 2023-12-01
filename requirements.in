@@ -3,6 +3,7 @@
 -e file:clickhouse
 -e file:core
 -e file:compose
+-e file:cosmosdb
 -e file:elasticsearch
 -e file:google
 -e file:kafka
