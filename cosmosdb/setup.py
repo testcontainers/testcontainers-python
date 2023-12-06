@@ -12,7 +12,8 @@ setup(
     url="https://github.com/jbt-omniblu/testcontainers-python",
     install_requires=[
         "testcontainers-core",
-        "cosmosdb @ git+https://github.com/jbt-omniblu/cosmosdb-python.git@update#egg=cosmosdb"
+        "azure-cosmos",
+        "azure.core"
     ],
     python_requires=">=3.7",
 )
