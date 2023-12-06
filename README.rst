@@ -75,11 +75,15 @@ When trying to launch a testcontainer from within a Docker container, e.g., in c
 Development and Contributing
 ----------------------------
 
-We recommend you use a `virtual environment <https://virtualenv.pypa.io/en/stable/>`_ for development (:code:`python>=3.7` is required). After setting up your virtual environment, you can install all dependencies and test the installation by running the following snippet.
+The package dependencies are defined in the requirements.in (project) and setup.py (extensions) files. They become compiled with `pip-tools <https://github.com/jazzband/pip-tools>`_
+and are provided in the `requirements directory <https://github.com/testcontainers/testcontainers-python/tree/main/requirements>`_ for different operating systems and Python versions.
+
+We recommend you use a `virtual environment <https://virtualenv.pypa.io/en/stable/>`_ for development (:code:`python>=3.7` is required).
+After setting up your virtual environment and activating it, you can install all dependencies and test the installation by running the following snippet.
 
 .. code-block:: bash
 
-    pip install -r requirements/[your python version].txt
+    pip install -r requirements/[your os and python version].txt
     pytest -s
 
 Package Structure
@@ -110,4 +114,4 @@ Testcontainers is a collection of `implicit namespace packages <https://peps.pyt
 Contributing a New Feature
 ^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-You want to contribute a new feature or container? Great! You can do that in six steps as outlined `here <https://github.com/testcontainers/testcontainers-python/blob/main/.github/PULL_REQUEST_TEMPLATE/new_container.md>__`.
+You want to contribute a new feature or container? Great! You can do that in six steps as outlined `in our pull request template <https://github.com/testcontainers/testcontainers-python/blob/main/.github/PULL_REQUEST_TEMPLATE/new_container.md>`_.
