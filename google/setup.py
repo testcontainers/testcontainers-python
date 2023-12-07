@@ -4,7 +4,7 @@ description = "Google Cloud Platform component of testcontainers-python."
 
 setup(
     name="testcontainers-gcp",
-    version="0.0.1rc1",
+    version="0.0.2rc1",
     packages=find_namespace_packages(),
     description=description,
     long_description=description,
