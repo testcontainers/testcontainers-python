@@ -7,6 +7,8 @@ testcontainers-python
    :target: https://pypi.python.org/pypi/testcontainers
 .. image:: https://readthedocs.org/projects/testcontainers-python/badge/?version=latest
    :target: http://testcontainers-python.readthedocs.io/en/latest/?badge=latest
+.. image:: https://github.com/codespaces/badge.svg
+   :target: https://codespaces.new/testcontainers/testcontainers-python
 
 testcontainers-python facilitates the use of Docker containers for functional and integration testing. The collection of packages currently supports the following features.
 
@@ -16,7 +18,6 @@ testcontainers-python facilitates the use of Docker containers for functional an
     arangodb/README
     azurite/README
     clickhouse/README
-    compose/README
     elasticsearch/README
     google/README
     kafka/README
@@ -35,6 +36,7 @@ testcontainers-python facilitates the use of Docker containers for functional an
     rabbitmq/README
     redis/README
     selenium/README
+    k3s/README
 
 Getting Started
 ---------------

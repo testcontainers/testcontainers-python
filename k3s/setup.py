@@ -1,9 +1,9 @@
 from setuptools import setup, find_namespace_packages
 
-description = "Docker Compose component of testcontainers-python."
+description = "K3S component of testcontainers-python."
 
 setup(
-    name="testcontainers-compose",
+    name="testcontainers-k3s",
     version="0.0.1rc1",
     packages=find_namespace_packages(),
     description=description,
@@ -12,7 +12,8 @@ setup(
     url="https://github.com/testcontainers/testcontainers-python",
     install_requires=[
         "testcontainers-core",
-        "docker-compose",
+        "kubernetes",
+        "pyyaml"
     ],
     python_requires=">=3.7",
 )

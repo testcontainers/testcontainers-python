@@ -24,7 +24,6 @@ jobs:
         - arangodb
         - azurite
         - clickhouse
-        - compose
         - core
         - elasticsearch
         - google
@@ -45,6 +44,7 @@ jobs:
         - rabbitmq
         - redis
         - selenium
+        - k3s
     runs-on: ${{ matrix.runtime.machine }}
     steps:
       - uses: actions/checkout@v3
