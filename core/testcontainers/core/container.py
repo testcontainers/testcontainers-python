@@ -1,11 +1,12 @@
-from docker.models.containers import Container
 import os
 from typing import Iterable, Optional, Tuple
 
-from .waiting_utils import wait_container_is_ready
-from .docker_client import DockerClient
-from .exceptions import ContainerStartException
-from .utils import setup_logger, inside_container, is_arm
+from docker.models.containers import Container
+
+from testcontainers.core.docker_client import DockerClient
+from testcontainers.core.exceptions import ContainerStartException
+from testcontainers.core.utils import setup_logger, inside_container, is_arm
+from testcontainers.core.waiting_utils import wait_container_is_ready
 
 logger = setup_logger(__name__)
 

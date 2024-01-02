@@ -12,10 +12,10 @@
 #    under the License.
 from typing import Optional
 
-from .container import DockerContainer
-from .exceptions import ContainerStartException
-from .utils import raise_for_deprecated_parameter
-from .waiting_utils import wait_container_is_ready
+from testcontainers.core.container import DockerContainer
+from testcontainers.core.exceptions import ContainerStartException
+from testcontainers.core.utils import raise_for_deprecated_parameter
+from testcontainers.core.waiting_utils import wait_container_is_ready
 
 ADDITIONAL_TRANSIENT_ERRORS = []
 try:
