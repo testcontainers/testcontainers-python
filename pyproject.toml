@@ -33,6 +33,7 @@ packages = [
     { include = "testcontainers", from = "modules/clickhouse" },
     { include = "testcontainers", from = "modules/elasticsearch" },
     { include = "testcontainers", from = "modules/google" },
+    { include = "testcontainers", from = "modules/influxdb" },
     { include = "testcontainers", from = "modules/k3s" },
     { include = "testcontainers", from = "modules/kafka" },
     { include = "testcontainers", from = "modules/keycloak" },
