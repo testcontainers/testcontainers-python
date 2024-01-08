@@ -14,6 +14,7 @@
 from os import getenv
 from typing import Dict, Optional
 
+from influxdb import InfluxDBClient as InfluxDBClientV1
 from requests import get
 from requests.exceptions import ConnectionError, ReadTimeout
 
@@ -106,3 +107,21 @@ class InfluxDbContainer(DockerContainer):
         self._health_check()
 
         return self
+
+    def get_client_v1(self, **client_kwargs) -> InfluxDBClientV1:
+        """
+        Returns an instance of the influxdb client, for InfluxDB 1.x versions.
+        Note that this client is not maintained anymore, but it is the only
+        official client available for 1.x InfluxDB versions:
+        - https://github.com/influxdata/influxdb-python
+        - https://pypi.org/project/influxdb/
+
+        To some extent, you can use the v2 client with InfluxDB v1.8+:
+        - https://github.com/influxdata/influxdb-client-python#influxdb-18-api-compatibility
+        """
+
+        return InfluxDBClientV1(
+            self.get_container_host_ip(),
+            self.get_exposed_port(self.container_port),
+            **client_kwargs
+        )
