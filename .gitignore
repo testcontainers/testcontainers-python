@@ -73,3 +73,6 @@ venv
 .python-version
 .env
 .github-token
+
+/cosmos_emulator.crt
+/cosmos_emulator.key

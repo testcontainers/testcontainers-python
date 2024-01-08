@@ -7,7 +7,7 @@ def test_cosmosdb_emulator():
     with CosmosDbEmulatorContainer() as cosmos:
 
         # Create a new cosmos database as well as container
-        container_client: ContainerProxy = cosmos.boostrap_container(db_name="mydb",
+        container_client: ContainerProxy = cosmos.bootstrap_container(db_name="mydb",
                                                                      container_name="mycontainer",
                                                                      container_partition_key="id")
 
