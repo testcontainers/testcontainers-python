@@ -22,7 +22,7 @@ class CosmosDbEmulatorContainer(DockerContainer):
         - Turn IP_ADDRESS into your actually local ip address on the network
         - Add the SSL code
     """
-    IP_ADDRESS = 'https://172.21.80.1'
+    IP_ADDRESS = 'https://127.0.0.1'
     SSL_CERT_FILE = 'cosmos_emulator.crt'
     SSL_KEY_FILE = 'cosmos_emulator.key'
 
