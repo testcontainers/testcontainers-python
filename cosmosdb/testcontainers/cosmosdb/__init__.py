@@ -17,11 +17,6 @@ class CosmosDbEmulatorContainer(DockerContainer):
     AZURE_COSMOS_EMULATOR_ENABLE_DATA_PERSISTENCE = False
     AZURE_COSMOS_EMULATOR_IP_ADDRESS_OVERRIDE = "127.0.0.1"
     WEBSITE_DYNAMIC_CACHE = 0
-    """
-        - Only add AZURE_COSMOS_EMULATOR_IP_ADDRESS_OVERRIDE
-        - Turn IP_ADDRESS into your actually local ip address on the network
-        - Add the SSL code
-    """
     IP_ADDRESS = 'https://127.0.0.1'
     SSL_CERT_FILE = 'cosmos_emulator.crt'
     SSL_KEY_FILE = 'cosmos_emulator.key'
@@ -81,19 +76,11 @@ class CosmosDbEmulatorContainer(DockerContainer):
 
     def _configure(self):
         self._generate_self_signed_cert(self.IP_ADDRESS)
-        # I would experiment leaving one or the other, might not be needed completely
-        self.with_volume_mapping(os.path.abspath(self.SSL_CERT_FILE), '/etc/ssl/certs' + self.SSL_CERT_FILE)
-        self.with_volume_mapping(os.path.abspath(self.SSL_KEY_FILE), '/etc/ssl/certs' + self.SSL_KEY_FILE)
         self.with_volume_mapping(os.path.abspath(self.SSL_CERT_FILE), '/bin/bin/bin/cosmos' + self.SSL_CERT_FILE)
         self.with_volume_mapping(os.path.abspath(self.SSL_KEY_FILE), '/bin/bin/bin/cosmos' + self.SSL_KEY_FILE)
 
-        # Additional Ports required by the emulator
-        for p in range(10250, 10255):
+        for p in range(10251, 10254):
             self.with_bind_ports(p, p)
-        self.with_bind_ports(8900, 8900)
-        self.with_bind_ports(8901, 8901)
-        self.with_bind_ports(8902, 8902)
-        self.with_bind_ports(10350, 10350)
         self.with_bind_ports(self.port_to_expose, self.port_to_expose)
 
         self.with_env("AZURE_COSMOS_EMULATOR_PARTITION_COUNT", self.AZURE_COSMOS_EMULATOR_PARTITION_COUNT)
