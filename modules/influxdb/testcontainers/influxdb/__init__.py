@@ -12,9 +12,10 @@
 #    under the License.
 
 from os import getenv
-from typing import Dict, Optional
+from typing import Dict, Optional, Tuple
 
 from influxdb import InfluxDBClient as InfluxDBClientV1
+from influxdb_client import InfluxDBClient as InfluxDBClientV2, Organization
 from requests import get
 from requests.exceptions import ConnectionError, ReadTimeout
 
@@ -47,12 +48,13 @@ class InfluxDbContainer(DockerContainer):
 
         # parameters used by the Docker container. Explicitely set them via the constructor or by their
         # respective environment variables
+        init_mode: Optional[str] = None,
+        admin_token: Optional[str] = None,
         username: Optional[str] = None,
         password: Optional[str] = None,
         org: Optional[str] = None,
         bucket: Optional[str] = None,
         retention: Optional[str] = None,
-        admin_token: Optional[str] = None,
     ):
         super().__init__(image=image)
         self.container_port = container_port
@@ -60,17 +62,19 @@ class InfluxDbContainer(DockerContainer):
         self.with_bind_ports(self.container_port, self.host_port)
 
         configuration = {
+            "DOCKER_INFLUXDB_INIT_MODE": init_mode,
+            "DOCKER_INFLUXDB_INIT_ADMIN_TOKEN": admin_token,
             "DOCKER_INFLUXDB_INIT_USERNAME": username,
             "DOCKER_INFLUXDB_INIT_PASSWORD": password,
             "DOCKER_INFLUXDB_INIT_ORG": org,
             "DOCKER_INFLUXDB_INIT_BUCKET": bucket,
             "DOCKER_INFLUXDB_INIT_RETENTION": retention,
-            "DOCKER_INFLUXDB_INIT_ADMIN_TOKEN": admin_token,
         }
         for env_key, env_param in configuration.items():
             env_value = env_param or getenv(env_key)
             if env_value:
-                self.with_env(env_value)
+                self.with_env(env_key, env_value)
+                
 
     def get_url(self) -> str:
         """
@@ -125,3 +129,24 @@ class InfluxDbContainer(DockerContainer):
             self.get_exposed_port(self.container_port),
             **client_kwargs
         )
+
+    def get_client_v2(self, token: str = None, org_name:str = None, **client_kwargs) -> Tuple[InfluxDBClientV2, Organization]:
+        """
+        Returns an instance of the influxdb client with the associated test organization created
+        when the container is spawn; for InfluxDB 2.x versions.
+        - https://github.com/influxdata/influxdb-client-python
+        - https://pypi.org/project/influxdb-client/
+        """
+
+        influxclient_v2 = InfluxDBClientV2(
+            self.get_url(),
+            token=token,
+            **client_kwargs
+        )
+
+        if org_name is None:
+            return influxclient_v2, None
+
+        orgs = influxclient_v2.organizations_api().find_organizations(org=org_name)
+
+        return influxclient_v2, orgs[0]

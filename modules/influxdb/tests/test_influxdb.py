@@ -1,8 +1,8 @@
 from influxdb.resultset import ResultSet
+from influxdb_client import Bucket
 from pytest import mark
 
 from testcontainers.influxdb import InfluxDbContainer
-
 
 
 @mark.parametrize(
@@ -58,3 +58,26 @@ def test_get_client_v1():
         datapoint = datapoints[0]
         assert datapoint['time'] == "1978-11-30T09:30:00Z"
         assert datapoint['value'] == 0.42
+
+def test_get_client_v2():
+    with InfluxDbContainer(
+        "influxdb:2.7",
+        init_mode="setup",
+        username="root",
+        password="secret-password",
+        org="testcontainers-org",
+        bucket="my-init-bucket",
+        admin_token="secret-token"
+    ) as influxdb_container:
+        client_v2, org = influxdb_container.get_client_v2(token="secret-token", org_name="testcontainers-org")
+        assert client_v2.ping(), "the client can connect to the InfluxDB instance"
+
+        # ensures that the bucket does not exist yet
+        buckets_api = client_v2.buckets_api()
+        bucket: Bucket = buckets_api.find_bucket_by_name("testcontainers")
+        assert bucket is None
+
+        # creates and retrieves the test bucket
+        buckets_api.create_bucket(bucket_name="testcontainers", org=org)
+        bucket: Bucket = buckets_api.find_bucket_by_name("testcontainers")
+        assert bucket.name == "testcontainers"
