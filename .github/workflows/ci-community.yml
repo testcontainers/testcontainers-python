@@ -47,7 +47,9 @@ jobs:
 #          - k3s
     runs-on: ${{ matrix.runtime.machine }}
     steps:
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v4
+      - name: Setup Poetry
+        run: pipx install poetry
       - name: Setup python ${{ matrix.runtime.python-version }}
         uses: actions/setup-python@v4
         with:

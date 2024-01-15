@@ -24,9 +24,11 @@ jobs:
 #          python-version: "3.11"
     runs-on: ${{ matrix.runtime.machine }}
     steps:
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v4
+      - name: Setup Poetry
+        run: pipx install poetry
       - name: Setup python ${{ matrix.runtime.python-version }}
-        uses: actions/setup-python@v4
+        uses: actions/setup-python@v5
         with:
           python-version: ${{ matrix.runtime.python-version }}
           cache: poetry
