@@ -1,0 +1,59 @@
+# Contrinuous Integration for community modules
+
+name: testcontainers core
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+
+jobs:
+  build:
+    strategy:
+      matrix:
+        runtime:
+#          - machine: ubuntu-latest
+#            python-version: "3.7"
+#          - machine: ubuntu-latest
+#            python-version: "3.8"
+          - machine: ubuntu-latest
+            python-version: "3.9"
+#          - machine: ubuntu-latest
+#            python-version: "3.10"
+#          - machine: ubuntu-latest
+#            python-version: "3.11"
+        module:
+          - arangodb
+#          - azurite
+#          - clickhouse
+#          - elasticsearch
+#          - google
+#          - kafka
+#          - keycloak
+          - localstack
+#          - meta
+#          - minio
+#          - mongodb
+#          - mssql
+#          - mysql
+#          - neo4j
+#          - nginx
+#          - opensearch
+#          - oracle
+#          - postgres
+#          - rabbitmq
+#          - redis
+#          - selenium
+#          - k3s
+    runs-on: ${{ matrix.runtime.machine }}
+    steps:
+      - uses: actions/checkout@v3
+      - name: Setup python ${{ matrix.runtime.python-version }}
+        uses: actions/setup-python@v4
+        with:
+          python-version: ${{ matrix.runtime.python-version }}
+          cache: poetry
+      - name: Install Python dependencies
+        run: poetry install -E ${{ matrix.module }}
+      - name: Run tests
+        run: make modules/${{ matrix.module }}/tests

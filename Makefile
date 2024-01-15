@@ -3,7 +3,7 @@ PYTHON_VERSION ?= 3.10
 IMAGE = testcontainers-python:${PYTHON_VERSION}
 RUN = docker run --rm -it
 # Get all directories that contain a setup.py and get the directory name.
-PACKAGES = core $(dir $(wildcard modules/*/README.rst))
+PACKAGES = core $(addprefix modules/,$(notdir $(wildcard modules/*)))
 
 # All */dist folders for each of the packages.
 DISTRIBUTIONS = $(addsuffix /dist,${PACKAGES})
