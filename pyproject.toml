@@ -67,6 +67,8 @@ python-arango = { version = "^7.8", optional = true }
 azure-storage-blob = { version = "^12.19", optional = true }
 clickhouse-driver = { version = "*", optional = true }
 google-cloud-pubsub = { version = ">=2", optional = true }
+influxdb = { version = "*", optional = true }
+influxdb-client = { version = "*", optional = true }
 kubernetes = { version = "*", optional = true }
 pyyaml = { version = "*", optional = true }
 kafka-python = { version = "*", optional = true }
@@ -91,6 +93,7 @@ azurite = ["azure-storage-blob"]
 clickhouse = ["clickhouse-driver"]
 elasticsearch = []
 google = ["google-cloud-pubsub"]
+influxdb = ["influxdb", "influxdb-client"]
 k3s = ["kubernetes", "pyyaml"]
 kafka = ["kafka-python"]
 keycloak = ["python-keycloak"]
