@@ -11,9 +11,9 @@
 #    License for the specific language governing permissions and limitations
 #    under the License.
 
+from datetime import datetime
 from typing import Type
 
-from dateutil.parser import parse
 from influxdb.resultset import ResultSet
 from influxdb_client import Bucket
 from influxdb_client.client.write_api import SYNCHRONOUS
@@ -141,5 +141,5 @@ def test_influxdb2container_get_client():
         results = tables.to_values(['_measurement', '_field', '_time', '_value'])
         
         assert len(results) == 2, '2 datapoints were retrieved'
-        assert results[0] == ['influxdbcontainer', 'ratio', parse('1978-11-30T09:30:00+00:00'), 0.42]
-        assert results[1] == ['influxdbcontainer', 'ratio', parse('1978-12-25T10:30:00+00:00'), 0.55]
+        assert results[0] == ['influxdbcontainer', 'ratio', datetime.fromisoformat('1978-11-30T09:30:00+00:00'), 0.42]
+        assert results[1] == ['influxdbcontainer', 'ratio', datetime.fromisoformat('1978-12-25T10:30:00+00:00'), 0.55]
