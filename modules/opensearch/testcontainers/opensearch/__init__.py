@@ -1,5 +1,6 @@
 from opensearchpy import OpenSearch
 from opensearchpy.exceptions import ConnectionError, TransportError
+from urllib3.exceptions import ProtocolError
 
 from testcontainers.core.container import DockerContainer
 from testcontainers.core.utils import raise_for_deprecated_parameter
@@ -84,7 +85,12 @@ class OpenSearchContainer(DockerContainer):
             **kwargs,
         )
 
-    @wait_container_is_ready(ConnectionError, TransportError)
+    @wait_container_is_ready(
+        ConnectionError,
+        TransportError,
+        ProtocolError,
+        ConnectionResetError
+    )
     def _healthcheck(self) -> None:
         """This is an internal method used to check if the OpenSearch container
         is healthy and ready to receive requests."""

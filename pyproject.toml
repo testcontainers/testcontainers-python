@@ -27,6 +27,7 @@ classifiers = [
 ]
 # testcontainers-core is a proper package dependency - only modules needed here
 packages = [
+    { include = "testcontainers", from = "core" },
     { include = "testcontainers", from = "modules/arangodb" },
     { include = "testcontainers", from = "modules/azurite" },
     { include = "testcontainers", from = "modules/clickhouse" },
@@ -56,7 +57,9 @@ packages = [
 
 [tool.poetry.dependencies]
 python = ">=3.9,<3.12"
-testcontainers-core = "4.0.0" # x-release-please-version
+docker = "*" # ">=4.0"
+urllib3 = "*" # "<2.0"
+wrapt = "*" # "^1.16.0"
 
 # community modules
 python-arango = { version = "^7.8", optional = true }
@@ -103,11 +106,11 @@ redis = ["redis"]
 selenium = ["selenium"]
 
 [tool.poetry.group.dev.dependencies]
-testcontainers-core = { path = "core", develop = true }
 pytest = "7.4.3"
 pytest-cov = "4.1.0"
 sphinx = "^7.2.6"
 flake8 = "^6.1.0"
+pg8000 = "*"
 
 [[tool.poetry.source]]
 name = "PyPI"
