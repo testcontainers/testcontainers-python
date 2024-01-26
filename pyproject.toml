@@ -56,7 +56,7 @@ packages = [
 "Issue Tracker" = "https://github.com/testcontainers/testcontainers-python/issues"
 
 [tool.poetry.dependencies]
-python = ">=3.9,<3.12"
+python = ">=3.8,<3.12"
 docker = "*" # ">=4.0"
 urllib3 = "*" # "<2.0"
 wrapt = "*" # "^1.16.0"
