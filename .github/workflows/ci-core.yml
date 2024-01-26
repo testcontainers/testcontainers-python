@@ -11,28 +11,21 @@ jobs:
   test:
     strategy:
       matrix:
-        runtime:
-#        - machine: ubuntu-latest
-#          python-version: "3.7"
-#        - machine: ubuntu-latest
-#          python-version: "3.8"
-          - machine: ubuntu-latest
-            python-version: "3.9"
-#        - machine: ubuntu-latest
-#          python-version: "3.10"
-#        - machine: ubuntu-latest
-#          python-version: "3.11"
-    runs-on: ${{ matrix.runtime.machine }}
+        os: [ ubuntu, macos, windows ]
+        python-version: ["3.8", "3.10", "3.11"]
+    runs-on: ${{ matrix.os }}-latest
     steps:
       - uses: actions/checkout@v4
       - name: Setup Poetry
         run: pipx install poetry
-      - name: Setup python ${{ matrix.runtime.python-version }}
+      - name: Setup python ${{ matrix.python-version }}
         uses: actions/setup-python@v5
         with:
-          python-version: ${{ matrix.runtime.python-version }}
+          python-version: ${{ matrix.python-version }}
           cache: poetry
       - name: Install Python dependencies
         run: poetry install
+      - name: Lint the code
+        run: make core/lint
       - name: Run tests
         run: make core/tests

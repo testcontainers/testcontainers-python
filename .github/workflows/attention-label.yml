@@ -1,8 +1,8 @@
 name: Automatically add or remove labels
 on:
-  issue_comment:
+  issues:
     types:
-      - created
+      - opened
 jobs:
   show-metadata:
     runs-on: ubuntu-latest
