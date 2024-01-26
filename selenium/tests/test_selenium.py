@@ -15,9 +15,9 @@ def test_webdriver_container_container(caps):
 
     with BrowserWebDriverContainer(caps).maybe_emulate_amd64() as chrome:
         webdriver = chrome.get_driver()
-        webdriver.get("http://example.com")
-        header = webdriver.find_element(By.TAG_NAME, "h1").text
-        assert header == "Example Domain"
+        webdriver.get("http://google.com")
+        header = webdriver.find_element(By.CSS_SELECTOR, "[alt='Google']")
+        assert header.is_displayed()
 
 
 def test_selenium_custom_image():
