@@ -30,7 +30,6 @@ jobs:
           - kafka
           - keycloak
           - localstack
-          - meta
           - minio
           - mongodb
           - mssql

@@ -2733,6 +2733,7 @@ testing = ["big-O", "jaraco.functools", "jaraco.itertools", "more-itertools", "p
 arangodb = ["python-arango"]
 azurite = ["azure-storage-blob"]
 clickhouse = ["clickhouse-driver"]
+elasticsearch = []
 google = ["google-cloud-pubsub"]
 k3s = ["kubernetes", "pyyaml"]
 kafka = ["kafka-python"]
@@ -2743,6 +2744,7 @@ mongodb = ["pymongo"]
 mssql = ["pymssql", "sqlalchemy"]
 mysql = ["pymysql", "sqlalchemy"]
 neo4j = ["neo4j"]
+nginx = []
 opensearch = ["opensearch-py"]
 oracle = ["cx_Oracle", "sqlalchemy"]
 postgres = ["psycopg2-binary", "sqlalchemy"]
@@ -2753,4 +2755,4 @@ selenium = ["selenium"]
 [metadata]
 lock-version = "2.0"
 python-versions = ">=3.9,<3.12"
-content-hash = "73b24102271e496f446b37687ead6a42a2c87418b47d62146705c4ee69338532"
+content-hash = "909507b21effb3c59129b7603b978e26caa18c752f84580e2046af7e0b364999"
