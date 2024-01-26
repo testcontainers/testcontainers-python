@@ -1,6 +1,5 @@
 # Contrinuous Integration for the core package
 
-name: testcontainers core
 on:
   push:
     branches: [main]

@@ -1,4 +1,3 @@
-name: Automatically add or remove labels
 on:
   issues:
     types:
@@ -13,18 +12,9 @@ jobs:
       env:
         JSON: ${{ toJson(github.event) }}
   add-label:
-    if: ${{ github.event.comment.user.login != 'tillahoffmann' }}
     runs-on: ubuntu-latest
     steps:
     - name: Add label
       uses: actions-ecosystem/action-add-labels@v1
-      with:
-        labels: '👀 requires attention'
-  remove-label:
-    if: ${{ github.event.comment.user.login == 'tillahoffmann' }}
-    runs-on: ubuntu-latest
-    steps:
-    - name: Remove label
-      uses: actions-ecosystem/action-remove-labels@v1
       with:
         labels: '👀 requires attention'

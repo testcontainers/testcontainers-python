@@ -1,6 +1,4 @@
 # Contrinuous Integration for community modules
-
-name: testcontainers core
 on:
   push:
     branches: [main]
