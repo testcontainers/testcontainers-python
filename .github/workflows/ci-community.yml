@@ -16,9 +16,7 @@ jobs:
   test:
     strategy:
       matrix:
-        runtime:
-          - machine: ubuntu-latest
-            python-version: "3.11"
+        python-version: ["3.11"]
         module:
           - arangodb
           - azurite
@@ -42,7 +40,7 @@ jobs:
           - redis
           - selenium
           - k3s
-    runs-on: ${{ matrix.runtime.machine }}
+    runs-on: ubuntu-latest
     steps:
       - name: Get changed files
         id: changes-for-module
@@ -62,10 +60,10 @@ jobs:
         uses: actions/checkout@v4
       - name: Setup Poetry
         run: pipx install poetry
-      - name: Setup python ${{ matrix.runtime.python-version }}
+      - name: Setup python ${{ matrix.python-version }}
         uses: actions/setup-python@v4
         with:
-          python-version: ${{ matrix.runtime.python-version }}
+          python-version: ${{ matrix.python-version }}
           cache: poetry
       - name: Install Python dependencies
         run: poetry install -E ${{ matrix.module }}
