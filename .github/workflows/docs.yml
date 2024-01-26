@@ -1,19 +1,22 @@
+name: docs
+
 on:
-  # TODO: disabled while refactoring the build/test pipeline - fix me before merging!
-#  push:
-#    branches: [main]
-#  pull_request:
-#    branches: [main]
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
 
 jobs:
   build:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v3
-      - name: Setup python 3.10
-        uses: actions/setup-python@v4
+      - name: Setup Poetry
+        run: pipx install poetry
+      - name: Setup python
+        uses: actions/setup-python@v5
         with:
-          python-version: "3.10"
+          python-version: "3.11"
           cache: poetry
       - name: Install Python dependencies
         run: poetry install --all-extras
