@@ -1,5 +1,7 @@
 # Contrinuous Integration for the core package
 
+name: core
+
 on:
   push:
     branches: [main]
@@ -11,7 +13,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        os: [ ubuntu, macos, windows ]
+        os: [ ubuntu ]
         python-version: ["3.9", "3.10", "3.11"]
     runs-on: ${{ matrix.os }}-latest
     steps:

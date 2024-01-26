@@ -1,4 +1,7 @@
 # Contrinuous Integration for community modules
+
+name: modules
+
 on:
   push:
     branches: [main]
