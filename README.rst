@@ -15,27 +15,27 @@ testcontainers-python facilitates the use of Docker containers for functional an
 .. toctree::
 
     core/README
-    arangodb/README
-    azurite/README
-    clickhouse/README
-    elasticsearch/README
-    google/README
-    kafka/README
-    keycloak/README
-    localstack/README
-    minio/README
-    mongodb/README
-    mssql/README
-    mysql/README
-    neo4j/README
-    nginx/README
-    opensearch/README
-    oracle/README
-    postgres/README
-    rabbitmq/README
-    redis/README
-    selenium/README
-    k3s/README
+    modules/arangodb/README
+    modules/azurite/README
+    modules/clickhouse/README
+    modules/elasticsearch/README
+    modules/google/README
+    modules/kafka/README
+    modules/keycloak/README
+    modules/localstack/README
+    modules/minio/README
+    modules/mongodb/README
+    modules/mssql/README
+    modules/mysql/README
+    modules/neo4j/README
+    modules/nginx/README
+    modules/opensearch/README
+    modules/oracle/README
+    modules/postgres/README
+    modules/rabbitmq/README
+    modules/redis/README
+    modules/selenium/README
+    modules/k3s/README
 
 Getting Started
 ---------------
