@@ -42,7 +42,7 @@ ${UPLOAD} : %/upload :
 	fi
 
 # Targets to build docker images
-image: requirements/ubunut-latest-${PYTHON_VERSION}.txt
+image: requirements/ubuntu-latest-${PYTHON_VERSION}.txt
 	docker build --build-arg version=${PYTHON_VERSION} -t ${IMAGE} .
 
 # Targets to run tests in docker containers

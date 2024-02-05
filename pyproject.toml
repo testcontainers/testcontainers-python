@@ -7,7 +7,7 @@ maintainers = [
     "Balint Bartha <totallyzen@users.noreply.github.com>",
     "David Ankin <daveankin@gmail.com>"
 ]
-readme = "README.rst"
+readme = "README.md"
 keywords = ["testing", "logging", "docker", "test automation"]
 classifiers = [
     "License :: OSI Approved :: Apache Software License",

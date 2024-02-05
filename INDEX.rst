@@ -47,8 +47,9 @@ Getting Started
 
     >>> with PostgresContainer("postgres:9.5") as postgres:
     ...     engine = sqlalchemy.create_engine(postgres.get_connection_url())
-    ...     result = engine.execute("select version()")
-    ...     version, = result.fetchone()
+    ...     with engine.begin() as connection:
+    ...         result = connection.execute(sqlalchemy.text("select version()"))
+    ...         version, = result.fetchone()
     >>> version
     'PostgreSQL 9.5...'
 
