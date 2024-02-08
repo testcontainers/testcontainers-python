@@ -1,7 +1,7 @@
 ---
 name: Bug or unexpected behavior
 about: Create a report to help us improve.
-title: ''
+title: 'Bug: '
 labels: bug
 assignees: ''
 
