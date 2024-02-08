@@ -113,6 +113,7 @@ pytest-cov = "4.1.0"
 sphinx = "^7.2.6"
 flake8 = "^6.1.0"
 pg8000 = "*"
+twine = "^4.0.2"
 
 [[tool.poetry.source]]
 name = "PyPI"

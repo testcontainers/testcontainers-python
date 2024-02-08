@@ -28,5 +28,7 @@ jobs:
         run: poetry install
       - name: Run linter
         run: make core/lint
+      - name: Run twine check
+        run: poetry build && twine check dist/*.tar.gz
       - name: Run tests
         run: make core/tests
