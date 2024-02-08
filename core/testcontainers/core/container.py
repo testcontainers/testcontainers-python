@@ -1,11 +1,12 @@
-from docker.models.containers import Container
 import os
 from typing import Iterable, Optional, Tuple
 
-from .waiting_utils import wait_container_is_ready
+from docker.models.containers import Container
+
 from .docker_client import DockerClient
 from .exceptions import ContainerStartException
 from .utils import setup_logger, inside_container, is_arm
+from .waiting_utils import wait_container_is_ready
 
 logger = setup_logger(__name__)
 
@@ -28,10 +29,15 @@ class DockerContainer:
         self.volumes = {}
         self.image = image
         self._docker = DockerClient(**(docker_client_kw or {}))
+        self.network_name = None
         self._container = None
         self._command = None
         self._name = None
         self._kwargs = kwargs
+
+    @property
+    def name(self):
+        return self._container.name
 
     def with_env(self, key: str, value: str) -> 'DockerContainer':
         self.env[key] = value
@@ -55,12 +61,16 @@ class DockerContainer:
             return self.with_kwargs(platform='linux/amd64')
         return self
 
+    def set_network_name(self, network_name: str) -> 'DockerContainer':
+        self.network_name = network_name
+        return self
+
     def start(self) -> 'DockerContainer':
         logger.info("Pulling image %s", self.image)
         docker_client = self.get_docker_client()
         self._container = docker_client.run(
             self.image, command=self._command, detach=True, environment=self.env, ports=self.ports,
-            name=self._name, volumes=self.volumes, **self._kwargs
+            name=self._name, volumes=self.volumes, network=self.network_name, **self._kwargs
         )
         logger.info("Container started: %s", self._container.short_id)
         return self
