@@ -65,6 +65,7 @@ setuptools.setup(
         "postgresql": ["testcontainers-postgres"],
         "rabbitmq": ["testcontainers-rabbitmq"],
         "redis": ["testcontainers-redis"],
+        "vault": ["testcontainers-vault"],
         "selenium": ["testcontainers-selenium"],
     },
     python_requires=">=3.7",

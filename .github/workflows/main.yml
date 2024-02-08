@@ -42,6 +42,7 @@ jobs:
         - postgres
         - rabbitmq
         - redis
+        - vault
         - selenium
         - k3s
     runs-on: ${{ matrix.runtime.machine }}

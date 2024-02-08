@@ -19,6 +19,7 @@
 -e file:postgres
 -e file:rabbitmq
 -e file:redis
+-e file:vault
 -e file:selenium
 -e file:k3s
 cryptography<37
