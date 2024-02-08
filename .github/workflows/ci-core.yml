@@ -29,6 +29,6 @@ jobs:
       - name: Run linter
         run: make core/lint
       - name: Run twine check
-        run: poetry build && twine check dist/*.tar.gz
+        run: poetry build && poetry run twine check dist/*.tar.gz
       - name: Run tests
         run: make core/tests
