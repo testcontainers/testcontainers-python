@@ -25,6 +25,7 @@
     #   testcontainers-kafka
     #   testcontainers-keycloak
     #   testcontainers-localstack
+    #   testcontainers-memcached
     #   testcontainers-minio
     #   testcontainers-mongodb
     #   testcontainers-mssql
