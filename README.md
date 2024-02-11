@@ -2,7 +2,7 @@
 
 `testcontainers-python` facilitates the use of Docker containers for functional and integration testing.
 
-for more information, see [the docs][readthedocs].
+For more information, see [the docs][readthedocs].
 
 [readthedocs]: https://testcontainers-python.readthedocs.io/en/latest/
 
