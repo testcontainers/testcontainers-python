@@ -1,7 +1,6 @@
 import pytest
 
 from testcontainers.core.container import DockerContainer
-from testcontainers.core.exceptions import ContainerStartException
 from testcontainers.core.waiting_utils import wait_for_logs
 
 
