@@ -1,5 +1,5 @@
 import os
-from typing import Iterable, Optional, Tuple
+from typing import Optional, Tuple
 
 from docker.models.containers import Container
 
@@ -23,6 +23,7 @@ class DockerContainer:
         >>> with DockerContainer("hello-world") as container:
         ...    delay = wait_for_logs(container, "Hello from Docker!")
     """
+
     def __init__(self, image: str, docker_client_kw: Optional[dict] = None, **kwargs) -> None:
         self.env = {}
         self.ports = {}
@@ -42,7 +43,7 @@ class DockerContainer:
         self.ports[container] = host
         return self
 
-    def with_exposed_ports(self, *ports: Iterable[int]) -> 'DockerContainer':
+    def with_exposed_ports(self, *ports: int) -> 'DockerContainer':
         for port in ports:
             self.ports[port] = None
         return self
@@ -67,7 +68,7 @@ class DockerContainer:
         return self
 
     def stop(self, force=True, delete_volume=True) -> None:
-        self.get_wrapped_container().remove(force=force, v=delete_volume)
+        self._container.remove(force=force, v=delete_volume)
 
     def __enter__(self) -> 'DockerContainer':
         return self.start()
@@ -77,13 +78,14 @@ class DockerContainer:
 
     def __del__(self) -> None:
         """
-        Try to remove the container in all circumstances
+        __del__ runs when Python attempts to garbage collect the object.
+        In case of leaky test design, we still attempt to clean up the container.
         """
-        if self._container is not None:
-            try:
+        try:
+            if self._container is not None:
                 self.stop()
-            except:  # noqa: E722
-                pass
+        finally:
+            pass
 
     def get_container_host_ip(self) -> str:
         # infer from docker host
@@ -143,4 +145,4 @@ class DockerContainer:
     def exec(self, command) -> Tuple[int, str]:
         if not self._container:
             raise ContainerStartException("Container should be started before executing a command")
-        return self.get_wrapped_container().exec_run(command)
+        return self._container.exec_run(command)
