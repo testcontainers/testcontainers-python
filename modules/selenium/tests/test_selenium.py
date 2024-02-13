@@ -8,7 +8,7 @@ from testcontainers.core.utils import is_arm
 @pytest.mark.parametrize("caps", [DesiredCapabilities.CHROME, DesiredCapabilities.FIREFOX])
 def test_webdriver_container_container(caps):
     if is_arm():
-        pytest.skip('https://github.com/SeleniumHQ/docker-selenium/issues/1076')
+        pytest.skip("https://github.com/SeleniumHQ/docker-selenium/issues/1076")
 
     with BrowserWebDriverContainer(caps).maybe_emulate_amd64() as chrome:
         webdriver = chrome.get_driver()

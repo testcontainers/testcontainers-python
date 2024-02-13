@@ -26,7 +26,7 @@ class NginxContainer(DockerContainer):
         self.port = port
         self.with_exposed_ports(self.port)
 
-    def start(self) -> 'NginxContainer':
+    def start(self) -> "NginxContainer":
         super().start()
 
         host = self.get_container_host_ip()
@@ -37,5 +37,5 @@ class NginxContainer(DockerContainer):
 
     @wait_container_is_ready(urllib.error.URLError)
     def _connect(self, host: str, port: str) -> None:
-        url = urllib.parse.urlunsplit(('http', f'{host}:{port}', '', '', ''))
+        url = urllib.parse.urlunsplit(("http", f"{host}:{port}", "", "", ""))
         urllib.request.urlopen(url, timeout=1)

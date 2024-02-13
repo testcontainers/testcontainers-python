@@ -31,25 +31,40 @@ def _stop_container(container: Container) -> None:
     except NotFound:
         pass
     except Exception as ex:
-        LOGGER.warning("failed to shut down container %s with image %s: %s", container.id,
-                       container.image, ex)
+        LOGGER.warning("failed to shut down container %s with image %s: %s", container.id, container.image, ex)
 
 
 class DockerClient:
     """
     Thin wrapper around :class:`docker.DockerClient` for a more functional interface.
     """
+
     def __init__(self, **kwargs) -> None:
         self.client = docker.from_env(**kwargs)
 
     @ft.wraps(ContainerCollection.run)
-    def run(self, image: str, command: Union[str, List[str]] = None,
-            environment: Optional[dict] = None, ports: Optional[dict] = None,
-            detach: bool = False, stdout: bool = True, stderr: bool = False, remove: bool = False,
-            **kwargs) -> Container:
+    def run(
+        self,
+        image: str,
+        command: Union[str, List[str]] = None,
+        environment: Optional[dict] = None,
+        ports: Optional[dict] = None,
+        detach: bool = False,
+        stdout: bool = True,
+        stderr: bool = False,
+        remove: bool = False,
+        **kwargs,
+    ) -> Container:
         container = self.client.containers.run(
-            image, command=command, stdout=stdout, stderr=stderr, remove=remove, detach=detach,
-            environment=environment, ports=ports, **kwargs
+            image,
+            command=command,
+            stdout=stdout,
+            stderr=stderr,
+            remove=remove,
+            detach=detach,
+            environment=environment,
+            ports=ports,
+            **kwargs,
         )
         if detach:
             atexit.register(_stop_container, container)
@@ -61,17 +76,16 @@ class DockerClient:
         """
         port_mappings = self.client.api.port(container_id, port)
         if not port_mappings:
-            raise ConnectionError(f'Port mapping for container {container_id} and port {port} is '
-                                  'not available')
+            raise ConnectionError(f"Port mapping for container {container_id} and port {port} is " "not available")
         return port_mappings[0]["HostPort"]
 
     def get_container(self, container_id: str) -> Container:
         """
         Get the container with a given identifier.
         """
-        containers = self.client.api.containers(filters={'id': container_id})
+        containers = self.client.api.containers(filters={"id": container_id})
         if not containers:
-            raise RuntimeError(f'Could not get container with id {container_id}')
+            raise RuntimeError(f"Could not get container with id {container_id}")
         return containers[0]
 
     def bridge_ip(self, container_id: str) -> str:
@@ -79,14 +93,14 @@ class DockerClient:
         Get the bridge ip address for a container.
         """
         container = self.get_container(container_id)
-        return container['NetworkSettings']['Networks']['bridge']['IPAddress']
+        return container["NetworkSettings"]["Networks"]["bridge"]["IPAddress"]
 
     def gateway_ip(self, container_id: str) -> str:
         """
         Get the gateway ip address for a container.
         """
         container = self.get_container(container_id)
-        return container['NetworkSettings']['Networks']['bridge']['Gateway']
+        return container["NetworkSettings"]["Networks"]["bridge"]["Gateway"]
 
     def host(self) -> str:
         """
@@ -94,7 +108,7 @@ class DockerClient:
         """
         # https://github.com/testcontainers/testcontainers-go/blob/dd76d1e39c654433a3d80429690d07abcec04424/docker.go#L644
         # if os env TC_HOST is set, use it
-        host = os.environ.get('TC_HOST')
+        host = os.environ.get("TC_HOST")
         if host:
             return host
         try:
@@ -102,9 +116,9 @@ class DockerClient:
 
         except ValueError:
             return None
-        if 'http' in url.scheme or 'tcp' in url.scheme:
+        if "http" in url.scheme or "tcp" in url.scheme:
             return url.hostname
-        if 'unix' in url.scheme or 'npipe' in url.scheme:
+        if "unix" in url.scheme or "npipe" in url.scheme:
             if inside_container():
                 ip_address = default_gateway_ip()
                 if ip_address:

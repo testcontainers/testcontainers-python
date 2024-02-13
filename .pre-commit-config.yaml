@@ -1,0 +1,39 @@
+default_language_version:
+  python: python3.9
+
+repos:
+  - repo: https://github.com/pre-commit/pre-commit-hooks
+    rev: 'v4.5.0'
+    hooks:
+      - id: check-toml
+      - id: trailing-whitespace
+      - id: end-of-file-fixer
+
+  - repo: https://github.com/psf/black-pre-commit-mirror
+    rev: '24.1.1'
+    hooks:
+      - id: black
+        args: [ '--config', 'pyproject.toml' ]
+
+  - repo: https://github.com/astral-sh/ruff-pre-commit
+    rev: 'v0.1.14'
+    hooks:
+      - id: ruff
+        # Explicitly setting config to prevent Ruff from using `pyproject.toml` in sub packages.
+        args: [ '--fix', '--exit-non-zero-on-fix', '--config', 'pyproject.toml' ]
+
+#  - repo: https://github.com/PyCQA/bandit
+#    rev: '1.7.7'
+#    hooks:
+#      - id: bandit
+#        additional_dependencies: [ '.[toml]' ]
+#        args: [ '-c', 'pyproject.toml' ]
+
+#  - repo: local
+#    hooks:
+#      - id: mypy
+#        name: mypy
+#        entry: poetry run mypy
+#        language: system
+#        types: [ python ]
+#        require_serial: true

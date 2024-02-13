@@ -39,9 +39,17 @@ class PostgresContainer(DbContainer):
             >>> version
             'PostgreSQL 9.5...'
     """
-    def __init__(self, image: str = "postgres:latest", port: int = 5432,
-                 username: Optional[str] = None, password: Optional[str] = None,
-                 dbname: Optional[str] = None, driver: str = "psycopg2", **kwargs) -> None:
+
+    def __init__(
+        self,
+        image: str = "postgres:latest",
+        port: int = 5432,
+        username: Optional[str] = None,
+        password: Optional[str] = None,
+        dbname: Optional[str] = None,
+        driver: str = "psycopg2",
+        **kwargs,
+    ) -> None:
         raise_for_deprecated_parameter(kwargs, "user", "username")
         super(PostgresContainer, self).__init__(image=image, **kwargs)
         self.username = username or os.environ.get("POSTGRES_USER", "test")
@@ -59,7 +67,10 @@ class PostgresContainer(DbContainer):
 
     def get_connection_url(self, host=None) -> str:
         return super()._create_connection_url(
-            dialect=f"postgresql+{self.driver}", username=self.username,
-            password=self.password, dbname=self.dbname, host=host,
+            dialect=f"postgresql+{self.driver}",
+            username=self.username,
+            password=self.password,
+            dbname=self.dbname,
+            host=host,
             port=self.port,
         )

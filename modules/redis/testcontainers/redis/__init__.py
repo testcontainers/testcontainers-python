@@ -31,8 +31,8 @@ class RedisContainer(DockerContainer):
             >>> with RedisContainer() as redis_container:
             ...     redis_client = redis_container.get_client()
     """
-    def __init__(self, image: str = "redis:latest", port: int = 6379,
-                 password: Optional[str] = None, **kwargs) -> None:
+
+    def __init__(self, image: str = "redis:latest", port: int = 6379, password: Optional[str] = None, **kwargs) -> None:
         raise_for_deprecated_parameter(kwargs, "port_to_expose", "port")
         super(RedisContainer, self).__init__(image, **kwargs)
         self.port = port

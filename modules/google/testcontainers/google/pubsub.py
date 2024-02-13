@@ -38,15 +38,15 @@ class PubSubContainer(DockerContainer):
             ...    topic_path = publisher.topic_path(pubsub.project, "my-topic")
             ...    topic = publisher.create_topic(name=topic_path)
     """
-    def __init__(self, image: str = "google/cloud-sdk:emulators", project: str = "test-project",
-                 port: int = 8432, **kwargs) -> None:
+
+    def __init__(
+        self, image: str = "google/cloud-sdk:emulators", project: str = "test-project", port: int = 8432, **kwargs
+    ) -> None:
         super(PubSubContainer, self).__init__(image=image, **kwargs)
         self.project = project
         self.port = port
         self.with_exposed_ports(self.port)
-        self.with_command(
-            f"gcloud beta emulators pubsub start --project={project} --host-port=0.0.0.0:{port}"
-        )
+        self.with_command(f"gcloud beta emulators pubsub start --project={project} --host-port=0.0.0.0:{port}")
 
     def get_pubsub_emulator_host(self) -> str:
         return f"{self.get_container_host_ip()}:{self.get_exposed_port(self.port)}"

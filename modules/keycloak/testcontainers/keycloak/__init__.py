@@ -33,8 +33,14 @@ class KeycloakContainer(DockerContainer):
             >>> with KeycloakContainer() as kc:
             ...    keycloak = kc.get_client()
     """
-    def __init__(self, image="jboss/keycloak:latest", username: Optional[str] = None,
-                 password: Optional[str] = None, port: int = 8080) -> None:
+
+    def __init__(
+        self,
+        image="jboss/keycloak:latest",
+        username: Optional[str] = None,
+        password: Optional[str] = None,
+        port: int = 8080,
+    ) -> None:
         super(KeycloakContainer, self).__init__(image=image)
         self.username = username or os.environ.get("KEYCLOAK_USER", "test")
         self.password = password or os.environ.get("KEYCLOAK_PASSWORD", "test")
@@ -70,8 +76,5 @@ class KeycloakContainer(DockerContainer):
             realm_name="master",
             verify=True,
         )
-        kwargs = {
-            **default_kwargs,
-            **kwargs
-        }
+        kwargs = {**default_kwargs, **kwargs}
         return KeycloakAdmin(**kwargs)

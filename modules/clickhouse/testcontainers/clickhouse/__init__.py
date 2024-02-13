@@ -40,9 +40,16 @@ class ClickHouseContainer(DbContainer):
             ...     client.execute("select 'working'")
             [('working',)]
     """
-    def __init__(self, image: str = "clickhouse/clickhouse-server:latest", port: int = 9000,
-                 username: Optional[str] = None, password: Optional[str] = None,
-                 dbname: Optional[str] = None, **kwargs) -> None:
+
+    def __init__(
+        self,
+        image: str = "clickhouse/clickhouse-server:latest",
+        port: int = 9000,
+        username: Optional[str] = None,
+        password: Optional[str] = None,
+        dbname: Optional[str] = None,
+        **kwargs
+    ) -> None:
         raise_for_deprecated_parameter(kwargs, "user", "username")
         super().__init__(image=image, **kwargs)
         self.username = username or os.environ.get("CLICKHOUSE_USER", "test")

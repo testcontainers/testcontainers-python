@@ -11,6 +11,7 @@ def test_docker_run_neo4j_latest():
                     YIELD name, versions, edition
                     UNWIND versions as version
                     RETURN name, version, edition
-                    """)
+                    """
+                )
                 record = result.single()
                 assert record["name"].startswith("Neo4j")

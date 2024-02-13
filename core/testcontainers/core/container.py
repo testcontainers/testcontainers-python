@@ -23,6 +23,7 @@ class DockerContainer:
         >>> with DockerContainer("hello-world") as container:
         ...    delay = wait_for_logs(container, "Hello from Docker!")
     """
+
     def __init__(self, image: str, docker_client_kw: Optional[dict] = None, **kwargs) -> None:
         self.env = {}
         self.ports = {}
@@ -34,34 +35,40 @@ class DockerContainer:
         self._name = None
         self._kwargs = kwargs
 
-    def with_env(self, key: str, value: str) -> 'DockerContainer':
+    def with_env(self, key: str, value: str) -> "DockerContainer":
         self.env[key] = value
         return self
 
-    def with_bind_ports(self, container: int, host: int = None) -> 'DockerContainer':
+    def with_bind_ports(self, container: int, host: int = None) -> "DockerContainer":
         self.ports[container] = host
         return self
 
-    def with_exposed_ports(self, *ports: Iterable[int]) -> 'DockerContainer':
+    def with_exposed_ports(self, *ports: Iterable[int]) -> "DockerContainer":
         for port in ports:
             self.ports[port] = None
         return self
 
-    def with_kwargs(self, **kwargs) -> 'DockerContainer':
+    def with_kwargs(self, **kwargs) -> "DockerContainer":
         self._kwargs = kwargs
         return self
 
-    def maybe_emulate_amd64(self) -> 'DockerContainer':
+    def maybe_emulate_amd64(self) -> "DockerContainer":
         if is_arm():
-            return self.with_kwargs(platform='linux/amd64')
+            return self.with_kwargs(platform="linux/amd64")
         return self
 
-    def start(self) -> 'DockerContainer':
+    def start(self) -> "DockerContainer":
         logger.info("Pulling image %s", self.image)
         docker_client = self.get_docker_client()
         self._container = docker_client.run(
-            self.image, command=self._command, detach=True, environment=self.env, ports=self.ports,
-            name=self._name, volumes=self.volumes, **self._kwargs
+            self.image,
+            command=self._command,
+            detach=True,
+            environment=self.env,
+            ports=self.ports,
+            name=self._name,
+            volumes=self.volumes,
+            **self._kwargs
         )
         logger.info("Container started: %s", self._container.short_id)
         return self
@@ -69,7 +76,7 @@ class DockerContainer:
     def stop(self, force=True, delete_volume=True) -> None:
         self.get_wrapped_container().remove(force=force, v=delete_volume)
 
-    def __enter__(self) -> 'DockerContainer':
+    def __enter__(self) -> "DockerContainer":
         return self.start()
 
     def __exit__(self, exc_type, exc_val, exc_tb) -> None:
@@ -116,16 +123,16 @@ class DockerContainer:
                 return port
         return mapped_port
 
-    def with_command(self, command: str) -> 'DockerContainer':
+    def with_command(self, command: str) -> "DockerContainer":
         self._command = command
         return self
 
-    def with_name(self, name: str) -> 'DockerContainer':
+    def with_name(self, name: str) -> "DockerContainer":
         self._name = name
         return self
 
-    def with_volume_mapping(self, host: str, container: str, mode: str = 'ro') -> 'DockerContainer':
-        mapping = {'bind': container, 'mode': mode}
+    def with_volume_mapping(self, host: str, container: str, mode: str = "ro") -> "DockerContainer":
+        mapping = {"bind": container, "mode": mode}
         self.volumes[host] = mapping
         return self
 

@@ -114,6 +114,7 @@ sphinx = "^7.2.6"
 flake8 = "^6.1.0"
 pg8000 = "*"
 twine = "^4.0.2"
+mypy = "1.7.1"
 
 [[tool.poetry.source]]
 name = "PyPI"
@@ -138,6 +139,26 @@ exclude_lines = [
     "pass",
     "raise NotImplementedError" # TODO: used in core/generic.py, not sure we need DbContainer
 ]
+
+[tool.ruff.flake8-type-checking]
+strict = true
+
+[tool.mypy]
+python_version = "3.11"
+mypy_path = [
+    "example-service", "backmarket-fastapi", "backmarket-health", "backmarket-openapi", "backmarket-postgres"
+]
+namespace_packages = true
+explicit_package_bases = true
+fast_module_lookup = true
+enable_error_code = [
+    "ignore-without-code",
+    "redundant-expr",
+    "truthy-bool",
+]
+pretty = true
+show_error_codes = true
+strict = true
 
 [build-system]
 requires = ["poetry-core"]

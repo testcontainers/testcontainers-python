@@ -17,13 +17,9 @@ MESSAGE = {"hello": "world"}
         (None, None, None),  # use the defaults
         (5673, None, None),  # test with custom port
         (None, "my_test_user", "my_secret_password"),  # test with custom credentials
-    ]
+    ],
 )
-def test_docker_run_rabbitmq(
-    port: Optional[int],
-    username: Optional[str],
-    password: Optional[str]
-):
+def test_docker_run_rabbitmq(port: Optional[int], username: Optional[str], password: Optional[str]):
     """Run rabbitmq test container and use it to deliver a simple message."""
     kwargs = {}
     if port is not None:

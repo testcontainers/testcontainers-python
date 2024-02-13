@@ -23,8 +23,15 @@ class RabbitMqContainer(DockerContainer):
             ...    connection = pika.BlockingConnection(rabbitmq.get_connection_params())
             ...    channel = connection.channel()
     """
-    def __init__(self, image: str = "rabbitmq:latest", port: Optional[int] = None,
-                 username: Optional[str] = None, password: Optional[str] = None, **kwargs) -> None:
+
+    def __init__(
+        self,
+        image: str = "rabbitmq:latest",
+        port: Optional[int] = None,
+        username: Optional[str] = None,
+        password: Optional[str] = None,
+        **kwargs
+    ) -> None:
         """Initialize the RabbitMQ test container.
 
         Args:

@@ -1,6 +1,7 @@
 """
 ArangoDB container support.
 """
+
 from os import environ
 from testcontainers.core.config import TIMEOUT
 from testcontainers.core.generic import DbContainer
@@ -35,13 +36,15 @@ class ArangoDbContainer(DbContainer):
             True
     """
 
-    def __init__(self,
-                 image: str = "arangodb:latest",
-                 port: int = 8529,
-                 arango_root_password: str = "passwd",
-                 arango_no_auth: typing.Optional[bool] = None,
-                 arango_random_root_password: typing.Optional[bool] = None,
-                 **kwargs) -> None:
+    def __init__(
+        self,
+        image: str = "arangodb:latest",
+        port: int = 8529,
+        arango_root_password: str = "passwd",
+        arango_no_auth: typing.Optional[bool] = None,
+        arango_random_root_password: typing.Optional[bool] = None,
+        **kwargs,
+    ) -> None:
         """
         Args:
             image: Actual docker image/tag to pull.
@@ -62,14 +65,17 @@ class ArangoDbContainer(DbContainer):
         # See https://www.arangodb.com/docs/stable/deployment-single-instance-manual-start.html for
         # details. We convert to int then to bool because Arango uses the string literal "1" to
         # indicate flags.
-        self.arango_no_auth = bool(int(environ.get("ARANGO_NO_AUTH", 0) if arango_no_auth is None
-                                   else arango_no_auth))
-        self.arango_root_password = environ.get("ARANGO_ROOT_PASSWORD") if arango_root_password is \
-            None else arango_root_password
-        self.arango_random_root_password = bool(int(
-            environ.get("ARANGO_RANDOM_ROOT_PASSWORD", 0) if arango_random_root_password is None
-            else arango_random_root_password
-        ))
+        self.arango_no_auth = bool(int(environ.get("ARANGO_NO_AUTH", 0) if arango_no_auth is None else arango_no_auth))
+        self.arango_root_password = (
+            environ.get("ARANGO_ROOT_PASSWORD") if arango_root_password is None else arango_root_password
+        )
+        self.arango_random_root_password = bool(
+            int(
+                environ.get("ARANGO_RANDOM_ROOT_PASSWORD", 0)
+                if arango_random_root_password is None
+                else arango_random_root_password
+            )
+        )
 
     def _configure(self) -> None:
         self.with_env("ARANGO_ROOT_PASSWORD", self.arango_root_password)

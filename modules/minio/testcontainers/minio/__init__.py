@@ -35,9 +35,14 @@ class MinioContainer(DockerContainer):
             ...   retrieved_content = client.get_object("test", "testfile.txt").data
     """
 
-    def __init__(self, image: str = "minio/minio:RELEASE.2022-12-02T19-19-22Z",
-                 port: int = 9000, access_key: str = "minioadmin",
-                 secret_key: str = "minioadmin", **kwargs) -> None:
+    def __init__(
+        self,
+        image: str = "minio/minio:RELEASE.2022-12-02T19-19-22Z",
+        port: int = 9000,
+        access_key: str = "minioadmin",
+        secret_key: str = "minioadmin",
+        **kwargs,
+    ) -> None:
         """
         Args:
             image: Docker image to use for the MinIO container.

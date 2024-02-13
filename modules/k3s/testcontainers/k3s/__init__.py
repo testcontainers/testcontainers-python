@@ -40,7 +40,7 @@ class K3SContainer(DockerContainer):
     def __init__(self, image="rancher/k3s:latest", **kwargs) -> None:
         super(K3SContainer, self).__init__(image, **kwargs)
         self.with_exposed_ports(self.KUBE_SECURE_PORT, self.RANCHER_WEBHOOK_PORT)
-        self.with_env("K3S_URL", f'https://{self.get_container_host_ip()}:{self.KUBE_SECURE_PORT}')
+        self.with_env("K3S_URL", f"https://{self.get_container_host_ip()}:{self.KUBE_SECURE_PORT}")
         self.with_command("server --disable traefik --tls-san=" + self.get_container_host_ip())
         self.with_kwargs(privileged=True, tmpfs={"/run": "", "/var/run": ""})
         self.with_volume_mapping("/sys/fs/cgroup", "/sys/fs/cgroup", "rw")
@@ -57,9 +57,9 @@ class K3SContainer(DockerContainer):
         """This function returns the kubernetes config yaml which can be used
         to initialise k8s client
         """
-        execution = self.get_wrapped_container().exec_run(['cat', '/etc/rancher/k3s/k3s.yaml'])
-        config_yaml = execution.output.decode('utf-8') \
-            .replace(f'https://127.0.0.1:{self.KUBE_SECURE_PORT}',
-                     f'https://{self.get_container_host_ip()}:'
-                     f'{self.get_exposed_port(self.KUBE_SECURE_PORT)}')
+        execution = self.get_wrapped_container().exec_run(["cat", "/etc/rancher/k3s/k3s.yaml"])
+        config_yaml = execution.output.decode("utf-8").replace(
+            f"https://127.0.0.1:{self.KUBE_SECURE_PORT}",
+            f"https://{self.get_container_host_ip()}:" f"{self.get_exposed_port(self.KUBE_SECURE_PORT)}",
+        )
         return config_yaml

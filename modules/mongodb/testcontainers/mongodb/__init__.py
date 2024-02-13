@@ -48,9 +48,16 @@ class MongoDbContainer(DbContainer):
             ...    # Find the restaurant document
             ...    cursor = db.restaurants.find({"borough": "Manhattan"})
     """
-    def __init__(self, image: str = "mongo:latest", port: int = 27017,
-                 username: Optional[str] = None, password: Optional[str] = None,
-                 dbname: Optional[str] = None, **kwargs) -> None:
+
+    def __init__(
+        self,
+        image: str = "mongo:latest",
+        port: int = 27017,
+        username: Optional[str] = None,
+        password: Optional[str] = None,
+        dbname: Optional[str] = None,
+        **kwargs
+    ) -> None:
         raise_for_deprecated_parameter(kwargs, "port_to_expose", "port")
         super(MongoDbContainer, self).__init__(image=image, **kwargs)
         self.username = username or os.environ.get("MONGO_INITDB_ROOT_USERNAME", "test")
@@ -66,7 +73,7 @@ class MongoDbContainer(DbContainer):
 
     def get_connection_url(self) -> str:
         return self._create_connection_url(
-            dialect='mongodb',
+            dialect="mongodb",
             username=self.username,
             password=self.password,
             port=self.port,
