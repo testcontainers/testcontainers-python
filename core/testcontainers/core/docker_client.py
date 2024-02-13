@@ -39,6 +39,7 @@ class DockerClient:
     """
     Thin wrapper around :class:`docker.DockerClient` for a more functional interface.
     """
+
     def __init__(self, **kwargs) -> None:
         self.client = docker.from_env(**kwargs)
 
@@ -46,7 +47,8 @@ class DockerClient:
     def run(self, image: str, command: Union[str, List[str]] = None,
             environment: Optional[dict] = None, ports: Optional[dict] = None,
             detach: bool = False, stdout: bool = True, stderr: bool = False, remove: bool = False,
-            **kwargs) -> Container:
+            **kwargs
+    ) -> Container:
         container = self.client.containers.run(
             image, command=command, stdout=stdout, stderr=stderr, remove=remove, detach=detach,
             environment=environment, ports=ports, **kwargs
