@@ -1,5 +1,6 @@
 import json
 import urllib.request
+
 import pytest
 
 from testcontainers.elasticsearch import ElasticSearchContainer

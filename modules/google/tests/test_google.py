@@ -1,6 +1,7 @@
-from testcontainers.google import PubSubContainer
-from testcontainers.core.waiting_utils import wait_for_logs
 from queue import Queue
+
+from testcontainers.core.waiting_utils import wait_for_logs
+from testcontainers.google import PubSubContainer
 
 
 def test_pubsub_container():

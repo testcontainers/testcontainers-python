@@ -12,14 +12,13 @@
 #    under the License.
 
 import os
+from typing import Optional
 
 from neo4j import Driver, GraphDatabase
-
 from testcontainers.core.config import TIMEOUT
 from testcontainers.core.generic import DbContainer
 from testcontainers.core.utils import raise_for_deprecated_parameter
 from testcontainers.core.waiting_utils import wait_container_is_ready, wait_for_logs
-from typing import Optional
 
 
 class Neo4jContainer(DbContainer):
@@ -48,7 +47,7 @@ class Neo4jContainer(DbContainer):
         **kwargs,
     ) -> None:
         raise_for_deprecated_parameter(kwargs, "bolt_port", "port")
-        super(Neo4jContainer, self).__init__(image, **kwargs)
+        super().__init__(image, **kwargs)
         self.username = username or os.environ.get("NEO4J_USER", "neo4j")
         self.password = password or os.environ.get("NEO4J_PASSWORD", "password")
         self.port = port

@@ -11,13 +11,13 @@
 #    License for the specific language governing permissions and limitations
 #    under the License.
 import os
+from typing import Optional
+
 import requests
 
 from keycloak import KeycloakAdmin
-
 from testcontainers.core.container import DockerContainer
 from testcontainers.core.waiting_utils import wait_container_is_ready
-from typing import Optional
 
 
 class KeycloakContainer(DockerContainer):
@@ -41,7 +41,7 @@ class KeycloakContainer(DockerContainer):
         password: Optional[str] = None,
         port: int = 8080,
     ) -> None:
-        super(KeycloakContainer, self).__init__(image=image)
+        super().__init__(image=image)
         self.username = username or os.environ.get("KEYCLOAK_USER", "test")
         self.password = password or os.environ.get("KEYCLOAK_PASSWORD", "test")
         self.port = port
@@ -69,12 +69,12 @@ class KeycloakContainer(DockerContainer):
         return self
 
     def get_client(self, **kwargs) -> KeycloakAdmin:
-        default_kwargs = dict(
-            server_url=f"{self.get_url()}/auth/",
-            username=self.username,
-            password=self.password,
-            realm_name="master",
-            verify=True,
-        )
+        default_kwargs = {
+            "server_url": f"{self.get_url()}/auth/",
+            "username": self.username,
+            "password": self.password,
+            "realm_name": "master",
+            "verify": True,
+        }
         kwargs = {**default_kwargs, **kwargs}
         return KeycloakAdmin(**kwargs)

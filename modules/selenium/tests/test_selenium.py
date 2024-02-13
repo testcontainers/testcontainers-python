@@ -1,8 +1,9 @@
 import pytest
 from selenium.webdriver import DesiredCapabilities
 from selenium.webdriver.common.by import By
-from testcontainers.selenium import BrowserWebDriverContainer
+
 from testcontainers.core.utils import is_arm
+from testcontainers.selenium import BrowserWebDriverContainer
 
 
 @pytest.mark.parametrize("caps", [DesiredCapabilities.CHROME, DesiredCapabilities.FIREFOX])

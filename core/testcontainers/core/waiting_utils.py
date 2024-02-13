@@ -15,7 +15,7 @@
 import re
 import time
 import traceback
-from typing import Any, Callable, Iterable, Mapping, Optional, TYPE_CHECKING, Union
+from typing import TYPE_CHECKING, Any, Callable, Optional, Union
 
 import wrapt
 
@@ -45,7 +45,7 @@ def wait_container_is_ready(*transient_exceptions) -> Callable:
     transient_exceptions = TRANSIENT_EXCEPTIONS + tuple(transient_exceptions)
 
     @wrapt.decorator
-    def wrapper(wrapped: Callable, instance: Any, args: Iterable, kwargs: Mapping) -> Any:
+    def wrapper(wrapped: Callable, instance: Any, args: list, kwargs: dict) -> Any:
         from testcontainers.core.container import DockerContainer
 
         if isinstance(instance, DockerContainer):

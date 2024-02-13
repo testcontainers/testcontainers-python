@@ -1,4 +1,5 @@
 from kafka import KafkaConsumer, KafkaProducer, TopicPartition
+
 from testcontainers.kafka import KafkaContainer
 
 

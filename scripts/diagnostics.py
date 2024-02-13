@@ -1,7 +1,7 @@
 import json
+
 from testcontainers.core import utils
 from testcontainers.core.container import DockerContainer
-
 
 result = {
     "is_linux": utils.is_linux(),
@@ -22,4 +22,4 @@ with DockerContainer("alpine:latest") as container:
         }
     )
 
-print(json.dumps(result, indent=2))
+print(json.dumps(result, indent=2))  # noqa: T201

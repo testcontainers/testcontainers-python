@@ -29,15 +29,15 @@ def os_name() -> str:
 
 
 def is_mac() -> bool:
-    return MAC == os_name()
+    return os_name() == MAC
 
 
 def is_linux() -> bool:
-    return LINUX == os_name()
+    return os_name() == LINUX
 
 
 def is_windows() -> bool:
-    return WIN == os_name()
+    return os_name() == WIN
 
 
 def is_arm() -> bool:

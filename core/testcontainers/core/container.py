@@ -1,11 +1,12 @@
+import contextlib
 import os
-from typing import Iterable, Optional, Tuple
+from typing import Optional
 
 from docker.models.containers import Container
 
 from testcontainers.core.docker_client import DockerClient
 from testcontainers.core.exceptions import ContainerStartException
-from testcontainers.core.utils import setup_logger, inside_container, is_arm
+from testcontainers.core.utils import inside_container, is_arm, setup_logger
 from testcontainers.core.waiting_utils import wait_container_is_ready
 
 logger = setup_logger(__name__)
@@ -39,11 +40,11 @@ class DockerContainer:
         self.env[key] = value
         return self
 
-    def with_bind_ports(self, container: int, host: int = None) -> "DockerContainer":
+    def with_bind_ports(self, container: int, host: Optional[int] = None) -> "DockerContainer":
         self.ports[container] = host
         return self
 
-    def with_exposed_ports(self, *ports: Iterable[int]) -> "DockerContainer":
+    def with_exposed_ports(self, *ports: list[int]) -> "DockerContainer":
         for port in ports:
             self.ports[port] = None
         return self
@@ -86,11 +87,9 @@ class DockerContainer:
         """
         Try to remove the container in all circumstances
         """
-        if self._container is not None:
-            try:
+        with contextlib.suppress(Exception):
+            if self._container is not None:
                 self.stop()
-            except:  # noqa: E722
-                pass
 
     def get_container_host_ip(self) -> str:
         # infer from docker host
@@ -142,12 +141,12 @@ class DockerContainer:
     def get_docker_client(self) -> DockerClient:
         return self._docker
 
-    def get_logs(self) -> Tuple[str, str]:
+    def get_logs(self) -> tuple[str, str]:
         if not self._container:
             raise ContainerStartException("Container should be started before getting logs")
         return self._container.logs(stderr=False), self._container.logs(stdout=False)
 
-    def exec(self, command) -> Tuple[int, str]:
+    def exec(self, command) -> tuple[int, str]:
         if not self._container:
             raise ContainerStartException("Container should be started before executing a command")
         return self.get_wrapped_container().exec_run(command)

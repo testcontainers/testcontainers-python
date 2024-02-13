@@ -1,6 +1,7 @@
+import pytest
 from pymongo import MongoClient
 from pymongo.errors import OperationFailure
-import pytest
+
 from testcontainers.core.container import DockerContainer
 from testcontainers.core.waiting_utils import wait_for
 from testcontainers.mongodb import MongoDbContainer

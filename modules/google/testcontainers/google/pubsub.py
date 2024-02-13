@@ -10,11 +10,11 @@
 #    WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the
 #    License for the specific language governing permissions and limitations
 #    under the License.
-from google.cloud import pubsub
 import os
-from testcontainers.core.container import DockerContainer
-from typing import Type
 from unittest.mock import patch
+
+from google.cloud import pubsub
+from testcontainers.core.container import DockerContainer
 
 
 class PubSubContainer(DockerContainer):
@@ -42,7 +42,7 @@ class PubSubContainer(DockerContainer):
     def __init__(
         self, image: str = "google/cloud-sdk:emulators", project: str = "test-project", port: int = 8432, **kwargs
     ) -> None:
-        super(PubSubContainer, self).__init__(image=image, **kwargs)
+        super().__init__(image=image, **kwargs)
         self.project = project
         self.port = port
         self.with_exposed_ports(self.port)
@@ -51,7 +51,7 @@ class PubSubContainer(DockerContainer):
     def get_pubsub_emulator_host(self) -> str:
         return f"{self.get_container_host_ip()}:{self.get_exposed_port(self.port)}"
 
-    def _get_client(self, cls: Type, **kwargs) -> dict:
+    def _get_client(self, cls: type, **kwargs) -> dict:
         with patch.dict(os.environ, PUBSUB_EMULATOR_HOST=self.get_pubsub_emulator_host()):
             return cls(**kwargs)
 

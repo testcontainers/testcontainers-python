@@ -38,7 +38,7 @@ class K3SContainer(DockerContainer):
     RANCHER_WEBHOOK_PORT = 8443
 
     def __init__(self, image="rancher/k3s:latest", **kwargs) -> None:
-        super(K3SContainer, self).__init__(image, **kwargs)
+        super().__init__(image, **kwargs)
         self.with_exposed_ports(self.KUBE_SECURE_PORT, self.RANCHER_WEBHOOK_PORT)
         self.with_env("K3S_URL", f"https://{self.get_container_host_ip()}:{self.KUBE_SECURE_PORT}")
         self.with_command("server --disable traefik --tls-san=" + self.get_container_host_ip())

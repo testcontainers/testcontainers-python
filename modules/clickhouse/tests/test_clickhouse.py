@@ -1,4 +1,5 @@
 import clickhouse_driver
+
 from testcontainers.clickhouse import ClickHouseContainer
 
 

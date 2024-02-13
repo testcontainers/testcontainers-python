@@ -1,5 +1,6 @@
-from testcontainers.azurite import AzuriteContainer
 from azure.storage.blob import BlobServiceClient
+
+from testcontainers.azurite import AzuriteContainer
 
 
 def test_docker_run_azurite():

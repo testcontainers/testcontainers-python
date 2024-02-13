@@ -143,10 +143,60 @@ exclude_lines = [
 [tool.ruff.flake8-type-checking]
 strict = true
 
+[tool.ruff]
+target-version = "py39"
+line-length = 120
+fix = true
+fixable = ["I"]
+src = ["core", "modules/*"]
+select = [
+    # flake8-2020
+    "YTT",
+    # flake8-bugbear
+    "B",
+    # flake8-builtins
+    "A",
+    # flake8-comprehensions
+    "C4",
+    # flake8-debugger
+    "T10",
+    # flake8-print
+    "T20",
+    # flake8-pytest-style
+    "PT",
+    # flake8-simplify
+    "SIM",
+    # flake8-tidy-imports
+    "TID",
+    # flake8-type-checking
+    "TCH",
+    # isort
+    "I",
+    # mccabe
+    "C90",
+    # pycodestyle
+    "E", "W",
+    # pyflakes
+    "F",
+    # pygrep-hooks
+    "PGH",
+    # pyupgrade
+    "UP",
+    # ruff
+    "RUF",
+]
+ignore = [
+    # line too long (already checked by black)
+    "E501",
+    # the must-have __init__.py (we are using package namespaces)
+    "INP001"
+]
+
+
 [tool.mypy]
-python_version = "3.11"
+python_version = "3.9"
 mypy_path = [
-    "example-service", "backmarket-fastapi", "backmarket-health", "backmarket-openapi", "backmarket-postgres"
+    "core"
 ]
 namespace_packages = true
 explicit_package_bases = true

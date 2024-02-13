@@ -1,5 +1,3 @@
-# -*- coding: utf-8 -*-
-#
 # testcontainers documentation build configuration file, created by
 # sphinx-quickstart on Tue Mar 21 21:09:48 2017.
 #
@@ -54,7 +52,7 @@ master_doc = "INDEX"
 
 # General information about the project.
 project = "testcontainers"
-copyright = "2017, Sergey Pirogov"
+copyright = "2017, Sergey Pirogov"  # noqa: A001
 author = "Sergey Pirogov"
 
 # The version info for the project you're documenting, acts as replacement for

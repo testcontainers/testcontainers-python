@@ -1,8 +1,9 @@
-from typing import Optional
 import json
+from typing import Optional
 
 import pika
 import pytest
+
 from testcontainers.rabbitmq import RabbitMqContainer
 
 QUEUE = "test-q"
@@ -12,11 +13,11 @@ MESSAGE = {"hello": "world"}
 
 
 @pytest.mark.parametrize(
-    "port,username,password",
-    [
-        (None, None, None),  # use the defaults
-        (5673, None, None),  # test with custom port
-        (None, "my_test_user", "my_secret_password"),  # test with custom credentials
+    argnames=["port", "username", "password"],
+    argvalues=[
+        [None, None, None],  # use the defaults
+        [5673, None, None],  # test with custom port
+        [None, "my_test_user", "my_secret_password"],  # test with custom credentials
     ],
 )
 def test_docker_run_rabbitmq(port: Optional[int], username: Optional[str], password: Optional[str]):

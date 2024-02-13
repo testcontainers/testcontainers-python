@@ -14,7 +14,7 @@ import atexit
 import functools as ft
 import os
 import urllib
-from typing import List, Optional, Union
+from typing import Optional, Union
 
 import docker
 from docker.errors import NotFound
@@ -46,7 +46,7 @@ class DockerClient:
     def run(
         self,
         image: str,
-        command: Union[str, List[str]] = None,
+        command: Optional[Union[str, list[str]]] = None,
         environment: Optional[dict] = None,
         ports: Optional[dict] = None,
         detach: bool = False,
@@ -118,9 +118,8 @@ class DockerClient:
             return None
         if "http" in url.scheme or "tcp" in url.scheme:
             return url.hostname
-        if "unix" in url.scheme or "npipe" in url.scheme:
-            if inside_container():
-                ip_address = default_gateway_ip()
-                if ip_address:
-                    return ip_address
+        if inside_container() and ("unix" in url.scheme or "npipe" in url.scheme):
+            ip_address = default_gateway_ip()
+            if ip_address:
+                return ip_address
         return "localhost"

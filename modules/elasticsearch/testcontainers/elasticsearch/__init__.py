@@ -13,7 +13,6 @@
 import logging
 import re
 import urllib
-from typing import Dict
 from urllib.error import URLError
 
 from testcontainers.core.container import DockerContainer
@@ -40,7 +39,7 @@ def _major_version_from_image_name(image_name: str) -> int:
         return int(regex_match.group(1))
 
 
-def _environment_by_version(version: int) -> Dict[str, str]:
+def _environment_by_version(version: int) -> dict[str, str]:
     """Returns environment variables required for each major version to work."""
     if version == 6:
         # This setting is needed to avoid the check for the kernel parameter
@@ -77,7 +76,7 @@ class ElasticSearchContainer(DockerContainer):
 
     def __init__(self, image: str = "elasticsearch", port: int = 9200, **kwargs) -> None:
         raise_for_deprecated_parameter(kwargs, "port_to_expose", "port")
-        super(ElasticSearchContainer, self).__init__(image, **kwargs)
+        super().__init__(image, **kwargs)
         self.port = port
         self.with_exposed_ports(self.port)
         self.with_env("transport.host", "127.0.0.1")

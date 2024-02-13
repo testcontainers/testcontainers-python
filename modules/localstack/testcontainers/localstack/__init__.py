@@ -10,12 +10,14 @@
 #    WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the
 #    License for the specific language governing permissions and limitations
 #    under the License.
-import boto3
 import functools as ft
 import os
-from testcontainers.core.waiting_utils import wait_for_logs
-from testcontainers.core.container import DockerContainer
 from typing import Any, Optional
+
+import boto3
+
+from testcontainers.core.container import DockerContainer
+from testcontainers.core.waiting_utils import wait_for_logs
 
 
 class LocalStackContainer(DockerContainer):
@@ -42,7 +44,7 @@ class LocalStackContainer(DockerContainer):
         region_name: Optional[str] = None,
         **kwargs,
     ) -> None:
-        super(LocalStackContainer, self).__init__(image, **kwargs)
+        super().__init__(image, **kwargs)
         self.edge_port = edge_port
         self.region_name = region_name or os.environ.get("AWS_DEFAULT_REGION", "us-west-1")
         self.with_exposed_ports(self.edge_port)

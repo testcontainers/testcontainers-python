@@ -4,4 +4,4 @@ FROM python:${version}
 WORKDIR /workspace
 COPY core core
 RUN pip install --no-cache-dir -e core
-COPY diagnostics.py .
+COPY scripts/diagnostics.py .

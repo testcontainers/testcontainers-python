@@ -5,6 +5,7 @@ ArangoDB Container Tests
 import pytest
 from arango import ArangoClient
 from arango.exceptions import DatabaseCreateError, ServerVersionError
+
 from testcontainers.arangodb import ArangoDbContainer
 
 ARANGODB_IMAGE_NAME = "arangodb"
@@ -57,8 +58,8 @@ def test_docker_run_arango():
         client = ArangoClient(hosts=arango.get_connection_url())
 
         # Test invalid auth
+        sys_db = client.db("_system", username="root", password="notTheRightPass")
         with pytest.raises(DatabaseCreateError):
-            sys_db = client.db("_system", username="root", password="notTheRightPass")
             sys_db.create_database("test")
 
         arango_test_ops(arango_client=client, expeced_version=image_version, password=arango_root_password)
@@ -107,6 +108,6 @@ def test_docker_run_arango_random_root_password():
         client = ArangoClient(hosts=arango.get_connection_url())
 
         # Test invalid auth (we don't know the password in random mode)
+        sys_db = client.db("_system", username="root", password=arango_root_password)
         with pytest.raises(ServerVersionError):
-            sys_db = client.db("_system", username="root", password=arango_root_password)
             assert sys_db.version() == image_version

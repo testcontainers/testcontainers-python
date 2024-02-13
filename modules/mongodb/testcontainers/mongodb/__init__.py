@@ -11,11 +11,13 @@
 #    License for the specific language governing permissions and limitations
 #    under the License.
 import os
+from typing import Optional
+
 from pymongo import MongoClient
+
 from testcontainers.core.generic import DbContainer
 from testcontainers.core.utils import raise_for_deprecated_parameter
 from testcontainers.core.waiting_utils import wait_container_is_ready
-from typing import Optional
 
 
 class MongoDbContainer(DbContainer):
@@ -59,7 +61,7 @@ class MongoDbContainer(DbContainer):
         **kwargs
     ) -> None:
         raise_for_deprecated_parameter(kwargs, "port_to_expose", "port")
-        super(MongoDbContainer, self).__init__(image=image, **kwargs)
+        super().__init__(image=image, **kwargs)
         self.username = username or os.environ.get("MONGO_INITDB_ROOT_USERNAME", "test")
         self.password = password or os.environ.get("MONGO_INITDB_ROOT_PASSWORD", "test")
         self.dbname = dbname or os.environ.get("MONGO_DB", "test")

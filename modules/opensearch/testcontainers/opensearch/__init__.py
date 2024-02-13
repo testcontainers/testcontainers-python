@@ -44,7 +44,7 @@ class OpenSearchContainer(DockerContainer):
             security_enabled: :code:`False` disables the security plugin in OpenSearch.
         """
         raise_for_deprecated_parameter(kwargs, "port_to_expose", "port")
-        super(OpenSearchContainer, self).__init__(image, **kwargs)
+        super().__init__(image, **kwargs)
         self.port = port
         self.security_enabled = security_enabled
 

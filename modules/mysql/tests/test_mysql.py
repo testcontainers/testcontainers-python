@@ -1,9 +1,11 @@
 import re
-import sqlalchemy
+from unittest import mock
+
 import pytest
+import sqlalchemy
+
 from testcontainers.core.utils import is_arm
 from testcontainers.mysql import MySqlContainer
-from unittest import mock
 
 
 @pytest.mark.skipif(is_arm(), reason="mysql container not available for ARM")

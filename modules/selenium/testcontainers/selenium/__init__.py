@@ -11,13 +11,14 @@
 #    License for the specific language governing permissions and limitations
 #    under the License.
 
+from typing import Optional
+
+import urllib3
+
 from selenium import webdriver
 from selenium.webdriver.common.options import ArgOptions
 from testcontainers.core.container import DockerContainer
 from testcontainers.core.waiting_utils import wait_container_is_ready
-from typing import Optional
-import urllib3
-
 
 IMAGES = {"firefox": "selenium/standalone-firefox-debug:latest", "chrome": "selenium/standalone-chrome-debug:latest"}
 
@@ -50,7 +51,7 @@ class BrowserWebDriverContainer(DockerContainer):
         self.image = image or get_image_name(capabilities)
         self.port = port
         self.vnc_port = vnc_port
-        super(BrowserWebDriverContainer, self).__init__(image=self.image, **kwargs)
+        super().__init__(image=self.image, **kwargs)
         self.with_exposed_ports(self.port, self.vnc_port)
 
     def _configure(self) -> None:

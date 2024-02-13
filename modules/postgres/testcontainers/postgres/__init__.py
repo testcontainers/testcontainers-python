@@ -12,6 +12,7 @@
 #    under the License.
 import os
 from typing import Optional
+
 from testcontainers.core.generic import DbContainer
 from testcontainers.core.utils import raise_for_deprecated_parameter
 
@@ -51,7 +52,7 @@ class PostgresContainer(DbContainer):
         **kwargs,
     ) -> None:
         raise_for_deprecated_parameter(kwargs, "user", "username")
-        super(PostgresContainer, self).__init__(image=image, **kwargs)
+        super().__init__(image=image, **kwargs)
         self.username = username or os.environ.get("POSTGRES_USER", "test")
         self.password = password or os.environ.get("POSTGRES_PASSWORD", "test")
         self.dbname = dbname or os.environ.get("POSTGRES_DB", "test")

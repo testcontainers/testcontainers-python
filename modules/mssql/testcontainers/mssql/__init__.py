@@ -1,5 +1,6 @@
 from os import environ
 from typing import Optional
+
 from testcontainers.core.generic import DbContainer
 from testcontainers.core.utils import raise_for_deprecated_parameter
 
@@ -32,7 +33,7 @@ class SqlServerContainer(DbContainer):
         **kwargs
     ) -> None:
         raise_for_deprecated_parameter(kwargs, "user", "username")
-        super(SqlServerContainer, self).__init__(image, **kwargs)
+        super().__init__(image, **kwargs)
 
         self.port = port
         self.with_exposed_ports(self.port)

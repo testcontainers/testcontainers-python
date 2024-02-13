@@ -2,12 +2,13 @@
 ArangoDB container support.
 """
 
+import typing
 from os import environ
+
 from testcontainers.core.config import TIMEOUT
 from testcontainers.core.generic import DbContainer
 from testcontainers.core.utils import raise_for_deprecated_parameter
 from testcontainers.core.waiting_utils import wait_for_logs
-import typing
 
 
 class ArangoDbContainer(DbContainer):

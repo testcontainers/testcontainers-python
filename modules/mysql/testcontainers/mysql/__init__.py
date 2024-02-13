@@ -12,6 +12,7 @@
 #    under the License.
 from os import environ
 from typing import Optional
+
 from testcontainers.core.generic import DbContainer
 from testcontainers.core.utils import raise_for_deprecated_parameter
 
@@ -53,7 +54,7 @@ class MySqlContainer(DbContainer):
         raise_for_deprecated_parameter(kwargs, "MYSQL_ROOT_PASSWORD", "root_password")
         raise_for_deprecated_parameter(kwargs, "MYSQL_PASSWORD", "password")
         raise_for_deprecated_parameter(kwargs, "MYSQL_DATABASE", "dbname")
-        super(MySqlContainer, self).__init__(image, **kwargs)
+        super().__init__(image, **kwargs)
 
         self.port = port
         self.with_exposed_ports(self.port)
