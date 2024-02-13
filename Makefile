@@ -1,9 +1,9 @@
-PYTHON_VERSIONS = 3.7 3.8 3.9 3.10 3.11
+PYTHON_VERSIONS = 3.9 3.10 3.11
 PYTHON_VERSION ?= 3.10
 IMAGE = testcontainers-python:${PYTHON_VERSION}
 RUN = docker run --rm -it
 # Get all directories that contain a setup.py and get the directory name.
-PACKAGES = $(subst /,,$(dir $(wildcard */setup.py)))
+PACKAGES = core $(addprefix modules/,$(notdir $(wildcard modules/*)))
 
 # All */dist folders for each of the packages.
 DISTRIBUTIONS = $(addsuffix /dist,${PACKAGES})
@@ -25,12 +25,12 @@ ${DISTRIBUTIONS} : %/dist : %/setup.py
 # Targets to run the test suite for each package.
 tests : ${TESTS}
 ${TESTS} : %/tests :
-	pytest -svx --cov-report=term-missing --cov=testcontainers.$* --tb=short --strict-markers $*/tests
+	poetry run pytest -v --cov=testcontainers.$* $*/tests
 
 # Targets to lint the code.
 lint : ${LINT}
 ${LINT} : %/lint :
-	flake8 $*
+	poetry run flake8 $*
 
 # Targets to publish packages.
 upload : ${UPLOAD}
@@ -42,7 +42,7 @@ ${UPLOAD} : %/upload :
 	fi
 
 # Targets to build docker images
-image: requirements/ubunut-latest-${PYTHON_VERSION}.txt
+image: requirements/ubuntu-latest-${PYTHON_VERSION}.txt
 	docker build --build-arg version=${PYTHON_VERSION} -t ${IMAGE} .
 
 # Targets to run tests in docker containers
@@ -54,13 +54,13 @@ ${TESTS_DIND} : %/tests-dind : image
 
 # Target to build the documentation
 docs :
-	sphinx-build -nW . docs/_build
+	poetry run sphinx-build -nW . docs/_build
 
 doctest : ${DOCTESTS}
-	sphinx-build -b doctest . docs/_build
+	poetry run sphinx-build -b doctest . docs/_build
 
 ${DOCTESTS} : %/doctest :
-	sphinx-build -b doctest -c doctests $* docs/_build
+	poetry run sphinx-build -b doctest -c doctests $* docs/_build
 
 # Remove any generated files.
 clean :

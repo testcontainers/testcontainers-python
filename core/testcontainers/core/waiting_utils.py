@@ -16,16 +16,16 @@ import re
 import time
 import traceback
 from typing import Any, Callable, Iterable, Mapping, Optional, TYPE_CHECKING, Union
+
 import wrapt
 
-from . import config
-from .utils import setup_logger
+from testcontainers.core import config
+from testcontainers.core.utils import setup_logger
 
 if TYPE_CHECKING:
-    from .container import DockerContainer
+    from testcontainers.core.container import DockerContainer
 
 logger = setup_logger(__name__)
-
 
 # Get a tuple of transient exceptions for which we'll retry. Other exceptions will be raised.
 TRANSIENT_EXCEPTIONS = (TimeoutError, ConnectionError)
@@ -46,7 +46,7 @@ def wait_container_is_ready(*transient_exceptions) -> Callable:
 
     @wrapt.decorator
     def wrapper(wrapped: Callable, instance: Any, args: Iterable, kwargs: Mapping) -> Any:
-        from .container import DockerContainer
+        from testcontainers.core.container import DockerContainer
 
         if isinstance(instance, DockerContainer):
             logger.info("Waiting for container %s with image %s to be ready ...",

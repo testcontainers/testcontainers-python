@@ -1,4 +1,3 @@
-name: Automatically add triage labels to new issues and pull requests
 on:
   issues:
     types:

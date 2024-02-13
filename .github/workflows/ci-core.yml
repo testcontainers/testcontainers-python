@@ -1,0 +1,34 @@
+# Contrinuous Integration for the core package
+
+name: core
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+
+jobs:
+  test:
+    strategy:
+      matrix:
+        os: [ ubuntu ]
+        python-version: ["3.9", "3.10", "3.11"]
+    runs-on: ${{ matrix.os }}-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Setup Poetry
+        run: pipx install poetry
+      - name: Setup python ${{ matrix.python-version }}
+        uses: actions/setup-python@v5
+        with:
+          python-version: ${{ matrix.python-version }}
+          cache: poetry
+      - name: Install Python dependencies
+        run: poetry install
+      - name: Run linter
+        run: make core/lint
+      - name: Run twine check
+        run: poetry build && poetry run twine check dist/*.tar.gz
+      - name: Run tests
+        run: make core/tests

@@ -11,16 +11,16 @@
 #    License for the specific language governing permissions and limitations
 #    under the License.
 import atexit
+import functools as ft
+import os
+import urllib
+from typing import List, Optional, Union
+
 import docker
 from docker.errors import NotFound
 from docker.models.containers import Container, ContainerCollection
-import functools as ft
-import os
-from typing import List, Optional, Union
-import urllib
 
 from .utils import default_gateway_ip, inside_container, setup_logger
-
 
 LOGGER = setup_logger(__name__)
 

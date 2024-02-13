@@ -1,8 +1,8 @@
+import logging
 import os
 import platform
-import sys
 import subprocess
-import logging
+import sys
 
 LINUX = "linux"
 MAC = "mac"

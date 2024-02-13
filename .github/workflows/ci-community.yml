@@ -1,0 +1,76 @@
+# Contrinuous Integration for community modules
+
+name: modules
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - "modules/**"
+  pull_request:
+    branches: [main]
+    paths:
+      - "modules/**"
+
+permissions:
+  actions: write  # needed for self-cancellation
+
+jobs:
+  test:
+    strategy:
+      fail-fast: false
+      matrix:
+        python-version: ["3.11"]
+        module:
+          - arangodb
+          - azurite
+          - clickhouse
+          - elasticsearch
+          - google
+          - kafka
+          - keycloak
+          - localstack
+          - minio
+          - mongodb
+          - mssql
+          - mysql
+          - neo4j
+          - nginx
+          - opensearch
+          - oracle
+          - postgres
+          - rabbitmq
+          - redis
+          - selenium
+          - k3s
+    runs-on: ubuntu-latest
+    steps:
+      - name: Get changed files
+        id: changes-for-module
+        uses: tj-actions/changed-files@v42
+        with:
+          files: |
+            modules/${{ matrix.module }}/**
+      - name: Exit early, nothing to do
+        if: ${{ steps.changes-for-module.outputs.any_changed == 'false' }}
+        run: |
+          # cancel and wait for run to end
+          gh run cancel ${{ github.run_id }}
+          gh run watch ${{ github.run_id }}
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      - name: Checkout contents
+        uses: actions/checkout@v4
+      - name: Setup Poetry
+        run: pipx install poetry
+      - name: Setup python ${{ matrix.python-version }}
+        uses: actions/setup-python@v4
+        with:
+          python-version: ${{ matrix.python-version }}
+          cache: poetry
+      - name: Install Python dependencies
+        run: poetry install -E ${{ matrix.module }}
+      - name: Run linter
+        run: make modules/${{ matrix.module }}/lint
+      - name: Run tests
+        run: make modules/${{ matrix.module }}/tests
