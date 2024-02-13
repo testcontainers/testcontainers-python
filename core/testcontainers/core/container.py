@@ -1,5 +1,5 @@
 import os
-from typing import Iterable, Optional, Tuple
+from typing import Optional, Tuple
 
 from docker.models.containers import Container
 

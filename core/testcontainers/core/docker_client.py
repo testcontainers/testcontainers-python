@@ -44,9 +44,15 @@ class DockerClient:
         self.client = docker.from_env(**kwargs)
 
     @ft.wraps(ContainerCollection.run)
-    def run(self, image: str, command: Union[str, List[str]] = None,
-            environment: Optional[dict] = None, ports: Optional[dict] = None,
-            detach: bool = False, stdout: bool = True, stderr: bool = False, remove: bool = False,
+    def run(
+            self, image: str,
+            command: Union[str, List[str]] = None,
+            environment: Optional[dict] = None,
+            ports: Optional[dict] = None,
+            detach: bool = False,
+            stdout: bool = True,
+            stderr: bool = False,
+            remove: bool = False,
             **kwargs
     ) -> Container:
         container = self.client.containers.run(
