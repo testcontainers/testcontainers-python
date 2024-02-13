@@ -45,6 +45,8 @@ jobs:
           - k3s
     runs-on: ubuntu-latest
     steps:
+      - name: Checkout contents
+        uses: actions/checkout@v4
       - name: Get changed files
         id: changes-for-module
         uses: tj-actions/changed-files@v42
@@ -59,8 +61,6 @@ jobs:
           gh run watch ${{ github.run_id }}
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-      - name: Checkout contents
-        uses: actions/checkout@v4
       - name: Setup Poetry
         run: pipx install poetry
       - name: Setup python ${{ matrix.python-version }}
