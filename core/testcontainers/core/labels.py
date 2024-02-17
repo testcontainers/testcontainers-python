@@ -1,7 +1,7 @@
 from uuid import uuid4
 from typing import Optional
 
-from .config import RYUK_IMAGE
+from testcontainers.core.config import RYUK_IMAGE
 
 
 SESSION_ID: str = str(uuid4())

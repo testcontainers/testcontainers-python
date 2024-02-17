@@ -1,1 +1,0 @@
-The :code:`testcontainers` meta package facilitates the installation of the collection of namespace packages that make up the testcontainers ecosystem for python. It follows `Jupyter's approach <https://github.com/jupyter/jupyter/blob/master/setup.py>`__ of installing a collection of packages.

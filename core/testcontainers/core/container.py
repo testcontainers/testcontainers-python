@@ -1,14 +1,15 @@
-from docker.models.containers import Container
 import os
-from typing import Iterable, Optional, Tuple
+from typing import Optional, Tuple
 
 
-from .reaper import Reaper
-from .config import RYUK_IMAGE, RYUK_DISABLED
-from .waiting_utils import wait_container_is_ready
-from .docker_client import DockerClient
-from .exceptions import ContainerStartException
-from .utils import setup_logger, inside_container, is_arm
+from testcontainers.core.reaper import Reaper
+from testcontainers.core.config import RYUK_IMAGE, RYUK_DISABLED
+from testcontainers.core.waiting_utils import wait_container_is_ready
+from testcontainers.core.docker_client import DockerClient
+from testcontainers.core.exceptions import ContainerStartException
+from testcontainers.core.utils import setup_logger, inside_container, is_arm
+from docker.models.containers import Container
+
 
 logger = setup_logger(__name__)
 
@@ -25,6 +26,7 @@ class DockerContainer:
         >>> with DockerContainer("hello-world") as container:
         ...    delay = wait_for_logs(container, "Hello from Docker!")
     """
+
     def __init__(self, image: str, docker_client_kw: Optional[dict] = None, **kwargs) -> None:
         self.env = {}
         self.ports = {}
@@ -44,7 +46,7 @@ class DockerContainer:
         self.ports[container] = host
         return self
 
-    def with_exposed_ports(self, *ports: Iterable[int]) -> 'DockerContainer':
+    def with_exposed_ports(self, *ports: int) -> 'DockerContainer':
         for port in ports:
             self.ports[port] = None
         return self
@@ -72,7 +74,7 @@ class DockerContainer:
         return self
 
     def stop(self, force=True, delete_volume=True) -> None:
-        self.get_wrapped_container().remove(force=force, v=delete_volume)
+        self._container.remove(force=force, v=delete_volume)
 
     def __enter__(self) -> 'DockerContainer':
         return self.start()
@@ -138,4 +140,4 @@ class DockerContainer:
     def exec(self, command) -> Tuple[int, str]:
         if not self._container:
             raise ContainerStartException("Container should be started before executing a command")
-        return self.get_wrapped_container().exec_run(command)
+        return self._container.exec_run(command)

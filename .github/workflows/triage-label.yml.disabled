@@ -1,0 +1,12 @@
+on:
+  issues:
+    types:
+      - opened
+jobs:
+  add-label:
+    runs-on: ubuntu-latest
+    steps:
+    - name: Add label
+      uses: actions-ecosystem/action-add-labels@v1
+      with:
+        labels: '🔀 requires triage'

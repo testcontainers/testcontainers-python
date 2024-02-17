@@ -10,17 +10,17 @@
 #    WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the
 #    License for the specific language governing permissions and limitations
 #    under the License.
-import docker
-from docker.models.containers import Container, ContainerCollection
 import functools as ft
 import os
-from typing import List, Optional, Union
 import urllib
+from typing import List, Optional, Union
+
+import docker
+from docker.models.containers import Container, ContainerCollection
 
 
 from .labels import create_labels, SESSION_ID
 from .utils import default_gateway_ip, inside_container, setup_logger
-
 
 LOGGER = setup_logger(__name__)
 
@@ -35,11 +35,17 @@ class DockerClient:
         self.client.api.headers["x-tc-sid"] = SESSION_ID
 
     @ft.wraps(ContainerCollection.run)
-    def run(self, image: str, command: Union[str, List[str]] = None,
-            environment: Optional[dict] = None, ports: Optional[dict] = None,
-            labels: Optional[dict] = None, detach: bool = False, stdout: bool = True,
-            stderr: bool = False, remove: bool = False,
-            **kwargs) -> Container:
+    def run(self, image: str,
+            command: Union[str, List[str]] = None,
+            environment: Optional[dict] = None,
+            ports: Optional[dict] = None,
+            labels: Optional[dict] = None,
+            detach: bool = False,
+            stdout: bool = True,
+            stderr: bool = False,
+            remove: bool = False,
+            **kwargs
+        ) -> Container:
         container = self.client.containers.run(
             image, command=command, stdout=stdout, stderr=stderr, remove=remove, detach=detach,
             environment=environment, ports=ports, labels=create_labels(image, labels), **kwargs
