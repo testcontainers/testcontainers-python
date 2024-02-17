@@ -15,12 +15,11 @@ import os
 import urllib
 from typing import List, Optional, Union
 
+from testcontainers.core.labels import create_labels, SESSION_ID
+from testcontainers.core.utils import default_gateway_ip, inside_container, setup_logger
+
 import docker
 from docker.models.containers import Container, ContainerCollection
-
-
-from .labels import create_labels, SESSION_ID
-from .utils import default_gateway_ip, inside_container, setup_logger
 
 LOGGER = setup_logger(__name__)
 
