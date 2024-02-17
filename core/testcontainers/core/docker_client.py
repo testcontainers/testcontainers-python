@@ -44,7 +44,7 @@ class DockerClient:
             stderr: bool = False,
             remove: bool = False,
             **kwargs
-        ) -> Container:
+            ) -> Container:
         container = self.client.containers.run(
             image, command=command, stdout=stdout, stderr=stderr, remove=remove, detach=detach,
             environment=environment, ports=ports, labels=create_labels(image, labels), **kwargs
