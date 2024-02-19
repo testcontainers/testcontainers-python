@@ -44,7 +44,7 @@ class DockerContainer:
         self.ports[container] = host
         return self
 
-    def with_exposed_ports(self, *ports: list[int]) -> "DockerContainer":
+    def with_exposed_ports(self, *ports: int) -> "DockerContainer":
         for port in ports:
             self.ports[port] = None
         return self
@@ -75,7 +75,7 @@ class DockerContainer:
         return self
 
     def stop(self, force=True, delete_volume=True) -> None:
-        self.get_wrapped_container().remove(force=force, v=delete_volume)
+        self._container.remove(force=force, v=delete_volume)
 
     def __enter__(self) -> "DockerContainer":
         return self.start()
@@ -85,7 +85,8 @@ class DockerContainer:
 
     def __del__(self) -> None:
         """
-        Try to remove the container in all circumstances
+        __del__ runs when Python attempts to garbage collect the object.
+        In case of leaky test design, we still attempt to clean up the container.
         """
         with contextlib.suppress(Exception):
             if self._container is not None:
@@ -149,4 +150,4 @@ class DockerContainer:
     def exec(self, command) -> tuple[int, str]:
         if not self._container:
             raise ContainerStartException("Container should be started before executing a command")
-        return self.get_wrapped_container().exec_run(command)
+        return self._container.exec_run(command)
