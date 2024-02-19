@@ -1,6 +1,6 @@
 # Contrinuous Integration for the core package
 
-name: core
+name: lint
 
 on:
   push:
@@ -9,12 +9,8 @@ on:
     branches: [main]
 
 jobs:
-  test:
-    strategy:
-      matrix:
-        os: [ ubuntu ]
-        python-version: ["3.9", "3.10", "3.11"]
-    runs-on: ${{ matrix.os }}-latest
+  all:
+    runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
       - name: Setup Poetry
@@ -25,8 +21,8 @@ jobs:
           python-version: ${{ matrix.python-version }}
           cache: poetry
       - name: Install Python dependencies
-        run: poetry install --all-extras
-      - name: Run twine check
-        run: poetry build && poetry run twine check dist/*.tar.gz
-      - name: Run tests
-        run: make core/tests
+        run: poetry install
+      - name: Install pre-commit
+        run: pip install pre-commit
+      - name: Run linter
+        run: pre-commit run -a

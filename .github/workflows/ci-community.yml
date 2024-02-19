@@ -70,7 +70,5 @@ jobs:
           cache: poetry
       - name: Install Python dependencies
         run: poetry install -E ${{ matrix.module }}
-      - name: Run linter
-        run: make modules/${{ matrix.module }}/lint
       - name: Run tests
         run: make modules/${{ matrix.module }}/tests
