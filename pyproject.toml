@@ -149,6 +149,7 @@ line-length = 120
 fix = true
 fixable = ["I"]
 src = ["core", "modules/*"]
+exclude = ["**/tests/**/*.py"]
 select = [
     # flake8-2020
     "YTT",
@@ -184,6 +185,8 @@ select = [
     "UP",
     # ruff
     "RUF",
+    # TODO: security, enable via line below
+    # "S",
 ]
 ignore = [
     # line too long (already checked by black)
@@ -195,20 +198,60 @@ ignore = [
 
 [tool.mypy]
 python_version = "3.9"
-mypy_path = [
-    "core"
-]
 namespace_packages = true
 explicit_package_bases = true
+pretty = true
+show_error_codes = true
+strict = true
 fast_module_lookup = true
+modules = ["testcontainers.core"]
+mypy_path = [
+    "core",
+#    "modules/arangodb",
+#    "modules/azurite",
+#    "modules/clickhouse",
+#    "modules/elasticsearch",
+#    "modules/google",
+#    "modules/k3s",
+#    "modules/kafka",
+#    "modules/keycloak",
+#    "modules/localstack",
+#    "modules/minio",
+#    "modules/mongodb",
+#    "modules/mssql",
+#    "modules/mysql",
+#    "modules/neo4j",
+#    "modules/nginx",
+#    "modules/opensearch",
+#    "modules/oracle",
+#    "modules/postgres",
+#    "modules/rabbitmq",
+#    "modules/redis",
+#    "modules/selenium"
+]
 enable_error_code = [
     "ignore-without-code",
     "redundant-expr",
     "truthy-bool",
 ]
-pretty = true
-show_error_codes = true
-strict = true
+
+[[tool.mypy.overrides]]
+module = ['tests.*']
+# in pytest we allow fixtures to be more relaxed, though we check the untyped functions
+check_untyped_defs = true
+disable_error_code = [
+    'no-untyped-def'
+]
+
+[[tool.mypy.overrides]]
+module = ['docker.*']
+# docker still doesn't have type annotations (not even 7.0)
+ignore_missing_imports = true
+
+[[tool.mypy.overrides]]
+module = ['wrapt.*']
+# wrapt doesn't have type annotations
+ignore_missing_imports = true
 
 [build-system]
 requires = ["poetry-core"]
