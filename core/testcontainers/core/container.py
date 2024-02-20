@@ -1,4 +1,4 @@
-import os
+from os import environ, getenv
 from typing import Optional, Tuple
 
 from docker.models.containers import Container
@@ -29,7 +29,12 @@ class DockerContainer:
         self.ports = {}
         self.volumes = {}
         self.image = image
-        self._docker = DockerClient(**(docker_client_kw or {}))
+        docker_client_args = docker_client_kw or {}
+        tho = 'TESTCONTAINERS_HOST_OVERRIDE'
+        tho_value = docker_client_args.get(tho.lower(), environ.get(tho, None))
+        if tho_value:
+            docker_client_args['DOCKER_HOST'] = tho_value
+        self._docker = DockerClient(**docker_client_args)
         self._container = None
         self._command = None
         self._name = None
@@ -94,7 +99,7 @@ class DockerContainer:
             return "localhost"
 
         # check testcontainers itself runs inside docker container
-        if inside_container() and not os.getenv("DOCKER_HOST"):
+        if inside_container() and not getenv("DOCKER_HOST"):
             # If newly spawned container's gateway IP address from the docker
             # "bridge" network is equal to detected host address, we should use
             # container IP address, otherwise fall back to detected host
