@@ -55,7 +55,10 @@ class DockerCompose:
         services: Optional[List[str]] = None,
     ) -> None:
         self.filepath = filepath
-        self.compose_file_names = [compose_file_name] if isinstance(compose_file_name, str) else list(compose_file_name)
+        if isinstance(compose_file_name, str):
+            self.compose_file_names = [compose_file_name]
+        else:
+            self.compose_file_names = list(compose_file_name)
         self.pull = pull
         self.build = build
         self.env_file = env_file

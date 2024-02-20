@@ -31,6 +31,7 @@ packages = [
     { include = "testcontainers", from = "modules/arangodb" },
     { include = "testcontainers", from = "modules/azurite" },
     { include = "testcontainers", from = "modules/clickhouse" },
+    { include = "testcontainers", from = "modules/compose" },
     { include = "testcontainers", from = "modules/elasticsearch" },
     { include = "testcontainers", from = "modules/google" },
     { include = "testcontainers", from = "modules/k3s" },
@@ -88,6 +89,7 @@ selenium = { version = "*", optional = true }
 arangodb = ["python-arango"]
 azurite = ["azure-storage-blob"]
 clickhouse = ["clickhouse-driver"]
+compose = []
 elasticsearch = []
 google = ["google-cloud-pubsub"]
 k3s = ["kubernetes", "pyyaml"]

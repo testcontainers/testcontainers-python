@@ -25,6 +25,7 @@ jobs:
           - arangodb
           - azurite
           - clickhouse
+          - compose
           - elasticsearch
           - google
           - kafka
