@@ -151,7 +151,7 @@ class DockerContainer:
             raise ContainerStartException("Container should be started before getting logs")
         return self._container.logs(stderr=False), self._container.logs(stdout=False)
 
-    def exec(self, command) -> tuple[int, str]:  # noqa: A003
+    def exec(self, command) -> tuple[int, str]:
         if not self._container:
             raise ContainerStartException("Container should be started before executing a command")
         return self._container.exec_run(command)
