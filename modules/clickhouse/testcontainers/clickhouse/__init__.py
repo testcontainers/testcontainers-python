@@ -49,13 +49,14 @@ class ClickHouseContainer(DbContainer):
         self.dbname = dbname or os.environ.get("CLICKHOUSE_DB", "test")
         self.port = port
         self.with_exposed_ports(self.port)
+        self.with_exposed_ports(8123)
 
     @wait_container_is_ready(HTTPError, URLError)
     def _connect(self) -> None:
         # noinspection HttpUrlsUsage
-        url = f'http://{self.get_container_host_ip()}:{self.get_exposed_port(self.port)}'
+        url = f'http://{self.get_container_host_ip()}:{self.get_exposed_port(8123)}'
         with urlopen(url) as r:
-            assert 'Ok' in r.read()
+            assert b'Ok' in r.read()
 
     def _configure(self) -> None:
         self.with_env("CLICKHOUSE_USER", self.username)
