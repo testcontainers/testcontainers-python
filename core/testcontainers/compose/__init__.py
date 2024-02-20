@@ -1,6 +1,6 @@
 from testcontainers.compose.compose import (
     ContainerIsNotRunning,
-    PortIsNotExposed,
+    NoSuchPortExposed,
     PublishedPort,
     ComposeContainer,
     DockerCompose

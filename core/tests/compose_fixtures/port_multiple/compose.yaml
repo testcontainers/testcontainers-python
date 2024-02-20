@@ -1,0 +1,28 @@
+version: '3.0'
+
+services:
+  alpine:
+    image: nginx:alpine-slim
+    init: true
+    ports:
+      - '81'
+      - '82'
+      - target: 80
+        host_ip: 127.0.0.1
+        protocol: tcp
+    command:
+      - sh
+      - -c
+      - 'd=/etc/nginx/conf.d; echo "server { listen 81; location / { return 202; } }" > $$d/81.conf && echo "server { listen 82; location / { return 204; } }" > $$d/82.conf && nginx -g "daemon off;"'
+
+  alpine2:
+    image: nginx:alpine-slim
+    init: true
+    ports:
+      - target: 80
+        host_ip: 127.0.0.1
+        protocol: tcp
+    command:
+      - sh
+      - -c
+      - 'd=/etc/nginx/conf.d; echo "server { listen 81; location / { return 202; } }" > $$d/81.conf && echo "server { listen 82; location / { return 204; } }" > $$d/82.conf && nginx -g "daemon off;"'

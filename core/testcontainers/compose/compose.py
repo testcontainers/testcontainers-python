@@ -3,9 +3,10 @@ from dataclasses import dataclass, field, fields
 from functools import cached_property
 from json import loads
 from os import PathLike
-from typing import List, Optional, Tuple, Union
+from re import split
+from typing import Callable, List, Optional, Tuple, Type, TypeVar, Union
 
-from typing import TypeVar, Type
+from testcontainers.core.exceptions import NoSuchPortExposed, ContainerIsNotRunning
 
 _IPT = TypeVar('_IPT')
 
@@ -20,14 +21,6 @@ def _ignore_properties(cls: Type[_IPT], dict_: any) -> _IPT:
     return cls(**filtered)
 
 
-class ContainerIsNotRunning(RuntimeError):
-    pass
-
-
-class PortIsNotExposed(RuntimeError):
-    pass
-
-
 @dataclass
 class PublishedPort:
     """
@@ -38,6 +31,16 @@ class PublishedPort:
     TargetPort: Optional[str] = None
     PublishedPort: Optional[str] = None
     Protocol: Optional[str] = None
+
+
+OT = TypeVar('OT')
+
+
+def one(array: List[OT], exception: Callable[[], Exception]) -> OT:
+    if len(array) != 1:
+        e = exception()
+        raise e
+    return array[0]
 
 
 @dataclass
@@ -63,9 +66,6 @@ class ComposeContainer:
                 _ignore_properties(PublishedPort, p) for p in self.Publishers
             ]
 
-    # TODO: you can ask testcontainers.core.docker_client.DockerClient.get_container(self, id: str)
-    #       to get you a testcontainer instance which then can stop/restart the instance individually
-
     def get_publisher(
             self,
             by_port: Optional[int] = None,
@@ -84,9 +84,17 @@ class ComposeContainer:
                 if item.URL == by_host
             ]
         if len(remaining_publishers) == 0:
-            raise PortIsNotExposed(
+            raise NoSuchPortExposed(
                 f"Could not find publisher for for service {self.Service}")
-        return remaining_publishers[0]
+        return one(
+            remaining_publishers,
+            lambda: NoSuchPortExposed(
+                'get_publisher failed because there is '
+                f'not exactly 1 publisher for service {self.Service}'
+                f' when filtering by_port={by_port}, by_host={by_host}'
+                f' (but {len(remaining_publishers)})'
+            )
+        )
 
 
 @dataclass
@@ -113,6 +121,8 @@ class DockerCompose:
             to pass to docker compose.
         services:
             The list of services to use from this DockerCompose.
+        client_args:
+            arguments to pass to docker.from_env()
 
     Example:
 
@@ -155,7 +165,6 @@ class DockerCompose:
     def __exit__(self, exc_type, exc_val, exc_tb) -> None:
         self.stop()
 
-    @cached_property
     def docker_compose_command(self) -> List[str]:
         """
         Returns command parts used for the docker compose commands
@@ -163,6 +172,10 @@ class DockerCompose:
         Returns:
             cmd: Docker compose command parts.
         """
+        return self.compose_command_property
+
+    @cached_property
+    def compose_command_property(self) -> List[str]:
         docker_compose_cmd = ['docker', 'compose']
         if self.compose_file_name:
             for file in self.compose_file_name:
@@ -175,7 +188,7 @@ class DockerCompose:
         """
         Starts the docker compose environment.
         """
-        base_cmd = self.docker_compose_command or []
+        base_cmd = self.compose_command_property or []
 
         # pull means running a separate command before starting
         if self.pull:
@@ -203,7 +216,7 @@ class DockerCompose:
         """
         Stops the docker compose environment.
         """
-        down_cmd = self.docker_compose_command[:]
+        down_cmd = self.compose_command_property[:]
         if down:
             down_cmd += ['down', '--volumes']
         else:
@@ -220,7 +233,7 @@ class DockerCompose:
             stdout: Standard output stream.
             stderr: Standard error stream.
         """
-        logs_cmd = self.docker_compose_command + ["logs", *services]
+        logs_cmd = self.compose_command_property + ["logs", *services]
 
         result = subprocess.run(
             logs_cmd,
@@ -240,23 +253,28 @@ class DockerCompose:
 
         """
 
-        cmd = self.docker_compose_command + ["ps", "--format", "json"]
+        cmd = self.compose_command_property + ["ps", "--format", "json"]
         if include_all:
             cmd += ["-a"]
         result = subprocess.run(cmd, cwd=self.context, check=True, stdout=subprocess.PIPE)
-        stdout = result.stdout.decode("utf-8")
-        if not stdout:
-            return []
-        json_object = loads(stdout)
-
-        if not isinstance(json_object, list):
-            return [_ignore_properties(ComposeContainer, json_object)]
+        stdout = split(r'\r?\n', result.stdout.decode("utf-8"))
 
         return [
-            _ignore_properties(ComposeContainer, item) for item in json_object
+            _ignore_properties(ComposeContainer, loads(line)) for line in stdout if line
         ]
 
-    def get_container(self, service_name: str, include_all=False) -> ComposeContainer:
+    def get_container(
+            self,
+            service_name: Optional[str] = None,
+            include_all: bool = False
+    ) -> ComposeContainer:
+        if not service_name:
+            c = self.get_containers(include_all=include_all)
+            return one(c, lambda: ContainerIsNotRunning(
+                'get_container failed because no service_name given '
+                f'and there is not exactly 1 container (but {len(c)})'
+            ))
+
         matching_containers = [
             item for item in self.get_containers(include_all=include_all)
             if item.Service == service_name
@@ -270,8 +288,8 @@ class DockerCompose:
 
     def exec_in_container(
             self,
-            service_name: str,
-            command: List[str]
+            command: List[str],
+            service_name: Optional[str] = None,
     ) -> Tuple[str, str, int]:
         """
         Executes a command in the container of one of the services.
@@ -288,7 +306,9 @@ class DockerCompose:
             stderr: Standard error stream.
             exit_code: The command's exit code.
         """
-        exec_cmd = self.docker_compose_command + ['exec', '-T', service_name] + command
+        if not service_name:
+            service_name = self.get_container().Service
+        exec_cmd = self.compose_command_property + ['exec', '-T', service_name] + command
         result = subprocess.run(
             exec_cmd,
             cwd=self.context,
@@ -307,3 +327,55 @@ class DockerCompose:
                       context: Optional[str] = None) -> None:
         context = context or self.context
         subprocess.call(cmd, cwd=context)
+
+    def get_service_port(
+            self,
+            service_name: Optional[str] = None,
+            port: Optional[int] = None
+    ):
+        """
+        Returns the mapped port for one of the services.
+
+        Parameters
+        ----------
+        service_name: str
+            Name of the docker compose service
+        port: int
+            The internal port to get the mapping for
+
+        Returns
+        -------
+        str:
+            The mapped port on the host
+        """
+        return self.get_container(service_name).get_publisher(by_port=port).PublishedPort
+
+    def get_service_host(
+            self,
+            service_name: Optional[str] = None,
+            port: Optional[int] = None
+    ):
+        """
+        Returns the host for one of the services.
+
+        Parameters
+        ----------
+        service_name: str
+            Name of the docker compose service
+        port: int
+            The internal port to get the host for
+
+        Returns
+        -------
+        str:
+            The hostname for the service
+        """
+        return self.get_container(service_name).get_publisher(by_port=port).URL
+
+    def get_service_host_and_port(
+            self,
+            service_name: Optional[str] = None,
+            port: Optional[int] = None
+    ):
+        publisher = self.get_container(service_name).get_publisher(by_port=port)
+        return publisher.URL, publisher.PublishedPort
