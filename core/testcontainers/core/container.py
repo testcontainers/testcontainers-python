@@ -1,4 +1,5 @@
 import os
+from platform import system
 from typing import Optional, Tuple
 
 from docker.models.containers import Container
@@ -91,6 +92,9 @@ class DockerContainer:
         # infer from docker host
         host = self.get_docker_client().host()
         if not host:
+            return "localhost"
+        # see https://github.com/testcontainers/testcontainers-python/issues/415
+        if host == "localnpipe" and "Windows" == system():
             return "localhost"
 
         # check testcontainers itself runs inside docker container
