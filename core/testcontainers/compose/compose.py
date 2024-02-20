@@ -69,9 +69,13 @@ class ComposeContainer:
     def get_publisher(
             self,
             by_port: Optional[int] = None,
-            by_host: Optional[str] = None
+            by_host: Optional[str] = None,
+            ipv4_only: bool = True,
     ) -> PublishedPort:
         remaining_publishers = self.Publishers
+
+        if ipv4_only:
+            remaining_publishers = [r for r in remaining_publishers if ':' not in r.URL]
 
         if by_port:
             remaining_publishers = [

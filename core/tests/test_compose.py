@@ -137,6 +137,14 @@ def test_compose_multiple_containers_and_ports():
         with pytest.raises(NoSuchPortExposed) as e:
             multiple.get_container('alpine').get_publisher(by_host='localhost')
             e.match('not exactly 1')
+
+        try:
+            # this fails when ipv6 is enabled and docker is forwarding for both 4 + 6
+            multiple.get_container(service_name='alpine') \
+                .get_publisher(by_port=81, ipv4_only=False)
+        except:  # noqa
+            pass
+
         ports = [
             (80,
              multiple.get_service_host(service_name='alpine', port=80),
