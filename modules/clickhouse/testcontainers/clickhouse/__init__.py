@@ -12,9 +12,8 @@
 #    under the License.
 import os
 from typing import Optional
-
-import clickhouse_driver
-from clickhouse_driver.errors import Error
+from urllib.request import urlopen
+from urllib.error import HTTPError, URLError
 
 from testcontainers.core.generic import DbContainer
 from testcontainers.core.utils import raise_for_deprecated_parameter
@@ -51,10 +50,12 @@ class ClickHouseContainer(DbContainer):
         self.port = port
         self.with_exposed_ports(self.port)
 
-    @wait_container_is_ready(Error, EOFError)
+    @wait_container_is_ready(HTTPError, URLError)
     def _connect(self) -> None:
-        with clickhouse_driver.Client.from_url(self.get_connection_url()) as client:
-            client.execute("SELECT version()")
+        # noinspection HttpUrlsUsage
+        url = f'http://{self.get_container_host_ip()}:{self.get_exposed_port(self.port)}'
+        with urlopen(url) as r:
+            assert 'Ok' in r.read()
 
     def _configure(self) -> None:
         self.with_env("CLICKHOUSE_USER", self.username)
