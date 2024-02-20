@@ -5,8 +5,11 @@ from json import loads
 from os import PathLike
 from re import split
 from typing import Callable, List, Optional, Tuple, Type, TypeVar, Union
+from urllib.request import urlopen
+from urllib.error import URLError, HTTPError
 
 from testcontainers.core.exceptions import NoSuchPortExposed, ContainerIsNotRunning
+from testcontainers.core.waiting_utils import wait_container_is_ready
 
 _IPT = TypeVar('_IPT')
 
@@ -383,3 +386,16 @@ class DockerCompose:
     ):
         publisher = self.get_container(service_name).get_publisher(by_port=port)
         return publisher.URL, publisher.PublishedPort
+
+    @wait_container_is_ready(HTTPError, URLError)
+    def wait_for(self, url: str) -> 'DockerCompose':
+        """
+        Waits for a response from a given URL. This is typically used to block until a service in
+        the environment has started and is responding. Note that it does not assert any sort of
+        return code, only check that the connection was successful.
+
+        Args:
+            url: URL from one of the services in the environment to use to wait on.
+        """
+        with urlopen(url) as r: r.read()  # noqa
+        return self

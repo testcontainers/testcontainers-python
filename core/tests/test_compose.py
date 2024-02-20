@@ -104,6 +104,7 @@ def test_compose_ports():
     with single:
         host, port = single.get_service_host_and_port()
         endpoint = f'http://{host}:{port}'
+        single.wait_for(endpoint)
         code, response = fetch(Request(method='GET', url=endpoint))
         assert code == 200
         assert '<h1>' in response
@@ -173,6 +174,7 @@ def test_exec_in_container():
     single = DockerCompose(context=FIXTURES / 'port_single')
     with single:
         url = f'http://{single.get_service_host()}:{single.get_service_port()}'
+        single.wait_for(url)
 
         # unchanged
         code, body = fetch(url)
@@ -199,6 +201,7 @@ def test_exec_in_container_multiple():
         sn = 'alpine2'  # service name
         host, port = multiple.get_service_host_and_port(service_name=sn)
         url = f'http://{host}:{port}'
+        multiple.wait_for(url)
 
         # unchanged
         code, body = fetch(url)
