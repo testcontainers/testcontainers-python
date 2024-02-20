@@ -1,7 +1,7 @@
 import contextlib
 import os
 from platform import system
-from typing import Optional, Tuple
+from typing import Optional
 
 from docker.models.containers import Container
 
@@ -99,7 +99,7 @@ class DockerContainer:
         if not host:
             return "localhost"
         # see https://github.com/testcontainers/testcontainers-python/issues/415
-        if host == "localnpipe" and "Windows" == system():
+        if host == "localnpipe" and system() == "Windows":
             return "localhost"
 
         # check testcontainers itself runs inside docker container
@@ -151,7 +151,7 @@ class DockerContainer:
             raise ContainerStartException("Container should be started before getting logs")
         return self._container.logs(stderr=False), self._container.logs(stdout=False)
 
-    def exec(self, command) -> tuple[int, str]:
+    def exec(self, command) -> tuple[int, str]:  # noqa: A003
         if not self._container:
             raise ContainerStartException("Container should be started before executing a command")
         return self._container.exec_run(command)
