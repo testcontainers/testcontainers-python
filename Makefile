@@ -41,7 +41,8 @@ ${UPLOAD} : %/upload :
 	fi
 
 # Targets to build docker images
-image: requirements/ubuntu-latest-${PYTHON_VERSION}.txt
+image:
+	poetry export -f requirements.txt -o build/requirements.txt
 	docker build --build-arg version=${PYTHON_VERSION} -t ${IMAGE} .
 
 # Targets to run tests in docker containers
