@@ -111,7 +111,6 @@ selenium = ["selenium"]
 pytest = "7.4.3"
 pytest-cov = "4.1.0"
 sphinx = "^7.2.6"
-flake8 = "^6.1.0"
 pg8000 = "*"
 twine = "^4.0.2"
 mypy = "1.7.1"

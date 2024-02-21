@@ -27,10 +27,9 @@ tests : ${TESTS}
 ${TESTS} : %/tests :
 	poetry run pytest -v --cov=testcontainers.$* $*/tests
 
-# Targets to lint the code.
-lint : ${LINT}
-${LINT} : %/lint :
-	poetry run flake8 $*
+# Target to lint the code.
+lint:
+	pre-commit run -a
 
 # Targets to publish packages.
 upload : ${UPLOAD}
