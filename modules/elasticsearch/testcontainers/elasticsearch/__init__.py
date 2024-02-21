@@ -13,7 +13,6 @@
 import logging
 import re
 import urllib
-from typing import Dict
 from urllib.error import URLError
 
 from testcontainers.core.container import DockerContainer
@@ -32,14 +31,15 @@ def _major_version_from_image_name(image_name: str) -> int:
     version_string = image_name.split(":")[-1]
     regex_match = re.compile(r"(\d+)\.\d+\.\d+").match(version_string)
     if not regex_match:
-        logging.warning("Could not determine major version from image name '%s'. Will use %s",
-                        image_name, _FALLBACK_VERSION)
+        logging.warning(
+            "Could not determine major version from image name '%s'. Will use %s", image_name, _FALLBACK_VERSION
+        )
         return _FALLBACK_VERSION
     else:
         return int(regex_match.group(1))
 
 
-def _environment_by_version(version: int) -> Dict[str, str]:
+def _environment_by_version(version: int) -> dict[str, str]:
     """Returns environment variables required for each major version to work."""
     if version == 6:
         # This setting is needed to avoid the check for the kernel parameter
@@ -76,11 +76,11 @@ class ElasticSearchContainer(DockerContainer):
 
     def __init__(self, image: str = "elasticsearch", port: int = 9200, **kwargs) -> None:
         raise_for_deprecated_parameter(kwargs, "port_to_expose", "port")
-        super(ElasticSearchContainer, self).__init__(image, **kwargs)
+        super().__init__(image, **kwargs)
         self.port = port
         self.with_exposed_ports(self.port)
-        self.with_env('transport.host', '127.0.0.1')
-        self.with_env('http.host', '0.0.0.0')
+        self.with_env("transport.host", "127.0.0.1")
+        self.with_env("http.host", "0.0.0.0")
 
         major_version = _major_version_from_image_name(image)
         for key, value in _environment_by_version(major_version).items():
@@ -95,7 +95,7 @@ class ElasticSearchContainer(DockerContainer):
     def get_url(self) -> str:
         host = self.get_container_host_ip()
         port = self.get_exposed_port(self.port)
-        return f'http://{host}:{port}'
+        return f"http://{host}:{port}"
 
     def start(self) -> "ElasticSearchContainer":
         super().start()

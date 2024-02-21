@@ -7,8 +7,7 @@ RUN pip install --upgrade pip \
     && apt-get install -y \
         freetds-dev \
     && rm -rf /var/lib/apt/lists/*
-ARG version=3.8
-COPY requirements/${version}.txt requirements.txt
+COPY build/requirements.txt requirements.txt
 COPY setup.py README.rst ./
 RUN pip install -r requirements.txt
 COPY . .

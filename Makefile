@@ -27,10 +27,9 @@ tests : ${TESTS}
 ${TESTS} : %/tests :
 	poetry run pytest -v --cov=testcontainers.$* $*/tests
 
-# Targets to lint the code.
-lint : ${LINT}
-${LINT} : %/lint :
-	poetry run flake8 $*
+# Target to lint the code.
+lint:
+	pre-commit run -a
 
 # Targets to publish packages.
 upload : ${UPLOAD}
@@ -42,7 +41,8 @@ ${UPLOAD} : %/upload :
 	fi
 
 # Targets to build docker images
-image: requirements/ubuntu-latest-${PYTHON_VERSION}.txt
+image:
+	poetry export -f requirements.txt -o build/requirements.txt
 	docker build --build-arg version=${PYTHON_VERSION} -t ${IMAGE} .
 
 # Targets to run tests in docker containers
