@@ -54,10 +54,13 @@ def test_can_specify_services():
     assert "chrome" not in docker_compose_cmd
 
 
-@pytest.mark.parametrize("should_run_hub", [
-    [True],
-    [False],
-])
+@pytest.mark.parametrize(
+    "should_run_hub",
+    [
+        [True],
+        [False],
+    ],
+)
 def test_can_run_specific_services(should_run_hub: bool):
     # compose V2 will improve this test by being able to assert that "firefox" also started/exited
     services = ["firefox"]
@@ -91,8 +94,7 @@ def test_compose_can_wait_for_logs():
 
 
 def test_can_parse_multiple_compose_files():
-    with DockerCompose(filepath=ROOT,
-                       compose_file_name=["docker-compose.yml", "docker-compose-2.yml"]) as compose:
+    with DockerCompose(filepath=ROOT, compose_file_name=["docker-compose.yml", "docker-compose-2.yml"]) as compose:
         host = compose.get_service_host("alpine", 3306)
         port = compose.get_service_port("alpine", 3306)
         assert host == "0.0.0.0"
@@ -109,19 +111,18 @@ def test_can_get_logs():
         docker = DockerClient()
         compose.wait_for("http://%s:4444/wd/hub" % docker.host())
         stdout, stderr = compose.get_logs()
-        assert stdout, 'There should be something on stdout'
+        assert stdout, "There should be something on stdout"
 
 
 def test_can_pass_env_params_by_env_file():
-    with DockerCompose(ROOT, compose_file_name='docker-compose-3.yml',
-                       env_file='.env.test') as compose:
+    with DockerCompose(ROOT, compose_file_name="docker-compose-3.yml", env_file=".env.test") as compose:
         stdout, *_ = compose.exec_in_container("alpine", ["printenv"])
-        assert stdout.splitlines()[0], 'test_has_passed'
+        assert stdout.splitlines()[0], "test_has_passed"
 
 
 def test_can_exec_commands():
     with DockerCompose(ROOT) as compose:
-        result = compose.exec_in_container('hub', ['echo', 'my_test'])
-        assert result[0] == 'my_test\n', "The echo should be successful"
-        assert result[1] == '', "stderr should be empty"
-        assert result[2] == 0, 'The exit code should be successful'
+        result = compose.exec_in_container("hub", ["echo", "my_test"])
+        assert result[0] == "my_test\n", "The echo should be successful"
+        assert result[1] == "", "stderr should be empty"
+        assert result[2] == 0, "The exit code should be successful"
