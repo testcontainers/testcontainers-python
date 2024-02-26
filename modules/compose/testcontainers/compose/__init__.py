@@ -11,10 +11,9 @@
 #    License for the specific language governing permissions and limitations
 #    under the License.
 import subprocess
-from typing import Optional, Union
+from typing import Iterable, Optional, Union  # noqa: UP035
 
 import requests
-from collections.abc import Iterable
 
 from testcontainers.core.exceptions import NoSuchPortExposed
 from testcontainers.core.waiting_utils import wait_container_is_ready
