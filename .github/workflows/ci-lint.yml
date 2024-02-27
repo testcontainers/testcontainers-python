@@ -1,0 +1,28 @@
+# Contrinuous Integration for the core package
+
+name: lint
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+
+jobs:
+  all:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Setup Poetry
+        run: pipx install poetry
+      - name: Setup python 3.9
+        uses: actions/setup-python@v5
+        with:
+          python-version: 3.9
+          cache: poetry
+      - name: Install Python dependencies
+        run: poetry install
+      - name: Install pre-commit
+        run: pip install pre-commit
+      - name: Run linter
+        run: pre-commit run -a

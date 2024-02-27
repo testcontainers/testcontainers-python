@@ -1,4 +1,5 @@
 import clickhouse_driver
+
 from testcontainers.clickhouse import ClickHouseContainer
 
 
@@ -8,4 +9,4 @@ def test_docker_run_clickhouse():
         client = clickhouse_driver.Client.from_url(clickhouse.get_connection_url())
         result = client.execute("select 'working'")
 
-        assert result == [('working',)]
+        assert result == [("working",)]

@@ -12,6 +12,7 @@
 #    under the License.
 from os import environ
 from typing import Optional
+
 from testcontainers.core.generic import DbContainer
 from testcontainers.core.utils import raise_for_deprecated_parameter
 
@@ -38,23 +39,31 @@ class MySqlContainer(DbContainer):
             ...         result = connection.execute(sqlalchemy.text("select version()"))
             ...         version, = result.fetchone()
     """
-    def __init__(self, image: str = "mysql:latest", username: Optional[str] = None,
-                 root_password: Optional[str] = None, password: Optional[str] = None,
-                 dbname: Optional[str] = None, port: int = 3306, **kwargs) -> None:
+
+    def __init__(
+        self,
+        image: str = "mysql:latest",
+        username: Optional[str] = None,
+        root_password: Optional[str] = None,
+        password: Optional[str] = None,
+        dbname: Optional[str] = None,
+        port: int = 3306,
+        **kwargs
+    ) -> None:
         raise_for_deprecated_parameter(kwargs, "MYSQL_USER", "username")
         raise_for_deprecated_parameter(kwargs, "MYSQL_ROOT_PASSWORD", "root_password")
         raise_for_deprecated_parameter(kwargs, "MYSQL_PASSWORD", "password")
         raise_for_deprecated_parameter(kwargs, "MYSQL_DATABASE", "dbname")
-        super(MySqlContainer, self).__init__(image, **kwargs)
+        super().__init__(image, **kwargs)
 
         self.port = port
         self.with_exposed_ports(self.port)
-        self.username = username or environ.get('MYSQL_USER', 'test')
-        self.root_password = root_password or environ.get('MYSQL_ROOT_PASSWORD', 'test')
-        self.password = password or environ.get('MYSQL_PASSWORD', 'test')
-        self.dbname = dbname or environ.get('MYSQL_DATABASE', 'test')
+        self.username = username or environ.get("MYSQL_USER", "test")
+        self.root_password = root_password or environ.get("MYSQL_ROOT_PASSWORD", "test")
+        self.password = password or environ.get("MYSQL_PASSWORD", "test")
+        self.dbname = dbname or environ.get("MYSQL_DATABASE", "test")
 
-        if self.username == 'root':
+        if self.username == "root":
             self.root_password = self.password
 
     def _configure(self) -> None:
@@ -66,8 +75,6 @@ class MySqlContainer(DbContainer):
             self.with_env("MYSQL_PASSWORD", self.password)
 
     def get_connection_url(self) -> str:
-        return super()._create_connection_url(dialect="mysql+pymysql",
-                                              username=self.username,
-                                              password=self.password,
-                                              dbname=self.dbname,
-                                              port=self.port)
+        return super()._create_connection_url(
+            dialect="mysql+pymysql", username=self.username, password=self.password, dbname=self.dbname, port=self.port
+        )

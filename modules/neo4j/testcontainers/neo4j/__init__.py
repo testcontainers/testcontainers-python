@@ -12,14 +12,13 @@
 #    under the License.
 
 import os
+from typing import Optional
 
 from neo4j import Driver, GraphDatabase
-
 from testcontainers.core.config import TIMEOUT
 from testcontainers.core.generic import DbContainer
 from testcontainers.core.utils import raise_for_deprecated_parameter
 from testcontainers.core.waiting_utils import wait_container_is_ready, wait_for_logs
-from typing import Optional
 
 
 class Neo4jContainer(DbContainer):
@@ -38,10 +37,17 @@ class Neo4jContainer(DbContainer):
             ...     result = session.run("MATCH (n) RETURN n LIMIT 1")
             ...     record = result.single()
     """
-    def __init__(self, image: str = "neo4j:latest", port: int = 7687,
-                 password: Optional[str] = None, username: Optional[str] = None, **kwargs) -> None:
+
+    def __init__(
+        self,
+        image: str = "neo4j:latest",
+        port: int = 7687,
+        password: Optional[str] = None,
+        username: Optional[str] = None,
+        **kwargs,
+    ) -> None:
         raise_for_deprecated_parameter(kwargs, "bolt_port", "port")
-        super(Neo4jContainer, self).__init__(image, **kwargs)
+        super().__init__(image, **kwargs)
         self.username = username or os.environ.get("NEO4J_USER", "neo4j")
         self.password = password or os.environ.get("NEO4J_PASSWORD", "password")
         self.port = port
@@ -65,8 +71,4 @@ class Neo4jContainer(DbContainer):
             driver.verify_connectivity()
 
     def get_driver(self, **kwargs) -> Driver:
-        return GraphDatabase.driver(
-            self.get_connection_url(),
-            auth=(self.username, self.password),
-            **kwargs
-        )
+        return GraphDatabase.driver(self.get_connection_url(), auth=(self.username, self.password), **kwargs)

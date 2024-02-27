@@ -30,8 +30,13 @@ class OpenSearchContainer(DockerContainer):
             ...   search_result = client.search(index="test", body={"query": {"match_all": {}}})
     """
 
-    def __init__(self, image: str = "opensearchproject/opensearch:2.4.0",
-                 port: int = 9200, security_enabled: bool = False, **kwargs) -> None:
+    def __init__(
+        self,
+        image: str = "opensearchproject/opensearch:2.4.0",
+        port: int = 9200,
+        security_enabled: bool = False,
+        **kwargs
+    ) -> None:
         """
         Args:
             image: Docker image to use for the container.
@@ -39,7 +44,7 @@ class OpenSearchContainer(DockerContainer):
             security_enabled: :code:`False` disables the security plugin in OpenSearch.
         """
         raise_for_deprecated_parameter(kwargs, "port_to_expose", "port")
-        super(OpenSearchContainer, self).__init__(image, **kwargs)
+        super().__init__(image, **kwargs)
         self.port = port
         self.security_enabled = security_enabled
 
@@ -85,12 +90,7 @@ class OpenSearchContainer(DockerContainer):
             **kwargs,
         )
 
-    @wait_container_is_ready(
-        ConnectionError,
-        TransportError,
-        ProtocolError,
-        ConnectionResetError
-    )
+    @wait_container_is_ready(ConnectionError, TransportError, ProtocolError, ConnectionResetError)
     def _healthcheck(self) -> None:
         """This is an internal method used to check if the OpenSearch container
         is healthy and ready to receive requests."""

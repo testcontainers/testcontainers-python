@@ -1,15 +1,17 @@
 """
 ArangoDB Container Tests
 """
+
 import pytest
 from arango import ArangoClient
 from arango.exceptions import DatabaseCreateError, ServerVersionError
+
 from testcontainers.arangodb import ArangoDbContainer
 
-ARANGODB_IMAGE_NAME = 'arangodb'
+ARANGODB_IMAGE_NAME = "arangodb"
 
 
-def arango_test_ops(arango_client, expeced_version, username='root', password=''):
+def arango_test_ops(arango_client, expeced_version, username="root", password=""):
     """
     Basic ArangoDB operations to test DB really up and running.
     """
@@ -48,38 +50,32 @@ def test_docker_run_arango():
     """
     Test ArangoDB container with default settings.
     """
-    image_version = '3.9.1'
-    image = f'{ARANGODB_IMAGE_NAME}:{image_version}'
-    arango_root_password = 'passwd'
+    image_version = "3.9.1"
+    image = f"{ARANGODB_IMAGE_NAME}:{image_version}"
+    arango_root_password = "passwd"
 
     with ArangoDbContainer(image) as arango:
         client = ArangoClient(hosts=arango.get_connection_url())
 
         # Test invalid auth
+        sys_db = client.db("_system", username="root", password="notTheRightPass")
         with pytest.raises(DatabaseCreateError):
-            sys_db = client.db("_system", username="root", password='notTheRightPass')
             sys_db.create_database("test")
 
-        arango_test_ops(
-            arango_client=client,
-            expeced_version=image_version,
-            password=arango_root_password)
+        arango_test_ops(arango_client=client, expeced_version=image_version, password=arango_root_password)
 
 
 def test_docker_run_arango_without_auth():
     """
     Test ArangoDB container with ARANGO_NO_AUTH var set.
     """
-    image_version = '3.9.1'
-    image = f'{ARANGODB_IMAGE_NAME}:{image_version}'
+    image_version = "3.9.1"
+    image = f"{ARANGODB_IMAGE_NAME}:{image_version}"
 
     with ArangoDbContainer(image, arango_no_auth=True) as arango:
         client = ArangoClient(hosts=arango.get_connection_url())
 
-        arango_test_ops(
-            arango_client=client,
-            expeced_version=image_version,
-            password='')
+        arango_test_ops(arango_client=client, expeced_version=image_version, password="")
 
 
 def test_docker_run_arango_older_version():
@@ -91,30 +87,27 @@ def test_docker_run_arango_older_version():
     we must verify older image tags still supported. (without that logic - we'll face race issues
     where we try to create & populate DB when ArangoDB not really ready.
     """
-    image_version = '3.1.7'
-    image = f'{ARANGODB_IMAGE_NAME}:{image_version}'
+    image_version = "3.1.7"
+    image = f"{ARANGODB_IMAGE_NAME}:{image_version}"
 
     with ArangoDbContainer(image, arango_no_auth=True) as arango:
         client = ArangoClient(hosts=arango.get_connection_url())
 
-        arango_test_ops(
-            arango_client=client,
-            expeced_version=image_version,
-            password='')
+        arango_test_ops(arango_client=client, expeced_version=image_version, password="")
 
 
 def test_docker_run_arango_random_root_password():
     """
     Test ArangoDB container with ARANGO_RANDOM_ROOT_PASSWORD var set.
     """
-    image_version = '3.9.1'
-    image = f'{ARANGODB_IMAGE_NAME}:{image_version}'
-    arango_root_password = 'passwd'
+    image_version = "3.9.1"
+    image = f"{ARANGODB_IMAGE_NAME}:{image_version}"
+    arango_root_password = "passwd"
 
     with ArangoDbContainer(image, arango_random_root_password=True) as arango:
         client = ArangoClient(hosts=arango.get_connection_url())
 
         # Test invalid auth (we don't know the password in random mode)
+        sys_db = client.db("_system", username="root", password=arango_root_password)
         with pytest.raises(ServerVersionError):
-            sys_db = client.db("_system", username='root', password=arango_root_password)
             assert sys_db.version() == image_version

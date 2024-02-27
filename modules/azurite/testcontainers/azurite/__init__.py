@@ -40,23 +40,30 @@ class AzuriteContainer(DockerContainer):
             ...        api_version="2019-12-12"
             ...   )
     """
-    def __init__(self, image: str = "mcr.microsoft.com/azure-storage/azurite:latest", *,
-                 blob_service_port: int = 10_000, queue_service_port: int = 10_001,
-                 table_service_port: int = 10_002, account_name: Optional[str] = None,
-                 account_key: Optional[str] = None, **kwargs) \
-            -> None:
-        """ Constructs an AzuriteContainer.
+
+    def __init__(
+        self,
+        image: str = "mcr.microsoft.com/azure-storage/azurite:latest",
+        *,
+        blob_service_port: int = 10_000,
+        queue_service_port: int = 10_001,
+        table_service_port: int = 10_002,
+        account_name: Optional[str] = None,
+        account_key: Optional[str] = None,
+        **kwargs,
+    ) -> None:
+        """Constructs an AzuriteContainer.
 
         Args:
             image: Expects an image with tag.
             **kwargs: Keyword arguments passed to super class.
         """
         super().__init__(image=image, **kwargs)
-        self.account_name = account_name or os.environ.get(
-            "AZURITE_ACCOUNT_NAME", "devstoreaccount1")
+        self.account_name = account_name or os.environ.get("AZURITE_ACCOUNT_NAME", "devstoreaccount1")
         self.account_key = account_key or os.environ.get(
-            "AZURITE_ACCOUNT_KEY", "Eby8vdM02xNOcqFlqUwJPLlmEtlCDXJ1OUzFT50uSRZ6IFsuFq2UVErCz4I6tq/"
-            "K1SZFPTOtr/KBHBeksoGMGw==")
+            "AZURITE_ACCOUNT_KEY",
+            "Eby8vdM02xNOcqFlqUwJPLlmEtlCDXJ1OUzFT50uSRZ6IFsuFq2UVErCz4I6tq/" "K1SZFPTOtr/KBHBeksoGMGw==",
+        )
 
         raise_for_deprecated_parameter(kwargs, "ports_to_expose", "container.with_exposed_ports")
         self.blob_service_port = blob_service_port
@@ -68,28 +75,34 @@ class AzuriteContainer(DockerContainer):
 
     def get_connection_string(self) -> str:
         host_ip = self.get_container_host_ip()
-        connection_string = f"DefaultEndpointsProtocol=http;" \
-                            f"AccountName={self.account_name};" \
-                            f"AccountKey={self.account_key};"
+        connection_string = (
+            f"DefaultEndpointsProtocol=http;" f"AccountName={self.account_name};" f"AccountKey={self.account_key};"
+        )
 
         if self.blob_service_port in self.ports:
-            connection_string += f"BlobEndpoint=http://{host_ip}:" \
-                                 f"{self.get_exposed_port(self.blob_service_port)}" \
-                                 f"/{self.account_name};"
+            connection_string += (
+                f"BlobEndpoint=http://{host_ip}:"
+                f"{self.get_exposed_port(self.blob_service_port)}"
+                f"/{self.account_name};"
+            )
 
         if self.queue_service_port in self.ports:
-            connection_string += f"QueueEndpoint=http://{host_ip}:" \
-                                 f"{self.get_exposed_port(self.queue_service_port)}" \
-                                 f"/{self.account_name};"
+            connection_string += (
+                f"QueueEndpoint=http://{host_ip}:"
+                f"{self.get_exposed_port(self.queue_service_port)}"
+                f"/{self.account_name};"
+            )
 
         if self.table_service_port in self.ports:
-            connection_string += f"TableEndpoint=http://{host_ip}:" \
-                                 f"{self.get_exposed_port(self.table_service_port)}" \
-                                 f"/{self.account_name};"
+            connection_string += (
+                f"TableEndpoint=http://{host_ip}:"
+                f"{self.get_exposed_port(self.table_service_port)}"
+                f"/{self.account_name};"
+            )
 
         return connection_string
 
-    def start(self) -> 'AzuriteContainer':
+    def start(self) -> "AzuriteContainer":
         super().start()
         self._connect()
         return self
@@ -97,5 +110,4 @@ class AzuriteContainer(DockerContainer):
     @wait_container_is_ready(OSError)
     def _connect(self) -> None:
         with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as s:
-            s.connect((self.get_container_host_ip(),
-                       int(self.get_exposed_port(next(iter(self.ports))))))
+            s.connect((self.get_container_host_ip(), int(self.get_exposed_port(next(iter(self.ports))))))

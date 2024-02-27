@@ -16,13 +16,13 @@ def test_docker_custom_image():
 def test_docker_kwargs():
     code_dir = Path(__file__).parent
     container_first = DockerContainer("nginx:latest")
-    container_first.with_volume_mapping(code_dir, '/code')
+    container_first.with_volume_mapping(code_dir, "/code")
 
     container_second = DockerContainer("nginx:latest")
 
     with container_first:
         container_second.with_kwargs(volumes_from=[container_first._container.short_id])
         with container_second:
-            files_first = container_first.exec('ls /code').output.decode('utf-8').strip()
-            files_second = container_second.exec('ls /code').output.decode('utf-8').strip()
+            files_first = container_first.exec("ls /code").output.decode("utf-8").strip()
+            files_second = container_second.exec("ls /code").output.decode("utf-8").strip()
             assert files_first == files_second

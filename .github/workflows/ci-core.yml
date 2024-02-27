@@ -25,9 +25,7 @@ jobs:
           python-version: ${{ matrix.python-version }}
           cache: poetry
       - name: Install Python dependencies
-        run: poetry install
-      - name: Run linter
-        run: make core/lint
+        run: poetry install --all-extras
       - name: Run twine check
         run: poetry build && poetry run twine check dist/*.tar.gz
       - name: Run tests
