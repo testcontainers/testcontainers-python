@@ -4,7 +4,7 @@ from functools import cached_property
 from json import loads
 from os import PathLike
 from re import split
-from typing import Callable, List, Optional, Tuple, Type, TypeVar, Union
+from typing import Callable, List, Optional, Tuple, Type, TypeVar, Union, Literal
 from urllib.request import urlopen
 from urllib.error import URLError, HTTPError
 
@@ -73,12 +73,14 @@ class ComposeContainer:
             self,
             by_port: Optional[int] = None,
             by_host: Optional[str] = None,
-            ipv4_only: bool = True,
+            prefer_ip_version: Literal["IPV4", "IPv6"] = "IPv4",
     ) -> PublishedPort:
         remaining_publishers = self.Publishers
 
-        if ipv4_only:
-            remaining_publishers = [r for r in remaining_publishers if ':' not in r.URL]
+        remaining_publishers = [
+            r for r in remaining_publishers
+            if (':' in r.URL) is (prefer_ip_version == "IPv6")
+        ]
 
         if by_port:
             remaining_publishers = [

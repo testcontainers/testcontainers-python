@@ -142,7 +142,7 @@ def test_compose_multiple_containers_and_ports():
         try:
             # this fails when ipv6 is enabled and docker is forwarding for both 4 + 6
             multiple.get_container(service_name='alpine') \
-                .get_publisher(by_port=81, ipv4_only=False)
+                .get_publisher(by_port=81, prefer_ip_version="IPv6")
         except:  # noqa
             pass
 
