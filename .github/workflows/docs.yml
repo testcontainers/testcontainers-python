@@ -11,7 +11,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Set up Python
-        uses: .github/actions/setup-env
+        uses: ./.github/actions/setup-env
         with:
           python-version: "3.11"
       - name: Install Python dependencies

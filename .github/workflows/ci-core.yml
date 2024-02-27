@@ -17,7 +17,7 @@ jobs:
     runs-on: ${{ matrix.os }}-latest
     steps:
       - name: Set up Python
-        uses: .github/actions/setup-env
+        uses: ./.github/actions/setup-env
         with:
           python-version: ${{ matrix.python-version }}
       - name: Install Python dependencies
