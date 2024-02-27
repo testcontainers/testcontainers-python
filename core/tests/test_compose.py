@@ -8,40 +8,38 @@ import pytest
 
 from testcontainers.compose import DockerCompose, ContainerIsNotRunning, NoSuchPortExposed
 
-FIXTURES = Path(__file__).parent.joinpath('compose_fixtures')
+FIXTURES = Path(__file__).parent.joinpath("compose_fixtures")
 
 
 def test_compose_no_file_name():
-    basic = DockerCompose(context=FIXTURES / 'basic')
+    basic = DockerCompose(context=FIXTURES / "basic")
     assert basic.compose_file_name is None
 
 
 def test_compose_str_file_name():
-    basic = DockerCompose(context=FIXTURES / 'basic',
-                          compose_file_name='docker-compose.yaml')
-    assert basic.compose_file_name == ['docker-compose.yaml']
+    basic = DockerCompose(context=FIXTURES / "basic", compose_file_name="docker-compose.yaml")
+    assert basic.compose_file_name == ["docker-compose.yaml"]
 
 
 def test_compose_list_file_name():
-    basic = DockerCompose(context=FIXTURES / 'basic',
-                          compose_file_name=['docker-compose.yaml'])
-    assert basic.compose_file_name == ['docker-compose.yaml']
+    basic = DockerCompose(context=FIXTURES / "basic", compose_file_name=["docker-compose.yaml"])
+    assert basic.compose_file_name == ["docker-compose.yaml"]
 
 
 def test_compose_stop():
-    basic = DockerCompose(context=FIXTURES / 'basic')
+    basic = DockerCompose(context=FIXTURES / "basic")
     basic.stop()
 
 
 def test_compose_start_stop():
-    basic = DockerCompose(context=FIXTURES / 'basic')
+    basic = DockerCompose(context=FIXTURES / "basic")
     basic.start()
     basic.stop()
 
 
 def test_compose():
     """stream-of-consciousness e2e test"""
-    basic = DockerCompose(context=FIXTURES / 'basic')
+    basic = DockerCompose(context=FIXTURES / "basic")
     try:
         # first it does not exist
         containers = basic.get_containers(include_all=True)
@@ -72,17 +70,17 @@ def test_compose():
         basic.stop(down=False)
 
         with pytest.raises(ContainerIsNotRunning):
-            assert basic.get_container('alpine') is None
+            assert basic.get_container("alpine") is None
 
         # what it looks like after it exits
-        stopped = basic.get_container('alpine', include_all=True)
+        stopped = basic.get_container("alpine", include_all=True)
         assert stopped.State == "exited"
     finally:
         basic.stop()
 
 
 def test_compose_logs():
-    basic = DockerCompose(context=FIXTURES / 'basic')
+    basic = DockerCompose(context=FIXTURES / "basic")
     with basic:
         sleep(1)  # generate some logs every 200ms
         stdout, stderr = basic.get_logs()
@@ -90,7 +88,7 @@ def test_compose_logs():
 
     assert not stderr
     assert stdout
-    lines = split(r'\r?\n', stdout)
+    lines = split(r"\r?\n", stdout)
 
     assert len(lines) > 5  # actually 10
     for line in lines[1:]:
@@ -100,14 +98,14 @@ def test_compose_logs():
 # noinspection HttpUrlsUsage
 def test_compose_ports():
     # fairly straight forward - can we get the right port to request it
-    single = DockerCompose(context=FIXTURES / 'port_single')
+    single = DockerCompose(context=FIXTURES / "port_single")
     with single:
         host, port = single.get_service_host_and_port()
-        endpoint = f'http://{host}:{port}'
+        endpoint = f"http://{host}:{port}"
         single.wait_for(endpoint)
-        code, response = fetch(Request(method='GET', url=endpoint))
+        code, response = fetch(Request(method="GET", url=endpoint))
         assert code == 200
-        assert '<h1>' in response
+        assert "<h1>" in response
 
 
 # noinspection HttpUrlsUsage
@@ -116,52 +114,57 @@ def test_compose_multiple_containers_and_ports():
 
     assert correctness of multiple logic
     """
-    multiple = DockerCompose(context=FIXTURES / 'port_multiple')
+    multiple = DockerCompose(context=FIXTURES / "port_multiple")
     with multiple:
         with pytest.raises(ContainerIsNotRunning) as e:
             multiple.get_container()
-            e.match('get_container failed')
-            e.match('not exactly 1 container')
+            e.match("get_container failed")
+            e.match("not exactly 1 container")
 
-        assert multiple.get_container('alpine')
-        assert multiple.get_container('alpine2')
+        assert multiple.get_container("alpine")
+        assert multiple.get_container("alpine2")
 
-        a2p = multiple.get_service_port('alpine2')
+        a2p = multiple.get_service_port("alpine2")
         assert a2p > 0  # > 1024
 
         with pytest.raises(NoSuchPortExposed) as e:
-            multiple.get_service_port('alpine')
-            e.match('not exactly 1')
+            multiple.get_service_port("alpine")
+            e.match("not exactly 1")
         with pytest.raises(NoSuchPortExposed) as e:
-            multiple.get_container('alpine').get_publisher(by_host='example.com')
-            e.match('not exactly 1')
+            multiple.get_container("alpine").get_publisher(by_host="example.com")
+            e.match("not exactly 1")
         with pytest.raises(NoSuchPortExposed) as e:
-            multiple.get_container('alpine').get_publisher(by_host='localhost')
-            e.match('not exactly 1')
+            multiple.get_container("alpine").get_publisher(by_host="localhost")
+            e.match("not exactly 1")
 
         try:
             # this fails when ipv6 is enabled and docker is forwarding for both 4 + 6
-            multiple.get_container(service_name='alpine') \
-                .get_publisher(by_port=81, prefer_ip_version="IPv6")
+            multiple.get_container(service_name="alpine").get_publisher(by_port=81, prefer_ip_version="IPv6")
         except:  # noqa
             pass
 
         ports = [
-            (80,
-             multiple.get_service_host(service_name='alpine', port=80),
-             multiple.get_service_port(service_name='alpine', port=80)),
-            (81,
-             multiple.get_service_host(service_name='alpine', port=81),
-             multiple.get_service_port(service_name='alpine', port=81)),
-            (82,
-             multiple.get_service_host(service_name='alpine', port=82),
-             multiple.get_service_port(service_name='alpine', port=82)),
+            (
+                80,
+                multiple.get_service_host(service_name="alpine", port=80),
+                multiple.get_service_port(service_name="alpine", port=80),
+            ),
+            (
+                81,
+                multiple.get_service_host(service_name="alpine", port=81),
+                multiple.get_service_port(service_name="alpine", port=81),
+            ),
+            (
+                82,
+                multiple.get_service_host(service_name="alpine", port=82),
+                multiple.get_service_port(service_name="alpine", port=82),
+            ),
         ]
 
         # test correctness of port lookup
         for target, host, mapped in ports:
-            assert mapped, f'we have a mapped port for target port {target}'
-            code, body = fetch(Request(method='GET', url=f'http://{host}:{mapped}'))
+            assert mapped, f"we have a mapped port for target port {target}"
+            code, body = fetch(Request(method="GET", url=f"http://{host}:{mapped}"))
             if target == 81:
                 assert code == 202
             if target == 82:
@@ -171,60 +174,58 @@ def test_compose_multiple_containers_and_ports():
 # noinspection HttpUrlsUsage
 def test_exec_in_container():
     """we test that we can manipulate a container via exec"""
-    single = DockerCompose(context=FIXTURES / 'port_single')
+    single = DockerCompose(context=FIXTURES / "port_single")
     with single:
-        url = f'http://{single.get_service_host()}:{single.get_service_port()}'
+        url = f"http://{single.get_service_host()}:{single.get_service_port()}"
         single.wait_for(url)
 
         # unchanged
         code, body = fetch(url)
         assert code == 200
-        assert 'test_exec_in_container' not in body
+        assert "test_exec_in_container" not in body
 
         # change it
-        single.exec_in_container(command=[
-            'sh', '-c',
-            'echo "test_exec_in_container" > /usr/share/nginx/html/index.html'
-        ])
+        single.exec_in_container(
+            command=["sh", "-c", 'echo "test_exec_in_container" > /usr/share/nginx/html/index.html']
+        )
 
         # and it is changed
         code, body = fetch(url)
         assert code == 200
-        assert 'test_exec_in_container' in body
+        assert "test_exec_in_container" in body
 
 
 # noinspection HttpUrlsUsage
 def test_exec_in_container_multiple():
     """same as above, except we exec into a particular service"""
-    multiple = DockerCompose(context=FIXTURES / 'port_multiple')
+    multiple = DockerCompose(context=FIXTURES / "port_multiple")
     with multiple:
-        sn = 'alpine2'  # service name
+        sn = "alpine2"  # service name
         host, port = multiple.get_service_host_and_port(service_name=sn)
-        url = f'http://{host}:{port}'
+        url = f"http://{host}:{port}"
         multiple.wait_for(url)
 
         # unchanged
         code, body = fetch(url)
         assert code == 200
-        assert 'test_exec_in_container' not in body
+        assert "test_exec_in_container" not in body
 
         # change it
-        multiple.exec_in_container(command=[
-            'sh', '-c',
-            'echo "test_exec_in_container" > /usr/share/nginx/html/index.html'
-        ], service_name=sn)
+        multiple.exec_in_container(
+            command=["sh", "-c", 'echo "test_exec_in_container" > /usr/share/nginx/html/index.html'], service_name=sn
+        )
 
         # and it is changed
         code, body = fetch(url)
         assert code == 200
-        assert 'test_exec_in_container' in body
+        assert "test_exec_in_container" in body
 
 
 def fetch(req: Union[Request, str]):
     if isinstance(req, str):
-        req = Request(method='GET', url=req)
+        req = Request(method="GET", url=req)
     with urlopen(req) as res:
-        body = res.read().decode('utf-8')
+        body = res.read().decode("utf-8")
         if 200 < res.getcode() >= 400:
             raise Exception(f"HTTP Error: {res.getcode()} - {res.reason}: {body}")
         return res.getcode(), body

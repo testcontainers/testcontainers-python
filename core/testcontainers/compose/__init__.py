@@ -4,5 +4,5 @@ from testcontainers.compose.compose import (
     NoSuchPortExposed,
     PublishedPort,
     ComposeContainer,
-    DockerCompose
+    DockerCompose,
 )

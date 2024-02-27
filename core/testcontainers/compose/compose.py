@@ -4,21 +4,22 @@ from functools import cached_property
 from json import loads
 from os import PathLike
 from re import split
-from typing import Callable, List, Optional, Tuple, Type, TypeVar, Union, Literal
+from typing import Callable, Literal, Optional, TypeVar, Union
+from urllib.error import HTTPError, URLError
 from urllib.request import urlopen
-from urllib.error import URLError, HTTPError
 
-from testcontainers.core.exceptions import NoSuchPortExposed, ContainerIsNotRunning
+from testcontainers.core.exceptions import ContainerIsNotRunning, NoSuchPortExposed
 from testcontainers.core.waiting_utils import wait_container_is_ready
 
-_IPT = TypeVar('_IPT')
+_IPT = TypeVar("_IPT")
 
 
-def _ignore_properties(cls: Type[_IPT], dict_: any) -> _IPT:
+def _ignore_properties(cls: type[_IPT], dict_: any) -> _IPT:
     """omits extra fields like @JsonIgnoreProperties(ignoreUnknown = true)
 
     https://gist.github.com/alexanderankin/2a4549ac03554a31bef6eaaf2eaf7fd5"""
-    if isinstance(dict_, cls): return dict_  # noqa
+    if isinstance(dict_, cls):
+        return dict_
     class_fields = {f.name for f in fields(cls)}
     filtered = {k: v for k, v in dict_.items() if k in class_fields}
     return cls(**filtered)
@@ -30,16 +31,17 @@ class PublishedPort:
     Class that represents the response we get from compose when inquiring status
     via `DockerCompose.get_running_containers()`.
     """
+
     URL: Optional[str] = None
     TargetPort: Optional[str] = None
     PublishedPort: Optional[str] = None
     Protocol: Optional[str] = None
 
 
-OT = TypeVar('OT')
+OT = TypeVar("OT")
 
 
-def one(array: List[OT], exception: Callable[[], Exception]) -> OT:
+def one(array: list[OT], exception: Callable[[], Exception]) -> OT:
     if len(array) != 1:
         e = exception()
         raise e
@@ -53,6 +55,7 @@ class ComposeContainer:
     It is not a true testcontainers.core.container.DockerContainer,
     but you can use the id with DockerClient to get that one too.
     """
+
     ID: Optional[str] = None
     Name: Optional[str] = None
     Command: Optional[str] = None
@@ -61,36 +64,35 @@ class ComposeContainer:
     State: Optional[str] = None
     Health: Optional[str] = None
     ExitCode: Optional[str] = None
-    Publishers: List[PublishedPort] = field(default_factory=list)
+    Publishers: list[PublishedPort] = field(default_factory=list)
 
     def __post_init__(self):
         if self.Publishers:
-            self.Publishers = [
-                _ignore_properties(PublishedPort, p) for p in self.Publishers
-            ]
+            self.Publishers = [_ignore_properties(PublishedPort, p) for p in self.Publishers]
 
+    # fmt:off
     def get_publisher(
-            self,
-            by_port: Optional[int] = None,
-            by_host: Optional[str] = None,
-            prefer_ip_version: Literal["IPV4", "IPv6"] = "IPv4",
+        self,
+        by_port: Optional[int] = None,
+        by_host: Optional[str] = None,
+        prefer_ip_version: Literal["IPV4", "IPv6"] = "IPv4",
     ) -> PublishedPort:
         remaining_publishers = self.Publishers
 
         remaining_publishers = [
             r for r in remaining_publishers
-            if (':' in r.URL) is (prefer_ip_version == "IPv6")
+            if (":" in r.URL) is (prefer_ip_version == "IPv6")
         ]
 
         if by_port:
             remaining_publishers = [
                 item for item in remaining_publishers
-                if item.TargetPort == by_port
+                if by_port == item.TargetPort
             ]
         if by_host:
             remaining_publishers = [
                 item for item in remaining_publishers
-                if item.URL == by_host
+                if by_host == item.URL
             ]
         if len(remaining_publishers) == 0:
             raise NoSuchPortExposed(
@@ -98,12 +100,13 @@ class ComposeContainer:
         return one(
             remaining_publishers,
             lambda: NoSuchPortExposed(
-                'get_publisher failed because there is '
-                f'not exactly 1 publisher for service {self.Service}'
-                f' when filtering by_port={by_port}, by_host={by_host}'
-                f' (but {len(remaining_publishers)})'
-            )
+                "get_publisher failed because there is "
+                f"not exactly 1 publisher for service {self.Service}"
+                f" when filtering by_port={by_port}, by_host={by_host}"
+                f" (but {len(remaining_publishers)})"
+            ),
         )
+    # fmt:on
 
 
 @dataclass
@@ -156,12 +159,12 @@ class DockerCompose:
     """
 
     context: Union[str, PathLike]
-    compose_file_name: Optional[Union[str, List[str]]] = None
+    compose_file_name: Optional[Union[str, list[str]]] = None
     pull: bool = False
     build: bool = False
     wait: bool = True
     env_file: Optional[str] = None
-    services: Optional[List[str]] = None
+    services: Optional[list[str]] = None
 
     def __post_init__(self):
         if isinstance(self.compose_file_name, str):
@@ -174,7 +177,7 @@ class DockerCompose:
     def __exit__(self, exc_type, exc_val, exc_tb) -> None:
         self.stop()
 
-    def docker_compose_command(self) -> List[str]:
+    def docker_compose_command(self) -> list[str]:
         """
         Returns command parts used for the docker compose commands
 
@@ -184,13 +187,13 @@ class DockerCompose:
         return self.compose_command_property
 
     @cached_property
-    def compose_command_property(self) -> List[str]:
-        docker_compose_cmd = ['docker', 'compose']
+    def compose_command_property(self) -> list[str]:
+        docker_compose_cmd = ["docker", "compose"]
         if self.compose_file_name:
             for file in self.compose_file_name:
-                docker_compose_cmd += ['-f', file]
+                docker_compose_cmd += ["-f", file]
         if self.env_file:
-            docker_compose_cmd += ['--env-file', self.env_file]
+            docker_compose_cmd += ["--env-file", self.env_file]
         return docker_compose_cmd
 
     def start(self) -> None:
@@ -201,20 +204,20 @@ class DockerCompose:
 
         # pull means running a separate command before starting
         if self.pull:
-            pull_cmd = base_cmd + ['pull']
+            pull_cmd = [*base_cmd, "pull"]
             self._call_command(cmd=pull_cmd)
 
-        up_cmd = base_cmd + ['up']
+        up_cmd = [*base_cmd, "up"]
 
         # build means modifying the up command
         if self.build:
-            up_cmd.append('--build')
+            up_cmd.append("--build")
 
         if self.wait:
-            up_cmd.append('--wait')
+            up_cmd.append("--wait")
         else:
             # we run in detached mode instead of blocking
-            up_cmd.append('--detach')
+            up_cmd.append("--detach")
 
         if self.services:
             up_cmd.extend(self.services)
@@ -227,12 +230,12 @@ class DockerCompose:
         """
         down_cmd = self.compose_command_property[:]
         if down:
-            down_cmd += ['down', '--volumes']
+            down_cmd += ["down", "--volumes"]
         else:
-            down_cmd += ['stop']
+            down_cmd += ["stop"]
         self._call_command(cmd=down_cmd)
 
-    def get_logs(self, *services: str) -> Tuple[str, str]:
+    def get_logs(self, *services: str) -> tuple[str, str]:
         """
         Returns all log output from stdout and stderr of a specific container.
 
@@ -242,17 +245,16 @@ class DockerCompose:
             stdout: Standard output stream.
             stderr: Standard error stream.
         """
-        logs_cmd = self.compose_command_property + ["logs", *services]
+        logs_cmd = [*self.compose_command_property, "logs", *services]
 
         result = subprocess.run(
             logs_cmd,
             cwd=self.context,
-            stdout=subprocess.PIPE,
-            stderr=subprocess.PIPE,
+            capture_output=True,
         )
         return result.stdout.decode("utf-8"), result.stderr.decode("utf-8")
 
-    def get_containers(self, include_all=False) -> List[ComposeContainer]:
+    def get_containers(self, include_all=False) -> list[ComposeContainer]:
         """
         Fetch information about running containers via `docker compose ps --format json`.
         Available only in V2 of compose.
@@ -262,20 +264,23 @@ class DockerCompose:
 
         """
 
-        cmd = self.compose_command_property + ["ps", "--format", "json"]
+        cmd = [*self.compose_command_property, "ps", "--format", "json"]
         if include_all:
-            cmd += ["-a"]
+            cmd = [*cmd, "-a"]
         result = subprocess.run(cmd, cwd=self.context, check=True, stdout=subprocess.PIPE)
-        stdout = split(r'\r?\n', result.stdout.decode("utf-8"))
+        stdout = split(r"\r?\n", result.stdout.decode("utf-8"))
 
+        # fmt:off
         return [
             _ignore_properties(ComposeContainer, loads(line)) for line in stdout if line
         ]
+        # fmt:on
 
+    # fmt:off
     def get_container(
-            self,
-            service_name: Optional[str] = None,
-            include_all: bool = False
+        self,
+        service_name: Optional[str] = None,
+        include_all: bool = False,
     ) -> ComposeContainer:
         if not service_name:
             c = self.get_containers(include_all=include_all)
@@ -294,12 +299,13 @@ class DockerCompose:
                 f"{service_name} is not running in the compose context")
 
         return matching_containers[0]
+    # fmt:on
 
     def exec_in_container(
-            self,
-            command: List[str],
-            service_name: Optional[str] = None,
-    ) -> Tuple[str, str, int]:
+        self,
+        command: list[str],
+        service_name: Optional[str] = None,
+    ) -> tuple[str, str, int]:
         """
         Executes a command in the container of one of the services.
 
@@ -317,30 +323,34 @@ class DockerCompose:
         """
         if not service_name:
             service_name = self.get_container().Service
-        exec_cmd = self.compose_command_property + ['exec', '-T', service_name] + command
+        exec_cmd = [*self.compose_command_property, "exec", "-T", service_name, *command]
         result = subprocess.run(
             exec_cmd,
             cwd=self.context,
-            stdout=subprocess.PIPE,
-            stderr=subprocess.PIPE,
+            capture_output=True,
             check=True,
         )
+
+        # fmt:off
         return (
             result.stdout.decode("utf-8"),
             result.stderr.decode("utf-8"),
             result.returncode
         )
+        # fmt:on
 
-    def _call_command(self,
-                      cmd: Union[str, List[str]],
-                      context: Optional[str] = None) -> None:
+    def _call_command(
+        self,
+        cmd: Union[str, list[str]],
+        context: Optional[str] = None,
+    ) -> None:
         context = context or self.context
         subprocess.call(cmd, cwd=context)
 
     def get_service_port(
-            self,
-            service_name: Optional[str] = None,
-            port: Optional[int] = None
+        self,
+        service_name: Optional[str] = None,
+        port: Optional[int] = None,
     ):
         """
         Returns the mapped port for one of the services.
@@ -360,9 +370,9 @@ class DockerCompose:
         return self.get_container(service_name).get_publisher(by_port=port).PublishedPort
 
     def get_service_host(
-            self,
-            service_name: Optional[str] = None,
-            port: Optional[int] = None
+        self,
+        service_name: Optional[str] = None,
+        port: Optional[int] = None,
     ):
         """
         Returns the host for one of the services.
@@ -382,15 +392,15 @@ class DockerCompose:
         return self.get_container(service_name).get_publisher(by_port=port).URL
 
     def get_service_host_and_port(
-            self,
-            service_name: Optional[str] = None,
-            port: Optional[int] = None
+        self,
+        service_name: Optional[str] = None,
+        port: Optional[int] = None,
     ):
         publisher = self.get_container(service_name).get_publisher(by_port=port)
         return publisher.URL, publisher.PublishedPort
 
     @wait_container_is_ready(HTTPError, URLError)
-    def wait_for(self, url: str) -> 'DockerCompose':
+    def wait_for(self, url: str) -> "DockerCompose":
         """
         Waits for a response from a given URL. This is typically used to block until a service in
         the environment has started and is responding. Note that it does not assert any sort of
@@ -399,5 +409,7 @@ class DockerCompose:
         Args:
             url: URL from one of the services in the environment to use to wait on.
         """
-        with urlopen(url) as r: r.read()  # noqa
+        # fmt:off
+        with urlopen(url) as r: r.read()  # noqa: E701
+        # fmt:on
         return self
