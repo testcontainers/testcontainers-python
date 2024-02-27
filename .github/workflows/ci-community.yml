@@ -61,13 +61,11 @@ jobs:
           gh run watch ${{ github.run_id }}
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-      - name: Setup Poetry
-        run: pipx install poetry
-      - name: Setup python ${{ matrix.python-version }}
-        uses: actions/setup-python@v4
+      - name: Set up Python
+        uses: .github/actions/setup-env
         with:
+          auto-checkout: false
           python-version: ${{ matrix.python-version }}
-          cache: poetry
       - name: Install Python dependencies
         run: poetry install -E ${{ matrix.module }}
       - name: Run tests
