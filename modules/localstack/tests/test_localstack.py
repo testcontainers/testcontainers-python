@@ -6,13 +6,13 @@ from testcontainers.localstack import LocalStackContainer
 
 def test_docker_run_localstack():
     with LocalStackContainer() as localstack:
-        resp = urllib.request.urlopen(f'{localstack.get_url()}/health')
-        services = json.loads(resp.read().decode())['services']
+        resp = urllib.request.urlopen(f"{localstack.get_url()}/health")
+        services = json.loads(resp.read().decode())["services"]
 
         # Check that all services are running
-        assert all(value == 'available' for value in services.values())
+        assert all(value == "available" for value in services.values())
         # Check that some of the services keys
-        assert all(test_service in services for test_service in ['dynamodb', 'sns', 'sqs'])
+        assert all(test_service in services for test_service in ["dynamodb", "sns", "sqs"])
 
 
 def test_localstack_boto3():

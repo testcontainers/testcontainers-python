@@ -10,12 +10,14 @@
 #    WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the
 #    License for the specific language governing permissions and limitations
 #    under the License.
-import boto3
 import functools as ft
 import os
-from testcontainers.core.waiting_utils import wait_for_logs
-from testcontainers.core.container import DockerContainer
 from typing import Any, Optional
+
+import boto3
+
+from testcontainers.core.container import DockerContainer
+from testcontainers.core.waiting_utils import wait_for_logs
 
 
 class LocalStackContainer(DockerContainer):
@@ -34,9 +36,15 @@ class LocalStackContainer(DockerContainer):
             >>> tables
             {'TableNames': [], ...}
     """
-    def __init__(self, image: str = 'localstack/localstack:2.0.1', edge_port: int = 4566,
-                 region_name: Optional[str] = None, **kwargs) -> None:
-        super(LocalStackContainer, self).__init__(image, **kwargs)
+
+    def __init__(
+        self,
+        image: str = "localstack/localstack:2.0.1",
+        edge_port: int = 4566,
+        region_name: Optional[str] = None,
+        **kwargs,
+    ) -> None:
+        super().__init__(image, **kwargs)
         self.edge_port = edge_port
         self.region_name = region_name or os.environ.get("AWS_DEFAULT_REGION", "us-west-1")
         self.with_exposed_ports(self.edge_port)
@@ -54,7 +62,7 @@ class LocalStackContainer(DockerContainer):
         Returns:
             self: Container to allow chaining of 'with_*' calls.
         """
-        return self.with_env('SERVICES', ','.join(services))
+        return self.with_env("SERVICES", ",".join(services))
 
     def get_url(self) -> str:
         """
@@ -64,7 +72,7 @@ class LocalStackContainer(DockerContainer):
         """
         host = self.get_container_host_ip()
         port = self.get_exposed_port(self.edge_port)
-        return f'http://{host}:{port}'
+        return f"http://{host}:{port}"
 
     @ft.wraps(boto3.client)
     def get_client(self, name, **kwargs) -> Any:
@@ -79,5 +87,5 @@ class LocalStackContainer(DockerContainer):
 
     def start(self, timeout: float = 60) -> "LocalStackContainer":
         super().start()
-        wait_for_logs(self, r'Ready\.\n', timeout=timeout)
+        wait_for_logs(self, r"Ready\.\n", timeout=timeout)
         return self

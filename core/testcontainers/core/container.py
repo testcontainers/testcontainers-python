@@ -1,12 +1,13 @@
+import contextlib
 import os
 from platform import system
-from typing import Optional, Tuple
+from typing import Optional
 
 from docker.models.containers import Container
 
 from testcontainers.core.docker_client import DockerClient
 from testcontainers.core.exceptions import ContainerStartException
-from testcontainers.core.utils import setup_logger, inside_container, is_arm
+from testcontainers.core.utils import inside_container, is_arm, setup_logger
 from testcontainers.core.waiting_utils import wait_container_is_ready
 
 logger = setup_logger(__name__)
@@ -36,34 +37,40 @@ class DockerContainer:
         self._name = None
         self._kwargs = kwargs
 
-    def with_env(self, key: str, value: str) -> 'DockerContainer':
+    def with_env(self, key: str, value: str) -> "DockerContainer":
         self.env[key] = value
         return self
 
-    def with_bind_ports(self, container: int, host: int = None) -> 'DockerContainer':
+    def with_bind_ports(self, container: int, host: Optional[int] = None) -> "DockerContainer":
         self.ports[container] = host
         return self
 
-    def with_exposed_ports(self, *ports: int) -> 'DockerContainer':
+    def with_exposed_ports(self, *ports: int) -> "DockerContainer":
         for port in ports:
             self.ports[port] = None
         return self
 
-    def with_kwargs(self, **kwargs) -> 'DockerContainer':
+    def with_kwargs(self, **kwargs) -> "DockerContainer":
         self._kwargs = kwargs
         return self
 
-    def maybe_emulate_amd64(self) -> 'DockerContainer':
+    def maybe_emulate_amd64(self) -> "DockerContainer":
         if is_arm():
-            return self.with_kwargs(platform='linux/amd64')
+            return self.with_kwargs(platform="linux/amd64")
         return self
 
-    def start(self) -> 'DockerContainer':
+    def start(self) -> "DockerContainer":
         logger.info("Pulling image %s", self.image)
         docker_client = self.get_docker_client()
         self._container = docker_client.run(
-            self.image, command=self._command, detach=True, environment=self.env, ports=self.ports,
-            name=self._name, volumes=self.volumes, **self._kwargs
+            self.image,
+            command=self._command,
+            detach=True,
+            environment=self.env,
+            ports=self.ports,
+            name=self._name,
+            volumes=self.volumes,
+            **self._kwargs
         )
         logger.info("Container started: %s", self._container.short_id)
         return self
@@ -71,7 +78,7 @@ class DockerContainer:
     def stop(self, force=True, delete_volume=True) -> None:
         self._container.remove(force=force, v=delete_volume)
 
-    def __enter__(self) -> 'DockerContainer':
+    def __enter__(self) -> "DockerContainer":
         return self.start()
 
     def __exit__(self, exc_type, exc_val, exc_tb) -> None:
@@ -82,11 +89,9 @@ class DockerContainer:
         __del__ runs when Python attempts to garbage collect the object.
         In case of leaky test design, we still attempt to clean up the container.
         """
-        try:
+        with contextlib.suppress(Exception):
             if self._container is not None:
                 self.stop()
-        finally:
-            pass
 
     def get_container_host_ip(self) -> str:
         # infer from docker host
@@ -94,7 +99,7 @@ class DockerContainer:
         if not host:
             return "localhost"
         # see https://github.com/testcontainers/testcontainers-python/issues/415
-        if host == "localnpipe" and "Windows" == system():
+        if host == "localnpipe" and system() == "Windows":
             return "localhost"
 
         # check testcontainers itself runs inside docker container
@@ -122,16 +127,16 @@ class DockerContainer:
                 return port
         return mapped_port
 
-    def with_command(self, command: str) -> 'DockerContainer':
+    def with_command(self, command: str) -> "DockerContainer":
         self._command = command
         return self
 
-    def with_name(self, name: str) -> 'DockerContainer':
+    def with_name(self, name: str) -> "DockerContainer":
         self._name = name
         return self
 
-    def with_volume_mapping(self, host: str, container: str, mode: str = 'ro') -> 'DockerContainer':
-        mapping = {'bind': container, 'mode': mode}
+    def with_volume_mapping(self, host: str, container: str, mode: str = "ro") -> "DockerContainer":
+        mapping = {"bind": container, "mode": mode}
         self.volumes[host] = mapping
         return self
 
@@ -141,12 +146,12 @@ class DockerContainer:
     def get_docker_client(self) -> DockerClient:
         return self._docker
 
-    def get_logs(self) -> Tuple[str, str]:
+    def get_logs(self) -> tuple[str, str]:
         if not self._container:
             raise ContainerStartException("Container should be started before getting logs")
         return self._container.logs(stderr=False), self._container.logs(stdout=False)
 
-    def exec(self, command) -> Tuple[int, str]:
+    def exec(self, command) -> tuple[int, str]:
         if not self._container:
             raise ContainerStartException("Container should be started before executing a command")
         return self._container.exec_run(command)

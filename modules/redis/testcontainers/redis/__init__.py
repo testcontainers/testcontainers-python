@@ -11,11 +11,12 @@
 #    License for the specific language governing permissions and limitations
 #    under the License.
 
+from typing import Optional
+
 import redis
 from testcontainers.core.container import DockerContainer
 from testcontainers.core.utils import raise_for_deprecated_parameter
 from testcontainers.core.waiting_utils import wait_container_is_ready
-from typing import Optional
 
 
 class RedisContainer(DockerContainer):
@@ -31,10 +32,10 @@ class RedisContainer(DockerContainer):
             >>> with RedisContainer() as redis_container:
             ...     redis_client = redis_container.get_client()
     """
-    def __init__(self, image: str = "redis:latest", port: int = 6379,
-                 password: Optional[str] = None, **kwargs) -> None:
+
+    def __init__(self, image: str = "redis:latest", port: int = 6379, password: Optional[str] = None, **kwargs) -> None:
         raise_for_deprecated_parameter(kwargs, "port_to_expose", "port")
-        super(RedisContainer, self).__init__(image, **kwargs)
+        super().__init__(image, **kwargs)
         self.port = port
         self.password = password
         self.with_exposed_ports(self.port)

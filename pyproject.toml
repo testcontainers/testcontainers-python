@@ -111,9 +111,9 @@ selenium = ["selenium"]
 pytest = "7.4.3"
 pytest-cov = "4.1.0"
 sphinx = "^7.2.6"
-flake8 = "^6.1.0"
 pg8000 = "*"
 twine = "^4.0.2"
+mypy = "1.7.1"
 
 [[tool.poetry.source]]
 name = "PyPI"
@@ -138,6 +138,119 @@ exclude_lines = [
     "pass",
     "raise NotImplementedError" # TODO: used in core/generic.py, not sure we need DbContainer
 ]
+
+[tool.ruff.flake8-type-checking]
+strict = true
+
+[tool.ruff]
+target-version = "py39"
+line-length = 120
+fix = true
+fixable = ["I"]
+src = ["core", "modules/*"]
+exclude = ["**/tests/**/*.py"]
+select = [
+    # flake8-2020
+    "YTT",
+    # flake8-bugbear
+    "B",
+    # flake8-builtins
+    "A",
+    # flake8-comprehensions
+    "C4",
+    # flake8-debugger
+    "T10",
+    # flake8-print
+    "T20",
+    # flake8-pytest-style
+    "PT",
+    # flake8-simplify
+    "SIM",
+    # flake8-tidy-imports
+    "TID",
+    # flake8-type-checking
+    "TCH",
+    # isort
+    "I",
+    # mccabe
+    "C90",
+    # pycodestyle
+    "E", "W",
+    # pyflakes
+    "F",
+    # pygrep-hooks
+    "PGH",
+    # pyupgrade
+    "UP",
+    # ruff
+    "RUF",
+    # TODO: security, enable via line below
+    # "S",
+]
+ignore = [
+    # line too long (already checked by black)
+    "E501",
+    # the must-have __init__.py (we are using package namespaces)
+    "INP001"
+]
+
+
+[tool.mypy]
+python_version = "3.9"
+namespace_packages = true
+explicit_package_bases = true
+pretty = true
+show_error_codes = true
+strict = true
+fast_module_lookup = true
+modules = ["testcontainers.core"]
+mypy_path = [
+    "core",
+#    "modules/arangodb",
+#    "modules/azurite",
+#    "modules/clickhouse",
+#    "modules/elasticsearch",
+#    "modules/google",
+#    "modules/k3s",
+#    "modules/kafka",
+#    "modules/keycloak",
+#    "modules/localstack",
+#    "modules/minio",
+#    "modules/mongodb",
+#    "modules/mssql",
+#    "modules/mysql",
+#    "modules/neo4j",
+#    "modules/nginx",
+#    "modules/opensearch",
+#    "modules/oracle",
+#    "modules/postgres",
+#    "modules/rabbitmq",
+#    "modules/redis",
+#    "modules/selenium"
+]
+enable_error_code = [
+    "ignore-without-code",
+    "redundant-expr",
+    "truthy-bool",
+]
+
+[[tool.mypy.overrides]]
+module = ['tests.*']
+# in pytest we allow fixtures to be more relaxed, though we check the untyped functions
+check_untyped_defs = true
+disable_error_code = [
+    'no-untyped-def'
+]
+
+[[tool.mypy.overrides]]
+module = ['docker.*']
+# docker still doesn't have type annotations (not even 7.0)
+ignore_missing_imports = true
+
+[[tool.mypy.overrides]]
+module = ['wrapt.*']
+# wrapt doesn't have type annotations
+ignore_missing_imports = true
 
 [build-system]
 requires = ["poetry-core"]

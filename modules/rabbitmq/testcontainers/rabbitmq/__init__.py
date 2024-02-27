@@ -2,6 +2,7 @@ import os
 from typing import Optional
 
 import pika
+
 from testcontainers.core.container import DockerContainer
 from testcontainers.core.waiting_utils import wait_container_is_ready
 
@@ -23,8 +24,15 @@ class RabbitMqContainer(DockerContainer):
             ...    connection = pika.BlockingConnection(rabbitmq.get_connection_params())
             ...    channel = connection.channel()
     """
-    def __init__(self, image: str = "rabbitmq:latest", port: Optional[int] = None,
-                 username: Optional[str] = None, password: Optional[str] = None, **kwargs) -> None:
+
+    def __init__(
+        self,
+        image: str = "rabbitmq:latest",
+        port: Optional[int] = None,
+        username: Optional[str] = None,
+        password: Optional[str] = None,
+        **kwargs
+    ) -> None:
         """Initialize the RabbitMQ test container.
 
         Args:
@@ -33,7 +41,7 @@ class RabbitMqContainer(DockerContainer):
             username: RabbitMQ username.
             password: RabbitMQ password.
         """
-        super(RabbitMqContainer, self).__init__(image=image, **kwargs)
+        super().__init__(image=image, **kwargs)
         self.port = port or int(os.environ.get("RABBITMQ_NODE_PORT", 5672))
         self.username = username or os.environ.get("RABBITMQ_DEFAULT_USER", "guest")
         self.password = password or os.environ.get("RABBITMQ_DEFAULT_PASS", "guest")

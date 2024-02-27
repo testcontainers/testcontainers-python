@@ -58,11 +58,12 @@ The snippet above will spin up a postgres database in a container. The :code:`ge
 Installation
 ------------
 
-The suite of testcontainers packages is available on `PyPI <https://pypi.org/project/testcontainers/>`_, and individual packages can be installed using :code:`pip`. We recommend installing the package you need by running :code:`pip install testcontainers-<feature>`, e.g., :code:`pip install testcontainers-postgres`.
+The suite of testcontainers packages is available on `PyPI <https://pypi.org/project/testcontainers/>`_,
+and individual packages can be installed using :code:`pip`.
 
-.. note::
+Version `4.0.0` onwards we do not support the `testcontainers-*` packages as it is unsutainable to maintain ownership.
 
-    For backwards compatibility, packages can also be installed by specifying `extras <https://setuptools.readthedocs.io/en/latest/setuptools.html#declaring-extras-optional-features-with-their-own-dependencies>`__, e.g., :code:`pip install testcontainers[postgres]`.
+Instead packages can be installed by specifying `extras <https://setuptools.readthedocs.io/en/latest/setuptools.html#declaring-extras-optional-features-with-their-own-dependencies>`__, e.g., :code:`pip install testcontainers[postgres]`.
 
 
 Docker in Docker (DinD)
@@ -80,8 +81,8 @@ We recommend you use a `virtual environment <https://virtualenv.pypa.io/en/stabl
 
 .. code-block:: bash
 
-    pip install -r requirements/[your python version].txt
-    pytest -s
+    poetry install --all-extras
+    make <your-module>/tests
 
 Package Structure
 ^^^^^^^^^^^^^^^^^
@@ -90,23 +91,24 @@ Testcontainers is a collection of `implicit namespace packages <https://peps.pyt
 
 .. code-block:: bash
 
-    # One folder per feature.
-    [feature name]
-        # Folder without __init__.py for implicit namespace packages.
-        testcontainers
-            # Implementation as namespace package with __init__.py.
-            [feature name]
-                __init__.py
-                # Other files for this
-                ...
-        # Tests for the feature.
-        tests
-            test_[feature_name].py
-            ...
-        # README for this feature.
-        README.rst
-        # Setup script for this feature.
-        setup.py
+      modules
+      # One folder per feature.
+      [feature name]
+          # Folder without __init__.py for implicit namespace packages.
+          testcontainers
+              # Implementation as namespace package with __init__.py.
+              [feature name]
+                  __init__.py
+                  # Other files for this
+                  ...
+          # Tests for the feature.
+          tests
+              test_[some_aspect_for_the_feature].py
+              ...
+          # README for this feature.
+          README.rst
+          # Setup script for this feature.
+          setup.py
 
 Contributing a New Feature
 ^^^^^^^^^^^^^^^^^^^^^^^^^^
