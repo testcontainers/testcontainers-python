@@ -29,7 +29,7 @@ jobs:
         uses: ./.github/actions/setup-env
       - name: build package
         run: poetry build
-      # this action uploads packages from the `dist/` directory
+      # this action uploads packages from the `dist/` directory, which poetry has built in the previous step
       # usable once we set up trusted publishing, see https://docs.pypi.org/trusted-publishers/using-a-publisher/
       - name: push package
         uses: pypa/gh-action-pypi-publish@release/v1
