@@ -81,7 +81,7 @@ class ComposeContainer:
 
         remaining_publishers = [
             r for r in remaining_publishers
-            if (":" in r.URL) is (prefer_ip_version == "IPv6")
+            if self._matches_protocol(prefer_ip_version, r)
         ]
 
         if by_port:
@@ -106,6 +106,10 @@ class ComposeContainer:
                 f" (but {len(remaining_publishers)})"
             ),
         )
+
+    @staticmethod
+    def _matches_protocol(prefer_ip_version, r):
+        return (":" in r.URL) is (prefer_ip_version == "IPv6")
     # fmt:on
 
 
