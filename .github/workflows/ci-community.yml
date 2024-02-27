@@ -64,7 +64,6 @@ jobs:
       - name: Set up Python
         uses: ./.github/actions/setup-env
         with:
-          auto-checkout: false
           python-version: ${{ matrix.python-version }}
       - name: Install Python dependencies
         run: poetry install -E ${{ matrix.module }}

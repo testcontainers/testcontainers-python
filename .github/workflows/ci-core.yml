@@ -11,11 +11,13 @@ on:
 jobs:
   test:
     strategy:
+      fail-fast: false
       matrix:
         os: [ ubuntu ]
         python-version: ["3.9", "3.10", "3.11"]
     runs-on: ${{ matrix.os }}-latest
     steps:
+      - uses: actions/checkout@v4
       - name: Set up Python
         uses: ./.github/actions/setup-env
         with:

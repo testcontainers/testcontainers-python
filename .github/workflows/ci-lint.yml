@@ -9,9 +9,10 @@ on:
     branches: [main]
 
 jobs:
-  all:
+  python:
     runs-on: ubuntu-latest
     steps:
+      - uses: actions/checkout@v4
       - name: Setup Env
         uses: ./.github/actions/setup-env
       - name: Install Python dependencies

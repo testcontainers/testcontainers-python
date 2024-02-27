@@ -4,18 +4,12 @@ description: set up the python environment
 inputs:
   python-version:
     description: "The python version to install and use"
-    default: "3.9"  # we default to the minimum python version for the project
-    required: false
-  auto-checkout:
-    description: "To perform the checkout or not. Might have done the checkout earlier"
-    default: "true"
+    default: "3.11"  # we default to latest supported
     required: false
 
 runs:
   using: composite
   steps:
-    - uses: actions/checkout@v4
-      if: ${{ inputs.auto-checkout == "true" }}
     - name: Setup Poetry
       run: pipx install poetry
       shell: bash
