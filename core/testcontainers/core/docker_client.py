@@ -14,6 +14,7 @@ import atexit
 import functools as ft
 import os
 import urllib
+from pathlib import Path
 from typing import Optional, Union
 
 import docker
@@ -23,15 +24,9 @@ from docker.models.containers import Container, ContainerCollection
 from .utils import default_gateway_ip, inside_container, setup_logger
 
 LOGGER = setup_logger(__name__)
-
-
-def _stop_container(container: Container) -> None:
-    try:
-        container.stop()
-    except NotFound:
-        pass
-    except Exception as ex:
-        LOGGER.warning("failed to shut down container %s with image %s: %s", container.id, container.image, ex)
+TC_FILE = ".testcontainers.properties"
+TC_GLOBAL = Path.home() / TC_FILE
+TC_LOCAL = Path.cwd() / TC_FILE
 
 
 class DockerClient:
@@ -40,22 +35,13 @@ class DockerClient:
     """
 
     def __init__(self, **kwargs) -> None:
-        docker_host = DockerClient.read_docker_host_from_properties()
+        docker_host = read_tc_properties().get("tc.host")
 
         if docker_host:
-            print(f"using host {docker_host}")
+            LOGGER.info(f"using host {docker_host}")
             self.client = docker.DockerClient(base_url=docker_host)
         else:
             self.client = docker.from_env(**kwargs)
-
-    def read_docker_host_from_properties():
-        try:
-            with open(os.path.expanduser('~/.testcontainers.properties')) as f:
-                for line in f:
-                    if line.startswith('tc.host'):
-                        return line.split('=')[1].strip()
-        except FileNotFoundError:
-            return None
 
     @ft.wraps(ContainerCollection.run)
     def run(
@@ -138,3 +124,27 @@ class DockerClient:
             if ip_address:
                 return ip_address
         return "localhost"
+
+
+@ft.cache
+def read_tc_properties() -> dict[str, str]:
+    tc_files = [item for item in [TC_GLOBAL, TC_LOCAL] if os.path.exists(item)]
+    if not tc_files:
+        return {}
+    settings = {}
+
+    for file in tc_files:
+        tuples = []
+        with open(file) as contents:
+            tuples = [line.split("=") for line in contents.readlines() if "=" in line]
+            settings = {**settings, **{item[0]: item[1] for item in tuples}}
+    return settings
+
+
+def _stop_container(container: Container) -> None:
+    try:
+        container.stop()
+    except NotFound:
+        pass
+    except Exception as ex:
+        LOGGER.warning("failed to shut down container %s with image %s: %s", container.id, container.image, ex)

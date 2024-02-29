@@ -1,5 +1,4 @@
 import contextlib
-import os
 from platform import system
 from typing import Optional
 
