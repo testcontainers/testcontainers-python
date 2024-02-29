@@ -84,6 +84,7 @@ pika = { version = "*", optional = true }
 redis = { version = "*", optional = true }
 selenium = { version = "*", optional = true }
 anyio = "^4.3.0"
+pre-commit = "^3.6.2"
 
 [tool.poetry.extras]
 arangodb = ["python-arango"]

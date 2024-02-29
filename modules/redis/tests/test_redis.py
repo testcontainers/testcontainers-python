@@ -5,8 +5,6 @@ import redis
 import pytest
 
 
-
-
 def test_docker_run_redis():
     config = RedisContainer()
     with config as redis:
@@ -26,28 +24,30 @@ def test_docker_run_redis_with_password():
         client.set("hello", "world")
         assert client.get("hello") == "world"
 
-pytest.mark.usefixtures('anyio_backend') 
-@pytest.mark.parametrize('anyio_backend', ['asyncio'])
-async def test_key_set_in_async_redis(anyio_backend):
-        with AsyncRedisContainer() as container:
-            async_redis_client: redis.Redis = await container.get_async_client(
-                decode_responses=True
-            )
-            key = "key"
-            expected_value = 1
-            await async_redis_client.set(key, expected_value)
-            actual_value = await async_redis_client.get(key)
-            assert int(actual_value) == expected_value
 
-pytest.mark.usefixtures('anyio_backend') 
-@pytest.mark.parametrize('anyio_backend', ['asyncio'])
+pytest.mark.usefixtures("anyio_backend")
+
+
+@pytest.mark.parametrize("anyio_backend", ["asyncio"])
+async def test_key_set_in_async_redis(anyio_backend):
+    with AsyncRedisContainer() as container:
+        async_redis_client: redis.Redis = await container.get_async_client(decode_responses=True)
+        key = "key"
+        expected_value = 1
+        await async_redis_client.set(key, expected_value)
+        actual_value = await async_redis_client.get(key)
+        assert int(actual_value) == expected_value
+
+
+pytest.mark.usefixtures("anyio_backend")
+
+
+@pytest.mark.parametrize("anyio_backend", ["asyncio"])
 @pytest.mark.skip(reason="Need to sort out async pub/sub")
 async def test_docker_run_async_redis(anyio_backend):
     config = AsyncRedisContainer()
     with config as container:
-        client: redis.Redis = await container.get_async_client(
-                decode_responses=True
-            )
+        client: redis.Redis = await container.get_async_client(decode_responses=True)
         p = await client.pubsub()
         await p.subscribe("test")
         await client.publish("test", "new_msg")
@@ -55,31 +55,31 @@ async def test_docker_run_async_redis(anyio_backend):
         assert "data" in msg
         assert b"new_msg", msg["data"]
 
-pytest.mark.usefixtures('anyio_backend') 
-@pytest.mark.parametrize('anyio_backend', ['asyncio'])
+
+pytest.mark.usefixtures("anyio_backend")
+
+
+@pytest.mark.parametrize("anyio_backend", ["asyncio"])
 async def test_docker_run_async_redis_with_password(anyio_backend):
     config = AsyncRedisContainer(password="mypass")
     with config as container:
-        client: redis.Redis = await container.get_async_client(
-                decode_responses=True
-            )
+        client: redis.Redis = await container.get_async_client(decode_responses=True)
         await client.set("hello", "world")
         assert await client.get("hello") == "world"
 
 
+pytest.mark.usefixtures("anyio_backend")
 
-pytest.mark.usefixtures('anyio_backend') 
-@pytest.mark.parametrize('anyio_backend', ['asyncio'])
+
+@pytest.mark.parametrize("anyio_backend", ["asyncio"])
 async def test_key_set_in_async(anyio_backend):
-        with AsyncRedisContainer() as container:
-            async_redis_client: redis.Redis = await container.get_async_client(
-                decode_responses=True
-            )
-            key = "key"
-            expected_value = 1
-            await async_redis_client.set(key, expected_value)
-            actual_value = await async_redis_client.get(key)
-            assert int(actual_value) == expected_value
+    with AsyncRedisContainer() as container:
+        async_redis_client: redis.Redis = await container.get_async_client(decode_responses=True)
+        key = "key"
+        expected_value = 1
+        await async_redis_client.set(key, expected_value)
+        actual_value = await async_redis_client.get(key)
+        assert int(actual_value) == expected_value
 
 
 def wait_for_message(pubsub, timeout=1, ignore_subscribe_messages=True):
