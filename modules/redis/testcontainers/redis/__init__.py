@@ -14,6 +14,7 @@
 from typing import Optional
 
 import redis
+from redis.asyncio import Redis as asyncRedis
 from testcontainers.core.container import DockerContainer
 from testcontainers.core.utils import raise_for_deprecated_parameter
 from testcontainers.core.waiting_utils import wait_container_is_ready
@@ -69,3 +70,34 @@ class RedisContainer(DockerContainer):
         super().start()
         self._connect()
         return self
+
+
+
+class AsyncRedisContainer(RedisContainer):
+    """
+    Redis container.
+
+    Example
+    -------
+    .. doctest::
+
+        >>> from testcontainers.redis import AsyncRedisContainer
+
+        >>> with AsyncRedisContainer() as redis_container:
+        ...     redis_client =await  redis_container.get_async_client()
+    """
+
+    def __init__(
+        self, image="redis:latest", port_to_expose=6379, password=None, **kwargs
+    ):
+        super(AsyncRedisContainer, self).__init__(
+            image, port_to_expose, password, **kwargs
+        )
+
+    async def get_async_client(self, **kwargs):
+        return await asyncRedis(
+            host=self.get_container_host_ip(),
+            port=self.get_exposed_port(self.port),
+            password=self.password,
+            **kwargs,
+        )

@@ -83,6 +83,7 @@ psycopg2-binary = { version = "*", optional = true }
 pika = { version = "*", optional = true }
 redis = { version = "*", optional = true }
 selenium = { version = "*", optional = true }
+anyio = "^4.3.0"
 
 [tool.poetry.extras]
 arangodb = ["python-arango"]
