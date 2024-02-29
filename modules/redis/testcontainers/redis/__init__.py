@@ -72,6 +72,7 @@ class RedisContainer(DockerContainer):
         return self
 
 
+
 class AsyncRedisContainer(RedisContainer):
     """
     Redis container.
@@ -86,8 +87,12 @@ class AsyncRedisContainer(RedisContainer):
         ...     redis_client =await  redis_container.get_async_client()
     """
 
-    def __init__(self, image="redis:latest", port_to_expose=6379, password=None, **kwargs):
-        super().__init__(image, port_to_expose, password, **kwargs)
+    def __init__(
+        self, image="redis:latest", port_to_expose=6379, password=None, **kwargs
+    ):
+        super(AsyncRedisContainer, self).__init__(
+            image, port_to_expose, password, **kwargs
+        )
 
     async def get_async_client(self, **kwargs):
         return await asyncRedis(
