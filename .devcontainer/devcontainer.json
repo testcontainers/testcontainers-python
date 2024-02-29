@@ -18,7 +18,7 @@
 	// "forwardPorts": [],
 
 	// Use 'postCreateCommand' to run commands after the container is created.
-	"postCreateCommand": "pip install --user -r requirements/ubuntu-latest-3.11.txt",
+	"postCreateCommand": ".devcontainer/commands/post-create-command.sh",
 	"customizations": {
 		"vscode": {
 			"extensions": [
