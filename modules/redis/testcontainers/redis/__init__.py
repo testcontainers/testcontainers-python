@@ -90,7 +90,7 @@ class AsyncRedisContainer(RedisContainer):
     def __init__(
         self, image="redis:latest", port_to_expose=6379, password=None, **kwargs
     ):
-        super(AsyncRedisContainer, self).__init__(
+        super().__init__(
             image, port_to_expose, password, **kwargs
         )
 
