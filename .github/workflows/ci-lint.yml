@@ -9,17 +9,14 @@ on:
     branches: [main]
 
 jobs:
-  all:
+  python:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
-      - name: Setup Poetry
-        run: pipx install poetry
-      - name: Setup python 3.9
-        uses: actions/setup-python@v5
+      - name: Setup Env
+        uses: ./.github/actions/setup-env
         with:
-          python-version: 3.9
-          cache: poetry
+          python-version: "3.9"  # the pre-commit is hooked in as 3.9
       - name: Install Python dependencies
         run: poetry install
       - name: Install pre-commit
