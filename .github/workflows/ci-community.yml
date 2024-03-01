@@ -48,7 +48,7 @@ jobs:
       matrix:
         python-version: [ "3.11" ]
         module: ${{ fromJSON(needs.track-modules.outputs.changed_modules) }}
-    if: ${{ fromJSON(needs.track-modules.outputs.changed_modules) > 0 }}
+    if: ${{ fromJSON(needs.track-modules.outputs.changed_modules) }}
     runs-on: ubuntu-latest
     steps:
       - name: Checkout contents
