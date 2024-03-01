@@ -33,10 +33,14 @@ jobs:
         id: compute-changes
         run: |
           modules=$(echo "${{ steps.changed-files.outputs.all_changed_files }}" |  jq '.[] | split("/") | first' | jq -s -c '. | unique')
+          count=$(echo $modules | jq '. | length')
           echo "computed_modules=$modules"
+          echo "module_count=$count"
           echo "computed_modules=$modules" >> $GITHUB_OUTPUT
+          echo "module_count=$count" >> $GITHUB_OUTPUT
     outputs:
       changed_modules: ${{ steps.compute-changes.outputs.computed_modules }}
+      changed_module_count: ${{ steps.compute-changes.outputs.module_count }}
   test:
     needs: [track-modules]
     strategy:
@@ -44,6 +48,7 @@ jobs:
       matrix:
         python-version: [ "3.11" ]
         module: ${{ fromJSON(needs.track-modules.outputs.changed_modules) }}
+    if: ${{ fromJSON(needs.track-modules.outputs.changed_modules) > 0 }}
     runs-on: ubuntu-latest
     steps:
       - name: Checkout contents
