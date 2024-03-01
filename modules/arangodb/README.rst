@@ -1,2 +1,2 @@
 .. autoclass:: testcontainers.arangodb.ArangoDbContainer
-.arangodb
+toto
