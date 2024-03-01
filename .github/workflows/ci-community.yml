@@ -39,7 +39,7 @@ jobs:
       changed_modules: ${{ steps.compute-changes.outputs.computed_modules }}
   test:
     needs: [track-modules]
-    if: ${{ needs.track-modules.outputs.changed_modules != "[]" }}
+    if: ${{ needs.track-modules.outputs.changed_modules != '[]' }}
     strategy:
       fail-fast: false
       matrix:
