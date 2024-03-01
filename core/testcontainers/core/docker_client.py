@@ -27,7 +27,6 @@ from .utils import default_gateway_ip, inside_container, setup_logger
 LOGGER = setup_logger(__name__)
 TC_FILE = ".testcontainers.properties"
 TC_GLOBAL = Path.home() / TC_FILE
-TC_LOCAL = Path.cwd() / TC_FILE
 
 
 class DockerClient:
@@ -129,7 +128,13 @@ class DockerClient:
 
 @ft.cache
 def read_tc_properties() -> dict[str, str]:
-    tc_files = [item for item in [TC_GLOBAL, TC_LOCAL] if exists(item)]
+    """
+    Read the .testcontainers.properties for settings. (see the Java implementation for details)
+    Currently we only support the ~/.testcontainers.properties but may extend to per-project variables later.
+
+    :return: the merged properties from the sources.
+    """
+    tc_files = [item for item in [TC_GLOBAL] if exists(item)]
     if not tc_files:
         return {}
     settings = {}
