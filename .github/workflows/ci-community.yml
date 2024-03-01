@@ -32,19 +32,19 @@ jobs:
       - name: Compute modules from files
         id: compute-changes
         run: |
-          modules=$(echo "${{ steps.changed-files.outputs.all_changed_files }}" |  jq '.[] | split("/") | nth(1)' | jq -s -c '. | unique')
+          modules=$(echo "${{ steps.changed-files.outputs.all_changed_files }}" |  jq '.[] | split("/") | first' | jq -s -c '. | unique')
           echo "computed_modules=$modules"
           echo "computed_modules=$modules" >> $GITHUB_OUTPUT
     outputs:
       changed_modules: ${{ steps.compute-changes.outputs.computed_modules }}
   test:
+    needs: [track-files]
     strategy:
       fail-fast: false
       matrix:
         python-version: [ "3.11" ]
         module: ${{ fromJSON(needs.track-files.outputs.changed_modules) }}
     runs-on: ubuntu-latest
-    needs: [track-files]
     steps:
       - name: Checkout contents
         uses: actions/checkout@v4
