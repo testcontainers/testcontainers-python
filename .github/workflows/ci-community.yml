@@ -43,12 +43,12 @@ jobs:
       changed_module_count: ${{ steps.compute-changes.outputs.module_count }}
   test:
     needs: [track-modules]
+    if: ${{ fromJSON(needs.track-modules.outputs.changed_modules) }}
     strategy:
       fail-fast: false
       matrix:
         python-version: [ "3.11" ]
         module: ${{ fromJSON(needs.track-modules.outputs.changed_modules) }}
-    if: ${{ fromJSON(needs.track-modules.outputs.changed_modules) }}
     runs-on: ubuntu-latest
     steps:
       - name: Checkout contents
