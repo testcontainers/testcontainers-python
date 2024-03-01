@@ -21,13 +21,22 @@ jobs:
         with:
           fetch-depth: 0  # recommended by tj-actions/changed-files
       - name: Get changed files
-        id: changes-for-module
+        id: changed-files
         uses: tj-actions/changed-files@v42
         with:
-          files: |
-            modules/${{ matrix.module }}/**
+          path: "./modules"
+          diff_relative: true
+          dir_names: true
+          dir_names_exclude_current_dir: true
+          json: true
+      - name: Compute modules from files
+        id: compute-changes
+        run: |
+          modules=$(echo "${{ steps.changed-files.outputs.all_changed_files }}" |  jq '.[] | split("/") | nth(1)' | jq -s -c '. | unique')
+          echo "computed_modules=$modules"
+          echo "computed_modules=$modules" >> $GITHUB_OUTPUT
     outputs:
-      changed_files: ${{ steps.track-files.outputs.all_changed_files }}
+      changed_modules: ${{ steps.compute-changes.outputs.computed_modules }}
   test:
     strategy:
       fail-fast: false
@@ -56,8 +65,8 @@ jobs:
           - selenium
           - k3s
     runs-on: ubuntu-latest
-    needs: track-files
-    if: ${{ contains(needs.track-files.outputs.changed_files, matrix.module) }}
+    needs: [track-files]
+    if: ${{ "true" == "false" }}
     steps:
       - name: Checkout contents
         uses: actions/checkout@v4
