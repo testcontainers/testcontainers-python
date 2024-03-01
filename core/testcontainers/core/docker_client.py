@@ -14,6 +14,7 @@ import atexit
 import functools as ft
 import os
 import urllib
+from os.path import exists
 from pathlib import Path
 from typing import Optional, Union
 
@@ -128,7 +129,7 @@ class DockerClient:
 
 @ft.cache
 def read_tc_properties() -> dict[str, str]:
-    tc_files = [item for item in [TC_GLOBAL, TC_LOCAL] if os.path.exists(item)]
+    tc_files = [item for item in [TC_GLOBAL, TC_LOCAL] if exists(item)]
     if not tc_files:
         return {}
     settings = {}
