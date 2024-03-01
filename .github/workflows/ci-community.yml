@@ -42,31 +42,9 @@ jobs:
       fail-fast: false
       matrix:
         python-version: [ "3.11" ]
-        module:
-          - arangodb
-          - azurite
-          - clickhouse
-          - elasticsearch
-          - google
-          - kafka
-          - keycloak
-          - localstack
-          - minio
-          - mongodb
-          - mssql
-          - mysql
-          - neo4j
-          - nginx
-          - opensearch
-          - oracle
-          - postgres
-          - rabbitmq
-          - redis
-          - selenium
-          - k3s
+        module: ${{ fromJSON(needs.track-files.outputs.changed_modules) }}
     runs-on: ubuntu-latest
     needs: [track-files]
-    if: false
     steps:
       - name: Checkout contents
         uses: actions/checkout@v4
