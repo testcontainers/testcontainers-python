@@ -34,21 +34,21 @@ jobs:
         run: |
           modules=$(echo "${{ steps.changed-files.outputs.all_changed_files }}" |  jq '.[] | split("/") | first' | jq -s -c '. | unique')
           count=$(echo $modules | jq '. | length')
+          matrix=$(echo $modules | jq '.[] | { module: . }' | jq -s -c '{ include: . }')
           echo "computed_modules=$modules"
           echo "module_count=$count"
           echo "computed_modules=$modules" >> $GITHUB_OUTPUT
           echo "module_count=$count" >> $GITHUB_OUTPUT
+          echo "matrix=$matrix" >> $GITHUB_OUTPUT
     outputs:
+      matrix: ${{ steps.compute-changes.outputs.matrix }}
       changed_modules: ${{ steps.compute-changes.outputs.computed_modules }}
       changed_module_count: ${{ steps.compute-changes.outputs.module_count }}
   test:
     needs: [track-modules]
-    if: ${{ fromJSON(needs.track-modules.outputs.changed_modules) }}
     strategy:
       fail-fast: false
-      matrix:
-        python-version: [ "3.11" ]
-        module: ${{ fromJSON(needs.track-modules.outputs.changed_modules) }}
+      matrix: ${{ fromJSON(needs.track-modules.outputs.matrix) }}
     runs-on: ubuntu-latest
     steps:
       - name: Checkout contents
