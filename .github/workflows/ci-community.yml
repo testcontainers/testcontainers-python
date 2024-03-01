@@ -37,9 +37,9 @@ jobs:
           echo "computed_modules=$modules" >> $GITHUB_OUTPUT
     outputs:
       changed_modules: ${{ steps.compute-changes.outputs.computed_modules }}
-      changed_module_count: ${{ steps.compute-changes.outputs.module_count }}
   test:
     needs: [track-modules]
+    if: ${{ needs.track-modules.outputs.changed_modules != "[]" }}
     strategy:
       fail-fast: false
       matrix:
