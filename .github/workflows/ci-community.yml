@@ -59,6 +59,8 @@ jobs:
           # cancel and wait for run to end
           gh run cancel ${{ github.run_id }}
           gh run watch ${{ github.run_id }}
+          # then delete the run so it doesn't show as failed
+          gh run delete ${{ github.run_id }}
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       - name: Set up Python
