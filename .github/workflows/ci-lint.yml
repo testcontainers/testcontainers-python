@@ -18,8 +18,6 @@ jobs:
         with:
           python-version: "3.9"  # the pre-commit is hooked in as 3.9
       - name: Install Python dependencies
-        run: poetry install
-      - name: Install pre-commit
-        run: pip install pre-commit
-      - name: Run linter
+        run: poetry install --no-interaction
+      - name: Execute pre-commit handler
         run: pre-commit run -a
