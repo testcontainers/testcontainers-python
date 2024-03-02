@@ -53,6 +53,7 @@ packages = [
     { include = "testcontainers", from = "modules/qdrant" },
     { include = "testcontainers", from = "modules/rabbitmq" },
     { include = "testcontainers", from = "modules/redis" },
+    { include = "testcontainers", from = "modules/registry" },
     { include = "testcontainers", from = "modules/selenium" },
     { include = "testcontainers", from = "modules/weaviate" }
 ]
@@ -94,6 +95,7 @@ selenium = { version = "*", optional = true }
 weaviate-client = { version = "^4.5.4", optional = true }
 chromadb-client = { version = "*", optional = true }
 qdrant-client = { version = "*", optional = true }
+bcrypt = { version = "*", optional = true }
 
 [tool.poetry.extras]
 arangodb = ["python-arango"]
@@ -120,6 +122,7 @@ postgres = []
 qdrant = ["qdrant-client"]
 rabbitmq = ["pika"]
 redis = ["redis"]
+registry = ["bcrypt"]
 selenium = ["selenium"]
 weaviate = ["weaviate-client"]
 chroma = ["chromadb-client"]
