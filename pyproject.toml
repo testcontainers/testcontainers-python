@@ -41,6 +41,7 @@ packages = [
     { include = "testcontainers", from = "modules/mongodb" },
     { include = "testcontainers", from = "modules/mssql" },
     { include = "testcontainers", from = "modules/mysql" },
+    { include = "testcontainers", from = "modules/nats" },
     { include = "testcontainers", from = "modules/neo4j" },
     { include = "testcontainers", from = "modules/nginx" },
     { include = "testcontainers", from = "modules/opensearch" },
@@ -83,6 +84,7 @@ psycopg2-binary = { version = "*", optional = true }
 pika = { version = "*", optional = true }
 redis = { version = "*", optional = true }
 selenium = { version = "*", optional = true }
+nats-py = { version = "*", optional = true }
 
 [tool.poetry.extras]
 arangodb = ["python-arango"]
@@ -98,6 +100,7 @@ minio = ["minio"]
 mongodb = ["pymongo"]
 mssql = ["sqlalchemy", "pymssql"]
 mysql = ["sqlalchemy", "pymysql"]
+nats = ["nats-py"]
 neo4j = ["neo4j"]
 nginx = []
 opensearch = ["opensearch-py"]
@@ -114,6 +117,7 @@ sphinx = "^7.2.6"
 pg8000 = "*"
 twine = "^4.0.2"
 mypy = "1.7.1"
+anyio = "^4.3.0"
 
 [[tool.poetry.source]]
 name = "PyPI"
@@ -219,6 +223,7 @@ mypy_path = [
 #    "modules/mongodb",
 #    "modules/mssql",
 #    "modules/mysql",
+#    "modules/nats",
 #    "modules/neo4j",
 #    "modules/nginx",
 #    "modules/opensearch",

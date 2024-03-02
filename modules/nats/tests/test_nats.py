@@ -10,7 +10,7 @@ pytest.mark.usefixtures("anyio_backend")
 @pytest.mark.parametrize("anyio_backend", ["asyncio"])
 async def test_basic_publishing(anyio_backend):
     with NatsContainer() as container:
-        nc: NATSClient =  container.get_client()
+        nc: NATSClient =  await container.get_client()
          
         topic= str(uuid.uuid4())
     
@@ -19,6 +19,6 @@ async def test_basic_publishing(anyio_backend):
         await nc.publish(topic, b'Test-Containers')
         received_msg = await sub.next_msg()
         print("Received:", received_msg)
-        assert sent_message == received_msg
+        assert sent_message == received_msg.data
         await nc.flush()
         await nc.close()
