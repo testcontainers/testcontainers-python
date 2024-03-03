@@ -11,15 +11,16 @@
 #    License for the specific language governing permissions and limitations
 #    under the License.
 
-from testcontainers.core.container import DockerContainer
-from testcontainers.core.utils import raise_for_deprecated_parameter
-from testcontainers.core.waiting_utils import wait_container_is_ready
-import typing
 
-import asyncio
+# import asyncio
+import typing
+import uuid
+
 import nats
-from nats.errors import ConnectionClosedError, TimeoutError, NoServersError
 from nats.aio.client import Client as NATSClient
+from nats.errors import NoServersError, TimeoutError
+from testcontainers.core.container import DockerContainer
+from testcontainers.core.waiting_utils import wait_container_is_ready
 
 
 class NatsContainer(DockerContainer):
@@ -36,17 +37,33 @@ class NatsContainer(DockerContainer):
             ...     redis_client = redis_container.get_client()
     """
 
-    def __init__(self, image: str = "nats:latest", client_port: int = 4222, manamgent_port:int = 8222, password: typing.Optional[str] = None, **kwargs) -> None:
-        raise_for_deprecated_parameter(kwargs, "port_to_expose", "port")
+    def __init__(
+        self,
+        image: str = "nats:latest",
+        client_port: int = 4222,
+        manamgent_port: int = 8222,
+        password: typing.Optional[str] = None,
+        **kwargs,
+    ) -> None:
         super().__init__(image, **kwargs)
         self.client_port = client_port
         self.management_port = manamgent_port
         self.password = password
-        self.with_exposed_ports(self.client_port,self.management_port)
-        
-    @wait_container_is_ready(TimeoutError,NoServersError)
-    def _connect(self) -> None:
-        pass
+        self.with_exposed_ports(self.client_port, self.management_port)
+
+    @wait_container_is_ready(TimeoutError, NoServersError)
+    def _healthcheck(self) -> None:
+
+        async def _ping():
+            topic = str(uuid.uuid4())
+            nc: NATSClient = await self.get_client()
+            await nc.publish(topic, b"Test-Containers")
+            await nc.flush()
+            await nc.close()
+
+        # loop = asyncio.get_event_loop()
+        # coro = _ping()
+        # return loop.run_until_complete(coro)
 
     async def get_client(self, **kwargs) -> NATSClient:
         """
@@ -62,8 +79,7 @@ class NatsContainer(DockerContainer):
         client = await nats.connect(conn_string)
         return client
 
-
     def start(self) -> "NatsContainer":
         super().start()
-        self._connect()
+        self._healthcheck()
         return self
