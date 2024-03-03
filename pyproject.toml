@@ -109,7 +109,7 @@ selenium = ["selenium"]
 
 [tool.poetry.group.dev.dependencies]
 mypy = "1.7.1"
-pre-commit = "3.6.2"
+pre-commit = "^3.6"
 pg8000 = "*"
 pytest = "7.4.3"
 pytest-cov = "4.1.0"
