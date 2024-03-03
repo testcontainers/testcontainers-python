@@ -1,14 +1,19 @@
 import time
 from io import BytesIO
 from tarfile import TarFile, TarInfo
-from typing import Optional
+from typing import TYPE_CHECKING, Optional
 
 import bcrypt
-from requests import Response, get
+from requests import get
 from requests.auth import HTTPBasicAuth
 from requests.exceptions import ConnectionError, ReadTimeout
+
 from testcontainers.core.container import DockerContainer
 from testcontainers.core.waiting_utils import wait_container_is_ready
+
+if TYPE_CHECKING:
+    from requests import Response
+
 
 class DockerRegistryContainer(DockerContainer):
     # https://docs.docker.com/registry/
@@ -18,8 +23,8 @@ class DockerRegistryContainer(DockerContainer):
         self,
         image: str = "registry:2",
         port: int = 5000,
-        username: str = None,
-        password: str = None,
+        username: Optional[str] = None,
+        password: Optional[str] = None,
         **kwargs,
     ) -> None:
         super().__init__(image=image, **kwargs)
@@ -34,11 +39,9 @@ class DockerRegistryContainer(DockerContainer):
             self.password.encode("utf-8"),
             bcrypt.gensalt(rounds=12, prefix=b"2a"),
         ).decode("utf-8")
-        content = f"{self.username}:{hashed_password}".encode("utf-8")
+        content: bytes = f"{self.username}:{hashed_password}".encode("utf-8")  # noqa: UP012
 
-        with BytesIO() as tar_archive_object, TarFile(
-            fileobj=tar_archive_object, mode="w"
-        ) as tmp_tarfile:
+        with BytesIO() as tar_archive_object, TarFile(fileobj=tar_archive_object, mode="w") as tmp_tarfile:
             tarinfo: TarInfo = TarInfo(name=self.credentials_path)
             tarinfo.size = len(content)
             tarinfo.mtime = time.time()
@@ -65,7 +68,7 @@ class DockerRegistryContainer(DockerContainer):
         else:
             super().start()
 
-        self._readiness_probe()            
+        self._readiness_probe()
         return self
 
     def get_registry(self) -> str:
