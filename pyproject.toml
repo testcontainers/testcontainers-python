@@ -114,6 +114,7 @@ sphinx = "^7.2.6"
 pg8000 = "*"
 twine = "^4.0.2"
 mypy = "1.7.1"
+pre-commit = "3.6.2"
 
 [[tool.poetry.source]]
 name = "PyPI"
