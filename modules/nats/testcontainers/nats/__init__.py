@@ -34,7 +34,7 @@ class NatsContainer(DockerContainer):
             >>> from testcontainers.nats import NatsContainer
 
             >>> with NatsContainer() as nats_container:
-            ...     redis_client = redis_container.get_client()
+            ...     nc = nats_container.get_client()
     """
 
     def __init__(
