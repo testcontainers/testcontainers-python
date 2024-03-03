@@ -20,4 +20,4 @@ jobs:
       - name: Install Python dependencies
         run: poetry install --no-interaction
       - name: Execute pre-commit handler
-        run: pre-commit run -a
+        run: poetry run pre-commit run -a
