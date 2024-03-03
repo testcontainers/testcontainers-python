@@ -48,7 +48,8 @@ packages = [
     { include = "testcontainers", from = "modules/postgres" },
     { include = "testcontainers", from = "modules/rabbitmq" },
     { include = "testcontainers", from = "modules/redis" },
-    { include = "testcontainers", from = "modules/selenium" }
+    { include = "testcontainers", from = "modules/selenium" },
+    { include = "testcontainers", from = "modules/registry" }
 ]
 
 [tool.poetry.urls]
@@ -83,6 +84,7 @@ psycopg2-binary = { version = "*", optional = true }
 pika = { version = "*", optional = true }
 redis = { version = "*", optional = true }
 selenium = { version = "*", optional = true }
+bcrypt = { version = "*", optional = true }
 
 [tool.poetry.extras]
 arangodb = ["python-arango"]
@@ -106,6 +108,7 @@ postgres = ["sqlalchemy", "psycopg2-binary"]
 rabbitmq = ["pika"]
 redis = ["redis"]
 selenium = ["selenium"]
+registry = ["bcrypt"]
 
 [tool.poetry.group.dev.dependencies]
 pytest = "7.4.3"
