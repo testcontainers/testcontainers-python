@@ -53,6 +53,7 @@ packages = [
     { include = "testcontainers", from = "modules/qdrant" },
     { include = "testcontainers", from = "modules/rabbitmq" },
     { include = "testcontainers", from = "modules/redis" },
+    { include = "testcontainers", from = "modules/redpanda" },
     { include = "testcontainers", from = "modules/selenium" },
     { include = "testcontainers", from = "modules/weaviate" }
 ]
@@ -90,6 +91,7 @@ opensearch-py = { version = "*", optional = true }
 cx_Oracle = { version = "*", optional = true }
 pika = { version = "*", optional = true }
 redis = { version = "*", optional = true }
+redpanda = { version = "*", optional = true }
 selenium = { version = "*", optional = true }
 weaviate-client = { version = "^4.5.4", optional = true }
 chromadb-client = { version = "*", optional = true }
@@ -120,6 +122,7 @@ postgres = []
 qdrant = ["qdrant-client"]
 rabbitmq = ["pika"]
 redis = ["redis"]
+redpanda = []
 selenium = ["selenium"]
 weaviate = ["weaviate-client"]
 chroma = ["chromadb-client"]
