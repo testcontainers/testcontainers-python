@@ -70,7 +70,6 @@ influxdb = { version = "*", optional = true }
 influxdb-client = { version = "*", optional = true }
 kubernetes = { version = "*", optional = true }
 pyyaml = { version = "*", optional = true }
-kafka-python = { version = "*", optional = true }
 python-keycloak = { version = "*", optional = true }
 boto3 = { version = "*", optional = true }
 minio = { version = "*", optional = true }
@@ -93,7 +92,7 @@ elasticsearch = []
 google = ["google-cloud-pubsub"]
 influxdb = ["influxdb", "influxdb-client"]
 k3s = ["kubernetes", "pyyaml"]
-kafka = ["kafka-python"]
+kafka = []
 keycloak = ["python-keycloak"]
 localstack = ["boto3"]
 minio = ["minio"]
