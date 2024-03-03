@@ -20,4 +20,4 @@ jobs:
       - name: Install Python dependencies
         run: poetry install --with dev
       - name: Run linter
-        run: pre-commit run -a
+        run: poetry run pre-commit run -a
