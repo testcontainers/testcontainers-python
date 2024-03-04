@@ -108,12 +108,13 @@ redis = ["redis"]
 selenium = ["selenium"]
 
 [tool.poetry.group.dev.dependencies]
+mypy = "1.7.1"
+pre-commit = "^3.6"
+pg8000 = "*"
 pytest = "7.4.3"
 pytest-cov = "4.1.0"
 sphinx = "^7.2.6"
-pg8000 = "*"
 twine = "^4.0.2"
-mypy = "1.7.1"
 anyio = "^4.3.0"
 
 [[tool.poetry.source]]
@@ -140,15 +141,14 @@ exclude_lines = [
     "raise NotImplementedError" # TODO: used in core/generic.py, not sure we need DbContainer
 ]
 
-[tool.ruff.flake8-type-checking]
-strict = true
-
 [tool.ruff]
 target-version = "py39"
 line-length = 120
 fix = true
-fixable = ["I"]
 src = ["core", "modules/*"]
+
+[tool.ruff.lint]
+fixable = ["I"]
 exclude = ["**/tests/**/*.py"]
 select = [
     # flake8-2020
@@ -195,6 +195,8 @@ ignore = [
     "INP001"
 ]
 
+[tool.ruff.lint.flake8-type-checking]
+strict = true
 
 [tool.mypy]
 python_version = "3.9"
