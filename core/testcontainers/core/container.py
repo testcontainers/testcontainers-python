@@ -1,5 +1,4 @@
 import contextlib
-import os
 from platform import system
 from typing import Optional
 
@@ -102,18 +101,18 @@ class DockerContainer:
         if host == "localnpipe" and system() == "Windows":
             return "localhost"
 
-        # check testcontainers itself runs inside docker container
-        if inside_container() and not os.getenv("DOCKER_HOST"):
-            # If newly spawned container's gateway IP address from the docker
-            # "bridge" network is equal to detected host address, we should use
-            # container IP address, otherwise fall back to detected host
-            # address. Even it's inside container, we need to double check,
-            # because docker host might be set to docker:dind, usually in CI/CD environment
-            gateway_ip = self.get_docker_client().gateway_ip(self._container.id)
+        # # check testcontainers itself runs inside docker container
+        # if inside_container() and not os.getenv("DOCKER_HOST") and not host.startswith("http://"):
+        #     # If newly spawned container's gateway IP address from the docker
+        #     # "bridge" network is equal to detected host address, we should use
+        #     # container IP address, otherwise fall back to detected host
+        #     # address. Even it's inside container, we need to double check,
+        #     # because docker host might be set to docker:dind, usually in CI/CD environment
+        #     gateway_ip = self.get_docker_client().gateway_ip(self._container.id)
 
-            if gateway_ip == host:
-                return self.get_docker_client().bridge_ip(self._container.id)
-            return gateway_ip
+        #     if gateway_ip == host:
+        #         return self.get_docker_client().bridge_ip(self._container.id)
+        #     return gateway_ip
         return host
 
     @wait_container_is_ready()
