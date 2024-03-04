@@ -171,6 +171,7 @@ def test_compose_multiple_containers_and_ports():
             code, body = fetch(Request(method="GET", url=url))
 
             expected_code = {
+                80: 200,
                 81: 202,
                 82: 204,
             }.get(code, None)
