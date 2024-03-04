@@ -168,11 +168,19 @@ def test_compose_multiple_containers_and_ports():
         # test correctness of port lookup
         for target, host, mapped in ports:
             assert mapped, f"we have a mapped port for target port {target}"
-            code, body = fetch(Request(method="GET", url=f"http://{host}:{mapped}"))
-            if target == 81:
-                assert code == 202
-            if target == 82:
-                assert code == 204
+            url = f"http://{host}:{mapped}"
+            code, body = fetch(Request(method="GET", url=url))
+
+            expected_code = {
+                81: 202,
+                82: 204,
+            }.get(code, None)
+
+            if not expected_code:
+                continue
+
+            message = f"response '{body}' ({code}) from url {url} should have code {expected_code}"
+            assert code == expected_code, message
 
 
 # noinspection HttpUrlsUsage
