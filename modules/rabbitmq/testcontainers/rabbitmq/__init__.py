@@ -51,9 +51,7 @@ class RabbitMqContainer(DockerContainer):
         self.with_env("RABBITMQ_DEFAULT_USER", self.username)
         self.with_env("RABBITMQ_DEFAULT_PASS", self.password)
 
-    @wait_container_is_ready(
-        pika.exceptions.IncompatibleProtocolError, pika.exceptions.AMQPConnectionError
-    )
+    @wait_container_is_ready(pika.exceptions.IncompatibleProtocolError, pika.exceptions.AMQPConnectionError)
     def readiness_probe(self) -> bool:
         """Test if the RabbitMQ broker is ready."""
         connection = pika.BlockingConnection(self.get_connection_params())
@@ -68,9 +66,7 @@ class RabbitMqContainer(DockerContainer):
         For more details see:
         https://pika.readthedocs.io/en/latest/modules/parameters.html
         """
-        credentials = pika.PlainCredentials(
-            username=self.username, password=self.password
-        )
+        credentials = pika.PlainCredentials(username=self.username, password=self.password)
 
         return pika.ConnectionParameters(
             host=self.get_container_host_ip(),
