@@ -1286,6 +1286,20 @@ cryptography = ">=3.4"
 typing-extensions = ">=4.5.0"
 
 [[package]]
+name = "kafka-python"
+version = "2.0.2"
+description = "Pure Python client for Apache Kafka"
+optional = false
+python-versions = "*"
+files = [
+    {file = "kafka-python-2.0.2.tar.gz", hash = "sha256:04dfe7fea2b63726cd6f3e79a2d86e709d608d74406638c5da33a01d45a9d7e3"},
+    {file = "kafka_python-2.0.2-py2.py3-none-any.whl", hash = "sha256:2d92418c7cb1c298fa6c7f0fb3519b520d0d7526ac6cb7ae2a4fc65a51a94b6e"},
+]
+
+[package.extras]
+crc32c = ["crc32c"]
+
+[[package]]
 name = "keyring"
 version = "24.3.1"
 description = "Store and access your passwords safely."
@@ -3252,4 +3266,4 @@ selenium = ["selenium"]
 [metadata]
 lock-version = "2.0"
 python-versions = ">=3.9,<4.0"
-content-hash = "118e56b91645ea340d5ddc00b543b71ca177ec28d52bb8aeb98491b7616ba09a"
+content-hash = "c092494be845c5f76ff36892af1fd89c23e9445fd4a1014da8f3335c9862f240"

@@ -120,7 +120,7 @@ anyio = "^4.3.0"
 psycopg2-binary = "*"
 pg8000 = "*"
 sqlalchemy = "*"
-
+kafka-python = "^2.0.2"
 
 [[tool.poetry.source]]
 name = "PyPI"
