@@ -146,7 +146,6 @@ def test_compose_multiple_containers_and_ports():
         except:  # noqa
             pass
 
-        containers = multiple.get_containers(include_all=True)
         ports = [
             (
                 80,
