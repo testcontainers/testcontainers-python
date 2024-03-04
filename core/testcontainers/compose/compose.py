@@ -41,7 +41,7 @@ class PublishedPort:
 OT = TypeVar("OT")
 
 
-def one(array: list[OT], exception: Callable[[], Exception]) -> OT:
+def get_only_element_or_raise(array: list[OT], exception: Callable[[], Exception]) -> OT:
     if len(array) != 1:
         e = exception()
         raise e
@@ -97,7 +97,7 @@ class ComposeContainer:
         if len(remaining_publishers) == 0:
             raise NoSuchPortExposed(
                 f"Could not find publisher for for service {self.Service}")
-        return one(
+        return get_only_element_or_raise(
             remaining_publishers,
             lambda: NoSuchPortExposed(
                 "get_publisher failed because there is "
@@ -297,7 +297,7 @@ class DockerCompose:
     ) -> ComposeContainer:
         if not service_name:
             c = self.get_containers(include_all=include_all)
-            return one(c, lambda: ContainerIsNotRunning(
+            return get_only_element_or_raise(c, lambda: ContainerIsNotRunning(
                 'get_container failed because no service_name given '
                 f'and there is not exactly 1 container (but {len(c)})'
             ))
