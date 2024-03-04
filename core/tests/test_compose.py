@@ -92,7 +92,10 @@ def test_compose_logs():
 
     assert len(lines) > 5  # actually 10
     for line in lines[1:]:
-        assert not line or line.startswith(container.Service)
+        # either the line is blank or the first column (|-separated) contains the service name
+        # this is a safe way to split the string
+        # docker changes the prefix between versions 24 and 25
+        assert not line or container.Service in next(iter(line.split("|")), None)
 
 
 # noinspection HttpUrlsUsage
@@ -143,6 +146,7 @@ def test_compose_multiple_containers_and_ports():
         except:  # noqa
             pass
 
+        containers = multiple.get_containers(include_all=True)
         ports = [
             (
                 80,

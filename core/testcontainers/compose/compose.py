@@ -275,9 +275,18 @@ class DockerCompose:
         stdout = split(r"\r?\n", result.stdout.decode("utf-8"))
 
         # fmt:off
-        return [
-            _ignore_properties(ComposeContainer, loads(line)) for line in stdout if line
-        ]
+        containers = []
+        # one line per service in docker 25, single array for docker 24.0.2
+        for line in stdout:
+            if not line:
+                continue
+            data = loads(line)
+            if isinstance(data, list):
+                containers += [_ignore_properties(ComposeContainer, d) for d in data]
+            else:
+                containers.append(_ignore_properties(ComposeContainer, data))
+
+        return containers
         # fmt:on
 
     # fmt:off
