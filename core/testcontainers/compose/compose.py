@@ -70,7 +70,6 @@ class ComposeContainer:
         if self.Publishers:
             self.Publishers = [_ignore_properties(PublishedPort, p) for p in self.Publishers]
 
-    # fmt:off
     def get_publisher(
         self,
         by_port: Optional[int] = None,
@@ -79,24 +78,14 @@ class ComposeContainer:
     ) -> PublishedPort:
         remaining_publishers = self.Publishers
 
-        remaining_publishers = [
-            r for r in remaining_publishers
-            if self._matches_protocol(prefer_ip_version, r)
-        ]
+        remaining_publishers = [r for r in remaining_publishers if self._matches_protocol(prefer_ip_version, r)]
 
         if by_port:
-            remaining_publishers = [
-                item for item in remaining_publishers
-                if by_port == item.TargetPort
-            ]
+            remaining_publishers = [item for item in remaining_publishers if by_port == item.TargetPort]
         if by_host:
-            remaining_publishers = [
-                item for item in remaining_publishers
-                if by_host == item.URL
-            ]
+            remaining_publishers = [item for item in remaining_publishers if by_host == item.URL]
         if len(remaining_publishers) == 0:
-            raise NoSuchPortExposed(
-                f"Could not find publisher for for service {self.Service}")
+            raise NoSuchPortExposed(f"Could not find publisher for for service {self.Service}")
         return get_only_element_or_raise(
             remaining_publishers,
             lambda: NoSuchPortExposed(
@@ -110,7 +99,6 @@ class ComposeContainer:
     @staticmethod
     def _matches_protocol(prefer_ip_version, r):
         return (":" in r.URL) is (prefer_ip_version == "IPv6")
-    # fmt:on
 
 
 @dataclass
@@ -274,7 +262,6 @@ class DockerCompose:
         result = subprocess.run(cmd, cwd=self.context, check=True, stdout=subprocess.PIPE)
         stdout = split(r"\r?\n", result.stdout.decode("utf-8"))
 
-        # fmt:off
         containers = []
         # one line per service in docker 25, single array for docker 24.0.2
         for line in stdout:
@@ -287,32 +274,30 @@ class DockerCompose:
                 containers.append(_ignore_properties(ComposeContainer, data))
 
         return containers
-        # fmt:on
 
-    # fmt:off
     def get_container(
         self,
         service_name: Optional[str] = None,
         include_all: bool = False,
     ) -> ComposeContainer:
         if not service_name:
-            c = self.get_containers(include_all=include_all)
-            return get_only_element_or_raise(c, lambda: ContainerIsNotRunning(
-                'get_container failed because no service_name given '
-                f'and there is not exactly 1 container (but {len(c)})'
-            ))
+            containers = self.get_containers(include_all=include_all)
+            return get_only_element_or_raise(
+                containers,
+                lambda: ContainerIsNotRunning(
+                    "get_container failed because no service_name given "
+                    f"and there is not exactly 1 container (but {len(containers)})"
+                ),
+            )
 
         matching_containers = [
-            item for item in self.get_containers(include_all=include_all)
-            if item.Service == service_name
+            item for item in self.get_containers(include_all=include_all) if item.Service == service_name
         ]
 
         if not matching_containers:
-            raise ContainerIsNotRunning(
-                f"{service_name} is not running in the compose context")
+            raise ContainerIsNotRunning(f"{service_name} is not running in the compose context")
 
         return matching_containers[0]
-    # fmt:on
 
     def exec_in_container(
         self,
@@ -344,13 +329,7 @@ class DockerCompose:
             check=True,
         )
 
-        # fmt:off
-        return (
-            result.stdout.decode("utf-8"),
-            result.stderr.decode("utf-8"),
-            result.returncode
-        )
-        # fmt:on
+        return (result.stdout.decode("utf-8"), result.stderr.decode("utf-8"), result.returncode)
 
     def _call_command(
         self,
@@ -422,7 +401,6 @@ class DockerCompose:
         Args:
             url: URL from one of the services in the environment to use to wait on.
         """
-        # fmt:off
-        with urlopen(url) as r: r.read()  # noqa: E701
-        # fmt:on
+        with urlopen(url) as response:
+            response.read()
         return self
