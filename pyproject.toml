@@ -115,6 +115,7 @@ pytest = "7.4.3"
 pytest-cov = "4.1.0"
 sphinx = "^7.2.6"
 twine = "^4.0.2"
+anyio = "^4.3.0"
 
 [[tool.poetry.source]]
 name = "PyPI"
