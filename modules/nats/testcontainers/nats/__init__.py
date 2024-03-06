@@ -14,13 +14,11 @@
 
 # import asyncio
 import typing
-import uuid
 
 import nats
 from nats.aio.client import Client as NATSClient
-from nats.errors import NoServersError, TimeoutError
 from testcontainers.core.container import DockerContainer
-from testcontainers.core.waiting_utils import wait_container_is_ready
+from testcontainers.core.waiting_utils import wait_container_is_ready, wait_for_logs
 
 
 class NatsContainer(DockerContainer):
@@ -43,27 +41,21 @@ class NatsContainer(DockerContainer):
         client_port: int = 4222,
         manamgent_port: int = 8222,
         password: typing.Optional[str] = None,
+        expected_ready_log: str = "Server is ready",
+        ready_timeout_secs: int = 120,
         **kwargs,
     ) -> None:
         super().__init__(image, **kwargs)
         self.client_port = client_port
         self.management_port = manamgent_port
         self.password = password
+        self._expected_ready_log = expected_ready_log
+        self._ready_timeout_secs = max(ready_timeout_secs, 0)
         self.with_exposed_ports(self.client_port, self.management_port)
 
-    @wait_container_is_ready(TimeoutError, NoServersError)
+    @wait_container_is_ready()
     def _healthcheck(self) -> None:
-
-        async def _ping():
-            topic = str(uuid.uuid4())
-            nc: NATSClient = await self.get_client()
-            await nc.publish(topic, b"Test-Containers")
-            await nc.flush()
-            await nc.close()
-
-        # loop = asyncio.get_event_loop()
-        # coro = _ping()
-        # return loop.run_until_complete(coro)
+        wait_for_logs(self, self._expected_ready_log, timeout=self._ready_timeout_secs)
 
     async def get_client(self, **kwargs) -> NATSClient:
         """

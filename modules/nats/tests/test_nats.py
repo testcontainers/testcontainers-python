@@ -1,8 +1,10 @@
 from testcontainers.nats import NatsContainer
+from testcontainers.core import config
 import anyio
 from nats.aio.client import Client as NATSClient
 import uuid
 
+import os
 import pytest
 
 pytest.mark.usefixtures("anyio_backend")
