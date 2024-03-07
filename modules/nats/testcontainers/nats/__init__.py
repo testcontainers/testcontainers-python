@@ -12,10 +12,7 @@
 #    under the License.
 
 
-# import asyncio
-import typing
-
-import nats
+from nats import connect as nats_connect
 from nats.aio.client import Client as NATSClient
 from testcontainers.core.container import DockerContainer
 from testcontainers.core.waiting_utils import wait_container_is_ready, wait_for_logs
@@ -39,16 +36,14 @@ class NatsContainer(DockerContainer):
         self,
         image: str = "nats:latest",
         client_port: int = 4222,
-        manamgent_port: int = 8222,
-        password: typing.Optional[str] = None,
+        management_port: int = 8222,
         expected_ready_log: str = "Server is ready",
         ready_timeout_secs: int = 120,
         **kwargs,
     ) -> None:
         super().__init__(image, **kwargs)
         self.client_port = client_port
-        self.management_port = manamgent_port
-        self.password = password
+        self.management_port = management_port
         self._expected_ready_log = expected_ready_log
         self._ready_timeout_secs = max(ready_timeout_secs, 0)
         self.with_exposed_ports(self.client_port, self.management_port)
@@ -56,6 +51,9 @@ class NatsContainer(DockerContainer):
     @wait_container_is_ready()
     def _healthcheck(self) -> None:
         wait_for_logs(self, self._expected_ready_log, timeout=self._ready_timeout_secs)
+
+    def get_conn_string(self):
+        return f"nats://{self.get_container_host_ip()}:{self.get_exposed_port(self.client_port)}"
 
     async def get_client(self, **kwargs) -> NATSClient:
         """
@@ -67,8 +65,8 @@ class NatsContainer(DockerContainer):
         Returns:
             client: Nats client to connect to the container.
         """
-        conn_string = f"nats://{self.get_container_host_ip()}:{self.get_exposed_port(self.client_port)}"
-        client = await nats.connect(conn_string)
+        conn_string = self.get_conn_string()
+        client = await nats_connect(conn_string)
         return client
 
     def start(self) -> "NatsContainer":

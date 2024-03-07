@@ -1,21 +1,17 @@
-from testcontainers.nats import NatsContainer
-from testcontainers.core import config
-import anyio
-from nats.aio.client import Client as NATSClient
-import uuid
+from uuid import uuid4
 
-import os
 import pytest
+from nats.aio.client import Client as NATSClient
 
-pytest.mark.usefixtures("anyio_backend")
+from testcontainers.nats import NatsContainer
 
 
-@pytest.mark.parametrize("anyio_backend", ["asyncio"])
-async def test_basic_publishing(anyio_backend):
+@pytest.mark.asyncio
+async def test_basic_publishing():
     with NatsContainer() as container:
         nc: NATSClient = await container.get_client()
 
-        topic = str(uuid.uuid4())
+        topic = str(uuid4())
 
         sub = await nc.subscribe(topic)
         sent_message = b"Test-Containers"
@@ -27,11 +23,8 @@ async def test_basic_publishing(anyio_backend):
         await nc.close()
 
 
-pytest.mark.usefixtures("anyio_backend")
-
-
-@pytest.mark.parametrize("anyio_backend", ["asyncio"])
-async def test_more_complex_example(anyio_backend):
+@pytest.mark.asyncio
+async def test_more_complex_example():
     with NatsContainer() as container:
         nc: NATSClient = await container.get_client()
 
