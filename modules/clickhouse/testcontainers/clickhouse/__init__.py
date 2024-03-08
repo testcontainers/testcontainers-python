@@ -12,8 +12,8 @@
 #    under the License.
 import os
 from typing import Optional
-from urllib.request import urlopen
 from urllib.error import HTTPError, URLError
+from urllib.request import urlopen
 
 from testcontainers.core.generic import DbContainer
 from testcontainers.core.utils import raise_for_deprecated_parameter
@@ -47,7 +47,7 @@ class ClickHouseContainer(DbContainer):
         username: Optional[str] = None,
         password: Optional[str] = None,
         dbname: Optional[str] = None,
-        **kwargs
+        **kwargs,
     ) -> None:
         raise_for_deprecated_parameter(kwargs, "user", "username")
         super().__init__(image=image, **kwargs)
@@ -61,9 +61,9 @@ class ClickHouseContainer(DbContainer):
     @wait_container_is_ready(HTTPError, URLError)
     def _connect(self) -> None:
         # noinspection HttpUrlsUsage
-        url = f'http://{self.get_container_host_ip()}:{self.get_exposed_port(8123)}'
+        url = f"http://{self.get_container_host_ip()}:{self.get_exposed_port(8123)}"
         with urlopen(url) as r:
-            assert b'Ok' in r.read()
+            assert b"Ok" in r.read()
 
     def _configure(self) -> None:
         self.with_env("CLICKHOUSE_USER", self.username)
