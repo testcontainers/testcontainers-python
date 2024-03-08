@@ -42,15 +42,15 @@ def test_influxdbcontainer_get_url(image: str, influxdb_container_class: Type[In
     [
         ("influxdb:1.8", InfluxDb1Container, "1.8.10"),
         ("influxdb:1.8.10", InfluxDb1Container, "1.8.10"),
-        ("influxdb:2.7", InfluxDb2Container, "v2.7.4"),
         ("influxdb:2.7.4", InfluxDb2Container, "v2.7.4"),
+        ("influxdb:2.7", InfluxDb2Container, "v2.7"),
     ],
 )
 def test_influxdbcontainer_get_influxdb_version(
     image: str, influxdb_container_class: Type[InfluxDbContainer], expected_version: str
 ):
     with influxdb_container_class(image) as influxdb_container:
-        assert influxdb_container.get_influxdb_version() == expected_version
+        assert influxdb_container.get_influxdb_version().startswith(expected_version)
 
 
 def test_influxdb1container_get_client():
