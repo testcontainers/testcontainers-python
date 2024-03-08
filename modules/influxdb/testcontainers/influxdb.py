@@ -26,8 +26,7 @@ The 2 containers are separated in different modules for 2 reasons:
 - because the InfluxDB clients are different for 1.x and 2.x versions,
   so you won't have to install dependencies that you do not need
 """
-
-from typing import Dict, Optional
+from typing import Optional
 
 from requests import get
 from requests.exceptions import ConnectionError, ReadTimeout
@@ -44,16 +43,15 @@ class InfluxDbContainer(DockerContainer):
     because their respective clients rely on different Python libraries which we don't want
     to import at the same time.
     """
+
     def __init__(
         self,
         # Docker image name
         image: str,
-
         # in the container, the default port for influxdb is often 8086 and not likely to change
         container_port: int = 8086,
         # specifies the port on the host machine where influxdb is exposed; a random available port otherwise
         host_port: Optional[int] = None,
-
         **docker_client_kw,
     ):
         super().__init__(image=image, **docker_client_kw)
@@ -71,7 +69,7 @@ class InfluxDbContainer(DockerContainer):
         return f"http://{host}:{port}"
 
     @wait_container_is_ready(ConnectionError, ReadTimeout)
-    def _health_check(self) -> Dict:
+    def _health_check(self) -> dict:
         """
         Performs a health check on the running InfluxDB container.
         The call is retried until it works thanks to the @wait_container_is_ready decorator.
@@ -83,13 +81,13 @@ class InfluxDbContainer(DockerContainer):
         response.raise_for_status()
 
         return response.json()
-    
+
     def get_influxdb_version(self) -> str:
         """
         Returns the version of the InfluxDB service, as returned by the healthcheck.
         """
 
-        return self._health_check().get('version')
+        return self._health_check().get("version")
 
     def start(self) -> "InfluxDbContainer":
         """

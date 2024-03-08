@@ -25,27 +25,33 @@ from testcontainers.influxdb2 import InfluxDb2Container
 
 
 @mark.parametrize(
-    ["image", "influxdb_container_class", "exposed_port"], [
+    ["image", "influxdb_container_class", "exposed_port"],
+    [
         ("influxdb:2.7", InfluxDb1Container, 8086),
         ("influxdb:1.8", InfluxDb2Container, 8086),
-    ]
+    ],
 )
-def test_influxdbcontainer_get_url(image : str, influxdb_container_class: Type[InfluxDbContainer], exposed_port: int):
+def test_influxdbcontainer_get_url(image: str, influxdb_container_class: Type[InfluxDbContainer], exposed_port: int):
     with influxdb_container_class(image, host_port=exposed_port) as influxdb_container:
         connection_url = influxdb_container.get_url()
         assert str(exposed_port) in connection_url
 
+
 @mark.parametrize(
-    ["image", "influxdb_container_class", "expected_version"], [
+    ["image", "influxdb_container_class", "expected_version"],
+    [
         ("influxdb:1.8", InfluxDb1Container, "1.8.10"),
         ("influxdb:1.8.10", InfluxDb1Container, "1.8.10"),
         ("influxdb:2.7", InfluxDb2Container, "v2.7.4"),
         ("influxdb:2.7.4", InfluxDb2Container, "v2.7.4"),
-    ]
+    ],
 )
-def test_influxdbcontainer_get_influxdb_version(image: str, influxdb_container_class: Type[InfluxDbContainer], expected_version: str):
+def test_influxdbcontainer_get_influxdb_version(
+    image: str, influxdb_container_class: Type[InfluxDbContainer], expected_version: str
+):
     with influxdb_container_class(image) as influxdb_container:
         assert influxdb_container.get_influxdb_version() == expected_version
+
 
 def test_influxdb1container_get_client():
     """
@@ -61,36 +67,30 @@ def test_influxdb1container_get_client():
         databases = influxdb1_client.get_list_database()
         assert len(databases) == 1, "the InfluxDB container now contains one database"
         assert databases[0] == {"name": "testcontainers"}
-        
-        influxdb1_client.write_points([
-            {
-                "measurement": "influxdbcontainer",
-                "time": "1978-11-30T09:30:00Z",
-                "fields": {
-                    "ratio": 0.42
-                }
-            }, {
-                "measurement": "influxdbcontainer",
-                "time": "1978-12-25T10:30:00Z",
-                "fields": {
-                    "ratio": 0.55
-                }
-            },
-        ], database="testcontainers")
+
+        influxdb1_client.write_points(
+            [
+                {"measurement": "influxdbcontainer", "time": "1978-11-30T09:30:00Z", "fields": {"ratio": 0.42}},
+                {"measurement": "influxdbcontainer", "time": "1978-12-25T10:30:00Z", "fields": {"ratio": 0.55}},
+            ],
+            database="testcontainers",
+        )
 
         # retrieves the inserted datapoints
-        datapoints_set: ResultSet = influxdb1_client.query("select ratio from influxdbcontainer;", database="testcontainers")
+        datapoints_set: ResultSet = influxdb1_client.query(
+            "select ratio from influxdbcontainer;", database="testcontainers"
+        )
         datapoints = list(datapoints_set.get_points())
-        assert len(datapoints) == 2, '2 datapoints are retrieved'
+        assert len(datapoints) == 2, "2 datapoints are retrieved"
 
         datapoint = datapoints[0]
-        assert datapoint['time'] == "1978-11-30T09:30:00Z"
-        assert datapoint['ratio'] == 0.42
+        assert datapoint["time"] == "1978-11-30T09:30:00Z"
+        assert datapoint["ratio"] == 0.42
 
         datapoint = datapoints[1]
-        assert datapoint['time'] == "1978-12-25T10:30:00Z"
-        assert datapoint['ratio'] == 0.55
-      
+        assert datapoint["time"] == "1978-12-25T10:30:00Z"
+        assert datapoint["ratio"] == 0.55
+
 
 def test_influxdb2container_get_client():
     """
@@ -103,7 +103,7 @@ def test_influxdb2container_get_client():
         password="secret-password",
         org_name="testcontainers-org",
         bucket="my-init-bucket",
-        admin_token="secret-token"
+        admin_token="secret-token",
     ) as influxdb2_container:
         influxdb2_client, test_org = influxdb2_container.get_client(token="secret-token", org_name="testcontainers-org")
         assert influxdb2_client.ping(), "the client can connect to the InfluxDB instance"
@@ -111,35 +111,28 @@ def test_influxdb2container_get_client():
         # ensures that the bucket does not exist yet
         buckets_api = influxdb2_client.buckets_api()
         bucket: Bucket = buckets_api.find_bucket_by_name("testcontainers")
-        assert bucket is None, 'the test bucket does not exist yet'
+        assert bucket is None, "the test bucket does not exist yet"
 
         # creates a test bucket and insert a point
         buckets_api.create_bucket(bucket_name="testcontainers", org=test_org)
         bucket: Bucket = buckets_api.find_bucket_by_name("testcontainers")
-        assert bucket.name == "testcontainers", 'the test bucket now exists'
+        assert bucket.name == "testcontainers", "the test bucket now exists"
 
         write_api = influxdb2_client.write_api(write_options=SYNCHRONOUS)
-        write_api.write("testcontainers", "testcontainers-org", [
-            {
-                "measurement": "influxdbcontainer",
-                "time": "1978-11-30T09:30:00Z",
-                "fields": {
-                    "ratio": 0.42
-                }
-            }, {
-                "measurement": "influxdbcontainer",
-                "time": "1978-12-25T10:30:00Z",
-                "fields": {
-                    "ratio": 0.55
-                }
-            },
-        ])
+        write_api.write(
+            "testcontainers",
+            "testcontainers-org",
+            [
+                {"measurement": "influxdbcontainer", "time": "1978-11-30T09:30:00Z", "fields": {"ratio": 0.42}},
+                {"measurement": "influxdbcontainer", "time": "1978-12-25T10:30:00Z", "fields": {"ratio": 0.55}},
+            ],
+        )
 
         # retrieves the inserted datapoints
         query_api = influxdb2_client.query_api()
         tables = query_api.query('from(bucket: "testcontainers") |> range(start: 1978-11-01T22:00:00Z)', org=test_org)
-        results = tables.to_values(['_measurement', '_field', '_time', '_value'])
-        
-        assert len(results) == 2, '2 datapoints were retrieved'
-        assert results[0] == ['influxdbcontainer', 'ratio', datetime.fromisoformat('1978-11-30T09:30:00+00:00'), 0.42]
-        assert results[1] == ['influxdbcontainer', 'ratio', datetime.fromisoformat('1978-12-25T10:30:00+00:00'), 0.55]
+        results = tables.to_values(["_measurement", "_field", "_time", "_value"])
+
+        assert len(results) == 2, "2 datapoints were retrieved"
+        assert results[0] == ["influxdbcontainer", "ratio", datetime.fromisoformat("1978-11-30T09:30:00+00:00"), 0.42]
+        assert results[1] == ["influxdbcontainer", "ratio", datetime.fromisoformat("1978-12-25T10:30:00+00:00"), 0.55]

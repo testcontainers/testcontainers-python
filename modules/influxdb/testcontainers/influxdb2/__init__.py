@@ -12,7 +12,7 @@
 #    under the License.
 
 from os import getenv
-from typing import Optional, Tuple
+from typing import Optional
 
 from influxdb_client import InfluxDBClient, Organization
 
@@ -33,15 +33,14 @@ class InfluxDb2Container(InfluxDbContainer):
             >>> with InfluxDb2Container() as influxdb2:
             ...    version = influxdb2.get_version()
     """
+
     def __init__(
         self,
         image: str = "influxdb:latest",
-
         # in the container, the default port for influxdb is often 8086 and not likely to change
         container_port: int = 8086,
         # specifies the port on the host machine where influxdb is exposed; a random available port otherwise
         host_port: Optional[int] = None,
-
         # parameters used by the InfluxDSB 2.x Docker container when spawned in setup mode
         # (which is likely what you want). In setup mode, init_mode should be "setup" and all
         # the other parameters should be set (via this constructor or their respective
@@ -53,7 +52,6 @@ class InfluxDb2Container(InfluxDbContainer):
         org_name: Optional[str] = None,
         bucket: Optional[str] = None,
         retention: Optional[str] = None,
-
         **docker_client_kw,
     ):
         super().__init__(image, container_port, host_port, **docker_client_kw)
@@ -71,7 +69,6 @@ class InfluxDb2Container(InfluxDbContainer):
             env_value = constructor_param or getenv(env_key)
             if env_value:
                 self.with_env(env_key, env_value)
-                
 
     def start(self) -> "InfluxDb2Container":
         """
@@ -79,7 +76,9 @@ class InfluxDb2Container(InfluxDbContainer):
         """
         return super().start()
 
-    def get_client(self, token: str = None, org_name:str = None, **influxdb_client_kwargs) -> Tuple[InfluxDBClient, Organization]:
+    def get_client(
+        self, token: Optional[str] = None, org_name: Optional[str] = None, **influxdb_client_kwargs
+    ) -> tuple[InfluxDBClient, Organization]:
         """
         Returns an instance of the influxdb client with the associated test organization created
         when the container is spawn; for InfluxDB 2.x versions.
@@ -95,11 +94,7 @@ class InfluxDb2Container(InfluxDbContainer):
         want) by giving its name to the 'org_name' parameter constructor.
         """
 
-        influxclient = InfluxDBClient(
-            self.get_url(),
-            token=token,
-            **influxdb_client_kwargs
-        )
+        influxclient = InfluxDBClient(self.get_url(), token=token, **influxdb_client_kwargs)
 
         if org_name is None:
             return influxclient, None

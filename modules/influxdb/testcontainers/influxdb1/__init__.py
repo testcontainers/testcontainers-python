@@ -17,6 +17,7 @@ from influxdb import InfluxDBClient
 
 from testcontainers.influxdb import InfluxDbContainer
 
+
 class InfluxDb1Container(InfluxDbContainer):
     """
     Docker container for InfluxDB 1.x.
@@ -31,19 +32,18 @@ class InfluxDb1Container(InfluxDbContainer):
             >>> with InfluxDbContainer() as influxdb:
             ...    version = influxdb.get_version()
     """
+
     def __init__(
         self,
         image: str = "influxdb:1.8",
-
         # in the container, the default port for influxdb is often 8086 and not likely to change
         container_port: int = 8086,
         # specifies the port on the host machine where influxdb is exposed; a random available port otherwise
         host_port: Optional[int] = None,
-
         **docker_client_kw,
     ):
         super().__init__(image, container_port, host_port, **docker_client_kw)
-                
+
     def get_client(self, **client_kwargs):
         """
         Returns an instance of the influxdb client, for InfluxDB 1.x versions.
@@ -56,11 +56,7 @@ class InfluxDb1Container(InfluxDbContainer):
         - https://github.com/influxdata/influxdb-client-python#influxdb-18-api-compatibility
         """
 
-        return InfluxDBClient(
-            self.get_container_host_ip(),
-            self.get_exposed_port(self.container_port),
-            **client_kwargs
-        )
+        return InfluxDBClient(self.get_container_host_ip(), self.get_exposed_port(self.container_port), **client_kwargs)
 
     def start(self) -> "InfluxDb1Container":
         """
