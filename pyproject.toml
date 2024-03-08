@@ -48,7 +48,6 @@ packages = [
     { include = "testcontainers", from = "modules/postgres" },
     { include = "testcontainers", from = "modules/rabbitmq" },
     { include = "testcontainers", from = "modules/redis" },
-    { include = "testcontainers", from = "modules/redpanda" },
     { include = "testcontainers", from = "modules/selenium" }
 ]
 
@@ -83,7 +82,6 @@ cx_Oracle = { version = "*", optional = true }
 psycopg2-binary = { version = "*", optional = true }
 pika = { version = "*", optional = true }
 redis = { version = "*", optional = true }
-redpanda = { version = "*", optional = true }
 selenium = { version = "*", optional = true }
 
 [tool.poetry.extras]
@@ -107,7 +105,6 @@ oracle = ["sqlalchemy", "cx_Oracle"]
 postgres = ["sqlalchemy", "psycopg2-binary"]
 rabbitmq = ["pika"]
 redis = ["redis"]
-redpanda = []
 selenium = ["selenium"]
 
 [tool.poetry.group.dev.dependencies]

@@ -2,7 +2,7 @@ import requests
 import json
 from kafka import KafkaConsumer, KafkaProducer, TopicPartition, KafkaAdminClient
 from kafka.admin import NewTopic
-from testcontainers.redpanda import RedpandaContainer
+from testcontainers.kafka import RedpandaContainer
 
 
 def test_redpanda_producer_consumer():
