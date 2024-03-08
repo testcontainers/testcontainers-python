@@ -6,6 +6,7 @@ from textwrap import dedent
 from testcontainers.core.container import DockerContainer
 from testcontainers.core.utils import raise_for_deprecated_parameter
 from testcontainers.core.waiting_utils import wait_for_logs
+from testcontainers.kafka.redpanda import RedpandaContainer
 
 
 class KafkaContainer(DockerContainer):
