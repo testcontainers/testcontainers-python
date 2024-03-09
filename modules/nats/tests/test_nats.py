@@ -1,6 +1,6 @@
+from testcontainers.nats import NatsContainer
 from uuid import uuid4
 import pytest
-from nats.aio.client import Client as NATSClient
 
 
 """
@@ -35,10 +35,7 @@ async def get_client(container: NatsContainer) -> "NATSClient":
     return client
 
 
-
-
-@pytest.mark.asyncio
-async def test_basic_container_ops(anyio_backend):
+def test_basic_container_ops():
     with NatsContainer() as container:
         # Not sure how to get type information without doing this
         container: NatsContainer = container
@@ -55,6 +52,7 @@ pytest.mark.usefixtures("anyio_backend")
 
 @pytest.mark.skipif(NO_NATS_CLIENT, reason="No NATS Client Available")
 @pytest.mark.parametrize("anyio_backend", ["asyncio"])
+async def test_pubsub(anyio_backend):
     with NatsContainer() as container:
         nc: NATSClient = await get_client(container)
 
@@ -70,9 +68,12 @@ pytest.mark.usefixtures("anyio_backend")
         await nc.close()
 
 
-@pytest.mark.asyncio
-async def test_more_complex_example():
+pytest.mark.usefixtures("anyio_backend")
+
+
+@pytest.mark.parametrize("anyio_backend", ["asyncio"])
 @pytest.mark.skipif(NO_NATS_CLIENT, reason="No NATS Client Available")
+async def test_more_complex_example(anyio_backend):
     with NatsContainer() as container:
         nc: NATSClient = await get_client(container)
 

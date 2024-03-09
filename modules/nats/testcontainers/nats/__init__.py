@@ -12,7 +12,6 @@
 #    under the License.
 
 
-from nats import connect as nats_connect
 from testcontainers.core.container import DockerContainer
 from testcontainers.core.waiting_utils import wait_container_is_ready, wait_for_logs
 
@@ -53,7 +52,6 @@ class NatsContainer(DockerContainer):
 
     def nats_uri(self) -> str:
         return f"nats://{self.get_container_host_ip()}:{self.get_exposed_port(self.client_port)}"
-
 
     def nats_host_and_port(self) -> tuple[str, int]:
         return self.get_container_host_ip(), self.get_exposed_port(self.client_port)
