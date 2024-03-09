@@ -23,7 +23,7 @@ except ImportError:
     pass
 
 
-async def get_client(container: NatsContainer) -> NATSClient:
+async def get_client(container: NatsContainer) -> "NATSClient":
     """
     Get a nats client.
 
