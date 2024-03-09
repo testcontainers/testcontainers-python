@@ -44,6 +44,7 @@ packages = [
     { include = "testcontainers", from = "modules/mongodb" },
     { include = "testcontainers", from = "modules/mssql" },
     { include = "testcontainers", from = "modules/mysql" },
+    { include = "testcontainers", from = "modules/nats" },
     { include = "testcontainers", from = "modules/neo4j" },
     { include = "testcontainers", from = "modules/nginx" },
     { include = "testcontainers", from = "modules/opensearch" },
