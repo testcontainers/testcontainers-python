@@ -2,6 +2,7 @@ from dataclasses import dataclass, field, fields
 from functools import cached_property
 from json import loads
 from os import PathLike
+from platform import system
 from re import split
 from subprocess import CompletedProcess
 from subprocess import run as subprocess_run
@@ -378,7 +379,15 @@ class DockerCompose:
         str:
             The hostname for the service
         """
-        return self.get_container(service_name).get_publisher(by_port=port).URL
+        url = self.get_container(service_name).get_publisher(by_port=port).URL
+        url = self._normalize_url(url)
+        return url
+
+    def _normalize_url(self, url: str):
+        # reproducible on docker 24.0.7 on windows
+        if system() == "Windows" and url == "0.0.0.0":
+            url = "127.0.0.1"
+        return url
 
     def get_service_host_and_port(
         self,
@@ -386,7 +395,8 @@ class DockerCompose:
         port: Optional[int] = None,
     ):
         publisher = self.get_container(service_name).get_publisher(by_port=port)
-        return publisher.URL, publisher.PublishedPort
+        url = self._normalize_url(publisher.URL)
+        return url, publisher.PublishedPort
 
     @wait_container_is_ready(HTTPError, URLError)
     def wait_for(self, url: str) -> "DockerCompose":
