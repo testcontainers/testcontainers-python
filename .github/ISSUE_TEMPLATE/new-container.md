@@ -13,9 +13,9 @@ assignees: ''
 
 Please link some docker containers as well as documentation to the bene
 
-**Why not just use a generic container this?**
+**Why not just use a generic container for this?**
 
-PLease describe why
+Please describe why
 
 **Other references:**
 
