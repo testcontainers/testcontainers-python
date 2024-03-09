@@ -36,7 +36,7 @@ coverage:  ## Target to combine and report coverage.
 	poetry run coverage html
 
 lint:  ## Lint all files in the project, which we also run in pre-commit
-	pre-commit run -a
+	poetry run pre-commit run -a
 
 # Targets to build docker images
 image:
