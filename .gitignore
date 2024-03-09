@@ -66,9 +66,9 @@ venv
 .testrepository/
 
 # vscode:
-.devcontainer/
 .vscode/
 
 .DS_Store
 .python-version
 .env
+.github-token

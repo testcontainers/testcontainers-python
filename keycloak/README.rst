@@ -1,1 +1,0 @@
-.. autoclass:: testcontainers.keycloak.KeycloakContainer
