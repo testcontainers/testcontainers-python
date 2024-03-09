@@ -52,7 +52,7 @@ master_doc = "INDEX"
 
 # General information about the project.
 project = "testcontainers"
-copyright = "2017, Sergey Pirogov"  # noqa: A001
+copyright = "2017-2024, Sergey Pirogov and Testcontainers Python contributors"  # noqa: A001
 author = "Sergey Pirogov"
 
 # The version info for the project you're documenting, acts as replacement for
