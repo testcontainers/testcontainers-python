@@ -54,7 +54,7 @@ master_doc = 'README'
 
 # General information about the project.
 project = u'testcontainers'
-copyright = u'2017-2023, Sergey Pirogov and Testcontainers Python contributors'
+copyright = u'2017-2024, Sergey Pirogov and Testcontainers Python contributors'
 author = u'Sergey Pirogov'
 
 # The version info for the project you're documenting, acts as replacement for
