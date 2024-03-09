@@ -13,7 +13,6 @@
 
 
 from nats import connect as nats_connect
-from nats.aio.client import Client as NATSClient
 from testcontainers.core.container import DockerContainer
 from testcontainers.core.waiting_utils import wait_container_is_ready, wait_for_logs
 
@@ -52,22 +51,15 @@ class NatsContainer(DockerContainer):
     def _healthcheck(self) -> None:
         wait_for_logs(self, self._expected_ready_log, timeout=self._ready_timeout_secs)
 
-    def get_conn_string(self):
+    def nats_uri(self) -> str:
         return f"nats://{self.get_container_host_ip()}:{self.get_exposed_port(self.client_port)}"
 
-    async def get_client(self, **kwargs) -> NATSClient:
-        """
-        Get a nats client.
 
-        Args:
-            **kwargs: Keyword arguments passed to `redis.Redis`.
+    def nats_host_and_port(self) -> tuple[str, int]:
+        return self.get_container_host_ip(), self.get_exposed_port(self.client_port)
 
-        Returns:
-            client: Nats client to connect to the container.
-        """
-        conn_string = self.get_conn_string()
-        client = await nats_connect(conn_string)
-        return client
+    def nats_management_uri(self) -> str:
+        return f"nats://{self.get_container_host_ip()}:{self.get_exposed_port(self.management_port)}"
 
     def start(self) -> "NatsContainer":
         super().start()

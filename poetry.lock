@@ -3180,7 +3180,7 @@ minio = ["minio"]
 mongodb = ["pymongo"]
 mssql = ["pymssql", "sqlalchemy"]
 mysql = ["pymysql", "sqlalchemy"]
-nats = ["nats-py"]
+nats = []
 neo4j = ["neo4j"]
 nginx = []
 opensearch = ["opensearch-py"]
@@ -3193,4 +3193,4 @@ selenium = ["selenium"]
 [metadata]
 lock-version = "2.0"
 python-versions = ">=3.9,<4.0"
-content-hash = "9a546ef8b1e1509a5d98576b207b05ec58fd29f5cc4c845cb4262116ee76a30e"
+content-hash = "0f720c1889b4c29fb263490f7ced364969717a89126bc7c6ecf5a082f32e5d26"
