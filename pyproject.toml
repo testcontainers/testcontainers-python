@@ -1,0 +1,260 @@
+[tool.poetry]
+name = "testcontainers"
+version = "4.0.0"  # auto-incremented by release-please
+description = "Python library for throwaway instances of anything that can run in a Docker container"
+authors = ["Sergey Pirogov <automationremarks@gmail.com>"]
+maintainers = [
+    "Balint Bartha <totallyzen@users.noreply.github.com>",
+    "David Ankin <daveankin@gmail.com>"
+]
+readme = "README.md"
+keywords = ["testing", "logging", "docker", "test automation"]
+classifiers = [
+    "License :: OSI Approved :: Apache Software License",
+    "Intended Audience :: Information Technology",
+    "Intended Audience :: Developers",
+    "Programming Language :: Python :: 3",
+    "Programming Language :: Python :: 3.7",
+    "Programming Language :: Python :: 3.8",
+    "Programming Language :: Python :: 3.9",
+    "Programming Language :: Python :: 3.10",
+    "Programming Language :: Python :: 3.11",
+    "Topic :: Software Development :: Libraries :: Python Modules",
+    "Operating System :: Microsoft :: Windows",
+    "Operating System :: POSIX",
+    "Operating System :: Unix",
+    "Operating System :: MacOS",
+]
+# testcontainers-core is a proper package dependency - only modules needed here
+packages = [
+    { include = "testcontainers", from = "core" },
+    { include = "testcontainers", from = "modules/arangodb" },
+    { include = "testcontainers", from = "modules/azurite" },
+    { include = "testcontainers", from = "modules/clickhouse" },
+    { include = "testcontainers", from = "modules/elasticsearch" },
+    { include = "testcontainers", from = "modules/google" },
+    { include = "testcontainers", from = "modules/k3s" },
+    { include = "testcontainers", from = "modules/kafka" },
+    { include = "testcontainers", from = "modules/keycloak" },
+    { include = "testcontainers", from = "modules/localstack" },
+    { include = "testcontainers", from = "modules/minio" },
+    { include = "testcontainers", from = "modules/mongodb" },
+    { include = "testcontainers", from = "modules/mssql" },
+    { include = "testcontainers", from = "modules/mysql" },
+    { include = "testcontainers", from = "modules/neo4j" },
+    { include = "testcontainers", from = "modules/nginx" },
+    { include = "testcontainers", from = "modules/opensearch" },
+    { include = "testcontainers", from = "modules/oracle" },
+    { include = "testcontainers", from = "modules/postgres" },
+    { include = "testcontainers", from = "modules/rabbitmq" },
+    { include = "testcontainers", from = "modules/redis" },
+    { include = "testcontainers", from = "modules/selenium" }
+]
+
+[tool.poetry.urls]
+"GitHub" = "https://github.com/testcontainers/testcontainers-python"
+"Issue Tracker" = "https://github.com/testcontainers/testcontainers-python/issues"
+
+[tool.poetry.dependencies]
+python = ">=3.9,<4.0"
+docker = "*" # ">=4.0"
+urllib3 = "*" # "<2.0"
+wrapt = "*" # "^1.16.0"
+
+# community modules
+python-arango = { version = "^7.8", optional = true }
+azure-storage-blob = { version = "^12.19", optional = true }
+clickhouse-driver = { version = "*", optional = true }
+google-cloud-pubsub = { version = ">=2", optional = true }
+kubernetes = { version = "*", optional = true }
+pyyaml = { version = "*", optional = true }
+kafka-python = { version = "*", optional = true }
+python-keycloak = { version = "*", optional = true }
+boto3 = { version = "*", optional = true }
+minio = { version = "*", optional = true }
+pymongo = { version = "*", optional = true }
+sqlalchemy = { version = "*", optional = true }
+pymssql = { version = "*", optional = true }
+pymysql = { version = "*", extras = ["rsa"], optional = true }
+neo4j = { version = "*", optional = true }
+opensearch-py = { version = "*", optional = true }
+cx_Oracle = { version = "*", optional = true }
+psycopg2-binary = { version = "*", optional = true }
+pika = { version = "*", optional = true }
+redis = { version = "*", optional = true }
+selenium = { version = "*", optional = true }
+
+[tool.poetry.extras]
+arangodb = ["python-arango"]
+azurite = ["azure-storage-blob"]
+clickhouse = ["clickhouse-driver"]
+elasticsearch = []
+google = ["google-cloud-pubsub"]
+k3s = ["kubernetes", "pyyaml"]
+kafka = ["kafka-python"]
+keycloak = ["python-keycloak"]
+localstack = ["boto3"]
+minio = ["minio"]
+mongodb = ["pymongo"]
+mssql = ["sqlalchemy", "pymssql"]
+mysql = ["sqlalchemy", "pymysql"]
+neo4j = ["neo4j"]
+nginx = []
+opensearch = ["opensearch-py"]
+oracle = ["sqlalchemy", "cx_Oracle"]
+postgres = ["sqlalchemy", "psycopg2-binary"]
+rabbitmq = ["pika"]
+redis = ["redis"]
+selenium = ["selenium"]
+
+[tool.poetry.group.dev.dependencies]
+mypy = "1.7.1"
+pre-commit = "^3.6"
+pg8000 = "*"
+pytest = "7.4.3"
+pytest-cov = "4.1.0"
+sphinx = "^7.2.6"
+twine = "^4.0.2"
+anyio = "^4.3.0"
+
+[[tool.poetry.source]]
+name = "PyPI"
+priority = "primary"
+
+[tool.black]
+line-length = 120
+
+[tool.pytest.ini_options]
+addopts = "--cov-report=term --cov-report=html --tb=short --strict-markers"
+log_cli = true
+log_cli_level = "INFO"
+
+[tool.coverage.run]
+branch = true
+omit = [
+    "oracle.py"
+]
+
+[tool.coverage.report]
+exclude_lines = [
+    "pass",
+    "raise NotImplementedError" # TODO: used in core/generic.py, not sure we need DbContainer
+]
+
+[tool.ruff]
+target-version = "py39"
+line-length = 120
+fix = true
+src = ["core", "modules/*"]
+
+[tool.ruff.lint]
+fixable = ["I"]
+exclude = ["**/tests/**/*.py"]
+select = [
+    # flake8-2020
+    "YTT",
+    # flake8-bugbear
+    "B",
+    # flake8-builtins
+    "A",
+    # flake8-comprehensions
+    "C4",
+    # flake8-debugger
+    "T10",
+    # flake8-print
+    "T20",
+    # flake8-pytest-style
+    "PT",
+    # flake8-simplify
+    "SIM",
+    # flake8-tidy-imports
+    "TID",
+    # flake8-type-checking
+    "TCH",
+    # isort
+    "I",
+    # mccabe
+    "C90",
+    # pycodestyle
+    "E", "W",
+    # pyflakes
+    "F",
+    # pygrep-hooks
+    "PGH",
+    # pyupgrade
+    "UP",
+    # ruff
+    "RUF",
+    # TODO: security, enable via line below
+    # "S",
+]
+ignore = [
+    # line too long (already checked by black)
+    "E501",
+    # the must-have __init__.py (we are using package namespaces)
+    "INP001"
+]
+
+[tool.ruff.lint.flake8-type-checking]
+strict = true
+
+[tool.mypy]
+python_version = "3.9"
+namespace_packages = true
+explicit_package_bases = true
+pretty = true
+show_error_codes = true
+strict = true
+fast_module_lookup = true
+modules = ["testcontainers.core"]
+mypy_path = [
+    "core",
+#    "modules/arangodb",
+#    "modules/azurite",
+#    "modules/clickhouse",
+#    "modules/elasticsearch",
+#    "modules/google",
+#    "modules/k3s",
+#    "modules/kafka",
+#    "modules/keycloak",
+#    "modules/localstack",
+#    "modules/minio",
+#    "modules/mongodb",
+#    "modules/mssql",
+#    "modules/mysql",
+#    "modules/neo4j",
+#    "modules/nginx",
+#    "modules/opensearch",
+#    "modules/oracle",
+#    "modules/postgres",
+#    "modules/rabbitmq",
+#    "modules/redis",
+#    "modules/selenium"
+]
+enable_error_code = [
+    "ignore-without-code",
+    "redundant-expr",
+    "truthy-bool",
+]
+
+[[tool.mypy.overrides]]
+module = ['tests.*']
+# in pytest we allow fixtures to be more relaxed, though we check the untyped functions
+check_untyped_defs = true
+disable_error_code = [
+    'no-untyped-def'
+]
+
+[[tool.mypy.overrides]]
+module = ['docker.*']
+# docker still doesn't have type annotations (not even 7.0)
+ignore_missing_imports = true
+
+[[tool.mypy.overrides]]
+module = ['wrapt.*']
+# wrapt doesn't have type annotations
+ignore_missing_imports = true
+
+[build-system]
+requires = ["poetry-core"]
+build-backend = "poetry.core.masonry.api"
