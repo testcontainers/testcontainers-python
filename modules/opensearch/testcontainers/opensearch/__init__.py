@@ -4,7 +4,7 @@ from urllib3.exceptions import ProtocolError
 
 from testcontainers.core.container import DockerContainer
 from testcontainers.core.utils import raise_for_deprecated_parameter
-from testcontainers.core.waiting_utils import wait_container_is_ready
+from testcontainers.core.waiting_utils import wait_container_is_ready, wait_for_logs
 
 
 class OpenSearchContainer(DockerContainer):
@@ -90,16 +90,18 @@ class OpenSearchContainer(DockerContainer):
             **kwargs,
         )
 
+    '''
     @wait_container_is_ready(ConnectionError, TransportError, ProtocolError, ConnectionResetError)
     def _healthcheck(self) -> None:
         """This is an internal method used to check if the OpenSearch container
         is healthy and ready to receive requests."""
         client: OpenSearchContainer = self.get_client()
         client.cluster.health(wait_for_status="green")
+    '''
 
     def start(self) -> "OpenSearchContainer":
         """This method starts the OpenSearch container and runs the healthcheck
         to verify that the container is ready to use."""
         super().start()
-        self._healthcheck()
+        wait_for_logs(self, "Node started")
         return self
