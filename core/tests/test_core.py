@@ -1,6 +1,6 @@
 import pytest
-
 from testcontainers.core.container import DockerContainer
+from testcontainers.core.image import DockerImage
 from testcontainers.core.waiting_utils import wait_for_logs
 
 
@@ -29,3 +29,12 @@ def test_can_get_logs():
         wait_for_logs(container, "Hello from Docker!")
         stdout, stderr = container.get_logs()
         assert stdout, "There should be something on stdout"
+
+
+def test_create_container_from_image():
+    image = DockerImage().from_dockerfile(path="core/tests/", tag="testcontainers/test-image")
+
+    container = DockerContainer(image)
+    container.start()
+    container.stop(force=True, delete_volume=True)
+    image.remove(force=True)

@@ -22,6 +22,8 @@ import docker
 from docker.errors import NotFound
 from docker.models.containers import Container, ContainerCollection
 
+from testcontainers.core.image import DockerImage
+
 from .utils import default_gateway_ip, inside_container, setup_logger
 
 LOGGER = setup_logger(__name__)
@@ -46,7 +48,7 @@ class DockerClient:
     @ft.wraps(ContainerCollection.run)
     def run(
         self,
-        image: str,
+        image: Union[DockerImage, str],
         command: Optional[Union[str, list[str]]] = None,
         environment: Optional[dict] = None,
         ports: Optional[dict] = None,

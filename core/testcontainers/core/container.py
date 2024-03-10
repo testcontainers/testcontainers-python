@@ -1,11 +1,12 @@
 import contextlib
 from platform import system
-from typing import Optional
+from typing import Optional, Union
 
 from docker.models.containers import Container
 
 from testcontainers.core.docker_client import DockerClient
 from testcontainers.core.exceptions import ContainerStartException
+from testcontainers.core.image import DockerImage
 from testcontainers.core.utils import inside_container, is_arm, setup_logger
 from testcontainers.core.waiting_utils import wait_container_is_ready
 
@@ -25,11 +26,11 @@ class DockerContainer:
         ...    delay = wait_for_logs(container, "Hello from Docker!")
     """
 
-    def __init__(self, image: str, docker_client_kw: Optional[dict] = None, **kwargs) -> None:
+    def __init__(self, image: Union[DockerImage, str], docker_client_kw: Optional[dict] = None, **kwargs) -> None:
         self.env = {}
         self.ports = {}
         self.volumes = {}
-        self.image = image
+        self.image = image.get_wrapped_image() if isinstance(image, DockerImage) else image
         self._docker = DockerClient(**(docker_client_kw or {}))
         self._container = None
         self._command = None
