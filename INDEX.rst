@@ -45,15 +45,33 @@ Getting Started
     >>> from testcontainers.postgres import PostgresContainer
     >>> import sqlalchemy
 
-    >>> with PostgresContainer("postgres:9.5") as postgres:
-    ...     engine = sqlalchemy.create_engine(postgres.get_connection_url())
+    >>> with PostgresContainer("postgres:latest") as postgres:
+    ...     psql_url = postgres.get_connection_url()
+    ...     engine = sqlalchemy.create_engine(psql_url)
     ...     with engine.begin() as connection:
     ...         result = connection.execute(sqlalchemy.text("select version()"))
     ...         version, = result.fetchone()
     >>> version
-    'PostgreSQL 9.5...'
+    'PostgreSQL ...'
 
-The snippet above will spin up a postgres database in a container. The :code:`get_connection_url()` convenience method returns a :code:`sqlalchemy` compatible url we use to connect to the database and retrieve the database version.
+The snippet above will spin up the current latest version of a postgres database in a container. The :code:`get_connection_url()` convenience method returns a :code:`sqlalchemy` compatible url (using the :code:`psycopg2` driver per default) to connect to the database and retrieve the database version.
+
+.. doctest::
+
+    >>> import asyncpg
+    >>> from testcontainers.postgres import PostgresContainer
+
+    >>> with PostgresContainer("postgres:16", driver=None) as postgres:
+    ...     psql_url = container.get_connection_url()
+    ...     with asyncpg.create_pool(dsn=psql_url,server_settings={"jit": "off"}) as pool:
+    ...         conn = await pool.acquire()
+    ...         ret = await conn.fetchval("SELECT 1")
+    ...         assert ret == 1
+
+This snippet does the same, however using a specific version and the driver is set to None, to influence the :code:`get_connection_url()` convenience method to not include a driver in the URL (e.g. for compatibility with :code:`psycopg` v3).
+
+Note, that the :code:`sqlalchemy` and :code:`psycopg2` packages are no longer a dependency of :code:`testcontainers[postgres]` and not needed to launch the Postgres container. Your project therefore needs to declare a dependency on the used driver and db access methods you use in your code.
+
 
 Installation
 ------------
