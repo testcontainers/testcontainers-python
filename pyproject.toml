@@ -117,6 +117,7 @@ anyio = "^4.3.0"
 # for tests only
 psycopg2-binary = "*"
 pg8000 = "*"
+sqlalchemy = "*"
 
 
 [[tool.poetry.source]]
