@@ -3,13 +3,13 @@ from __future__ import annotations
 from socket import socket
 from typing import TYPE_CHECKING, Optional
 
-from .config import RYUK_DOCKER_SOCKET, RYUK_IMAGE, RYUK_PRIVILEGED
-from .labels import LABEL_SESSION_ID, SESSION_ID
-from .utils import setup_logger
-from .waiting_utils import wait_for_logs
+from testcontainers.core.config import RYUK_DOCKER_SOCKET, RYUK_IMAGE, RYUK_PRIVILEGED
+from testcontainers.core.labels import LABEL_SESSION_ID, SESSION_ID
+from testcontainers.core.utils import setup_logger
+from testcontainers.core.waiting_utils import wait_for_logs
 
 if TYPE_CHECKING:
-    from .container import DockerContainer
+    from testcontainers.core.container import DockerContainer
 
 
 logger = setup_logger(__name__)
