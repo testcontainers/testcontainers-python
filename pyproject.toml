@@ -1,6 +1,6 @@
 [tool.poetry]
 name = "testcontainers"
-version = "4.0.0"  # auto-incremented by release-please
+version = "4.0.1"  # auto-incremented by release-please
 description = "Python library for throwaway instances of anything that can run in a Docker container"
 authors = ["Sergey Pirogov <automationremarks@gmail.com>"]
 maintainers = [
@@ -14,11 +14,10 @@ classifiers = [
     "Intended Audience :: Information Technology",
     "Intended Audience :: Developers",
     "Programming Language :: Python :: 3",
-    "Programming Language :: Python :: 3.7",
-    "Programming Language :: Python :: 3.8",
     "Programming Language :: Python :: 3.9",
     "Programming Language :: Python :: 3.10",
     "Programming Language :: Python :: 3.11",
+    "Programming Language :: Python :: 3.12",
     "Topic :: Software Development :: Libraries :: Python Modules",
     "Operating System :: Microsoft :: Windows",
     "Operating System :: POSIX",
@@ -56,7 +55,7 @@ packages = [
 "Issue Tracker" = "https://github.com/testcontainers/testcontainers-python/issues"
 
 [tool.poetry.dependencies]
-python = ">=3.9,<3.12"
+python = ">=3.9,<4.0"
 docker = "*" # ">=4.0"
 urllib3 = "*" # "<2.0"
 wrapt = "*" # "^1.16.0"
@@ -79,7 +78,6 @@ pymysql = { version = "*", extras = ["rsa"], optional = true }
 neo4j = { version = "*", optional = true }
 opensearch-py = { version = "*", optional = true }
 cx_Oracle = { version = "*", optional = true }
-psycopg2-binary = { version = "*", optional = true }
 pika = { version = "*", optional = true }
 redis = { version = "*", optional = true }
 selenium = { version = "*", optional = true }
@@ -102,18 +100,24 @@ neo4j = ["neo4j"]
 nginx = []
 opensearch = ["opensearch-py"]
 oracle = ["sqlalchemy", "cx_Oracle"]
-postgres = ["sqlalchemy", "psycopg2-binary"]
+postgres = []
 rabbitmq = ["pika"]
 redis = ["redis"]
 selenium = ["selenium"]
 
 [tool.poetry.group.dev.dependencies]
+mypy = "1.7.1"
+pre-commit = "^3.6"
 pytest = "7.4.3"
 pytest-cov = "4.1.0"
 sphinx = "^7.2.6"
-flake8 = "^6.1.0"
-pg8000 = "*"
 twine = "^4.0.2"
+anyio = "^4.3.0"
+# for tests only
+psycopg2-binary = "*"
+pg8000 = "*"
+sqlalchemy = "*"
+
 
 [[tool.poetry.source]]
 name = "PyPI"
@@ -138,6 +142,120 @@ exclude_lines = [
     "pass",
     "raise NotImplementedError" # TODO: used in core/generic.py, not sure we need DbContainer
 ]
+
+[tool.ruff]
+target-version = "py39"
+line-length = 120
+fix = true
+src = ["core", "modules/*"]
+
+[tool.ruff.lint]
+fixable = ["I"]
+exclude = ["**/tests/**/*.py"]
+select = [
+    # flake8-2020
+    "YTT",
+    # flake8-bugbear
+    "B",
+    # flake8-builtins
+    "A",
+    # flake8-comprehensions
+    "C4",
+    # flake8-debugger
+    "T10",
+    # flake8-print
+    "T20",
+    # flake8-pytest-style
+    "PT",
+    # flake8-simplify
+    "SIM",
+    # flake8-tidy-imports
+    "TID",
+    # flake8-type-checking
+    "TCH",
+    # isort
+    "I",
+    # mccabe
+    "C90",
+    # pycodestyle
+    "E", "W",
+    # pyflakes
+    "F",
+    # pygrep-hooks
+    "PGH",
+    # pyupgrade
+    "UP",
+    # ruff
+    "RUF",
+    # TODO: security, enable via line below
+    # "S",
+]
+ignore = [
+    # line too long (already checked by black)
+    "E501",
+    # the must-have __init__.py (we are using package namespaces)
+    "INP001"
+]
+
+[tool.ruff.lint.flake8-type-checking]
+strict = true
+
+[tool.mypy]
+python_version = "3.9"
+namespace_packages = true
+explicit_package_bases = true
+pretty = true
+show_error_codes = true
+strict = true
+fast_module_lookup = true
+modules = ["testcontainers.core"]
+mypy_path = [
+    "core",
+#    "modules/arangodb",
+#    "modules/azurite",
+#    "modules/clickhouse",
+#    "modules/elasticsearch",
+#    "modules/google",
+#    "modules/k3s",
+#    "modules/kafka",
+#    "modules/keycloak",
+#    "modules/localstack",
+#    "modules/minio",
+#    "modules/mongodb",
+#    "modules/mssql",
+#    "modules/mysql",
+#    "modules/neo4j",
+#    "modules/nginx",
+#    "modules/opensearch",
+#    "modules/oracle",
+#    "modules/postgres",
+#    "modules/rabbitmq",
+#    "modules/redis",
+#    "modules/selenium"
+]
+enable_error_code = [
+    "ignore-without-code",
+    "redundant-expr",
+    "truthy-bool",
+]
+
+[[tool.mypy.overrides]]
+module = ['tests.*']
+# in pytest we allow fixtures to be more relaxed, though we check the untyped functions
+check_untyped_defs = true
+disable_error_code = [
+    'no-untyped-def'
+]
+
+[[tool.mypy.overrides]]
+module = ['docker.*']
+# docker still doesn't have type annotations (not even 7.0)
+ignore_missing_imports = true
+
+[[tool.mypy.overrides]]
+module = ['wrapt.*']
+# wrapt doesn't have type annotations
+ignore_missing_imports = true
 
 [build-system]
 requires = ["poetry-core"]

@@ -11,11 +11,13 @@
 #    License for the specific language governing permissions and limitations
 #    under the License.
 import os
+from typing import Optional
+
 from pymongo import MongoClient
+
 from testcontainers.core.generic import DbContainer
 from testcontainers.core.utils import raise_for_deprecated_parameter
-from testcontainers.core.waiting_utils import wait_container_is_ready
-from typing import Optional
+from testcontainers.core.waiting_utils import wait_for_logs
 
 
 class MongoDbContainer(DbContainer):
@@ -48,11 +50,18 @@ class MongoDbContainer(DbContainer):
             ...    # Find the restaurant document
             ...    cursor = db.restaurants.find({"borough": "Manhattan"})
     """
-    def __init__(self, image: str = "mongo:latest", port: int = 27017,
-                 username: Optional[str] = None, password: Optional[str] = None,
-                 dbname: Optional[str] = None, **kwargs) -> None:
+
+    def __init__(
+        self,
+        image: str = "mongo:latest",
+        port: int = 27017,
+        username: Optional[str] = None,
+        password: Optional[str] = None,
+        dbname: Optional[str] = None,
+        **kwargs
+    ) -> None:
         raise_for_deprecated_parameter(kwargs, "port_to_expose", "port")
-        super(MongoDbContainer, self).__init__(image=image, **kwargs)
+        super().__init__(image=image, **kwargs)
         self.username = username or os.environ.get("MONGO_INITDB_ROOT_USERNAME", "test")
         self.password = password or os.environ.get("MONGO_INITDB_ROOT_PASSWORD", "test")
         self.dbname = dbname or os.environ.get("MONGO_DB", "test")
@@ -66,15 +75,14 @@ class MongoDbContainer(DbContainer):
 
     def get_connection_url(self) -> str:
         return self._create_connection_url(
-            dialect='mongodb',
+            dialect="mongodb",
             username=self.username,
             password=self.password,
             port=self.port,
         )
 
-    @wait_container_is_ready()
-    def _connect(self) -> MongoClient:
-        return MongoClient(self.get_connection_url())
+    def _connect(self) -> None:
+        wait_for_logs(self, "Waiting for connections")
 
     def get_connection_client(self) -> MongoClient:
-        return self._connect()
+        return MongoClient(self.get_connection_url())

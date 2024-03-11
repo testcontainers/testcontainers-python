@@ -10,14 +10,11 @@ jobs:
   build:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v3
-      - name: Setup Poetry
-        run: pipx install poetry
-      - name: Setup python
-        uses: actions/setup-python@v5
+      - uses: actions/checkout@v4
+      - name: Set up Python
+        uses: ./.github/actions/setup-env
         with:
           python-version: "3.11"
-          cache: poetry
       - name: Install Python dependencies
         run: poetry install --all-extras
       - name: Build documentation

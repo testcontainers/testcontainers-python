@@ -22,11 +22,11 @@ from testcontainers.core.waiting_utils import wait_container_is_ready
 class NginxContainer(DockerContainer):
     def __init__(self, image: str = "nginx:latest", port: int = 80, **kwargs) -> None:
         raise_for_deprecated_parameter(kwargs, "port_to_expose", "port")
-        super(NginxContainer, self).__init__(image, **kwargs)
+        super().__init__(image, **kwargs)
         self.port = port
         self.with_exposed_ports(self.port)
 
-    def start(self) -> 'NginxContainer':
+    def start(self) -> "NginxContainer":
         super().start()
 
         host = self.get_container_host_ip()
@@ -37,5 +37,5 @@ class NginxContainer(DockerContainer):
 
     @wait_container_is_ready(urllib.error.URLError)
     def _connect(self, host: str, port: str) -> None:
-        url = urllib.parse.urlunsplit(('http', f'{host}:{port}', '', '', ''))
+        url = urllib.parse.urlunsplit(("http", f"{host}:{port}", "", "", ""))
         urllib.request.urlopen(url, timeout=1)

@@ -1,6 +1,7 @@
-from testcontainers.google import PubSubContainer
-from testcontainers.core.waiting_utils import wait_for_logs
 from queue import Queue
+
+from testcontainers.core.waiting_utils import wait_for_logs
+from testcontainers.google import PubSubContainer
 
 
 def test_pubsub_container():
@@ -14,8 +15,7 @@ def test_pubsub_container():
 
         # Create a subscription
         subscriber = pubsub.get_subscriber_client()
-        subscription_path = subscriber.subscription_path(pubsub.project,
-                                                         "my-subscription")
+        subscription_path = subscriber.subscription_path(pubsub.project, "my-subscription")
         subscriber.create_subscription(name=subscription_path, topic=topic_path)
 
         # Publish a message

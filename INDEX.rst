@@ -45,24 +45,43 @@ Getting Started
     >>> from testcontainers.postgres import PostgresContainer
     >>> import sqlalchemy
 
-    >>> with PostgresContainer("postgres:9.5") as postgres:
-    ...     engine = sqlalchemy.create_engine(postgres.get_connection_url())
+    >>> with PostgresContainer("postgres:latest") as postgres:
+    ...     psql_url = postgres.get_connection_url()
+    ...     engine = sqlalchemy.create_engine(psql_url)
     ...     with engine.begin() as connection:
     ...         result = connection.execute(sqlalchemy.text("select version()"))
     ...         version, = result.fetchone()
     >>> version
-    'PostgreSQL 9.5...'
+    'PostgreSQL ...'
 
-The snippet above will spin up a postgres database in a container. The :code:`get_connection_url()` convenience method returns a :code:`sqlalchemy` compatible url we use to connect to the database and retrieve the database version.
+The snippet above will spin up the current latest version of a postgres database in a container. The :code:`get_connection_url()` convenience method returns a :code:`sqlalchemy` compatible url (using the :code:`psycopg2` driver per default) to connect to the database and retrieve the database version.
+
+.. doctest::
+
+    >>> import asyncpg
+    >>> from testcontainers.postgres import PostgresContainer
+
+    >>> with PostgresContainer("postgres:16", driver=None) as postgres:
+    ...     psql_url = container.get_connection_url()
+    ...     with asyncpg.create_pool(dsn=psql_url,server_settings={"jit": "off"}) as pool:
+    ...         conn = await pool.acquire()
+    ...         ret = await conn.fetchval("SELECT 1")
+    ...         assert ret == 1
+
+This snippet does the same, however using a specific version and the driver is set to None, to influence the :code:`get_connection_url()` convenience method to not include a driver in the URL (e.g. for compatibility with :code:`psycopg` v3).
+
+Note, that the :code:`sqlalchemy` and :code:`psycopg2` packages are no longer a dependency of :code:`testcontainers[postgres]` and not needed to launch the Postgres container. Your project therefore needs to declare a dependency on the used driver and db access methods you use in your code.
+
 
 Installation
 ------------
 
-The suite of testcontainers packages is available on `PyPI <https://pypi.org/project/testcontainers/>`_, and individual packages can be installed using :code:`pip`. We recommend installing the package you need by running :code:`pip install testcontainers-<feature>`, e.g., :code:`pip install testcontainers-postgres`.
+The suite of testcontainers packages is available on `PyPI <https://pypi.org/project/testcontainers/>`_,
+and individual packages can be installed using :code:`pip`.
 
-.. note::
+Version `4.0.0` onwards we do not support the `testcontainers-*` packages as it is unsutainable to maintain ownership.
 
-    For backwards compatibility, packages can also be installed by specifying `extras <https://setuptools.readthedocs.io/en/latest/setuptools.html#declaring-extras-optional-features-with-their-own-dependencies>`__, e.g., :code:`pip install testcontainers[postgres]`.
+Instead packages can be installed by specifying `extras <https://setuptools.readthedocs.io/en/latest/setuptools.html#declaring-extras-optional-features-with-their-own-dependencies>`__, e.g., :code:`pip install testcontainers[postgres]`.
 
 
 Docker in Docker (DinD)
@@ -95,8 +114,8 @@ We recommend you use a `virtual environment <https://virtualenv.pypa.io/en/stabl
 
 .. code-block:: bash
 
-    pip install -r requirements/[your python version].txt
-    pytest -s
+    poetry install --all-extras
+    make <your-module>/tests
 
 Package Structure
 ^^^^^^^^^^^^^^^^^
@@ -105,23 +124,24 @@ Testcontainers is a collection of `implicit namespace packages <https://peps.pyt
 
 .. code-block:: bash
 
-    # One folder per feature.
-    [feature name]
-        # Folder without __init__.py for implicit namespace packages.
-        testcontainers
-            # Implementation as namespace package with __init__.py.
-            [feature name]
-                __init__.py
-                # Other files for this
-                ...
-        # Tests for the feature.
-        tests
-            test_[feature_name].py
-            ...
-        # README for this feature.
-        README.rst
-        # Setup script for this feature.
-        setup.py
+      modules
+      # One folder per feature.
+      [feature name]
+          # Folder without __init__.py for implicit namespace packages.
+          testcontainers
+              # Implementation as namespace package with __init__.py.
+              [feature name]
+                  __init__.py
+                  # Other files for this
+                  ...
+          # Tests for the feature.
+          tests
+              test_[some_aspect_for_the_feature].py
+              ...
+          # README for this feature.
+          README.rst
+          # Setup script for this feature.
+          setup.py
 
 Contributing a New Feature
 ^^^^^^^^^^^^^^^^^^^^^^^^^^

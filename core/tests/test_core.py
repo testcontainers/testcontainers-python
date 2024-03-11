@@ -5,9 +5,8 @@ from testcontainers.core.waiting_utils import wait_for_logs
 
 
 def test_timeout_is_raised_when_waiting_for_logs():
-    with pytest.raises(TimeoutError):
-        with DockerContainer("alpine").with_command("sleep 2") as container:
-            wait_for_logs(container, "Hello from Docker!", timeout=1e-3)
+    with pytest.raises(TimeoutError), DockerContainer("alpine").with_command("sleep 2") as container:
+        wait_for_logs(container, "Hello from Docker!", timeout=1e-3)
 
 
 def test_garbage_collection_is_defensive():
@@ -29,4 +28,4 @@ def test_can_get_logs():
     with DockerContainer("hello-world") as container:
         wait_for_logs(container, "Hello from Docker!")
         stdout, stderr = container.get_logs()
-        assert stdout, 'There should be something on stdout'
+        assert stdout, "There should be something on stdout"

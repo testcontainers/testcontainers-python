@@ -4,8 +4,7 @@ from io import BytesIO
 from textwrap import dedent
 
 from kafka import KafkaConsumer
-from kafka.errors import KafkaError, UnrecognizedBrokerVersion, NoBrokersAvailable
-
+from kafka.errors import KafkaError, NoBrokersAvailable, UnrecognizedBrokerVersion
 from testcontainers.core.container import DockerContainer
 from testcontainers.core.utils import raise_for_deprecated_parameter
 from testcontainers.core.waiting_utils import wait_container_is_ready
@@ -24,42 +23,41 @@ class KafkaContainer(DockerContainer):
             >>> with KafkaContainer() as kafka:
             ...    connection = kafka.get_bootstrap_server()
     """
-    TC_START_SCRIPT = '/tc-start.sh'
 
-    def __init__(self, image: str = "confluentinc/cp-kafka:5.4.3", port: int = 9093, **kwargs) \
-            -> None:
+    TC_START_SCRIPT = "/tc-start.sh"
+
+    def __init__(self, image: str = "confluentinc/cp-kafka:5.4.3", port: int = 9093, **kwargs) -> None:
         raise_for_deprecated_parameter(kwargs, "port_to_expose", "port")
-        super(KafkaContainer, self).__init__(image, **kwargs)
+        super().__init__(image, **kwargs)
         self.port = port
         self.with_exposed_ports(self.port)
-        listeners = f'PLAINTEXT://0.0.0.0:{self.port},BROKER://0.0.0.0:9092'
-        self.with_env('KAFKA_LISTENERS', listeners)
-        self.with_env('KAFKA_LISTENER_SECURITY_PROTOCOL_MAP',
-                      'BROKER:PLAINTEXT,PLAINTEXT:PLAINTEXT')
-        self.with_env('KAFKA_INTER_BROKER_LISTENER_NAME', 'BROKER')
+        listeners = f"PLAINTEXT://0.0.0.0:{self.port},BROKER://0.0.0.0:9092"
+        self.with_env("KAFKA_LISTENERS", listeners)
+        self.with_env("KAFKA_LISTENER_SECURITY_PROTOCOL_MAP", "BROKER:PLAINTEXT,PLAINTEXT:PLAINTEXT")
+        self.with_env("KAFKA_INTER_BROKER_LISTENER_NAME", "BROKER")
 
-        self.with_env('KAFKA_BROKER_ID', '1')
-        self.with_env('KAFKA_OFFSETS_TOPIC_REPLICATION_FACTOR', '1')
-        self.with_env('KAFKA_OFFSETS_TOPIC_NUM_PARTITIONS', '1')
-        self.with_env('KAFKA_LOG_FLUSH_INTERVAL_MESSAGES', '10000000')
-        self.with_env('KAFKA_GROUP_INITIAL_REBALANCE_DELAY_MS', '0')
+        self.with_env("KAFKA_BROKER_ID", "1")
+        self.with_env("KAFKA_OFFSETS_TOPIC_REPLICATION_FACTOR", "1")
+        self.with_env("KAFKA_OFFSETS_TOPIC_NUM_PARTITIONS", "1")
+        self.with_env("KAFKA_LOG_FLUSH_INTERVAL_MESSAGES", "10000000")
+        self.with_env("KAFKA_GROUP_INITIAL_REBALANCE_DELAY_MS", "0")
 
     def get_bootstrap_server(self) -> str:
         host = self.get_container_host_ip()
         port = self.get_exposed_port(self.port)
-        return f'{host}:{port}'
+        return f"{host}:{port}"
 
     @wait_container_is_ready(UnrecognizedBrokerVersion, NoBrokersAvailable, KafkaError, ValueError)
     def _connect(self) -> None:
         bootstrap_server = self.get_bootstrap_server()
-        consumer = KafkaConsumer(group_id='test', bootstrap_servers=[bootstrap_server])
+        consumer = KafkaConsumer(group_id="test", bootstrap_servers=[bootstrap_server])
         if not consumer.bootstrap_connected():
             raise KafkaError("Unable to connect with kafka container!")
 
     def tc_start(self) -> None:
         host = self.get_container_host_ip()
         port = self.get_exposed_port(self.port)
-        listeners = f'PLAINTEXT://{host}:{port},BROKER://$(hostname -i):9092'
+        listeners = f"PLAINTEXT://{host}:{port},BROKER://$(hostname -i):9092"
         data = (
             dedent(
                 f"""
@@ -76,7 +74,7 @@ class KafkaContainer(DockerContainer):
                 """
             )
             .strip()
-            .encode('utf-8')
+            .encode("utf-8")
         )
         self.create_file(data, KafkaContainer.TC_START_SCRIPT)
 
