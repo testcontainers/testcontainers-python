@@ -15,7 +15,7 @@ from functools import cached_property
 from pathlib import Path
 from typing import Optional
 
-from qdrant_client import QdrantClient
+from qdrant_client import AsyncQdrantClient, QdrantClient
 
 from testcontainers.core.config import TIMEOUT
 from testcontainers.core.generic import DbContainer
@@ -23,6 +23,19 @@ from testcontainers.core.waiting_utils import wait_container_is_ready, wait_for_
 
 
 class QdrantContainer(DbContainer):
+    """
+    Qdrant vector database container.
+
+    Example:
+        .. doctest::
+
+            >>> from testcontainers.qdrant import QdrantContainer
+
+            >>> with QdrantContainer(api_key="<OPTIONAL_API_KEY>") as qdrant:
+            ...     client = qdrant.get_client()
+            ...     client.get_collections()
+    """
+
     QDRANT_CONFIG_FILE_PATH = "/qdrant/config/config.yaml"
 
     def __init__(
@@ -30,14 +43,14 @@ class QdrantContainer(DbContainer):
         image: str = "qdrant/qdrant:latest",
         rest_port: int = 6333,
         grpc_port: int = 6334,
-        container_api_key: Optional[str] = None,
+        api_key: Optional[str] = None,
         config_file_path: Optional[Path] = None,
         **kwargs,
     ) -> None:
         super().__init__(image, **kwargs)
         self.rest_port = rest_port
         self.grpc_port = grpc_port
-        self.container_api_key = container_api_key or os.getenv("QDRANT_CONTAINER_API_KEY")
+        self.api_key = api_key or os.getenv("QDRANT_CONTAINER_API_KEY")
 
         if config_file_path:
             self.with_volume_mapping(host=str(config_file_path), container=QdrantContainer.QDRANT_CONFIG_FILE_PATH)
@@ -45,25 +58,68 @@ class QdrantContainer(DbContainer):
         self.with_exposed_ports(self.rest_port, self.grpc_port)
 
     def _configure(self) -> None:
-        self.with_env("QDRANT__SERVICE__API_KEY", self.container_api_key)
+        self.with_env("QDRANT__SERVICE__API_KEY", self.api_key)
 
     @wait_container_is_ready()
     def _connect(self) -> None:
         wait_for_logs(self, ".*Actix runtime found; starting in Actix runtime.*", TIMEOUT)
 
     def get_client(self, **kwargs) -> "QdrantClient":
+        """
+        Get a `qdrant_client.QdrantClient` instance associated with the container.
+
+        Args:
+            **kwargs: Additional keyword arguments to be passed to the `qdrant_client.QdrantClient` constructor.
+
+        Returns:
+            QdrantClient: An instance of the `qdrant_client.QdrantClient` class.
+
+        """
         return QdrantClient(
             host=self.get_container_host_ip(),
             port=self.get_exposed_port(self.rest_port),
             grpc_port=self.get_exposed_port(self.grpc_port),
-            api_key=self.container_api_key,
+            api_key=self.api_key,
+            https=False,
+            **kwargs,
+        )
+
+    def get_async_client(self, **kwargs) -> "AsyncQdrantClient":
+        """
+        Get a `qdrant_client.AsyncQdrantClient` instance associated with the container.
+
+        Args:
+            **kwargs: Additional keyword arguments to be passed to the `qdrant_client.AsyncQdrantClient` constructor.
+
+        Returns:
+            QdrantClient: An instance of the `qdrant_client.AsyncQdrantClient` class.
+
+        """
+        return AsyncQdrantClient(
+            host=self.get_container_host_ip(),
+            port=self.get_exposed_port(self.rest_port),
+            grpc_port=self.get_exposed_port(self.grpc_port),
+            api_key=self.api_key,
+            https=False,
             **kwargs,
         )
 
     @cached_property
-    def http_host_address(self) -> str:
+    def rest_host_address(self) -> str:
+        """
+        Get the REST host address of the Qdrant container.
+
+        Returns:
+            str: The REST host address of the Qdrant container.
+        """
         return f"{self.get_container_host_ip()}:{self.get_exposed_port(self.rest_port)}"
 
     @cached_property
     def grpc_host_address(self) -> str:
+        """
+        Get the GRPC host address of the Qdrant container.
+
+        Returns:
+            str: The GRPC host address of the Qdrant container.
+        """
         return f"{self.get_container_host_ip()}:{self.get_exposed_port(self.grpc_port)}"

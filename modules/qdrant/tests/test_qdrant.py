@@ -21,15 +21,22 @@ def test_docker_run_qdrant():
 def test_qdrant_with_api_key_http():
     api_key = uuid.uuid4().hex
 
-    with QdrantContainer(container_api_key=api_key) as qdrant:
+    with QdrantContainer(api_key=api_key) as qdrant:
         with pytest.raises(UnexpectedResponse) as e:
-            QdrantClient(location=f"http://{qdrant.http_host_address}").get_collections()
+            # Construct a client without an API key
+            QdrantClient(location=f"http://{qdrant.rest_host_address}").get_collections()
 
         assert "Invalid api-key" in str(e.value)
 
+        # Construct a client with an API key
         collections = (
-            QdrantClient(location=f"http://{qdrant.http_host_address}", api_key=api_key).get_collections().collections
+            QdrantClient(location=f"http://{qdrant.rest_host_address}", api_key=api_key).get_collections().collections
         )
+
+        assert len(collections) == 0
+
+        # Get an automatically configured client instance
+        collections = qdrant.get_client().get_collections().collections
 
         assert len(collections) == 0
 
@@ -37,7 +44,7 @@ def test_qdrant_with_api_key_http():
 def test_qdrant_with_api_key_grpc():
     api_key = uuid.uuid4().hex
 
-    with QdrantContainer(container_api_key=api_key) as qdrant:
+    with QdrantContainer(api_key=api_key) as qdrant:
         with pytest.raises(RpcError) as e:
             QdrantClient(
                 url=f"http://{qdrant.grpc_host_address}",
@@ -66,6 +73,6 @@ def test_qdrant_with_config_file():
 
     with QdrantContainer(config_file_path=config_file_path) as qdrant:
         with pytest.raises(UnexpectedResponse) as e:
-            QdrantClient(location=f"http://{qdrant.http_host_address}").get_collections()
+            QdrantClient(location=f"http://{qdrant.rest_host_address}").get_collections()
 
         assert "Invalid api-key" in str(e.value)
