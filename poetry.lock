@@ -908,7 +908,7 @@ grpc = ["grpcio (>=1.44.0,<2.0.0.dev0)"]
 name = "greenlet"
 version = "3.0.3"
 description = "Lightweight in-process concurrent programming"
-optional = true
+optional = false
 python-versions = ">=3.7"
 files = [
     {file = "greenlet-3.0.3-cp310-cp310-macosx_11_0_universal2.whl", hash = "sha256:9da2bd29ed9e4f15955dd1595ad7bc9320308a3b766ef7f837e23ad4b4aac31a"},
@@ -1861,7 +1861,7 @@ files = [
 name = "psycopg2-binary"
 version = "2.9.9"
 description = "psycopg2 - Python-PostgreSQL Database Adapter"
-optional = true
+optional = false
 python-versions = ">=3.7"
 files = [
     {file = "psycopg2-binary-2.9.9.tar.gz", hash = "sha256:7f01846810177d829c7692f1f5ada8096762d9172af1b1a28d4ab5b77c923c1c"},
@@ -2865,7 +2865,7 @@ test = ["pytest"]
 name = "sqlalchemy"
 version = "2.0.28"
 description = "Database Abstraction Library"
-optional = true
+optional = false
 python-versions = ">=3.7"
 files = [
     {file = "SQLAlchemy-2.0.28-cp310-cp310-macosx_10_9_x86_64.whl", hash = "sha256:e0b148ab0438f72ad21cb004ce3bdaafd28465c4276af66df3b9ecd2037bf252"},
@@ -3254,7 +3254,7 @@ neo4j = ["neo4j"]
 nginx = []
 opensearch = ["opensearch-py"]
 oracle = ["cx_Oracle", "sqlalchemy"]
-postgres = ["psycopg2-binary", "sqlalchemy"]
+postgres = []
 rabbitmq = ["pika"]
 redis = ["redis"]
 selenium = ["selenium"]
