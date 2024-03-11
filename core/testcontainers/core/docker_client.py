@@ -17,11 +17,11 @@ from os.path import exists
 from pathlib import Path
 from typing import Optional, Union
 
-from testcontainers.core.labels import create_labels, SESSION_ID
-from testcontainers.core.utils import default_gateway_ip, inside_container, setup_logger
-
 import docker
 from docker.models.containers import Container, ContainerCollection
+
+from testcontainers.core.labels import SESSION_ID, create_labels
+from testcontainers.core.utils import default_gateway_ip, inside_container, setup_logger
 
 LOGGER = setup_logger(__name__)
 TC_FILE = ".testcontainers.properties"
@@ -50,12 +50,12 @@ class DockerClient:
         command: Optional[Union[str, list[str]]] = None,
         environment: Optional[dict] = None,
         ports: Optional[dict] = None,
-        labels: Optional[dict] = None,
+        labels: Optional[dict[str, str]] = None,
         detach: bool = False,
         stdout: bool = True,
         stderr: bool = False,
         remove: bool = False,
-        **kwargs
+        **kwargs,
     ) -> Container:
         container = self.client.containers.run(
             image,
@@ -67,7 +67,7 @@ class DockerClient:
             environment=environment,
             ports=ports,
             labels=create_labels(image, labels),
-            **kwargs
+            **kwargs,
         )
         return container
 
@@ -145,12 +145,3 @@ def read_tc_properties() -> dict[str, str]:
             tuples = [line.split("=") for line in contents.readlines() if "=" in line]
             settings = {**settings, **{item[0]: item[1] for item in tuples}}
     return settings
-
-
-def _stop_container(container: Container) -> None:
-    try:
-        container.stop()
-    except NotFound:
-        pass
-    except Exception as ex:
-        LOGGER.warning("failed to shut down container %s with image %s: %s", container.id, container.image, ex)

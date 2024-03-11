@@ -3,11 +3,11 @@ from typing import Optional
 
 from docker.models.containers import Container
 
-from testcontainers.core.reaper import Reaper
-from testcontainers.core.config import RYUK_IMAGE, RYUK_DISABLED
+from testcontainers.core.config import RYUK_DISABLED, RYUK_IMAGE
 from testcontainers.core.docker_client import DockerClient
 from testcontainers.core.exceptions import ContainerStartException
-from testcontainers.core.utils import setup_logger, inside_container, is_arm
+from testcontainers.core.reaper import Reaper
+from testcontainers.core.utils import inside_container, is_arm, setup_logger
 from testcontainers.core.waiting_utils import wait_container_is_ready
 
 logger = setup_logger(__name__)
