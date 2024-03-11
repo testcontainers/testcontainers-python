@@ -48,7 +48,7 @@ def test_qdrant_with_api_key_grpc():
         with pytest.raises(RpcError) as e:
             QdrantClient(
                 url=f"http://{qdrant.grpc_host_address}",
-                grpc_port=qdrant.get_exposed_port(qdrant.grpc_port),
+                grpc_port=qdrant.exposed_grpc_port,
                 prefer_grpc=True,
             ).get_collections()
 
@@ -57,7 +57,7 @@ def test_qdrant_with_api_key_grpc():
         collections = (
             QdrantClient(
                 url=f"http://{qdrant.grpc_host_address}",
-                grpc_port=qdrant.get_exposed_port(qdrant.grpc_port),
+                grpc_port=qdrant.exposed_grpc_port,
                 prefer_grpc=True,
                 api_key=api_key,
             )

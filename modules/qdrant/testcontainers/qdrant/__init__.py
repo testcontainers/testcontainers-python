@@ -31,7 +31,7 @@ class QdrantContainer(DbContainer):
 
             >>> from testcontainers.qdrant import QdrantContainer
 
-            >>> with QdrantContainer(api_key="<OPTIONAL_API_KEY>") as qdrant:
+            >>> with QdrantContainer() as qdrant:
             ...     client = qdrant.get_client()
             ...     client.get_collections()
     """
@@ -48,17 +48,17 @@ class QdrantContainer(DbContainer):
         **kwargs,
     ) -> None:
         super().__init__(image, **kwargs)
-        self.rest_port = rest_port
-        self.grpc_port = grpc_port
-        self.api_key = api_key or os.getenv("QDRANT_CONTAINER_API_KEY")
+        self._rest_port = rest_port
+        self._grpc_port = grpc_port
+        self._api_key = api_key or os.getenv("QDRANT_CONTAINER_API_KEY")
 
         if config_file_path:
             self.with_volume_mapping(host=str(config_file_path), container=QdrantContainer.QDRANT_CONFIG_FILE_PATH)
 
-        self.with_exposed_ports(self.rest_port, self.grpc_port)
+        self.with_exposed_ports(self._rest_port, self._grpc_port)
 
     def _configure(self) -> None:
-        self.with_env("QDRANT__SERVICE__API_KEY", self.api_key)
+        self.with_env("QDRANT__SERVICE__API_KEY", self._api_key)
 
     @wait_container_is_ready()
     def _connect(self) -> None:
@@ -77,9 +77,9 @@ class QdrantContainer(DbContainer):
         """
         return QdrantClient(
             host=self.get_container_host_ip(),
-            port=self.get_exposed_port(self.rest_port),
-            grpc_port=self.get_exposed_port(self.grpc_port),
-            api_key=self.api_key,
+            port=self.get_exposed_port(self._rest_port),
+            grpc_port=self.get_exposed_port(self._grpc_port),
+            api_key=self._api_key,
             https=False,
             **kwargs,
         )
@@ -97,9 +97,9 @@ class QdrantContainer(DbContainer):
         """
         return AsyncQdrantClient(
             host=self.get_container_host_ip(),
-            port=self.get_exposed_port(self.rest_port),
-            grpc_port=self.get_exposed_port(self.grpc_port),
-            api_key=self.api_key,
+            port=self.get_exposed_port(self._rest_port),
+            grpc_port=self.get_exposed_port(self._grpc_port),
+            api_key=self._api_key,
             https=False,
             **kwargs,
         )
@@ -112,7 +112,7 @@ class QdrantContainer(DbContainer):
         Returns:
             str: The REST host address of the Qdrant container.
         """
-        return f"{self.get_container_host_ip()}:{self.get_exposed_port(self.rest_port)}"
+        return f"{self.get_container_host_ip()}:{self.exposed_rest_port}"
 
     @cached_property
     def grpc_host_address(self) -> str:
@@ -122,4 +122,24 @@ class QdrantContainer(DbContainer):
         Returns:
             str: The GRPC host address of the Qdrant container.
         """
-        return f"{self.get_container_host_ip()}:{self.get_exposed_port(self.grpc_port)}"
+        return f"{self.get_container_host_ip()}:{self.exposed_grpc_port}"
+
+    @cached_property
+    def exposed_rest_port(self) -> int:
+        """
+        Get the exposed REST port of the Qdrant container.
+
+        Returns:
+            int: The REST port of the Qdrant container.
+        """
+        return self.get_exposed_port(self._rest_port)
+
+    @cached_property
+    def exposed_grpc_port(self) -> int:
+        """
+        Get the exposed GRPC port of the Qdrant container.
+
+        Returns:
+            int: The GRPC port of the Qdrant container.
+        """
+        return self.get_exposed_port(self._grpc_port)
