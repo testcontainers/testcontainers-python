@@ -17,7 +17,9 @@ logger = setup_logger(__name__)
 
 class Reaper:
     _instance: Union[Reaper, None] = None
-    _container: "Union[DockerContainer, None]" = None  # noqa: UP037 Use quotes for type annotation due to circular dependency on DockerContainer
+    _container: "Union[DockerContainer, None]" = (
+        None  # noqa: UP037 Use quotes for type annotation due to circular dependency on DockerContainer
+    )
     _socket: Union[socket, None] = None
 
     @classmethod
