@@ -1,7 +1,7 @@
 from __future__ import annotations
 
 from socket import socket
-from typing import TYPE_CHECKING, Union
+from typing import TYPE_CHECKING, Optional
 
 from .config import RYUK_DOCKER_SOCKET, RYUK_IMAGE, RYUK_PRIVILEGED
 from .labels import LABEL_SESSION_ID, SESSION_ID
@@ -16,9 +16,9 @@ logger = setup_logger(__name__)
 
 
 class Reaper:
-    _instance: Union[Reaper, None] = None
-    _container: "Union[DockerContainer, None]" = None  # noqa: UP037 Use quotes for type annotation due to circular deps
-    _socket: Union[socket, None] = None
+    _instance: Optional[Reaper] = None  # noqa: UP007 Support Python3.9 type annotations
+    _container: "Optional[DockerContainer]" = None  # noqa: UP037,UP007 Quotes for type annotation due to circular deps
+    _socket: Optional[socket] = None  # noqa: UP007 Support Python3.9 type annotations
 
     @classmethod
     def get_instance(cls) -> Reaper:
