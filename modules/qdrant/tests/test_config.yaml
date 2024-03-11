@@ -1,0 +1,4 @@
+log_level: INFO
+
+service:
+  api_key: "SOME_TEST_KEY"
