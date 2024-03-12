@@ -1,1 +1,0 @@
-.. autoclass:: testcontainers.google.PubSubContainer

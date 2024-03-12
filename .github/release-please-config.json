@@ -1,0 +1,10 @@
+{
+    "release-type": "python",
+    "bootstrap-sha": "dcb4f6842cbfe6e880a77b0d4aabb3f396c6dc19",
+    "packages": {
+        ".": {
+            "package-name": "testcontainers"
+        }
+    },
+    "$schema": "https://raw.githubusercontent.com/googleapis/release-please/main/schemas/config.json"
+}
