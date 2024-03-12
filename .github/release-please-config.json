@@ -1,6 +1,6 @@
 {
     "release-type": "python",
-    "bootstrap-sha": "28e3a471c32c1036dd5e37df13cdde3b1ba91000",
+    "bootstrap-sha": "dcb4f6842cbfe6e880a77b0d4aabb3f396c6dc19",
     "packages": {
         ".": {
             "package-name": "testcontainers"
