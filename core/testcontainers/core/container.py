@@ -2,7 +2,7 @@ from __future__ import annotations
 
 from platform import system
 from socket import socket
-from typing import TYPE_CHECKING, Optional
+from typing import TYPE_CHECKING
 
 from testcontainers.core.config import RYUK_DISABLED, RYUK_DOCKER_SOCKET, RYUK_IMAGE, RYUK_PRIVILEGED
 from testcontainers.core.docker_client import DockerClient
@@ -33,7 +33,7 @@ class DockerContainer:
     def __init__(
         self,
         image: str,
-        docker_client_kw: Optional[dict] = None,  # noqa: UP007 Support Python3.9 type annotations
+        docker_client_kw: dict | None = None,
         **kwargs,
     ) -> None:
         self.env = {}
@@ -50,9 +50,7 @@ class DockerContainer:
         self.env[key] = value
         return self
 
-    def with_bind_ports(
-        self, container: int, host: Optional[int] = None  # noqa: UP007 Support Python3.9 type annotations
-    ) -> DockerContainer:
+    def with_bind_ports(self, container: int, host: int | None = None) -> DockerContainer:
         self.ports[container] = host
         return self
 
@@ -164,9 +162,9 @@ class DockerContainer:
 
 
 class Reaper:
-    _instance: Optional[Reaper] = None  # noqa: UP007 Support Python3.9 type annotations
-    _container: Optional[DockerContainer] = None  # noqa: UP007 Support Python3.9 type annotations
-    _socket: Optional[socket] = None  # noqa: UP007 Support Python3.9 type annotations
+    _instance: Reaper | None = None
+    _container: DockerContainer | None = None
+    _socket: socket | None = None
 
     @classmethod
     def get_instance(cls) -> Reaper:
