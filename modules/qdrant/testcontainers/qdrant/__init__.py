@@ -40,7 +40,7 @@ class QdrantContainer(DbContainer):
 
     def __init__(
         self,
-        image: str = "qdrant/qdrant:latest",
+        image: str = "qdrant/qdrant:v1.8.1",
         rest_port: int = 6333,
         grpc_port: int = 6334,
         api_key: Optional[str] = None,
