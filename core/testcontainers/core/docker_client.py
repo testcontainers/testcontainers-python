@@ -143,7 +143,7 @@ def read_tc_properties() -> dict[str, str]:
         tuples = []
         with open(file) as contents:
             tuples = [line.split("=") for line in contents.readlines() if "=" in line]
-            settings = {**settings, **{item[0]: item[1] for item in tuples}}
+            settings = {**settings, **{item[0].strip(): item[1].strip() for item in tuples}}
     return settings
 
 
