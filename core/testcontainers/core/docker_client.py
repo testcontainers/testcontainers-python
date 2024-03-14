@@ -13,10 +13,11 @@
 import atexit
 import functools as ft
 import os
+import signal
 import urllib
 from os.path import exists
 from pathlib import Path
-from typing import Optional, Union
+from typing import Optional, Union, Callable, Iterable, Optional
 
 import docker
 from docker.errors import NotFound
@@ -69,6 +70,11 @@ class DockerClient:
         )
         if detach:
             atexit.register(_stop_container, container)
+            signal_handler = ft.partial(_stop_container, container)
+            _register_signal_handler(
+                signal_handler,
+                {signal.SIGINT, signal.SIGTERM, signal.SIGQUIT, signal.SIGHUP}
+            )
         return container
 
     def port(self, container_id: str, port: int) -> int:
@@ -154,3 +160,28 @@ def _stop_container(container: Container) -> None:
         pass
     except Exception as ex:
         LOGGER.warning("failed to shut down container %s with image %s: %s", container.id, container.image, ex)
+
+
+def _register_signal_handler(handler: Callable[[], None], signals: Iterable) -> None:
+    def signal_wrapper(old_handler: Optional[Callable[[], None]] = None):
+        if old_handler is not None:
+            old_handler()
+        handler()
+
+    for sig in signals:
+        # Register function for this signal and pop() the previously
+        # registered one (if any). This can either be a callable,
+        # SIG_IGN (ignore signal) or SIG_DFL (perform default action
+        # for signal).
+        old_handler = signal.getsignal(sig)
+        if old_handler in (signal.SIG_DFL, signal.SIG_IGN) or not callable(old_handler):
+            continue
+        # This is needed otherwise we'll get a KeyboardInterrupt
+        # strace on interpreter exit, even if the process exited
+        # with sig 0.
+        if (sig == signal.SIGINT and
+                old_handler is signal.default_int_handler):
+            continue
+        wrapped_handler = ft.partial(signal_wrapper, old_handler)
+        signal.signal(sig, wrapped_handler)
+        
