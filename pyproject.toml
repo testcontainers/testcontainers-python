@@ -48,7 +48,8 @@ packages = [
     { include = "testcontainers", from = "modules/postgres" },
     { include = "testcontainers", from = "modules/rabbitmq" },
     { include = "testcontainers", from = "modules/redis" },
-    { include = "testcontainers", from = "modules/selenium" }
+    { include = "testcontainers", from = "modules/selenium" },
+    { include = "testcontainers", from = "modules/chroma" },
 ]
 
 [tool.poetry.urls]
@@ -84,6 +85,7 @@ cx_Oracle = { version = "*", optional = true }
 pika = { version = "*", optional = true }
 redis = { version = "*", optional = true }
 selenium = { version = "*", optional = true }
+chroma = { version = "*", optional = true }
 
 [tool.poetry.extras]
 arangodb = ["python-arango"]
@@ -108,6 +110,7 @@ postgres = []
 rabbitmq = ["pika"]
 redis = ["redis"]
 selenium = ["selenium"]
+chroma = ["chromadb-client"]
 
 [tool.poetry.group.dev.dependencies]
 mypy = "1.7.1"
