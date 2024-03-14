@@ -1,5 +1,3 @@
-from __future__ import annotations
-
 from platform import system
 from socket import socket
 from typing import TYPE_CHECKING, Optional
@@ -46,29 +44,29 @@ class DockerContainer:
         self._name = None
         self._kwargs = kwargs
 
-    def with_env(self, key: str, value: str) -> DockerContainer:
+    def with_env(self, key: str, value: str) -> "DockerContainer":
         self.env[key] = value
         return self
 
-    def with_bind_ports(self, container: int, host: Optional[int] = None) -> DockerContainer:
+    def with_bind_ports(self, container: int, host: Optional[int] = None) -> "DockerContainer":
         self.ports[container] = host
         return self
 
-    def with_exposed_ports(self, *ports: int) -> DockerContainer:
+    def with_exposed_ports(self, *ports: int) -> "DockerContainer":
         for port in ports:
             self.ports[port] = None
         return self
 
-    def with_kwargs(self, **kwargs) -> DockerContainer:
+    def with_kwargs(self, **kwargs) -> "DockerContainer":
         self._kwargs = kwargs
         return self
 
-    def maybe_emulate_amd64(self) -> DockerContainer:
+    def maybe_emulate_amd64(self) -> "DockerContainer":
         if is_arm():
             return self.with_kwargs(platform="linux/amd64")
         return self
 
-    def start(self) -> DockerContainer:
+    def start(self):
         if not RYUK_DISABLED and self.image != RYUK_IMAGE:
             logger.debug("Creating Ryuk container")
             Reaper.get_instance()
@@ -91,7 +89,7 @@ class DockerContainer:
         self._container.remove(force=force, v=delete_volume)
         self.get_docker_client().client.close()
 
-    def __enter__(self) -> DockerContainer:
+    def __enter__(self):
         return self.start()
 
     def __exit__(self, exc_type, exc_val, exc_tb) -> None:
@@ -131,20 +129,20 @@ class DockerContainer:
                 return port
         return mapped_port
 
-    def with_command(self, command: str) -> DockerContainer:
+    def with_command(self, command: str) -> "DockerContainer":
         self._command = command
         return self
 
-    def with_name(self, name: str) -> DockerContainer:
+    def with_name(self, name: str) -> "DockerContainer":
         self._name = name
         return self
 
-    def with_volume_mapping(self, host: str, container: str, mode: str = "ro") -> DockerContainer:
+    def with_volume_mapping(self, host: str, container: str, mode: str = "ro") -> "DockerContainer":
         mapping = {"bind": container, "mode": mode}
         self.volumes[host] = mapping
         return self
 
-    def get_wrapped_container(self) -> Container:
+    def get_wrapped_container(self) -> "Container":
         return self._container
 
     def get_docker_client(self) -> DockerClient:
@@ -162,12 +160,12 @@ class DockerContainer:
 
 
 class Reaper:
-    _instance: Optional[Reaper] = None
+    _instance: "Optional[Reaper]" = None
     _container: Optional[DockerContainer] = None
     _socket: Optional[socket] = None
 
     @classmethod
-    def get_instance(cls) -> Reaper:
+    def get_instance(cls) -> "Reaper":
         if not Reaper._instance:
             Reaper._instance = Reaper._create_instance()
 
@@ -187,7 +185,7 @@ class Reaper:
             Reaper._instance = None
 
     @classmethod
-    def _create_instance(cls) -> Reaper:
+    def _create_instance(cls) -> "Reaper":
         logger.debug(f"Creating new Reaper for session: {SESSION_ID}")
 
         Reaper._container = (
