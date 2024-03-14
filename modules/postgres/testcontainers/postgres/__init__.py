@@ -45,7 +45,7 @@ class PostgresContainer(DbContainer):
             ...         result = connection.execute(sqlalchemy.text("select version()"))
             ...         version, = result.fetchone()
             >>> version
-            'PostgreSQL 9.5...'
+            'PostgreSQL 16...'
     """
 
     def __init__(
