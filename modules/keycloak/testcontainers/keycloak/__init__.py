@@ -36,20 +36,21 @@ class KeycloakContainer(DockerContainer):
 
     def __init__(
         self,
-        image="jboss/keycloak:latest",
+        image="quay.io/keycloak/keycloak:latest",
         username: Optional[str] = None,
         password: Optional[str] = None,
         port: int = 8080,
     ) -> None:
         super().__init__(image=image)
-        self.username = username or os.environ.get("KEYCLOAK_USER", "test")
-        self.password = password or os.environ.get("KEYCLOAK_PASSWORD", "test")
+        self.username = username or os.environ.get("KEYCLOAK_ADMIN", "test")
+        self.password = password or os.environ.get("KEYCLOAK_ADMIN_PASSWORD", "test")
         self.port = port
         self.with_exposed_ports(self.port)
 
     def _configure(self) -> None:
-        self.with_env("KEYCLOAK_USER", self.username)
-        self.with_env("KEYCLOAK_PASSWORD", self.password)
+        self.with_env("KEYCLOAK_ADMIN", self.username)
+        self.with_env("KEYCLOAK_ADMIN_PASSWORD", self.password)
+        self.with_command("start-dev")
 
     def get_url(self) -> str:
         host = self.get_container_host_ip()
@@ -58,8 +59,7 @@ class KeycloakContainer(DockerContainer):
 
     @wait_container_is_ready(requests.exceptions.ConnectionError, requests.exceptions.ReadTimeout)
     def _connect(self) -> None:
-        url = self.get_url()
-        response = requests.get(f"{url}/auth", timeout=1)
+        response = requests.get(self.get_url(), timeout=1)
         response.raise_for_status()
 
     def start(self) -> "KeycloakContainer":
@@ -70,7 +70,7 @@ class KeycloakContainer(DockerContainer):
 
     def get_client(self, **kwargs) -> KeycloakAdmin:
         default_kwargs = {
-            "server_url": f"{self.get_url()}/auth/",
+            "server_url": self.get_url(),
             "username": self.username,
             "password": self.password,
             "realm_name": "master",
