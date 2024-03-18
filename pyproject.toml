@@ -30,6 +30,7 @@ packages = [
     { include = "testcontainers", from = "core" },
     { include = "testcontainers", from = "modules/arangodb" },
     { include = "testcontainers", from = "modules/azurite" },
+    { include = "testcontainers", from = "modules/cassandra" },
     { include = "testcontainers", from = "modules/chroma" },
     { include = "testcontainers", from = "modules/clickhouse" },
     { include = "testcontainers", from = "modules/elasticsearch" },
@@ -93,6 +94,7 @@ chromadb-client = { version = "*", optional = true }
 [tool.poetry.extras]
 arangodb = ["python-arango"]
 azurite = ["azure-storage-blob"]
+cassandra = ["cassandra-driver"]
 clickhouse = ["clickhouse-driver"]
 elasticsearch = []
 google = ["google-cloud-pubsub", "google-cloud-datastore"]
@@ -130,6 +132,7 @@ pg8000 = "*"
 sqlalchemy = "*"
 psycopg = "*"
 kafka-python = "^2.0.2"
+cassandra-driver = "*"
 
 [[tool.poetry.source]]
 name = "PyPI"
@@ -228,6 +231,7 @@ mypy_path = [
     "core",
 #    "modules/arangodb",
 #    "modules/azurite",
+#    "modules/cassandra",
 #    "modules/clickhouse",
 #    "modules/elasticsearch",
 #    "modules/google",
