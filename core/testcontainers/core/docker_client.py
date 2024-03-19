@@ -10,7 +10,6 @@
 #    WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the
 #    License for the specific language governing permissions and limitations
 #    under the License.
-import atexit
 import functools as ft
 import os
 import urllib
@@ -19,10 +18,10 @@ from pathlib import Path
 from typing import Optional, Union
 
 import docker
-from docker.errors import NotFound
 from docker.models.containers import Container, ContainerCollection
 
-from .utils import default_gateway_ip, inside_container, setup_logger
+from testcontainers.core.labels import SESSION_ID, create_labels
+from testcontainers.core.utils import default_gateway_ip, inside_container, setup_logger
 
 LOGGER = setup_logger(__name__)
 TC_FILE = ".testcontainers.properties"
@@ -42,6 +41,7 @@ class DockerClient:
             self.client = docker.DockerClient(base_url=docker_host)
         else:
             self.client = docker.from_env(**kwargs)
+        self.client.api.headers["x-tc-sid"] = SESSION_ID
 
     @ft.wraps(ContainerCollection.run)
     def run(
@@ -50,6 +50,7 @@ class DockerClient:
         command: Optional[Union[str, list[str]]] = None,
         environment: Optional[dict] = None,
         ports: Optional[dict] = None,
+        labels: Optional[dict[str, str]] = None,
         detach: bool = False,
         stdout: bool = True,
         stderr: bool = False,
@@ -65,10 +66,9 @@ class DockerClient:
             detach=detach,
             environment=environment,
             ports=ports,
+            labels=create_labels(image, labels),
             **kwargs,
         )
-        if detach:
-            atexit.register(_stop_container, container)
         return container
 
     def port(self, container_id: str, port: int) -> int:
@@ -145,12 +145,3 @@ def read_tc_properties() -> dict[str, str]:
             tuples = [line.split("=") for line in contents.readlines() if "=" in line]
             settings = {**settings, **{item[0].strip(): item[1].strip() for item in tuples}}
     return settings
-
-
-def _stop_container(container: Container) -> None:
-    try:
-        container.stop()
-    except NotFound:
-        pass
-    except Exception as ex:
-        LOGGER.warning("failed to shut down container %s with image %s: %s", container.id, container.image, ex)

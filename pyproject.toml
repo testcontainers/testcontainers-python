@@ -197,6 +197,9 @@ ignore = [
     "INP001"
 ]
 
+[tool.ruff.lint.pyupgrade]
+keep-runtime-typing = true
+
 [tool.ruff.lint.flake8-type-checking]
 strict = true
 
