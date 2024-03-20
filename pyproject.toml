@@ -29,6 +29,7 @@ packages = [
     { include = "testcontainers", from = "core" },
     { include = "testcontainers", from = "modules/arangodb" },
     { include = "testcontainers", from = "modules/azurite" },
+    { include = "testcontainers", from = "modules/cassandra" },
     { include = "testcontainers", from = "modules/clickhouse" },
     { include = "testcontainers", from = "modules/elasticsearch" },
     { include = "testcontainers", from = "modules/google" },
@@ -85,6 +86,7 @@ selenium = { version = "*", optional = true }
 [tool.poetry.extras]
 arangodb = ["python-arango"]
 azurite = ["azure-storage-blob"]
+cassandra = ["cassandra-driver"]
 clickhouse = ["clickhouse-driver"]
 elasticsearch = []
 google = ["google-cloud-pubsub"]
@@ -117,6 +119,7 @@ anyio = "^4.3.0"
 psycopg2-binary = "*"
 pg8000 = "*"
 sqlalchemy = "*"
+cassandra-driver = "*"
 
 
 [[tool.poetry.source]]
@@ -216,6 +219,7 @@ mypy_path = [
     "core",
 #    "modules/arangodb",
 #    "modules/azurite",
+#    "modules/cassandra",
 #    "modules/clickhouse",
 #    "modules/elasticsearch",
 #    "modules/google",
