@@ -36,7 +36,7 @@ class DockerClient:
     """
 
     def __init__(self, **kwargs) -> None:
-        docker_host = read_tc_properties().get("tc.host")
+        docker_host = get_docker_host()
 
         if docker_host:
             LOGGER.info(f"using host {docker_host}")
@@ -59,31 +59,12 @@ class DockerClient:
         remove: bool = False,
         **kwargs,
     ) -> Container:
-        # If we're docker in docker running on a custom network, we need to inherit the
-        # network, so we can access the resulting container. Unless the user has specified
-        # a network, then we'll assume the user knows best
-        if "network" not in kwargs and not os.getenv("DOCKER_HOST"):
-            # See if we can find the host on our networks
-            host_network = None
-            try:
-                docker_host = ipaddress.IPv4Address(self.host())
-                for network in self.client.networks.list(filters={"type": "custom"}):
-                    if "IPAM" in network.attrs:
-                        for config in network.attrs["IPAM"]["Config"]:
-                            try:
-                                subnet = ipaddress.IPv4Network(config["Subnet"])
-                            except ipaddress.AddressValueError:
-                                continue
-                            if docker_host in subnet:
-                                host_network = network.name
-                                break
-                        if host_network:
-                            break
-                if host_network:
-                    kwargs["network"] = host_network
-
-            except ipaddress.AddressValueError:
-                pass
+        # If the user has specified a network, we'll assume the user knows best
+        if "network" not in kwargs and not get_docker_host():
+            # Otherwise we'll try to find the docker host for dind usage.
+            host_network = self.find_host_network()
+            if host_network:
+                kwargs["network"] = host_network
         container = self.client.containers.run(
             image,
             command=command,
@@ -97,6 +78,30 @@ class DockerClient:
             **kwargs,
         )
         return container
+
+    def find_host_network(self) -> Optional[str]:
+        """
+        Try to find the docker host network.
+
+        :return: The network name if found, None if not set.
+        """
+        # If we're docker in docker running on a custom network, we need to inherit the
+        # network settings, so we can access the resulting container.
+        try:
+            docker_host = ipaddress.IPv4Address(self.host())
+            # See if we can find the host on our networks
+            for network in self.client.networks.list(filters={"type": "custom"}):
+                if "IPAM" in network.attrs:
+                    for config in network.attrs["IPAM"]["Config"]:
+                        try:
+                            subnet = ipaddress.IPv4Network(config["Subnet"])
+                        except ipaddress.AddressValueError:
+                            continue
+                        if docker_host in subnet:
+                            return network.name
+        except ipaddress.AddressValueError:
+            pass
+        return None
 
     def port(self, container_id: str, port: int) -> int:
         """
@@ -184,3 +189,7 @@ def read_tc_properties() -> dict[str, str]:
             tuples = [line.split("=") for line in contents.readlines() if "=" in line]
             settings = {**settings, **{item[0].strip(): item[1].strip() for item in tuples}}
     return settings
+
+
+def get_docker_host() -> Optional[str]:
+    return read_tc_properties().get("tc.host") or os.getenv("DOCKER_HOST")
