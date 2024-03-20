@@ -1,13 +1,16 @@
-import contextlib
 from platform import system
-from typing import Optional
+from socket import socket
+from typing import TYPE_CHECKING, Optional
 
-from docker.models.containers import Container
-
+from testcontainers.core.config import RYUK_DISABLED, RYUK_DOCKER_SOCKET, RYUK_IMAGE, RYUK_PRIVILEGED
 from testcontainers.core.docker_client import DockerClient
 from testcontainers.core.exceptions import ContainerStartException
+from testcontainers.core.labels import LABEL_SESSION_ID, SESSION_ID
 from testcontainers.core.utils import inside_container, is_arm, setup_logger
-from testcontainers.core.waiting_utils import wait_container_is_ready
+from testcontainers.core.waiting_utils import wait_container_is_ready, wait_for_logs
+
+if TYPE_CHECKING:
+    from docker.models.containers import Container
 
 logger = setup_logger(__name__)
 
@@ -25,7 +28,12 @@ class DockerContainer:
         ...    delay = wait_for_logs(container, "Hello from Docker!")
     """
 
-    def __init__(self, image: str, docker_client_kw: Optional[dict] = None, **kwargs) -> None:
+    def __init__(
+        self,
+        image: str,
+        docker_client_kw: Optional[dict] = None,
+        **kwargs,
+    ) -> None:
         self.env = {}
         self.ports = {}
         self.volumes = {}
@@ -58,7 +66,10 @@ class DockerContainer:
             return self.with_kwargs(platform="linux/amd64")
         return self
 
-    def start(self) -> "DockerContainer":
+    def start(self):
+        if not RYUK_DISABLED and self.image != RYUK_IMAGE:
+            logger.debug("Creating Ryuk container")
+            Reaper.get_instance()
         logger.info("Pulling image %s", self.image)
         docker_client = self.get_docker_client()
         self._container = docker_client.run(
@@ -69,7 +80,7 @@ class DockerContainer:
             ports=self.ports,
             name=self._name,
             volumes=self.volumes,
-            **self._kwargs
+            **self._kwargs,
         )
         logger.info("Container started: %s", self._container.short_id)
         return self
@@ -78,20 +89,11 @@ class DockerContainer:
         self._container.remove(force=force, v=delete_volume)
         self.get_docker_client().client.close()
 
-    def __enter__(self) -> "DockerContainer":
+    def __enter__(self):
         return self.start()
 
     def __exit__(self, exc_type, exc_val, exc_tb) -> None:
         self.stop()
-
-    def __del__(self) -> None:
-        """
-        __del__ runs when Python attempts to garbage collect the object.
-        In case of leaky test design, we still attempt to clean up the container.
-        """
-        with contextlib.suppress(Exception):
-            if self._container is not None:
-                self.stop()
 
     def get_container_host_ip(self) -> str:
         # infer from docker host
@@ -140,7 +142,7 @@ class DockerContainer:
         self.volumes[host] = mapping
         return self
 
-    def get_wrapped_container(self) -> Container:
+    def get_wrapped_container(self) -> "Container":
         return self._container
 
     def get_docker_client(self) -> DockerClient:
@@ -155,3 +157,54 @@ class DockerContainer:
         if not self._container:
             raise ContainerStartException("Container should be started before executing a command")
         return self._container.exec_run(command)
+
+
+class Reaper:
+    _instance: "Optional[Reaper]" = None
+    _container: Optional[DockerContainer] = None
+    _socket: Optional[socket] = None
+
+    @classmethod
+    def get_instance(cls) -> "Reaper":
+        if not Reaper._instance:
+            Reaper._instance = Reaper._create_instance()
+
+        return Reaper._instance
+
+    @classmethod
+    def delete_instance(cls) -> None:
+        if Reaper._socket is not None:
+            Reaper._socket.close()
+            Reaper._socket = None
+
+        if Reaper._container is not None:
+            Reaper._container.stop()
+            Reaper._container = None
+
+        if Reaper._instance is not None:
+            Reaper._instance = None
+
+    @classmethod
+    def _create_instance(cls) -> "Reaper":
+        logger.debug(f"Creating new Reaper for session: {SESSION_ID}")
+
+        Reaper._container = (
+            DockerContainer(RYUK_IMAGE)
+            .with_name(f"testcontainers-ryuk-{SESSION_ID}")
+            .with_exposed_ports(8080)
+            .with_volume_mapping(RYUK_DOCKER_SOCKET, "/var/run/docker.sock", "rw")
+            .with_kwargs(privileged=RYUK_PRIVILEGED)
+            .start()
+        )
+        wait_for_logs(Reaper._container, r".* Started!")
+
+        container_host = Reaper._container.get_container_host_ip()
+        container_port = int(Reaper._container.get_exposed_port(8080))
+
+        Reaper._socket = socket()
+        Reaper._socket.connect((container_host, container_port))
+        Reaper._socket.send(f"label={LABEL_SESSION_ID}={SESSION_ID}\r\n".encode())
+
+        Reaper._instance = Reaper()
+
+        return Reaper._instance
