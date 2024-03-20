@@ -1,9 +1,10 @@
-import subprocess
 from dataclasses import dataclass, field, fields
 from functools import cached_property
 from json import loads
 from os import PathLike
 from re import split
+from subprocess import CompletedProcess
+from subprocess import run as subprocess_run
 from typing import Callable, Literal, Optional, TypeVar, Union
 from urllib.error import HTTPError, URLError
 from urllib.request import urlopen
@@ -197,7 +198,7 @@ class DockerCompose:
         # pull means running a separate command before starting
         if self.pull:
             pull_cmd = [*base_cmd, "pull"]
-            self._call_command(cmd=pull_cmd)
+            self._run_command(cmd=pull_cmd)
 
         up_cmd = [*base_cmd, "up"]
 
@@ -214,7 +215,7 @@ class DockerCompose:
         if self.services:
             up_cmd.extend(self.services)
 
-        self._call_command(cmd=up_cmd)
+        self._run_command(cmd=up_cmd)
 
     def stop(self, down=True) -> None:
         """
@@ -225,7 +226,7 @@ class DockerCompose:
             down_cmd += ["down", "--volumes"]
         else:
             down_cmd += ["stop"]
-        self._call_command(cmd=down_cmd)
+        self._run_command(cmd=down_cmd)
 
     def get_logs(self, *services: str) -> tuple[str, str]:
         """
@@ -239,11 +240,7 @@ class DockerCompose:
         """
         logs_cmd = [*self.compose_command_property, "logs", *services]
 
-        result = subprocess.run(
-            logs_cmd,
-            cwd=self.context,
-            capture_output=True,
-        )
+        result = self._run_command(cmd=logs_cmd)
         return result.stdout.decode("utf-8"), result.stderr.decode("utf-8")
 
     def get_containers(self, include_all=False) -> list[ComposeContainer]:
@@ -259,7 +256,7 @@ class DockerCompose:
         cmd = [*self.compose_command_property, "ps", "--format", "json"]
         if include_all:
             cmd = [*cmd, "-a"]
-        result = subprocess.run(cmd, cwd=self.context, check=True, stdout=subprocess.PIPE)
+        result = self._run_command(cmd=cmd)
         stdout = split(r"\r?\n", result.stdout.decode("utf-8"))
 
         containers = []
@@ -322,22 +319,22 @@ class DockerCompose:
         if not service_name:
             service_name = self.get_container().Service
         exec_cmd = [*self.compose_command_property, "exec", "-T", service_name, *command]
-        result = subprocess.run(
-            exec_cmd,
-            cwd=self.context,
-            capture_output=True,
-            check=True,
-        )
+        result = self._run_command(cmd=exec_cmd)
 
         return (result.stdout.decode("utf-8"), result.stderr.decode("utf-8"), result.returncode)
 
-    def _call_command(
+    def _run_command(
         self,
         cmd: Union[str, list[str]],
         context: Optional[str] = None,
-    ) -> None:
+    ) -> CompletedProcess[bytes]:
         context = context or self.context
-        subprocess.call(cmd, cwd=context)
+        return subprocess_run(
+            cmd,
+            capture_output=True,
+            check=True,
+            cwd=context,
+        )
 
     def get_service_port(
         self,
