@@ -1,9 +1,6 @@
 from platform import system
-from typing import Optional, Union
-
-
 from socket import socket
-from typing import TYPE_CHECKING, Optional
+from typing import TYPE_CHECKING, Optional, Union
 
 from docker.models.containers import Container
 

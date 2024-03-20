@@ -26,7 +26,6 @@ from testcontainers.core.image import DockerImage
 from testcontainers.core.labels import SESSION_ID, create_labels
 from testcontainers.core.utils import default_gateway_ip, inside_container, setup_logger
 
-
 LOGGER = setup_logger(__name__)
 TC_FILE = ".testcontainers.properties"
 TC_GLOBAL = Path.home() / TC_FILE
