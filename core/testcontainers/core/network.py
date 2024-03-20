@@ -11,12 +11,13 @@
 #    License for the specific language governing permissions and limitations
 #    under the License.
 import uuid
+from contextlib import suppress
 from typing import Optional
 
 from testcontainers.core.docker_client import DockerClient
 
 
-class Network(object):
+class Network:
     """
     Network context manager for programmatically connecting containers.
     """
@@ -42,7 +43,5 @@ class Network(object):
 
     def __del__(self) -> None:
         if self._network is not None:
-            try:
+            with suppress(Exception):
                 self.remove()
-            except:  # noqa: E722
-                pass
