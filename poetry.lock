@@ -237,6 +237,58 @@ files = [
 ]
 
 [[package]]
+name = "cassandra-driver"
+version = "3.29.0"
+description = "DataStax Driver for Apache Cassandra"
+optional = true
+python-versions = "*"
+files = [
+    {file = "cassandra-driver-3.29.0.tar.gz", hash = "sha256:0a34f9534356e5fd33af8cdda109d5e945b6335cb50399b267c46368c4e93c98"},
+    {file = "cassandra_driver-3.29.0-cp310-cp310-macosx_10_9_universal2.whl", hash = "sha256:28d6fe5379d55e4fc96785bd2e2cba029ef171cc43fb38fc507b9ba232917ac2"},
+    {file = "cassandra_driver-3.29.0-cp310-cp310-macosx_10_9_x86_64.whl", hash = "sha256:05e267412ccc9fe71ee4a81d98f2250df2429390fac4721f41dd17b65e4c41ac"},
+    {file = "cassandra_driver-3.29.0-cp310-cp310-macosx_11_0_arm64.whl", hash = "sha256:84eacfc8e6461590eb1c2b9651ea809be298eb8283c2d844a6dad8058ee7928c"},
+    {file = "cassandra_driver-3.29.0-cp310-cp310-manylinux_2_17_aarch64.manylinux2014_aarch64.whl", hash = "sha256:8feeda01bb13dce1a74b0a94172b3b06b0d9d8f33d6fb56e1910d495b0e085e5"},
+    {file = "cassandra_driver-3.29.0-cp310-cp310-manylinux_2_17_x86_64.manylinux2014_x86_64.whl", hash = "sha256:7bb0ef3297255bbade7b0c2d168c31d36ec904b1a9b42521d1d3d65c3148bbc7"},
+    {file = "cassandra_driver-3.29.0-cp310-cp310-win32.whl", hash = "sha256:39d78971a4e26ef65b77caa09c0e6ccfd7b2c52b0924c328fbfdca91667eb08e"},
+    {file = "cassandra_driver-3.29.0-cp310-cp310-win_amd64.whl", hash = "sha256:9dd713fe6388f3ba141cc2eef4737b5e4a27b0d1c1a6b0372b8ff3d2d35ccf79"},
+    {file = "cassandra_driver-3.29.0-cp311-cp311-macosx_10_9_universal2.whl", hash = "sha256:76333d38cb663065d53ca658e15185b23aa0ce434f2876c455624d90d2ee0dbf"},
+    {file = "cassandra_driver-3.29.0-cp311-cp311-macosx_10_9_x86_64.whl", hash = "sha256:81ce92e0420bf18742b4bc433052c7c2e4aa72fa84898be2b26083e240ace343"},
+    {file = "cassandra_driver-3.29.0-cp311-cp311-macosx_11_0_arm64.whl", hash = "sha256:5b90c2f052a102560e4fcf860f6d1ac35d3514ad36b1978cf821998f1e689f38"},
+    {file = "cassandra_driver-3.29.0-cp311-cp311-manylinux_2_17_aarch64.manylinux2014_aarch64.whl", hash = "sha256:6fecf584a7f411d247d1925c66d527f7ecc73710b230b68cdacf2044fb57ae4b"},
+    {file = "cassandra_driver-3.29.0-cp311-cp311-manylinux_2_17_x86_64.manylinux2014_x86_64.whl", hash = "sha256:a678bc7107cc606ac8ff8cb58fe6abb0bb2a9ff5196016b3bd36926146c4dc62"},
+    {file = "cassandra_driver-3.29.0-cp311-cp311-win32.whl", hash = "sha256:e9badede26005fd993e2344e8a541a4133bc46a76a90969d57a90a028b2b8ca6"},
+    {file = "cassandra_driver-3.29.0-cp311-cp311-win_amd64.whl", hash = "sha256:cac6d2e6ad1a386f1b786de78102f918bcd5caac390c3e446558e5adee9464c6"},
+    {file = "cassandra_driver-3.29.0-cp312-cp312-macosx_10_9_universal2.whl", hash = "sha256:01a8b4cdb056c209c5c4aa22e0d7f427b87cb98297a6efff29ea278da9a52698"},
+    {file = "cassandra_driver-3.29.0-cp312-cp312-macosx_10_9_x86_64.whl", hash = "sha256:73aa7b32dfad1f58fb00167052ab80b1b186b69baac7de4ad5cca785fff569be"},
+    {file = "cassandra_driver-3.29.0-cp312-cp312-macosx_11_0_arm64.whl", hash = "sha256:7f7c446edba002b0fdd94f2b92c4752e16738ea7dce27d754103fcd086b4dcc9"},
+    {file = "cassandra_driver-3.29.0-cp312-cp312-manylinux_2_17_aarch64.manylinux2014_aarch64.whl", hash = "sha256:6843569360fb4a446d65f6733faed1207c252745a31a1d8dc02feff8f7f86a23"},
+    {file = "cassandra_driver-3.29.0-cp312-cp312-manylinux_2_17_x86_64.manylinux2014_x86_64.whl", hash = "sha256:1762d228bdd3f1bc5faa0812e1fcac75a36ab7504f3cfb7e9b5d2bf26a50c552"},
+    {file = "cassandra_driver-3.29.0-cp312-cp312-win32.whl", hash = "sha256:dd245817e0df048b780f45ac78b1840fe12deb5aea8873df4a11e0c44a68c19a"},
+    {file = "cassandra_driver-3.29.0-cp312-cp312-win_amd64.whl", hash = "sha256:002134a4152034ed66d9f9616ea391f44dfdf7c9f97d22bd4d4f64d70020b91b"},
+    {file = "cassandra_driver-3.29.0-cp38-cp38-macosx_10_9_universal2.whl", hash = "sha256:d9b652db99f69ee62bbd679a29cfbab398ebf2bfc195632d57ecb3f246baf48b"},
+    {file = "cassandra_driver-3.29.0-cp38-cp38-macosx_10_9_x86_64.whl", hash = "sha256:6ac82ae8240b4f4f1a3d1e6f21a4ecd9948afdfedef6f23235fac85d20d11076"},
+    {file = "cassandra_driver-3.29.0-cp38-cp38-macosx_11_0_arm64.whl", hash = "sha256:1590d231503594546dfdbf6119d805e1a0b22de98a1a6ec0de79a1bacc59ecb5"},
+    {file = "cassandra_driver-3.29.0-cp38-cp38-manylinux_2_17_aarch64.manylinux2014_aarch64.whl", hash = "sha256:fcf9dee3b120062a8224278da56ab088c2c081a79dc9e017f065dccd421b6477"},
+    {file = "cassandra_driver-3.29.0-cp38-cp38-manylinux_2_17_x86_64.manylinux2014_x86_64.whl", hash = "sha256:bb9a123ad86152d2a1ca31f4a3d91d72cbd3ed7a88a4c3cd5f6f72173a1bfbd8"},
+    {file = "cassandra_driver-3.29.0-cp38-cp38-win32.whl", hash = "sha256:cc6794ca9c94e157570e2b7b5a04458259ee29c5a0d0de50a9e0c8e2da8f5455"},
+    {file = "cassandra_driver-3.29.0-cp38-cp38-win_amd64.whl", hash = "sha256:096eef84ab466b090a69a4e9d85e65d57e926ff7d7897443e7b637d40277f373"},
+    {file = "cassandra_driver-3.29.0-cp39-cp39-macosx_10_9_universal2.whl", hash = "sha256:befb723d62ee650cb3afd9668245ee9ce6ba5394dbd58352866ff2baa0324101"},
+    {file = "cassandra_driver-3.29.0-cp39-cp39-macosx_10_9_x86_64.whl", hash = "sha256:4108fb2a64a8fd77948003ff0ca4d296364d9ff7381f4abe7a9db202e6378446"},
+    {file = "cassandra_driver-3.29.0-cp39-cp39-macosx_11_0_arm64.whl", hash = "sha256:5cd4701cc083e047553888dbd99d2d5119b5b3da54b9e8034a80b8c8d516142c"},
+    {file = "cassandra_driver-3.29.0-cp39-cp39-manylinux_2_17_aarch64.manylinux2014_aarch64.whl", hash = "sha256:d7b94c5273bf3c2f252aed8624303c46d9d4e6dc7663f53ed9c9335e5d0dcb88"},
+    {file = "cassandra_driver-3.29.0-cp39-cp39-manylinux_2_17_x86_64.manylinux2014_x86_64.whl", hash = "sha256:3609f2eda8ee2a6a9b2c9c84c009bf54a7695b9dfc21700b88dd0a2140c82c95"},
+    {file = "cassandra_driver-3.29.0-cp39-cp39-win32.whl", hash = "sha256:aaeff4c3af3100510e329177c46da89aab6d444070f4fa370df5328b8ad488b4"},
+    {file = "cassandra_driver-3.29.0-cp39-cp39-win_amd64.whl", hash = "sha256:88d9a6abd0e0af199636ff9386d0b9b81b1dd189e22c8498ecaa546256bacf24"},
+]
+
+[package.dependencies]
+geomet = ">=0.1,<0.3"
+
+[package.extras]
+cle = ["cryptography (>=35.0)"]
+graph = ["gremlinpython (==3.4.6)"]
+
+[[package]]
 name = "certifi"
 version = "2023.11.17"
 description = "Python package for providing Mozilla's CA Bundle."
@@ -420,6 +472,20 @@ files = [
     {file = "charset_normalizer-3.3.2-cp39-cp39-win_amd64.whl", hash = "sha256:b01b88d45a6fcb69667cd6d2f7a9aeb4bf53760d7fc536bf679ec94fe9f3ff3d"},
     {file = "charset_normalizer-3.3.2-py3-none-any.whl", hash = "sha256:3e4d1f6587322d2788836a99c69062fbb091331ec940e02d12d179c1d53e25fc"},
 ]
+
+[[package]]
+name = "click"
+version = "8.1.7"
+description = "Composable command line interface toolkit"
+optional = true
+python-versions = ">=3.7"
+files = [
+    {file = "click-8.1.7-py3-none-any.whl", hash = "sha256:ae74fb96c20a0277a1d615f1e4d73c8414f5a98db8b799a7931d1582f3390c28"},
+    {file = "click-8.1.7.tar.gz", hash = "sha256:ca9853ad459e787e2192211578cc907e7594e294c7ccc834310722b41b9ca6de"},
+]
+
+[package.dependencies]
+colorama = {version = "*", markers = "platform_system == \"Windows\""}
 
 [[package]]
 name = "clickhouse-driver"
@@ -819,6 +885,21 @@ files = [
 docs = ["furo (>=2023.9.10)", "sphinx (>=7.2.6)", "sphinx-autodoc-typehints (>=1.24)"]
 testing = ["covdefaults (>=2.3)", "coverage (>=7.3.2)", "diff-cover (>=8)", "pytest (>=7.4.3)", "pytest-cov (>=4.1)", "pytest-mock (>=3.12)", "pytest-timeout (>=2.2)"]
 typing = ["typing-extensions (>=4.8)"]
+
+[[package]]
+name = "geomet"
+version = "0.2.1.post1"
+description = "GeoJSON <-> WKT/WKB conversion utilities"
+optional = true
+python-versions = ">2.6, !=3.3.*, <4"
+files = [
+    {file = "geomet-0.2.1.post1-py3-none-any.whl", hash = "sha256:a41a1e336b381416d6cbed7f1745c848e91defaa4d4c1bdc1312732e46ffad2b"},
+    {file = "geomet-0.2.1.post1.tar.gz", hash = "sha256:91d754f7c298cbfcabd3befdb69c641c27fe75e808b27aa55028605761d17e95"},
+]
+
+[package.dependencies]
+click = "*"
+six = "*"
 
 [[package]]
 name = "google-api-core"
@@ -3136,6 +3217,7 @@ testing = ["big-O", "jaraco.functools", "jaraco.itertools", "more-itertools", "p
 [extras]
 arangodb = ["python-arango"]
 azurite = ["azure-storage-blob"]
+cassandra = ["cassandra-driver"]
 clickhouse = ["clickhouse-driver"]
 elasticsearch = []
 google = ["google-cloud-pubsub"]
@@ -3154,9 +3236,10 @@ oracle = ["cx_Oracle", "sqlalchemy"]
 postgres = []
 rabbitmq = ["pika"]
 redis = ["redis"]
+scylla = ["cassandra-driver"]
 selenium = ["selenium"]
 
 [metadata]
 lock-version = "2.0"
 python-versions = ">=3.9,<4.0"
-content-hash = "9d1a3bebfdad61d5be71944fd7f5a49462cbcc74ae3e0a9cf89aff0c01b0bb8f"
+content-hash = "c56c15c4d5e930ae1f81877797093a4df3dc7d928c24b099f78c410b6dc8d8f4"

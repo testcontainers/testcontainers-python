@@ -29,6 +29,7 @@ packages = [
     { include = "testcontainers", from = "core" },
     { include = "testcontainers", from = "modules/arangodb" },
     { include = "testcontainers", from = "modules/azurite" },
+    { include = "testcontainers", from = "modules/cassandra" },
     { include = "testcontainers", from = "modules/clickhouse" },
     { include = "testcontainers", from = "modules/elasticsearch" },
     { include = "testcontainers", from = "modules/google" },
@@ -47,7 +48,8 @@ packages = [
     { include = "testcontainers", from = "modules/postgres" },
     { include = "testcontainers", from = "modules/rabbitmq" },
     { include = "testcontainers", from = "modules/redis" },
-    { include = "testcontainers", from = "modules/selenium" }
+    { include = "testcontainers", from = "modules/selenium" },
+    { include = "testcontainers", from = "modules/scylla" }
 ]
 
 [tool.poetry.urls]
@@ -63,6 +65,7 @@ wrapt = "*" # "^1.16.0"
 # community modules
 python-arango = { version = "^7.8", optional = true }
 azure-storage-blob = { version = "^12.19", optional = true }
+cassandra-driver = { version = "3.29.0", optional = true }
 clickhouse-driver = { version = "*", optional = true }
 google-cloud-pubsub = { version = ">=2", optional = true }
 kubernetes = { version = "*", optional = true }
@@ -85,6 +88,7 @@ selenium = { version = "*", optional = true }
 [tool.poetry.extras]
 arangodb = ["python-arango"]
 azurite = ["azure-storage-blob"]
+cassandra = ["cassandra-driver"]
 clickhouse = ["clickhouse-driver"]
 elasticsearch = []
 google = ["google-cloud-pubsub"]
@@ -104,6 +108,7 @@ postgres = []
 rabbitmq = ["pika"]
 redis = ["redis"]
 selenium = ["selenium"]
+scylla = ["cassandra-driver"]
 
 [tool.poetry.group.dev.dependencies]
 mypy = "1.7.1"
@@ -118,6 +123,10 @@ psycopg2-binary = "*"
 pg8000 = "*"
 sqlalchemy = "*"
 
+
+
+[tool.poetry.group.cassandra.dependencies]
+cassandra-driver = {version = "^3.29.0", optional = true}
 
 [[tool.poetry.source]]
 name = "PyPI"
