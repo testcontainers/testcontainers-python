@@ -148,7 +148,7 @@ class DockerContainer:
     def get_docker_client(self) -> DockerClient:
         return self._docker
 
-    def get_logs(self) -> tuple[str, str]:
+    def get_logs(self) -> tuple[bytes, bytes]:
         if not self._container:
             raise ContainerStartException("Container should be started before getting logs")
         return self._container.logs(stderr=False), self._container.logs(stdout=False)
