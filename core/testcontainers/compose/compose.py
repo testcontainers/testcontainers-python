@@ -3,7 +3,8 @@ from functools import cached_property
 from json import loads
 from os import PathLike
 from re import split
-from subprocess import CompletedProcess, run as subprocess_run
+from subprocess import CompletedProcess
+from subprocess import run as subprocess_run
 from typing import Callable, Literal, Optional, TypeVar, Union
 from urllib.error import HTTPError, URLError
 from urllib.request import urlopen
