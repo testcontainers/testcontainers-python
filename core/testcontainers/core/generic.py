@@ -36,7 +36,10 @@ class DbContainer(DockerContainer):
         import sqlalchemy
 
         engine = sqlalchemy.create_engine(self.get_connection_url())
-        engine.connect()
+        try:
+            engine.connect()
+        finally:
+            engine.dispose()
 
     def get_connection_url(self) -> str:
         raise NotImplementedError

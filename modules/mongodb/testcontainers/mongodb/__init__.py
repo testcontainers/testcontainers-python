@@ -17,7 +17,7 @@ from pymongo import MongoClient
 
 from testcontainers.core.generic import DbContainer
 from testcontainers.core.utils import raise_for_deprecated_parameter
-from testcontainers.core.waiting_utils import wait_container_is_ready
+from testcontainers.core.waiting_utils import wait_for_logs
 
 
 class MongoDbContainer(DbContainer):
@@ -81,9 +81,8 @@ class MongoDbContainer(DbContainer):
             port=self.port,
         )
 
-    @wait_container_is_ready()
-    def _connect(self) -> MongoClient:
-        return MongoClient(self.get_connection_url())
+    def _connect(self) -> None:
+        wait_for_logs(self, "Waiting for connections")
 
     def get_connection_client(self) -> MongoClient:
-        return self._connect()
+        return MongoClient(self.get_connection_url())

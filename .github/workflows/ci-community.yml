@@ -4,63 +4,51 @@ name: modules
 
 on:
   push:
-    branches: [main]
+    branches: [ main ]
     paths:
       - "modules/**"
   pull_request:
-    branches: [main]
+    branches: [ main ]
     paths:
       - "modules/**"
 
-permissions:
-  actions: write  # needed for self-cancellation
-
 jobs:
-  test:
-    strategy:
-      fail-fast: false
-      matrix:
-        python-version: ["3.11"]
-        module:
-          - arangodb
-          - azurite
-          - clickhouse
-          - elasticsearch
-          - google
-          - kafka
-          - keycloak
-          - localstack
-          - minio
-          - mongodb
-          - mssql
-          - mysql
-          - neo4j
-          - nginx
-          - opensearch
-          - oracle
-          - postgres
-          - rabbitmq
-          - redis
-          - selenium
-          - k3s
+  track-modules:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout contents
         uses: actions/checkout@v4
+        with:
+          fetch-depth: 0  # recommended by tj-actions/changed-files
       - name: Get changed files
-        id: changes-for-module
+        id: changed-files
         uses: tj-actions/changed-files@v42
         with:
-          files: |
-            modules/${{ matrix.module }}/**
-      - name: Exit early, nothing to do
-        if: ${{ steps.changes-for-module.outputs.any_changed == 'false' }}
+          path: "./modules"
+          diff_relative: true
+          dir_names: true
+          dir_names_exclude_current_dir: true
+          json: true
+      - name: Compute modules from files
+        id: compute-changes
         run: |
-          # cancel and wait for run to end
-          gh run cancel ${{ github.run_id }}
-          gh run watch ${{ github.run_id }}
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          modules=$(echo "${{ steps.changed-files.outputs.all_changed_files }}" |  jq '.[] | split("/") | first' | jq -s -c '. | unique')
+          echo "computed_modules=$modules"
+          echo "computed_modules=$modules" >> $GITHUB_OUTPUT
+    outputs:
+      changed_modules: ${{ steps.compute-changes.outputs.computed_modules }}
+  test:
+    needs: [track-modules]
+    if: ${{ needs.track-modules.outputs.changed_modules != '[]' }}
+    strategy:
+      fail-fast: false
+      matrix:
+        python-version: [ "3.11" ]
+        module: ${{ fromJSON(needs.track-modules.outputs.changed_modules) }}
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout contents
+        uses: actions/checkout@v4
       - name: Set up Python
         uses: ./.github/actions/setup-env
         with:
