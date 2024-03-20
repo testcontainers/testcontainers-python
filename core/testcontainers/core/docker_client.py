@@ -11,10 +11,10 @@
 #    License for the specific language governing permissions and limitations
 #    under the License.
 import functools as ft
+import ipaddress
 import os
 import urllib
 import urllib.parse
-import ipaddress
 from os.path import exists
 from pathlib import Path
 from typing import Optional, Union
@@ -62,16 +62,16 @@ class DockerClient:
         # If we're docker in docker running on a custom network, we need to inherit the
         # network, so we can access the resulting container. Unless the user has specified
         # a network, then we'll assume the user knows best
-        if 'network' not in kwargs and not os.getenv('DOCKER_HOST'):
+        if "network" not in kwargs and not os.getenv("DOCKER_HOST"):
             # See if we can find the host on our networks
             host_network = None
             try:
                 docker_host = ipaddress.IPv4Address(self.host())
-                for network in self.client.networks.list(filters={'type': 'custom'}):
-                    if 'IPAM' in network.attrs:
-                        for config in network.attrs['IPAM']['Config']:
+                for network in self.client.networks.list(filters={"type": "custom"}):
+                    if "IPAM" in network.attrs:
+                        for config in network.attrs["IPAM"]["Config"]:
                             try:
-                                subnet = ipaddress.IPv4Network(config['Subnet'])
+                                subnet = ipaddress.IPv4Network(config["Subnet"])
                             except ipaddress.AddressValueError:
                                 continue
                             if docker_host in subnet:
@@ -80,7 +80,7 @@ class DockerClient:
                         if host_network:
                             break
                 if host_network:
-                    kwargs['network'] = host_network
+                    kwargs["network"] = host_network
 
             except ipaddress.AddressValueError:
                 pass
@@ -122,16 +122,16 @@ class DockerClient:
         """
         container = self.get_container(container_id)
         network_name = self.network_name(container_id)
-        return container['NetworkSettings']['Networks'][network_name]['IPAddress']
+        return container["NetworkSettings"]["Networks"][network_name]["IPAddress"]
 
     def network_name(self, container_id: str) -> str:
         """
         Get the name of the network this container runs on
         """
         container = self.get_container(container_id)
-        name = container['HostConfig']['NetworkMode']
-        if name == 'default':
-            return 'bridge'
+        name = container["HostConfig"]["NetworkMode"]
+        if name == "default":
+            return "bridge"
         return name
 
     def gateway_ip(self, container_id: str) -> str:
@@ -140,7 +140,7 @@ class DockerClient:
         """
         container = self.get_container(container_id)
         network_name = self.network_name(container_id)
-        return container['NetworkSettings']['Networks'][network_name]['Gateway']
+        return container["NetworkSettings"]["Networks"][network_name]["Gateway"]
 
     def host(self) -> str:
         """

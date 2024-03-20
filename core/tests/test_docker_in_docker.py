@@ -18,7 +18,7 @@ def _wait_for_dind_return_ip(client, dind):
                 break
         except ConnectionRefusedError:
             if time.perf_counter() - start_wait > timeout:
-                raise RuntimeError('Docker in docker took longer than 10 seconds to start')
+                raise RuntimeError("Docker in docker took longer than 10 seconds to start")
             time.sleep(0.01)
     return docker_host_ip
 
@@ -54,15 +54,13 @@ def test_wait_for_logs_docker_in_docker():
 def test_dind_inherits_network():
     client = DockerClient()
     try:
-        custom_network = client.client.networks.create(
-            "custom_network", driver="bridge", check_duplicate=True
-        )
+        custom_network = client.client.networks.create("custom_network", driver="bridge", check_duplicate=True)
     except Exception:
         custom_network = client.client.networks.list(names=["custom_network"])[0]
     not_really_dind = client.run(
         image="alpine/socat",
         command="tcp-listen:2375,fork,reuseaddr unix-connect:/var/run/docker.sock",
-        volumes={'/var/run/docker.sock': {'bind': '/var/run/docker.sock'}},
+        volumes={"/var/run/docker.sock": {"bind": "/var/run/docker.sock"}},
         detach=True,
     )
 
@@ -77,9 +75,9 @@ def test_dind_inherits_network():
     ) as container:
         assert container.get_container_host_ip() == docker_host_ip
         # Check the gateways are the same, so they can talk to each other
-        assert container.get_docker_client().\
-            gateway_ip(container.get_wrapped_container().id) == \
-            client.gateway_ip(not_really_dind.id)
+        assert container.get_docker_client().gateway_ip(container.get_wrapped_container().id) == client.gateway_ip(
+            not_really_dind.id
+        )
         wait_for_logs(container, "Hello from Docker!")
         stdout, stderr = container.get_logs()
         assert stdout, "There should be something on stdout"
