@@ -1,6 +1,6 @@
 [tool.poetry]
 name = "testcontainers"
-version = "4.0.1"  # auto-incremented by release-please
+version = "4.1.0"  # auto-incremented by release-please
 description = "Python library for throwaway instances of anything that can run in a Docker container"
 authors = ["Sergey Pirogov <automationremarks@gmail.com>"]
 maintainers = [
@@ -32,6 +32,7 @@ packages = [
     { include = "testcontainers", from = "modules/clickhouse" },
     { include = "testcontainers", from = "modules/elasticsearch" },
     { include = "testcontainers", from = "modules/google" },
+    { include = "testcontainers", from = "modules/influxdb" },
     { include = "testcontainers", from = "modules/k3s" },
     { include = "testcontainers", from = "modules/kafka" },
     { include = "testcontainers", from = "modules/keycloak" },
@@ -65,6 +66,8 @@ python-arango = { version = "^7.8", optional = true }
 azure-storage-blob = { version = "^12.19", optional = true }
 clickhouse-driver = { version = "*", optional = true }
 google-cloud-pubsub = { version = ">=2", optional = true }
+influxdb = { version = "*", optional = true }
+influxdb-client = { version = "*", optional = true }
 kubernetes = { version = "*", optional = true }
 pyyaml = { version = "*", optional = true }
 kafka-python = { version = "*", optional = true }
@@ -88,6 +91,7 @@ azurite = ["azure-storage-blob"]
 clickhouse = ["clickhouse-driver"]
 elasticsearch = []
 google = ["google-cloud-pubsub"]
+influxdb = ["influxdb", "influxdb-client"]
 k3s = ["kubernetes", "pyyaml"]
 kafka = ["kafka-python"]
 keycloak = ["python-keycloak"]
@@ -196,6 +200,9 @@ ignore = [
     # the must-have __init__.py (we are using package namespaces)
     "INP001"
 ]
+
+[tool.ruff.lint.pyupgrade]
+keep-runtime-typing = true
 
 [tool.ruff.lint.flake8-type-checking]
 strict = true

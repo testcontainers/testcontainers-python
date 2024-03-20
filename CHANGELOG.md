@@ -1,5 +1,19 @@
 # Changelog
 
+## [4.1.0](https://github.com/testcontainers/testcontainers-python/compare/testcontainers-v4.0.1...testcontainers-v4.1.0) (2024-03-19)
+
+
+### Features
+
+* **reliability:** integrate the ryuk container for better container cleanup ([#314](https://github.com/testcontainers/testcontainers-python/issues/314)) ([d019874](https://github.com/testcontainers/testcontainers-python/commit/d0198744c3bdc97a7fe41879b54acb2f5ee7becb))
+
+
+### Bug Fixes
+
+* changelog after release-please ([#469](https://github.com/testcontainers/testcontainers-python/issues/469)) ([dcb4f68](https://github.com/testcontainers/testcontainers-python/commit/dcb4f6842cbfe6e880a77b0d4aabb3f396c6dc19))
+* **configuration:** strip whitespaces when reading .testcontainers.properties ([#474](https://github.com/testcontainers/testcontainers-python/issues/474)) ([ade144e](https://github.com/testcontainers/testcontainers-python/commit/ade144ee2888d4044ac0c1dc627f47da92789e06))
+* try to fix release-please by setting a bootstrap sha ([#472](https://github.com/testcontainers/testcontainers-python/issues/472)) ([ca65a91](https://github.com/testcontainers/testcontainers-python/commit/ca65a916b719168c57c174d2af77d45fd026ec05))
+
 ## [4.0.1](https://github.com/testcontainers/testcontainers-python/compare/testcontainers-v4.0.0...testcontainers-v4.0.1) (2024-03-11)
 
 
