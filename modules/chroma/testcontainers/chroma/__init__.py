@@ -1,6 +1,5 @@
 from typing import TYPE_CHECKING
 
-import chromadb
 from requests import ConnectionError, get
 
 from testcontainers.core.container import DockerContainer
@@ -49,17 +48,6 @@ class ChromaContainer(DockerContainer):
         self.with_exposed_ports(self.port)
         # self.with_command(f"server /data --address :{self.port}")
 
-    def get_client(self, **kwargs) -> chromadb.ClientAPI:
-        """Returns a Chroma HttpClient to connect to the container.
-
-        Returns:
-            HttpClient: Chroma HttpClient according to
-                   https://docs.trychroma.com/reference/Client#httpclient
-        """
-        host_ip = self.get_container_host_ip()
-        exposed_port = self.get_exposed_port(self.port)
-        return chromadb.HttpClient(host=host_ip, port=int(exposed_port))
-
     def get_config(self) -> dict:
         """This method returns the configuration of the Chroma container,
         including the endpoint.
@@ -71,6 +59,8 @@ class ChromaContainer(DockerContainer):
         exposed_port = self.get_exposed_port(self.port)
         return {
             "endpoint": f"{host_ip}:{exposed_port}",
+            "host": host_ip,
+            "port": exposed_port,
         }
 
     @wait_container_is_ready(ConnectionError)
