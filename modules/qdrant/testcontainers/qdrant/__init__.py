@@ -15,8 +15,6 @@ from functools import cached_property
 from pathlib import Path
 from typing import Optional
 
-from qdrant_client import AsyncQdrantClient, QdrantClient
-
 from testcontainers.core.config import TIMEOUT
 from testcontainers.core.generic import DbContainer
 from testcontainers.core.waiting_utils import wait_container_is_ready, wait_for_logs
@@ -40,7 +38,7 @@ class QdrantContainer(DbContainer):
 
     def __init__(
         self,
-        image: str = "qdrant/qdrant:v1.8.1",
+        image: str = "qdrant/qdrant:v1.8.3",
         rest_port: int = 6333,
         grpc_port: int = 6334,
         api_key: Optional[str] = None,
@@ -64,7 +62,7 @@ class QdrantContainer(DbContainer):
     def _connect(self) -> None:
         wait_for_logs(self, ".*Actix runtime found; starting in Actix runtime.*", TIMEOUT)
 
-    def get_client(self, **kwargs) -> "QdrantClient":
+    def get_client(self, **kwargs):
         """
         Get a `qdrant_client.QdrantClient` instance associated with the container.
 
@@ -75,6 +73,11 @@ class QdrantContainer(DbContainer):
             QdrantClient: An instance of the `qdrant_client.QdrantClient` class.
 
         """
+
+        try:
+            from qdrant_client import QdrantClient
+        except ImportError as e:
+            raise ImportError("To use the `get_client` method, you must install the `qdrant_client` package.") from e
         return QdrantClient(
             host=self.get_container_host_ip(),
             port=self.get_exposed_port(self._rest_port),
@@ -84,7 +87,7 @@ class QdrantContainer(DbContainer):
             **kwargs,
         )
 
-    def get_async_client(self, **kwargs) -> "AsyncQdrantClient":
+    def get_async_client(self, **kwargs):
         """
         Get a `qdrant_client.AsyncQdrantClient` instance associated with the container.
 
@@ -95,6 +98,13 @@ class QdrantContainer(DbContainer):
             QdrantClient: An instance of the `qdrant_client.AsyncQdrantClient` class.
 
         """
+
+        try:
+            from qdrant_client import AsyncQdrantClient
+        except ImportError as e:
+            raise ImportError(
+                "To use the `get_async_client` method, you must install the `qdrant_client` package."
+            ) from e
         return AsyncQdrantClient(
             host=self.get_container_host_ip(),
             port=self.get_exposed_port(self._rest_port),

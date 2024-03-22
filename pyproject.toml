@@ -83,7 +83,6 @@ neo4j = { version = "*", optional = true }
 opensearch-py = { version = "*", optional = true }
 cx_Oracle = { version = "*", optional = true }
 pika = { version = "*", optional = true }
-qdrant-client = { version = "*", optional = true }
 redis = { version = "*", optional = true }
 selenium = { version = "*", optional = true }
 
@@ -107,7 +106,6 @@ nginx = []
 opensearch = ["opensearch-py"]
 oracle = ["sqlalchemy", "cx_Oracle"]
 postgres = []
-qdrant = ["qdrant-client"]
 rabbitmq = ["pika"]
 redis = ["redis"]
 selenium = ["selenium"]

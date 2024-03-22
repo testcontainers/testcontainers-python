@@ -1,10 +1,10 @@
 import pytest
 from testcontainers.qdrant import QdrantContainer
 import uuid
-from qdrant_client import QdrantClient
-from qdrant_client.http.exceptions import UnexpectedResponse
 from grpc import RpcError
 from pathlib import Path
+
+qdrant_client = pytest.importorskip("qdrant_client", reason="'qdrant_client' package is not installed")
 
 
 def test_docker_run_qdrant():
@@ -22,15 +22,17 @@ def test_qdrant_with_api_key_http():
     api_key = uuid.uuid4().hex
 
     with QdrantContainer(api_key=api_key) as qdrant:
-        with pytest.raises(UnexpectedResponse) as e:
+        with pytest.raises(qdrant_client.http.exceptions.UnexpectedResponse) as e:
             # Construct a client without an API key
-            QdrantClient(location=f"http://{qdrant.rest_host_address}").get_collections()
+            qdrant_client.QdrantClient(location=f"http://{qdrant.rest_host_address}").get_collections()
 
-        assert "Invalid api-key" in str(e.value)
+        assert "Must provide an API key" in str(e.value)
 
         # Construct a client with an API key
         collections = (
-            QdrantClient(location=f"http://{qdrant.rest_host_address}", api_key=api_key).get_collections().collections
+            qdrant_client.QdrantClient(location=f"http://{qdrant.rest_host_address}", api_key=api_key)
+            .get_collections()
+            .collections
         )
 
         assert len(collections) == 0
@@ -46,16 +48,16 @@ def test_qdrant_with_api_key_grpc():
 
     with QdrantContainer(api_key=api_key) as qdrant:
         with pytest.raises(RpcError) as e:
-            QdrantClient(
+            qdrant_client.QdrantClient(
                 url=f"http://{qdrant.grpc_host_address}",
                 grpc_port=qdrant.exposed_grpc_port,
                 prefer_grpc=True,
             ).get_collections()
 
-        assert "Invalid api-key" in str(e.value)
+        assert "Must provide an API key" in str(e.value)
 
         collections = (
-            QdrantClient(
+            qdrant_client.QdrantClient(
                 url=f"http://{qdrant.grpc_host_address}",
                 grpc_port=qdrant.exposed_grpc_port,
                 prefer_grpc=True,
@@ -72,7 +74,7 @@ def test_qdrant_with_config_file():
     config_file_path = Path(__file__).with_name("test_config.yaml")
 
     with QdrantContainer(config_file_path=config_file_path) as qdrant:
-        with pytest.raises(UnexpectedResponse) as e:
-            QdrantClient(location=f"http://{qdrant.rest_host_address}").get_collections()
+        with pytest.raises(qdrant_client.http.exceptions.UnexpectedResponse) as e:
+            qdrant_client.QdrantClient(location=f"http://{qdrant.rest_host_address}").get_collections()
 
-        assert "Invalid api-key" in str(e.value)
+        assert "Must provide an API key" in str(e.value)
