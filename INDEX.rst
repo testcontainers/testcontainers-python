@@ -14,29 +14,29 @@ testcontainers-python facilitates the use of Docker containers for functional an
 
 .. toctree::
 
-    core/README
-    modules/arangodb/README
-    modules/azurite/README
-    modules/clickhouse/README
-    modules/elasticsearch/README
-    modules/google/README
-    modules/influxdb/README
-    modules/kafka/README
-    modules/keycloak/README
-    modules/localstack/README
-    modules/minio/README
-    modules/mongodb/README
-    modules/mssql/README
-    modules/mysql/README
-    modules/neo4j/README
-    modules/nginx/README
-    modules/opensearch/README
-    modules/oracle/README
-    modules/postgres/README
-    modules/rabbitmq/README
-    modules/redis/README
-    modules/selenium/README
-    modules/k3s/README
+    testcontainers/core/README
+    testcontainers//arangodb/README
+    testcontainers//azurite/README
+    testcontainers//clickhouse/README
+    testcontainers//elasticsearch/README
+    testcontainers//google/README
+    testcontainers//influxdb/README
+    testcontainers//kafka/README
+    testcontainers//keycloak/README
+    testcontainers//localstack/README
+    testcontainers//minio/README
+    testcontainers//mongodb/README
+    testcontainers//mssql/README
+    testcontainers//mysql/README
+    testcontainers//neo4j/README
+    testcontainers//nginx/README
+    testcontainers//opensearch/README
+    testcontainers//oracle/README
+    testcontainers//postgres/README
+    testcontainers//rabbitmq/README
+    testcontainers//redis/README
+    testcontainers//selenium/README
+    testcontainers//k3s/README
 
 Getting Started
 ---------------

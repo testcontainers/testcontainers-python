@@ -24,32 +24,6 @@ classifiers = [
     "Operating System :: Unix",
     "Operating System :: MacOS",
 ]
-# testcontainers-core is a proper package dependency - only modules needed here
-packages = [
-    { include = "testcontainers", from = "core" },
-    { include = "testcontainers", from = "modules/arangodb" },
-    { include = "testcontainers", from = "modules/azurite" },
-    { include = "testcontainers", from = "modules/clickhouse" },
-    { include = "testcontainers", from = "modules/elasticsearch" },
-    { include = "testcontainers", from = "modules/google" },
-    { include = "testcontainers", from = "modules/influxdb" },
-    { include = "testcontainers", from = "modules/k3s" },
-    { include = "testcontainers", from = "modules/kafka" },
-    { include = "testcontainers", from = "modules/keycloak" },
-    { include = "testcontainers", from = "modules/localstack" },
-    { include = "testcontainers", from = "modules/minio" },
-    { include = "testcontainers", from = "modules/mongodb" },
-    { include = "testcontainers", from = "modules/mssql" },
-    { include = "testcontainers", from = "modules/mysql" },
-    { include = "testcontainers", from = "modules/neo4j" },
-    { include = "testcontainers", from = "modules/nginx" },
-    { include = "testcontainers", from = "modules/opensearch" },
-    { include = "testcontainers", from = "modules/oracle" },
-    { include = "testcontainers", from = "modules/postgres" },
-    { include = "testcontainers", from = "modules/rabbitmq" },
-    { include = "testcontainers", from = "modules/redis" },
-    { include = "testcontainers", from = "modules/selenium" }
-]
 
 [tool.poetry.urls]
 "GitHub" = "https://github.com/testcontainers/testcontainers-python"
@@ -215,31 +189,6 @@ pretty = true
 show_error_codes = true
 strict = true
 fast_module_lookup = true
-modules = ["testcontainers.core"]
-mypy_path = [
-    "core",
-#    "modules/arangodb",
-#    "modules/azurite",
-#    "modules/clickhouse",
-#    "modules/elasticsearch",
-#    "modules/google",
-#    "modules/k3s",
-#    "modules/kafka",
-#    "modules/keycloak",
-#    "modules/localstack",
-#    "modules/minio",
-#    "modules/mongodb",
-#    "modules/mssql",
-#    "modules/mysql",
-#    "modules/neo4j",
-#    "modules/nginx",
-#    "modules/opensearch",
-#    "modules/oracle",
-#    "modules/postgres",
-#    "modules/rabbitmq",
-#    "modules/redis",
-#    "modules/selenium"
-]
 enable_error_code = [
     "ignore-without-code",
     "redundant-expr",
