@@ -1,8 +1,6 @@
 testcontainers-python
 =====================
 
-.. image:: https://github.com/testcontainers/testcontainers-python/workflows/testcontainers-python/badge.svg
-   :target: https://github.com/testcontainers/testcontainers-python/actions/workflows/main.yml
 .. image:: https://img.shields.io/pypi/v/testcontainers.svg
    :target: https://pypi.python.org/pypi/testcontainers
 .. image:: https://readthedocs.org/projects/testcontainers-python/badge/?version=latest
