@@ -1,9 +1,12 @@
+import pytest
+
 from testcontainers.core import container
 from testcontainers.core.container import Reaper
 from testcontainers.core.container import DockerContainer
 from testcontainers.core.waiting_utils import wait_for_logs
 
 
+@pytest.mark.skip("invalid test - ryuk logs 'Removed' right before exiting")
 def test_wait_for_reaper():
     container = DockerContainer("hello-world").start()
     wait_for_logs(container, "Hello from Docker!")

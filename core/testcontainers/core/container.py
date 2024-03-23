@@ -4,6 +4,8 @@ from signal import SIGINT, SIGTERM, signal
 from socket import socket
 from typing import TYPE_CHECKING, Optional
 
+from docker.errors import NotFound
+
 from testcontainers.core.config import RYUK_DISABLED, RYUK_DOCKER_SOCKET, RYUK_IMAGE, RYUK_PRIVILEGED
 from testcontainers.core.docker_client import DockerClient
 from testcontainers.core.exceptions import ContainerStartException
@@ -41,7 +43,7 @@ class DockerContainer:
         self.volumes = {}
         self.image = image
         self._docker = DockerClient(**(docker_client_kw or {}))
-        self._container = None
+        self._container: Optional[Container] = None
         self._command = None
         self._name = None
         self._kwargs = kwargs
@@ -181,7 +183,10 @@ class Reaper:
 
         if Reaper._container is not None:
             if Reaper._container._container is not None:
-                Reaper._container._container.stop()
+                try:
+                    Reaper._container._container.stop()
+                except NotFound:
+                    pass
             Reaper._container = None
 
         if Reaper._instance is not None:
