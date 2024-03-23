@@ -1,4 +1,6 @@
+from atexit import register
 from platform import system
+from signal import SIGINT, SIGTERM, signal
 from socket import socket
 from typing import TYPE_CHECKING, Optional
 
@@ -196,6 +198,9 @@ class Reaper:
             .with_kwargs(privileged=RYUK_PRIVILEGED)
             .start()
         )
+        register(lambda: Reaper._container.stop())
+        signal(SIGINT, lambda _, __: Reaper._container.stop())
+        signal(SIGTERM, lambda _, __: Reaper._container.stop())
         wait_for_logs(Reaper._container, r".* Started!")
 
         container_host = Reaper._container.get_container_host_ip()
