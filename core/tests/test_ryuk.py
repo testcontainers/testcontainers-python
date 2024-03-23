@@ -22,3 +22,8 @@ def test_container_without_ryuk(monkeypatch):
     with DockerContainer("hello-world") as cont:
         wait_for_logs(cont, "Hello from Docker!")
         assert Reaper._instance is None
+
+
+def test_reaper_gets_deleted():
+    """this is a manual check - run 'docker ps -a' after the test suite to 'assert'."""
+    DockerContainer("alpine").with_command("tail -f /dev/stdout").start()

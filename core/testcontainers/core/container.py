@@ -180,7 +180,8 @@ class Reaper:
             Reaper._socket = None
 
         if Reaper._container is not None:
-            Reaper._container.stop()
+            if Reaper._container._container is not None:
+                Reaper._container._container.stop()
             Reaper._container = None
 
         if Reaper._instance is not None:
@@ -195,12 +196,12 @@ class Reaper:
             .with_name(f"testcontainers-ryuk-{SESSION_ID}")
             .with_exposed_ports(8080)
             .with_volume_mapping(RYUK_DOCKER_SOCKET, "/var/run/docker.sock", "rw")
-            .with_kwargs(privileged=RYUK_PRIVILEGED)
+            .with_kwargs(privileged=RYUK_PRIVILEGED, auto_remove=True)
             .start()
         )
-        register(lambda: Reaper._container.stop())
-        signal(SIGINT, lambda _, __: Reaper._container.stop())
-        signal(SIGTERM, lambda _, __: Reaper._container.stop())
+        register(lambda: Reaper.delete_instance())
+        signal(SIGINT, lambda _, __: Reaper.delete_instance())
+        signal(SIGTERM, lambda _, __: Reaper.delete_instance())
         wait_for_logs(Reaper._container, r".* Started!")
 
         container_host = Reaper._container.get_container_host_ip()
