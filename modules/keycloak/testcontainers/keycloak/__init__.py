@@ -50,6 +50,11 @@ class KeycloakContainer(DockerContainer):
     def _configure(self) -> None:
         self.with_env("KEYCLOAK_ADMIN", self.username)
         self.with_env("KEYCLOAK_ADMIN_PASSWORD", self.password)
+        # Enable health checks
+        # see: https://www.keycloak.org/server/health#_relevant_options
+        self.with_env("KC_HEALTH_ENABLED", "true")
+        # Starting Keycloak in development mode
+        # see: https://www.keycloak.org/server/configuration#_starting_keycloak_in_development_mode
         self.with_command("start-dev")
 
     def get_url(self) -> str:
@@ -58,14 +63,15 @@ class KeycloakContainer(DockerContainer):
         return f"http://{host}:{port}"
 
     @wait_container_is_ready(requests.exceptions.ConnectionError, requests.exceptions.ReadTimeout)
-    def _connect(self) -> None:
-        response = requests.get(self.get_url(), timeout=1)
+    def _readiness_probe(self) -> None:
+        # Keycloak provides an REST API endpoints for health checks: https://www.keycloak.org/server/health
+        response = requests.get(f"{self.get_url()}/health/ready", timeout=1)
         response.raise_for_status()
 
     def start(self) -> "KeycloakContainer":
         self._configure()
         super().start()
-        self._connect()
+        self._readiness_probe()
         return self
 
     def get_client(self, **kwargs) -> KeycloakAdmin:
