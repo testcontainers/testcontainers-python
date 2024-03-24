@@ -1,3 +1,4 @@
+import contextlib
 from platform import system
 from socket import socket
 from typing import TYPE_CHECKING, Optional
@@ -89,11 +90,23 @@ class DockerContainer:
         self._container.remove(force=force, v=delete_volume)
         self.get_docker_client().client.close()
 
-    def __enter__(self):
+    def __enter__(self) -> "DockerContainer":
         return self.start()
 
     def __exit__(self, exc_type, exc_val, exc_tb) -> None:
         self.stop()
+
+    def __del__(self) -> None:
+        """
+        __del__ runs when Python attempts to garbage collect the object.
+        In case of leaky test design, we still attempt to clean up the container.
+        """
+        if not RYUK_DISABLED:
+            return
+
+        with contextlib.suppress(Exception):
+            if self._container is not None:
+                self.stop()
 
     def get_container_host_ip(self) -> str:
         # infer from docker host

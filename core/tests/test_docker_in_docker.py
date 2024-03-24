@@ -32,6 +32,7 @@ def test_wait_for_logs_docker_in_docker():
         command="tcp-listen:2375,fork,reuseaddr unix-connect:/var/run/docker.sock",
         volumes={"/var/run/docker.sock": {"bind": "/var/run/docker.sock"}},
         detach=True,
+        auto_remove=True,
     )
 
     not_really_dind.start()
@@ -62,6 +63,7 @@ def test_dind_inherits_network():
         command="tcp-listen:2375,fork,reuseaddr unix-connect:/var/run/docker.sock",
         volumes={"/var/run/docker.sock": {"bind": "/var/run/docker.sock"}},
         detach=True,
+        auto_remove=True,
     )
 
     not_really_dind.start()
