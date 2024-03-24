@@ -1,4 +1,5 @@
 from atexit import register
+from contextlib import suppress
 from platform import system
 from signal import SIGINT, SIGTERM, signal
 from socket import socket
@@ -183,10 +184,8 @@ class Reaper:
 
         if Reaper._container is not None:
             if Reaper._container._container is not None:
-                try:
+                with suppress(NotFound):
                     Reaper._container._container.stop()
-                except NotFound:
-                    pass
             Reaper._container = None
 
         if Reaper._instance is not None:
