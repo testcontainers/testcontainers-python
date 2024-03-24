@@ -1,5 +1,26 @@
 # Changelog
 
+## [4.2.0](https://github.com/testcontainers/testcontainers-python/compare/testcontainers-v4.1.0...testcontainers-v4.2.0) (2024-03-24)
+
+
+### Features
+
+* support influxdb ([#413](https://github.com/testcontainers/testcontainers-python/issues/413)) ([13742a5](https://github.com/testcontainers/testcontainers-python/commit/13742a5dc448c80914953c21f8f2b01177c3fa6c))
+
+
+### Bug Fixes
+
+* **arangodb:** tests to pass on ARM CPUs - change default image to 3.11.x where ARM image is published ([#479](https://github.com/testcontainers/testcontainers-python/issues/479)) ([7b58a50](https://github.com/testcontainers/testcontainers-python/commit/7b58a50f3a8703c5d5e974a4ff20bc8e52ae93c8))
+* **core:** DinD issues [#141](https://github.com/testcontainers/testcontainers-python/issues/141), [#329](https://github.com/testcontainers/testcontainers-python/issues/329) ([#368](https://github.com/testcontainers/testcontainers-python/issues/368)) ([b10d916](https://github.com/testcontainers/testcontainers-python/commit/b10d916848cccc016fc457333f7b382b18a7b3ef))
+* **core:** raise an exception when docker compose fails to start [#258](https://github.com/testcontainers/testcontainers-python/issues/258) ([#485](https://github.com/testcontainers/testcontainers-python/issues/485)) ([d61af38](https://github.com/testcontainers/testcontainers-python/commit/d61af383def6eadcd7f2b5ba667eb587c6cc84f1))
+* **core:** use auto_remove=True with reaper instance ([#499](https://github.com/testcontainers/testcontainers-python/issues/499)) ([274a400](https://github.com/testcontainers/testcontainers-python/commit/274a4002600ae70662a5785c7a903cf8846b2ffc))
+* **docs:** update the non-existent main.yml badge ([#493](https://github.com/testcontainers/testcontainers-python/issues/493)) ([1d10c1c](https://github.com/testcontainers/testcontainers-python/commit/1d10c1ca8c8163b8d68338e1d50d0e26d7b0515e))
+* Fix the return type of `DockerContainer.get_logs` ([#487](https://github.com/testcontainers/testcontainers-python/issues/487)) ([cd72f68](https://github.com/testcontainers/testcontainers-python/commit/cd72f6896db3eb1fd5ea60f9c051cb719568a12f))
+* **keycloak:** tests on aarch64, use image from [jboss -&gt; quay], change supported version [16+ -> 18+] ([#480](https://github.com/testcontainers/testcontainers-python/issues/480)) ([5758310](https://github.com/testcontainers/testcontainers-python/commit/5758310532b8a8e1303a24bc534fa8aeb0f75eb2))
+* **postgres:** doctest ([#473](https://github.com/testcontainers/testcontainers-python/issues/473)) ([c9c6f92](https://github.com/testcontainers/testcontainers-python/commit/c9c6f92348299a2cc04988af8d69a53a23a7c7d5))
+* read the docs build works again ([#496](https://github.com/testcontainers/testcontainers-python/issues/496)) ([dfd1781](https://github.com/testcontainers/testcontainers-python/commit/dfd17814a7fc9ede510ae17569004bd92f2a6fa6))
+* readthedocs build - take 1 ([#495](https://github.com/testcontainers/testcontainers-python/issues/495)) ([b3b9901](https://github.com/testcontainers/testcontainers-python/commit/b3b990159154857239e2fb86da3cb85a6a13ab8e))
+
 ## [4.1.0](https://github.com/testcontainers/testcontainers-python/compare/testcontainers-v4.0.1...testcontainers-v4.1.0) (2024-03-19)
 
 
