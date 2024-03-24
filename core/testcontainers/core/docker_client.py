@@ -21,8 +21,9 @@ from pathlib import Path
 from typing import Optional, Union
 
 import docker
-from docker.errors import NotFound, APIError
+from docker.errors import NotFound
 from docker.models.containers import Container, ContainerCollection
+from requests.exceptions import ConnectionError
 
 from testcontainers.core.config import RYUK_DISABLED
 from testcontainers.core.labels import SESSION_ID, create_labels
@@ -80,8 +81,8 @@ class DockerClient:
             labels=create_labels(image, labels),
             **kwargs,
         )
-#         if detach and RYUK_DISABLED:
-#             atexit.register(_stop_container, container)
+        if detach and RYUK_DISABLED:
+            atexit.register(_stop_container, container)
         return container
 
     def find_host_network(self) -> Optional[str]:
@@ -204,6 +205,10 @@ def _stop_container(container: Container) -> None:
     try:
         container.stop()
     except NotFound:
+        # happens when container is already deleted
+        pass
+    except ConnectionError:
+        # happens when the container running the docker engine is already deleted
         pass
     except Exception as ex:
         LOGGER.warning("failed to shut down container %s with image %s: %s", container.id, container.image, ex)
