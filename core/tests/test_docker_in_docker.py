@@ -49,7 +49,7 @@ def test_wait_for_logs_docker_in_docker():
         assert stdout, "There should be something on stdout"
 
     not_really_dind.stop()
-    not_really_dind.remove()
+    # not_really_dind.remove()  # auto_remove = True
 
 
 def test_dind_inherits_network():
@@ -85,5 +85,5 @@ def test_dind_inherits_network():
         assert stdout, "There should be something on stdout"
 
     not_really_dind.stop()
-    not_really_dind.remove()
+    # not_really_dind.remove()  # auto_remove = True
     custom_network.remove()

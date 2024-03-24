@@ -21,7 +21,7 @@ from pathlib import Path
 from typing import Optional, Union
 
 import docker
-from docker.errors import NotFound
+from docker.errors import NotFound, APIError
 from docker.models.containers import Container, ContainerCollection
 
 from testcontainers.core.config import RYUK_DISABLED
@@ -80,8 +80,8 @@ class DockerClient:
             labels=create_labels(image, labels),
             **kwargs,
         )
-        if detach and RYUK_DISABLED:
-            atexit.register(_stop_container, container)
+#         if detach and RYUK_DISABLED:
+#             atexit.register(_stop_container, container)
         return container
 
     def find_host_network(self) -> Optional[str]:
