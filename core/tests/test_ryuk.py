@@ -1,5 +1,7 @@
 import pytest
 
+from contextlib import contextmanager
+
 from testcontainers.core import container
 from testcontainers.core.container import Reaper
 from testcontainers.core.container import DockerContainer
@@ -22,9 +24,18 @@ def test_wait_for_reaper():
 
 def test_container_without_ryuk(monkeypatch):
     monkeypatch.setattr(container, "RYUK_DISABLED", True)
-    with DockerContainer("hello-world") as cont:
-        wait_for_logs(cont, "Hello from Docker!")
-        assert Reaper._instance is None
+
+    @contextmanager
+    def reset_reaper_instance():
+        old_value = Reaper._instance
+        Reaper._instance = None
+        yield
+        Reaper._instance = old_value
+
+    with reset_reaper_instance():
+        with DockerContainer("hello-world") as cont:
+            wait_for_logs(cont, "Hello from Docker!")
+            assert Reaper._instance is None
 
 
 def test_reaper_gets_deleted():
