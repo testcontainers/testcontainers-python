@@ -1,6 +1,6 @@
 [tool.poetry]
 name = "testcontainers"
-version = "4.1.0"  # auto-incremented by release-please
+version = "4.2.0"  # auto-incremented by release-please
 description = "Python library for throwaway instances of anything that can run in a Docker container"
 authors = ["Sergey Pirogov <automationremarks@gmail.com>"]
 maintainers = [
@@ -71,7 +71,6 @@ influxdb = { version = "*", optional = true }
 influxdb-client = { version = "*", optional = true }
 kubernetes = { version = "*", optional = true }
 pyyaml = { version = "*", optional = true }
-kafka-python = { version = "*", optional = true }
 python-keycloak = { version = "*", optional = true }
 boto3 = { version = "*", optional = true }
 minio = { version = "*", optional = true }
@@ -94,7 +93,7 @@ elasticsearch = []
 google = ["google-cloud-pubsub"]
 influxdb = ["influxdb", "influxdb-client"]
 k3s = ["kubernetes", "pyyaml"]
-kafka = ["kafka-python"]
+kafka = []
 keycloak = ["python-keycloak"]
 localstack = ["boto3"]
 minio = ["minio"]
@@ -122,7 +121,7 @@ anyio = "^4.3.0"
 psycopg2-binary = "*"
 pg8000 = "*"
 sqlalchemy = "*"
-
+kafka-python = "^2.0.2"
 
 [[tool.poetry.source]]
 name = "PyPI"

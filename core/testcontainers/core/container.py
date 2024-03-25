@@ -148,7 +148,7 @@ class DockerContainer:
     def get_docker_client(self) -> DockerClient:
         return self._docker
 
-    def get_logs(self) -> tuple[str, str]:
+    def get_logs(self) -> tuple[bytes, bytes]:
         if not self._container:
             raise ContainerStartException("Container should be started before getting logs")
         return self._container.logs(stderr=False), self._container.logs(stdout=False)
@@ -193,7 +193,7 @@ class Reaper:
             .with_name(f"testcontainers-ryuk-{SESSION_ID}")
             .with_exposed_ports(8080)
             .with_volume_mapping(RYUK_DOCKER_SOCKET, "/var/run/docker.sock", "rw")
-            .with_kwargs(privileged=RYUK_PRIVILEGED)
+            .with_kwargs(privileged=RYUK_PRIVILEGED, auto_remove=True)
             .start()
         )
         wait_for_logs(Reaper._container, r".* Started!")
