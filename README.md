@@ -4,7 +4,7 @@
 
 For more information, see [the docs][readthedocs].
 
-[readthedocs]: https://testcontainers-python.readthedocs.io/en/latest/
+[readthedocs]: https://testcontainers.readthedocs.io/en/latest/
 
 ## Getting Started
 
