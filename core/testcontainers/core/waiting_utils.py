@@ -31,7 +31,7 @@ logger = setup_logger(__name__)
 TRANSIENT_EXCEPTIONS = (TimeoutError, ConnectionError)
 
 
-def wait_container_is_ready(*transient_exceptions) -> Callable:
+def wait_container_is_ready(*transient_exceptions: type[Exception]) -> Callable[..., Any]:
     """
     Wait until container is ready.
 
@@ -44,8 +44,8 @@ def wait_container_is_ready(*transient_exceptions) -> Callable:
     """
     transient_exceptions = TRANSIENT_EXCEPTIONS + tuple(transient_exceptions)
 
-    @wrapt.decorator
-    def wrapper(wrapped: Callable, instance: Any, args: list, kwargs: dict) -> Any:
+    @wrapt.decorator  # type: ignore[misc]
+    def wrapper(wrapped: Callable[..., Any], instance: Any, args: list[Any], kwargs: dict[str, Any]) -> Any:
         from testcontainers.core.container import DockerContainer
 
         if isinstance(instance, DockerContainer):
@@ -69,7 +69,7 @@ def wait_container_is_ready(*transient_exceptions) -> Callable:
             f"{kwargs}). Exception: {exception}"
         )
 
-    return wrapper
+    return wrapper  # type: ignore[no-any-return]
 
 
 @wait_container_is_ready()
@@ -78,7 +78,10 @@ def wait_for(condition: Callable[..., bool]) -> bool:
 
 
 def wait_for_logs(
-    container: "DockerContainer", predicate: Union[Callable, str], timeout: Optional[float] = None, interval: float = 1
+    container: "DockerContainer",
+    predicate: Union[Callable[..., Any], str],
+    timeout: Optional[float] = None,
+    interval: float = 1,
 ) -> float:
     """
     Wait for the container to emit logs satisfying the predicate.

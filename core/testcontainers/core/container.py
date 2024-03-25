@@ -1,6 +1,7 @@
+from os import PathLike
 from platform import system
 from socket import socket
-from typing import TYPE_CHECKING, Optional
+from typing import TYPE_CHECKING, Any, Optional, TypedDict, Union
 
 from testcontainers.core.config import RYUK_DISABLED, RYUK_DOCKER_SOCKET, RYUK_IMAGE, RYUK_PRIVILEGED
 from testcontainers.core.docker_client import DockerClient
@@ -10,9 +11,14 @@ from testcontainers.core.utils import inside_container, is_arm, setup_logger
 from testcontainers.core.waiting_utils import wait_container_is_ready, wait_for_logs
 
 if TYPE_CHECKING:
-    from docker.models.containers import Container
+    from docker.models.containers import Container, ExecResult
 
 logger = setup_logger(__name__)
+
+
+class VolumeDict(TypedDict):
+    bind: str
+    mode: str
 
 
 class DockerContainer:
@@ -31,18 +37,25 @@ class DockerContainer:
     def __init__(
         self,
         image: str,
-        docker_client_kw: Optional[dict] = None,
-        **kwargs,
+        docker_client_kw: Optional[dict[str, Any]] = None,
+        **kwargs: Any,
     ) -> None:
-        self.env = {}
-        self.ports = {}
-        self.volumes = {}
+        self.env: dict[str, str] = {}
+        self.ports: dict[int, Optional[int]] = {}
+        self.volumes: dict[str, VolumeDict] = {}
         self.image = image
         self._docker = DockerClient(**(docker_client_kw or {}))
-        self._container = None
-        self._command = None
-        self._name = None
+        self._container: Optional["Container"] = None
+        self._command: Union[str, list[str], None] = None
+        self._name: Optional[str] = None
         self._kwargs = kwargs
+
+    @property
+    def _use_container(self) -> "Container":
+        """todo fail fast with better error when it is None"""
+        container = self._container
+        assert container is not None
+        return container
 
     def with_env(self, key: str, value: str) -> "DockerContainer":
         self.env[key] = value
@@ -57,7 +70,7 @@ class DockerContainer:
             self.ports[port] = None
         return self
 
-    def with_kwargs(self, **kwargs) -> "DockerContainer":
+    def with_kwargs(self, **kwargs: Any) -> "DockerContainer":
         self._kwargs = kwargs
         return self
 
@@ -66,7 +79,7 @@ class DockerContainer:
             return self.with_kwargs(platform="linux/amd64")
         return self
 
-    def start(self):
+    def start(self) -> "DockerContainer":
         if not RYUK_DISABLED and self.image != RYUK_IMAGE:
             logger.debug("Creating Ryuk container")
             Reaper.get_instance()
@@ -85,14 +98,14 @@ class DockerContainer:
         logger.info("Container started: %s", self._container.short_id)
         return self
 
-    def stop(self, force=True, delete_volume=True) -> None:
-        self._container.remove(force=force, v=delete_volume)
+    def stop(self, force: bool = True, delete_volume: bool = True) -> None:
+        self._use_container.remove(force=force, v=delete_volume)
         self.get_docker_client().client.close()
 
-    def __enter__(self):
+    def __enter__(self) -> "DockerContainer":
         return self.start()
 
-    def __exit__(self, exc_type, exc_val, exc_tb) -> None:
+    def __exit__(self, exc_type: Any, exc_val: Any, exc_tb: Any) -> None:
         self.stop()
 
     def get_container_host_ip(self) -> str:
@@ -119,15 +132,15 @@ class DockerContainer:
         return host
 
     @wait_container_is_ready()
-    def get_exposed_port(self, port: int) -> str:
-        mapped_port = self.get_docker_client().port(self._container.id, port)
+    def get_exposed_port(self, port: int) -> int:
+        mapped_port = self.get_docker_client().port(self._use_container.id, port)
         if inside_container():
-            gateway_ip = self.get_docker_client().gateway_ip(self._container.id)
+            gateway_ip = self.get_docker_client().gateway_ip(self._use_container.id)
             host = self.get_docker_client().host()
 
             if gateway_ip == host:
                 return port
-        return mapped_port
+        return int(mapped_port)
 
     def with_command(self, command: str) -> "DockerContainer":
         self._command = command
@@ -137,9 +150,11 @@ class DockerContainer:
         self._name = name
         return self
 
-    def with_volume_mapping(self, host: str, container: str, mode: str = "ro") -> "DockerContainer":
-        mapping = {"bind": container, "mode": mode}
-        self.volumes[host] = mapping
+    def with_volume_mapping(
+        self, host: Union[str, PathLike[Any]], container: str, mode: str = "ro"
+    ) -> "DockerContainer":
+        mapping: VolumeDict = {"bind": container, "mode": mode}
+        self.volumes[str(host)] = mapping
         return self
 
     def get_wrapped_container(self) -> "Container":
@@ -153,7 +168,7 @@ class DockerContainer:
             raise ContainerStartException("Container should be started before getting logs")
         return self._container.logs(stderr=False), self._container.logs(stdout=False)
 
-    def exec(self, command) -> tuple[int, str]:
+    def exec(self, command: Union[str, list[str]]) -> "ExecResult":
         if not self._container:
             raise ContainerStartException("Container should be started before executing a command")
         return self._container.exec_run(command)
