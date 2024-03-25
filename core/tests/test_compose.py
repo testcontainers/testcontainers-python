@@ -86,7 +86,7 @@ def test_compose_logs():
         stdout, stderr = basic.get_logs()
         container = basic.get_container()
 
-    assert not stderr
+    assert not stderr or "`version` is obsolete" in stderr
     assert stdout
     lines = split(r"\r?\n", stdout)
 
@@ -129,7 +129,7 @@ def test_compose_multiple_containers_and_ports():
 
         a2p = multiple.get_service_port("alpine2")
         assert a2p is not None
-        assert int(a2p) > 0  # > 1024
+        assert a2p > 0  # > 1024
 
         with pytest.raises(NoSuchPortExposed) as e:
             multiple.get_service_port("alpine")

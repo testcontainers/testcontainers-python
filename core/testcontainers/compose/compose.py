@@ -38,8 +38,8 @@ class PublishedPort:
     """
 
     URL: Optional[str] = None
-    TargetPort: Optional[str] = None
-    PublishedPort: Optional[str] = None
+    TargetPort: Optional[int] = None
+    PublishedPort: Optional[int] = None
     Protocol: Optional[str] = None
 
 
@@ -86,13 +86,9 @@ class ComposeContainer:
         remaining_publishers = [r for r in remaining_publishers if self._matches_protocol(prefer_ip_version, r)]
 
         if by_port:
-            remaining_publishers = [
-                item for item in remaining_publishers if item.TargetPort is not None and by_port == int(item.TargetPort)
-            ]
+            remaining_publishers = [item for item in remaining_publishers if by_port == item.TargetPort]
         if by_host:
-            remaining_publishers = [
-                item for item in remaining_publishers if item.URL is not None and by_host == item.URL
-            ]
+            remaining_publishers = [item for item in remaining_publishers if by_host == item.URL]
         if len(remaining_publishers) == 0:
             raise NoSuchPortExposed(f"Could not find publisher for for service {self.Service}")
         return get_only_element_or_raise(
@@ -348,7 +344,7 @@ class DockerCompose:
         self,
         service_name: Optional[str] = None,
         port: Optional[int] = None,
-    ) -> Optional[str]:
+    ) -> Optional[int]:
         """
         Returns the mapped port for one of the services.
 
@@ -392,7 +388,7 @@ class DockerCompose:
         self,
         service_name: Optional[str] = None,
         port: Optional[int] = None,
-    ) -> tuple[Optional[str], Optional[str]]:
+    ) -> tuple[Optional[str], Optional[int]]:
         publisher = self.get_container(service_name).get_publisher(by_port=port)
         return publisher.URL, publisher.PublishedPort
 
