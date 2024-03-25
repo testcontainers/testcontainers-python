@@ -12,7 +12,7 @@ This will greatly increase your chances of getting prompt replies as the maintai
 
 We recommend following these steps:
 
-1. Finish readng this document.
+1. Finish reading this document.
 2. Read the [recently updated issues][1]
 3. Look for existing issues on the subject you are interested in - we do our best to label everything correctly
 
