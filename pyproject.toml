@@ -1,11 +1,11 @@
 [tool.poetry]
 name = "testcontainers"
-version = "4.2.0" # auto-incremented by release-please
+version = "4.2.0"  # auto-incremented by release-please
 description = "Python library for throwaway instances of anything that can run in a Docker container"
 authors = ["Sergey Pirogov <automationremarks@gmail.com>"]
 maintainers = [
     "Balint Bartha <totallyzen@users.noreply.github.com>",
-    "David Ankin <daveankin@gmail.com>",
+    "David Ankin <daveankin@gmail.com>"
 ]
 readme = "README.md"
 keywords = ["testing", "logging", "docker", "test automation"]
@@ -48,7 +48,7 @@ packages = [
     { include = "testcontainers", from = "modules/postgres" },
     { include = "testcontainers", from = "modules/rabbitmq" },
     { include = "testcontainers", from = "modules/redis" },
-    { include = "testcontainers", from = "modules/selenium" },
+    { include = "testcontainers", from = "modules/selenium" }
 ]
 
 [tool.poetry.urls]
@@ -57,9 +57,9 @@ packages = [
 
 [tool.poetry.dependencies]
 python = ">=3.9,<4.0"
-docker = "*"          # ">=4.0"
-urllib3 = "*"         # "<2.0"
-wrapt = "*"           # "^1.16.0"
+docker = "*" # ">=4.0"
+urllib3 = "*" # "<2.0"
+wrapt = "*" # "^1.16.0"
 
 # community modules
 python-arango = { version = "^7.8", optional = true }
@@ -137,12 +137,14 @@ log_cli_level = "INFO"
 
 [tool.coverage.run]
 branch = true
-omit = ["oracle.py"]
+omit = [
+    "oracle.py"
+]
 
 [tool.coverage.report]
 exclude_lines = [
     "pass",
-    "raise NotImplementedError", # TODO: used in core/generic.py, not sure we need DbContainer
+    "raise NotImplementedError" # TODO: used in core/generic.py, not sure we need DbContainer
 ]
 
 [tool.ruff]
@@ -180,8 +182,7 @@ select = [
     # mccabe
     "C90",
     # pycodestyle
-    "E",
-    "W",
+    "E", "W",
     # pyflakes
     "F",
     # pygrep-hooks
@@ -197,7 +198,7 @@ ignore = [
     # line too long (already checked by black)
     "E501",
     # the must-have __init__.py (we are using package namespaces)
-    "INP001",
+    "INP001"
 ]
 
 [tool.ruff.lint.pyupgrade]
@@ -217,35 +218,41 @@ fast_module_lookup = true
 modules = ["testcontainers.core"]
 mypy_path = [
     "core",
-    #    "modules/arangodb",
-    #    "modules/azurite",
-    #    "modules/clickhouse",
-    #    "modules/elasticsearch",
-    #    "modules/google",
-    #    "modules/k3s",
-    #    "modules/kafka",
-    #    "modules/keycloak",
-    #    "modules/localstack",
-    #    "modules/minio",
-    #    "modules/mongodb",
-    #    "modules/mssql",
-    #    "modules/mysql",
-    #    "modules/neo4j",
-    #    "modules/nginx",
-    #    "modules/opensearch",
-    #    "modules/oracle",
-    #    "modules/postgres",
-    #    "modules/rabbitmq",
-    #    "modules/redis",
-    #    "modules/selenium"
+#    "modules/arangodb",
+#    "modules/azurite",
+#    "modules/clickhouse",
+#    "modules/elasticsearch",
+#    "modules/google",
+#    "modules/k3s",
+#    "modules/kafka",
+#    "modules/keycloak",
+#    "modules/localstack",
+#    "modules/minio",
+#    "modules/mongodb",
+#    "modules/mssql",
+#    "modules/mysql",
+#    "modules/neo4j",
+#    "modules/nginx",
+#    "modules/opensearch",
+#    "modules/oracle",
+#    "modules/postgres",
+#    "modules/rabbitmq",
+#    "modules/redis",
+#    "modules/selenium"
 ]
-enable_error_code = ["ignore-without-code", "redundant-expr", "truthy-bool"]
+enable_error_code = [
+    "ignore-without-code",
+    "redundant-expr",
+    "truthy-bool",
+]
 
 [[tool.mypy.overrides]]
 module = ['tests.*']
 # in pytest we allow fixtures to be more relaxed, though we check the untyped functions
 check_untyped_defs = true
-disable_error_code = ['no-untyped-def']
+disable_error_code = [
+    'no-untyped-def'
+]
 
 [[tool.mypy.overrides]]
 module = ['docker.*']
