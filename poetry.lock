@@ -1289,7 +1289,7 @@ typing-extensions = ">=4.5.0"
 name = "kafka-python"
 version = "2.0.2"
 description = "Pure Python client for Apache Kafka"
-optional = true
+optional = false
 python-versions = "*"
 files = [
     {file = "kafka-python-2.0.2.tar.gz", hash = "sha256:04dfe7fea2b63726cd6f3e79a2d86e709d608d74406638c5da33a01d45a9d7e3"},
@@ -3270,7 +3270,7 @@ elasticsearch = []
 google = ["google-cloud-pubsub"]
 influxdb = ["influxdb", "influxdb-client"]
 k3s = ["kubernetes", "pyyaml"]
-kafka = ["kafka-python"]
+kafka = []
 keycloak = ["python-keycloak"]
 localstack = ["boto3"]
 minio = ["minio"]
@@ -3289,4 +3289,4 @@ selenium = ["selenium"]
 [metadata]
 lock-version = "2.0"
 python-versions = ">=3.9,<4.0"
-content-hash = "527278b36b9c9dfb01402e878baec38d6f5d206223b57019679f4363a6209020"
+content-hash = "c615fb00a26498599e32567cbba63d69f0e8c45c647f0d5dda2b6922bdec0ed7"

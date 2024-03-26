@@ -1,9 +1,8 @@
 import pytest
-
 from testcontainers.keycloak import KeycloakContainer
 
 
-@pytest.mark.parametrize("version", ["16.1.1"])
-def test_docker_run_keycloak(version: str):
-    with KeycloakContainer(f"jboss/keycloak:{version}") as kc:
-        kc.get_client().users_count()
+@pytest.mark.parametrize("image_version", ["24.0.1", "18.0"])
+def test_docker_run_keycloak(image_version: str):
+    with KeycloakContainer(f"quay.io/keycloak/keycloak:{image_version}") as keycloak_admin:
+        keycloak_admin.get_client().users_count()
