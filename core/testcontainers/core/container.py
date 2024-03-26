@@ -1,10 +1,13 @@
 from platform import system
 from socket import socket
-from typing import TYPE_CHECKING, Optional
+from typing import TYPE_CHECKING, Optional, Union
+
+from docker.models.containers import Container
 
 from testcontainers.core.config import RYUK_DISABLED, RYUK_DOCKER_SOCKET, RYUK_IMAGE, RYUK_PRIVILEGED
 from testcontainers.core.docker_client import DockerClient
 from testcontainers.core.exceptions import ContainerStartException
+from testcontainers.core.image import DockerImage
 from testcontainers.core.labels import LABEL_SESSION_ID, SESSION_ID
 from testcontainers.core.utils import inside_container, is_arm, setup_logger
 from testcontainers.core.waiting_utils import wait_container_is_ready, wait_for_logs
@@ -30,14 +33,14 @@ class DockerContainer:
 
     def __init__(
         self,
-        image: str,
+        image: Union[DockerImage, str],
         docker_client_kw: Optional[dict] = None,
         **kwargs,
     ) -> None:
         self.env = {}
         self.ports = {}
         self.volumes = {}
-        self.image = image
+        self.image = image.get_wrapped_image() if isinstance(image, DockerImage) else image
         self._docker = DockerClient(**(docker_client_kw or {}))
         self._container = None
         self._command = None
