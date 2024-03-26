@@ -11,6 +11,7 @@
 #    License for the specific language governing permissions and limitations
 #    under the License.
 import functools as ft
+import importlib.metadata
 import ipaddress
 import os
 import urllib
@@ -44,6 +45,7 @@ class DockerClient:
         else:
             self.client = docker.from_env(**kwargs)
         self.client.api.headers["x-tc-sid"] = SESSION_ID
+        self.client.api.headers["User-Agent"] = "tc-python/" + importlib.metadata.version("testcontainers")
 
     @ft.wraps(ContainerCollection.run)
     def run(
