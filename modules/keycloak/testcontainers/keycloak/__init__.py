@@ -17,7 +17,10 @@ import requests
 
 from keycloak import KeycloakAdmin
 from testcontainers.core.container import DockerContainer
-from testcontainers.core.waiting_utils import wait_container_is_ready
+from testcontainers.core.waiting_utils import wait_container_is_ready, wait_for_logs
+
+
+_DEFAULT_DEV_COMMAND = "start-dev"
 
 
 class KeycloakContainer(DockerContainer):
@@ -56,7 +59,7 @@ class KeycloakContainer(DockerContainer):
         self.with_env("KC_HEALTH_ENABLED", "true")
         # Starting Keycloak in development mode
         # see: https://www.keycloak.org/server/configuration#_starting_keycloak_in_development_mode
-        self.with_command("start-dev")
+        self.with_command(_DEFAULT_DEV_COMMAND)
 
     def get_url(self) -> str:
         host = self.get_container_host_ip()
@@ -68,6 +71,8 @@ class KeycloakContainer(DockerContainer):
         # Keycloak provides an REST API endpoints for health checks: https://www.keycloak.org/server/health
         response = requests.get(f"{self.get_url()}/health/ready", timeout=1)
         response.raise_for_status()
+        if self._command == _DEFAULT_DEV_COMMAND:
+            wait_for_logs(self, "Added user .* to realm .*")
 
     def start(self) -> "KeycloakContainer":
         self._configure()
