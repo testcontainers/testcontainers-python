@@ -1,5 +1,19 @@
 # Changelog
 
+## [4.3.0](https://github.com/testcontainers/testcontainers-python/compare/testcontainers-v4.2.0...testcontainers-v4.3.0) (2024-03-27)
+
+
+### Features
+
+* **client:** Add custom User-Agent in Docker client as `tc-python/&lt;version&gt;` ([#507](https://github.com/testcontainers/testcontainers-python/issues/507)) ([dd55082](https://github.com/testcontainers/testcontainers-python/commit/dd55082991b3405038a90678a39e8c815f0d1fc8))
+
+
+### Bug Fixes
+
+* **kafka:** wait_for_logs in kafka container to reduce lib requirement ([#377](https://github.com/testcontainers/testcontainers-python/issues/377)) ([909107b](https://github.com/testcontainers/testcontainers-python/commit/909107b221417a39516f961364beb518d2756f45))
+* **keycloak:** container should use dedicated API endpoints to determine container readiness ([#490](https://github.com/testcontainers/testcontainers-python/issues/490)) ([2e27225](https://github.com/testcontainers/testcontainers-python/commit/2e272253148797759748bd40c42f797697d3163f))
+* pass doctests, s/doctest/doctests/, run them in gha, s/asyncpg/psycopg/ in doctest, fix keycloak flakiness: wait for first user ([#505](https://github.com/testcontainers/testcontainers-python/issues/505)) ([545240d](https://github.com/testcontainers/testcontainers-python/commit/545240dfdcb2a565ad7cef0e9813f03b9b6f910e))
+
 ## [4.2.0](https://github.com/testcontainers/testcontainers-python/compare/testcontainers-v4.1.0...testcontainers-v4.2.0) (2024-03-24)
 
 
