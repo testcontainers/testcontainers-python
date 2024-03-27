@@ -47,6 +47,7 @@ packages = [
     { include = "testcontainers", from = "modules/opensearch" },
     { include = "testcontainers", from = "modules/oracle" },
     { include = "testcontainers", from = "modules/postgres" },
+    { include = "testcontainers", from = "modules/qdrant" },
     { include = "testcontainers", from = "modules/rabbitmq" },
     { include = "testcontainers", from = "modules/redis" },
     { include = "testcontainers", from = "modules/selenium" }
