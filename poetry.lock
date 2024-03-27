@@ -3289,4 +3289,4 @@ selenium = ["selenium"]
 [metadata]
 lock-version = "2.0"
 python-versions = ">=3.9,<4.0"
-content-hash = "c615fb00a26498599e32567cbba63d69f0e8c45c647f0d5dda2b6922bdec0ed7"
+content-hash = "d58539d14fbcf79c97d6dde14d76a86b52cc11d059bd5e211655be73b74c4993"
