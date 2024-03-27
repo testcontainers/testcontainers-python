@@ -21,6 +21,7 @@ testcontainers-python facilitates the use of Docker containers for functional an
     modules/elasticsearch/README
     modules/google/README
     modules/influxdb/README
+    modules/k3s/README
     modules/kafka/README
     modules/keycloak/README
     modules/localstack/README
@@ -36,7 +37,6 @@ testcontainers-python facilitates the use of Docker containers for functional an
     modules/rabbitmq/README
     modules/redis/README
     modules/selenium/README
-    modules/k3s/README
 
 Getting Started
 ---------------

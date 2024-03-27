@@ -11,7 +11,7 @@ UPLOAD = $(addsuffix /upload,${PACKAGES})
 # All */tests folders for each of the test suites.
 TESTS = $(addsuffix /tests,$(filter-out meta,${PACKAGES}))
 TESTS_DIND = $(addsuffix -dind,${TESTS})
-DOCTESTS = $(addsuffix /doctest,$(filter-out modules/README.md,${PACKAGES}))
+DOCTESTS = $(addsuffix /doctests,$(filter-out modules/README.md,${PACKAGES}))
 # All linting targets.
 LINT = $(addsuffix /lint,${PACKAGES})
 
@@ -56,10 +56,10 @@ ${TESTS_DIND} : %/tests-dind : image
 docs :
 	poetry run sphinx-build -nW . docs/_build
 
-doctest : ${DOCTESTS}
+doctests : ${DOCTESTS}
 	poetry run sphinx-build -b doctest . docs/_build
 
-${DOCTESTS} : %/doctest :
+${DOCTESTS} : %/doctests :
 	poetry run sphinx-build -b doctest -c doctests $* docs/_build
 
 # Remove any generated files.
