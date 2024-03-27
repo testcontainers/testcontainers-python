@@ -46,14 +46,13 @@ Getting Started
     >>> from testcontainers.postgres import PostgresContainer
     >>> import sqlalchemy
 
-    >>> with PostgresContainer("postgres:latest") as postgres:
+    >>> with PostgresContainer("postgres:16") as postgres:
     ...     psql_url = postgres.get_connection_url()
     ...     engine = sqlalchemy.create_engine(psql_url)
     ...     with engine.begin() as connection:
-    ...         result = connection.execute(sqlalchemy.text("SELECT version()"))
-    ...         version, = result.fetchone()
+    ...         version, = connection.execute(sqlalchemy.text("SELECT version()")).fetchone()
     >>> version
-    'PostgreSQL ...'
+    'PostgreSQL 16...'
 
 The snippet above will spin up the current latest version of a postgres database in a container. The :code:`get_connection_url()` convenience method returns a :code:`sqlalchemy` compatible url (using the :code:`psycopg2` driver per default) to connect to the database and retrieve the database version.
 
@@ -63,11 +62,10 @@ The snippet above will spin up the current latest version of a postgres database
     >>> import psycopg
 
     >>> with PostgresContainer("postgres:16", driver=None) as postgres:
-    ...     psql_url = container.get_connection_url()
+    ...     psql_url = postgres.get_connection_url()
     ...     with psycopg.connect(psql_url) as connection:
     ...         with connection.cursor() as cursor:
-    ...             cursor.execute("SELECT version()")
-    ...             version, = cursor.fetchone()
+    ...             version, = cursor.execute("SELECT version()").fetchone()
     >>> version
     'PostgreSQL 16...'
 
