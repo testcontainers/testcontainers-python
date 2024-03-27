@@ -2,7 +2,13 @@ from platform import system
 from socket import socket
 from typing import TYPE_CHECKING, Optional
 
-from testcontainers.core.config import RYUK_DISABLED, RYUK_DOCKER_SOCKET, RYUK_IMAGE, RYUK_PRIVILEGED
+from testcontainers.core.config import (
+    RYUK_DISABLED,
+    RYUK_DOCKER_SOCKET,
+    RYUK_IMAGE,
+    RYUK_PRIVILEGED,
+    RYUK_RECONNECTION_TIMEOUT,
+)
 from testcontainers.core.docker_client import DockerClient
 from testcontainers.core.exceptions import ContainerStartException
 from testcontainers.core.labels import LABEL_SESSION_ID, SESSION_ID
@@ -194,6 +200,7 @@ class Reaper:
             .with_exposed_ports(8080)
             .with_volume_mapping(RYUK_DOCKER_SOCKET, "/var/run/docker.sock", "rw")
             .with_kwargs(privileged=RYUK_PRIVILEGED, auto_remove=True)
+            .with_env("RYUK_RECONNECTION_TIMEOUT", RYUK_RECONNECTION_TIMEOUT)
             .start()
         )
         wait_for_logs(Reaper._container, r".* Started!")
