@@ -12,6 +12,7 @@ from testcontainers.core.waiting_utils import wait_for_logs
 
 
 def test_wait_for_reaper(monkeypatch: MonkeyPatch):
+    Reaper.delete_instance()
     monkeypatch.setattr(container_module, "RYUK_RECONNECTION_TIMEOUT", "0.1s")
     docker_client = DockerClient()
     container = DockerContainer("hello-world").start()
@@ -34,12 +35,11 @@ def test_wait_for_reaper(monkeypatch: MonkeyPatch):
         docker_client.containers.get(reaper_id)
 
     # Cleanup Ryuk class fields after manual Ryuk shutdown
-    Reaper._socket = None
-    Reaper._instance = None
-    Reaper._container = None
+    Reaper.delete_instance()
 
 
 def test_container_without_ryuk(monkeypatch: MonkeyPatch):
+    Reaper.delete_instance()
     monkeypatch.setattr(container_module, "RYUK_DISABLED", True)
     with DockerContainer("hello-world") as container:
         wait_for_logs(container, "Hello from Docker!")

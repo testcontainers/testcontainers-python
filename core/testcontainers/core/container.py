@@ -1,6 +1,9 @@
+import contextlib
 from platform import system
 from socket import socket
 from typing import TYPE_CHECKING, Optional
+
+import docker.errors
 
 from testcontainers.core.config import (
     RYUK_DISABLED,
@@ -183,8 +186,9 @@ class Reaper:
             Reaper._socket.close()
             Reaper._socket = None
 
-        if Reaper._container is not None:
-            Reaper._container.stop()
+        if Reaper._container is not None and Reaper._container._container is not None:
+            with contextlib.suppress(docker.errors.NotFound):
+                Reaper._container.stop()
             Reaper._container = None
 
         if Reaper._instance is not None:
