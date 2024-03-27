@@ -28,3 +28,5 @@ jobs:
         run: poetry build && poetry run twine check dist/*.tar.gz
       - name: Run tests
         run: make core/tests
+      - name: Run tests
+        run: make core/doctests
