@@ -43,8 +43,8 @@ class KeycloakContainer(DockerContainer):
         port: int = 8080,
     ) -> None:
         super().__init__(image=image)
-        self.username = username if username else os.environ.get("KEYCLOAK_ADMIN", "test")
-        self.password = password if password else os.environ.get("KEYCLOAK_ADMIN_PASSWORD", "test")
+        self.username = username or os.environ.get("KEYCLOAK_ADMIN", "test")
+        self.password = password or os.environ.get("KEYCLOAK_ADMIN_PASSWORD", "test")
         self.port = port
         self.with_exposed_ports(self.port)
 
