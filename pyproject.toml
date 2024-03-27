@@ -5,7 +5,8 @@ description = "Python library for throwaway instances of anything that can run i
 authors = ["Sergey Pirogov <automationremarks@gmail.com>"]
 maintainers = [
     "Balint Bartha <totallyzen@users.noreply.github.com>",
-    "David Ankin <daveankin@gmail.com>"
+    "David Ankin <daveankin@gmail.com>",
+    "Vemund Santi <vemund@santi.no>"
 ]
 readme = "README.md"
 keywords = ["testing", "logging", "docker", "test automation"]
@@ -120,6 +121,7 @@ anyio = "^4.3.0"
 psycopg2-binary = "*"
 pg8000 = "*"
 sqlalchemy = "*"
+psycopg = "*"
 kafka-python = "^2.0.2"
 
 [[tool.poetry.source]]
