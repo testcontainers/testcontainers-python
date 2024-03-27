@@ -11,7 +11,7 @@ UPLOAD = $(addsuffix /upload,${PACKAGES})
 # All */tests folders for each of the test suites.
 TESTS = $(addsuffix /tests,$(filter-out meta,${PACKAGES}))
 TESTS_DIND = $(addsuffix -dind,${TESTS})
-DOCTESTS = $(addsuffix /doctest,$(filter-out meta,${PACKAGES}))
+DOCTESTS = $(addsuffix /doctest,$(filter-out modules/README.md,${PACKAGES}))
 # All linting targets.
 LINT = $(addsuffix /lint,${PACKAGES})
 
