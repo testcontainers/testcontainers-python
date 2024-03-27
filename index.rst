@@ -105,7 +105,7 @@ Configuration
 +-------------------------------------------+-------------------------------+------------------------------------------+
 | ``TESTCONTAINERS_RYUK_DISABLED``          | ``false``                     | Disable ryuk                             |
 +-------------------------------------------+-------------------------------+------------------------------------------+
-| ``RYUK_CONTAINER_IMAGE``                  | ``testcontainers/ryuk:0.5.1`` | Custom image for ryuk                    |
+| ``RYUK_CONTAINER_IMAGE``                  | ``testcontainers/ryuk:0.7.0`` | Custom image for ryuk                    |
 +-------------------------------------------+-------------------------------+------------------------------------------+
 
 Development and Contributing
