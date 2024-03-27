@@ -3,10 +3,13 @@ import os
 import platform
 import subprocess
 import sys
+from contextlib import suppress
+from typing import Any, Optional
 
 LINUX = "linux"
 MAC = "mac"
 WIN = "win"
+UNKNOWN = "unknown"
 
 
 def setup_logger(name: str) -> logging.Logger:
@@ -26,6 +29,7 @@ def os_name() -> str:
         return MAC
     elif pl == "win32":
         return WIN
+    return UNKNOWN
 
 
 def is_mac() -> bool:
@@ -53,7 +57,7 @@ def inside_container() -> bool:
     return os.path.exists("/.dockerenv")
 
 
-def default_gateway_ip() -> str:
+def default_gateway_ip() -> Optional[str]:
     """
     Returns gateway IP address of the host that testcontainer process is
     running on
@@ -61,16 +65,15 @@ def default_gateway_ip() -> str:
     https://github.com/testcontainers/testcontainers-java/blob/3ad8d80e2484864e554744a4800a81f6b7982168/core/src/main/java/org/testcontainers/dockerclient/DockerClientConfigUtils.java#L27
     """
     cmd = ["sh", "-c", "ip route|awk '/default/ { print $3 }'"]
-    try:
+    with suppress(subprocess.SubprocessError):
         process = subprocess.Popen(cmd, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
         ip_address = process.communicate()[0]
         if ip_address and process.returncode == 0:
             return ip_address.decode("utf-8").strip().strip("\n")
-    except subprocess.SubprocessError:
-        return None
+    return None
 
 
-def raise_for_deprecated_parameter(kwargs: dict, name: str, replacement: str) -> dict:
+def raise_for_deprecated_parameter(kwargs: dict[str, Any], name: str, replacement: str) -> dict[str, Any]:
     """
     Raise an error if a dictionary of keyword arguments contains a key and suggest the replacement.
     """
