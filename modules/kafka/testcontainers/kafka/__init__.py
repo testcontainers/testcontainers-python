@@ -3,11 +3,9 @@ import time
 from io import BytesIO
 from textwrap import dedent
 
-from kafka import KafkaConsumer
-from kafka.errors import KafkaError, NoBrokersAvailable, UnrecognizedBrokerVersion
 from testcontainers.core.container import DockerContainer
 from testcontainers.core.utils import raise_for_deprecated_parameter
-from testcontainers.core.waiting_utils import wait_container_is_ready
+from testcontainers.core.waiting_utils import wait_for_logs
 
 
 class KafkaContainer(DockerContainer):
@@ -47,13 +45,6 @@ class KafkaContainer(DockerContainer):
         port = self.get_exposed_port(self.port)
         return f"{host}:{port}"
 
-    @wait_container_is_ready(UnrecognizedBrokerVersion, NoBrokersAvailable, KafkaError, ValueError)
-    def _connect(self) -> None:
-        bootstrap_server = self.get_bootstrap_server()
-        consumer = KafkaConsumer(group_id="test", bootstrap_servers=[bootstrap_server])
-        if not consumer.bootstrap_connected():
-            raise KafkaError("Unable to connect with kafka container!")
-
     def tc_start(self) -> None:
         host = self.get_container_host_ip()
         port = self.get_exposed_port(self.port)
@@ -78,13 +69,13 @@ class KafkaContainer(DockerContainer):
         )
         self.create_file(data, KafkaContainer.TC_START_SCRIPT)
 
-    def start(self) -> "KafkaContainer":
+    def start(self, timeout=30) -> "KafkaContainer":
         script = KafkaContainer.TC_START_SCRIPT
         command = f'sh -c "while [ ! -f {script} ]; do sleep 0.1; done; sh {script}"'
         self.with_command(command)
         super().start()
         self.tc_start()
-        self._connect()
+        wait_for_logs(self, r".*\[KafkaServer id=\d+\] started.*", timeout=timeout)
         return self
 
     def create_file(self, content: bytes, path: str) -> None:
