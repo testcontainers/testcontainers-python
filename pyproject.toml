@@ -5,7 +5,8 @@ description = "Python library for throwaway instances of anything that can run i
 authors = ["Sergey Pirogov <automationremarks@gmail.com>"]
 maintainers = [
     "Balint Bartha <totallyzen@users.noreply.github.com>",
-    "David Ankin <daveankin@gmail.com>"
+    "David Ankin <daveankin@gmail.com>",
+    "Vemund Santi <vemund@santi.no>"
 ]
 readme = "README.md"
 keywords = ["testing", "logging", "docker", "test automation"]
