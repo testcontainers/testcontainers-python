@@ -158,6 +158,7 @@ class DockerCompose:
     wait: bool = True
     env_file: Optional[str] = None
     services: Optional[list[str]] = None
+    docker_command_path: Optional[str] = None
 
     def __post_init__(self):
         if isinstance(self.compose_file_name, str):
@@ -181,7 +182,7 @@ class DockerCompose:
 
     @cached_property
     def compose_command_property(self) -> list[str]:
-        docker_compose_cmd = ["docker", "compose"]
+        docker_compose_cmd = [self.docker_command_path or "docker", "compose"]
         if self.compose_file_name:
             for file in self.compose_file_name:
                 docker_compose_cmd += ["-f", file]
