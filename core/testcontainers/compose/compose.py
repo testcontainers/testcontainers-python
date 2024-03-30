@@ -1,11 +1,11 @@
-from dataclasses import dataclass, field, fields
+from dataclasses import Field, dataclass, field, fields
 from functools import cached_property
 from json import loads
 from os import PathLike
 from re import split
 from subprocess import CompletedProcess
 from subprocess import run as subprocess_run
-from typing import Callable, Literal, Optional, TypeVar, Union
+from typing import Any, Callable, ClassVar, Literal, Optional, Protocol, TypeVar, Union, cast
 from urllib.error import HTTPError, URLError
 from urllib.request import urlopen
 
@@ -15,14 +15,18 @@ from testcontainers.core.waiting_utils import wait_container_is_ready
 _IPT = TypeVar("_IPT")
 
 
-def _ignore_properties(cls: type[_IPT], dict_: any) -> _IPT:
+class DataclassInstance(Protocol):
+    __dataclass_fields__: ClassVar[dict[str, Field[Any]]]
+
+
+def _ignore_properties(cls: type[_IPT], dict_: Union[_IPT, dict[str, Any]]) -> _IPT:
     """omits extra fields like @JsonIgnoreProperties(ignoreUnknown = true)
 
     https://gist.github.com/alexanderankin/2a4549ac03554a31bef6eaaf2eaf7fd5"""
     if isinstance(dict_, cls):
         return dict_
-    class_fields = {f.name for f in fields(cls)}
-    filtered = {k: v for k, v in dict_.items() if k in class_fields}
+    class_fields = {f.name for f in fields(cast(type[DataclassInstance], cls))}
+    filtered = {k: v for k, v in cast(dict[str, Any], dict_).items() if k in class_fields}
     return cls(**filtered)
 
 
@@ -34,8 +38,8 @@ class PublishedPort:
     """
 
     URL: Optional[str] = None
-    TargetPort: Optional[str] = None
-    PublishedPort: Optional[str] = None
+    TargetPort: Optional[int] = None
+    PublishedPort: Optional[int] = None
     Protocol: Optional[str] = None
 
 
@@ -61,13 +65,13 @@ class ComposeContainer:
     Name: Optional[str] = None
     Command: Optional[str] = None
     Project: Optional[str] = None
-    Service: Optional[str] = None
+    Service: str = ""
     State: Optional[str] = None
     Health: Optional[str] = None
-    ExitCode: Optional[str] = None
+    ExitCode: Optional[int] = None
     Publishers: list[PublishedPort] = field(default_factory=list)
 
-    def __post_init__(self):
+    def __post_init__(self) -> None:
         if self.Publishers:
             self.Publishers = [_ignore_properties(PublishedPort, p) for p in self.Publishers]
 
@@ -75,7 +79,7 @@ class ComposeContainer:
         self,
         by_port: Optional[int] = None,
         by_host: Optional[str] = None,
-        prefer_ip_version: Literal["IPV4", "IPv6"] = "IPv4",
+        prefer_ip_version: Literal["IPv4", "IPv6"] = "IPv4",
     ) -> PublishedPort:
         remaining_publishers = self.Publishers
 
@@ -98,8 +102,8 @@ class ComposeContainer:
         )
 
     @staticmethod
-    def _matches_protocol(prefer_ip_version, r):
-        return (":" in r.URL) is (prefer_ip_version == "IPv6")
+    def _matches_protocol(prefer_ip_version: str, r: PublishedPort) -> bool:
+        return (":" in (r.URL or "")) is (prefer_ip_version == "IPv6")
 
 
 @dataclass
@@ -151,7 +155,7 @@ class DockerCompose:
                 image: "hello-world"
     """
 
-    context: Union[str, PathLike]
+    context: Union[str, PathLike[Any]]
     compose_file_name: Optional[Union[str, list[str]]] = None
     pull: bool = False
     build: bool = False
@@ -160,7 +164,7 @@ class DockerCompose:
     services: Optional[list[str]] = None
     docker_command_path: Optional[str] = None
 
-    def __post_init__(self):
+    def __post_init__(self) -> None:
         if isinstance(self.compose_file_name, str):
             self.compose_file_name = [self.compose_file_name]
 
@@ -168,7 +172,7 @@ class DockerCompose:
         self.start()
         return self
 
-    def __exit__(self, exc_type, exc_val, exc_tb) -> None:
+    def __exit__(self, exc_type: Any, exc_val: Any, exc_tb: Any) -> None:
         self.stop()
 
     def docker_compose_command(self) -> list[str]:
@@ -218,7 +222,7 @@ class DockerCompose:
 
         self._run_command(cmd=up_cmd)
 
-    def stop(self, down=True) -> None:
+    def stop(self, down: bool = True) -> None:
         """
         Stops the docker compose environment.
         """
@@ -244,7 +248,7 @@ class DockerCompose:
         result = self._run_command(cmd=logs_cmd)
         return result.stdout.decode("utf-8"), result.stderr.decode("utf-8")
 
-    def get_containers(self, include_all=False) -> list[ComposeContainer]:
+    def get_containers(self, include_all: bool = False) -> list[ComposeContainer]:
         """
         Fetch information about running containers via `docker compose ps --format json`.
         Available only in V2 of compose.
@@ -327,7 +331,7 @@ class DockerCompose:
     def _run_command(
         self,
         cmd: Union[str, list[str]],
-        context: Optional[str] = None,
+        context: Optional[Union[str, PathLike[Any]]] = None,
     ) -> CompletedProcess[bytes]:
         context = context or self.context
         return subprocess_run(
@@ -341,7 +345,7 @@ class DockerCompose:
         self,
         service_name: Optional[str] = None,
         port: Optional[int] = None,
-    ):
+    ) -> Optional[int]:
         """
         Returns the mapped port for one of the services.
 
@@ -363,7 +367,7 @@ class DockerCompose:
         self,
         service_name: Optional[str] = None,
         port: Optional[int] = None,
-    ):
+    ) -> Optional[str]:
         """
         Returns the host for one of the services.
 
@@ -385,7 +389,7 @@ class DockerCompose:
         self,
         service_name: Optional[str] = None,
         port: Optional[int] = None,
-    ):
+    ) -> tuple[Optional[str], Optional[int]]:
         publisher = self.get_container(service_name).get_publisher(by_port=port)
         return publisher.URL, publisher.PublishedPort
 
@@ -402,3 +406,12 @@ class DockerCompose:
         with urlopen(url) as response:
             response.read()
         return self
+
+
+__all__ = [
+    "ContainerIsNotRunning",
+    "NoSuchPortExposed",
+    "PublishedPort",
+    "ComposeContainer",
+    "DockerCompose",
+]

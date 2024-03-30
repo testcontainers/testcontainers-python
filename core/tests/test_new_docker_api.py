@@ -21,7 +21,7 @@ def test_docker_kwargs():
     container_second = DockerContainer("nginx:latest")
 
     with container_first:
-        container_second.with_kwargs(volumes_from=[container_first._container.short_id])
+        container_second.with_kwargs(volumes_from=[container_first._use_container.short_id])
         with container_second:
             files_first = container_first.exec("ls /code").output.decode("utf-8").strip()
             files_second = container_second.exec("ls /code").output.decode("utf-8").strip()

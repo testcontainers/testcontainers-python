@@ -1,11 +1,14 @@
 import time
 import socket
+
+from docker.models.containers import Container
+
 from testcontainers.core.container import DockerContainer
 from testcontainers.core.docker_client import DockerClient
 from testcontainers.core.waiting_utils import wait_for_logs
 
 
-def _wait_for_dind_return_ip(client, dind):
+def _wait_for_dind_return_ip(client: DockerClient, dind: Container):
     # get ip address for DOCKER_HOST
     # avoiding DockerContainer class here to prevent code changes affecting the test
     docker_host_ip = client.bridge_ip(dind.id)

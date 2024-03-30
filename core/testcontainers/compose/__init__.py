@@ -6,3 +6,11 @@ from testcontainers.compose.compose import (
     ComposeContainer,
     DockerCompose,
 )
+
+__all__ = [
+    "ContainerIsNotRunning",
+    "NoSuchPortExposed",
+    "PublishedPort",
+    "ComposeContainer",
+    "DockerCompose",
+]

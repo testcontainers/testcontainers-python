@@ -22,13 +22,13 @@ repos:
         # Explicitly setting config to prevent Ruff from using `pyproject.toml` in sub packages.
         args: [ '--fix', '--exit-non-zero-on-fix', '--config', 'pyproject.toml' ]
 
-#  - repo: local
-#    hooks:
-#      - id: mypy
-#        name: mypy
-#        entry: poetry run mypy
-#        args: ["--config-file", "pyproject.toml"]
-#        files: "core"  # start with the core being type checked
-#        language: system
-#        types: [ python ]
-#        require_serial: true
+  - repo: local
+    hooks:
+      - id: mypy
+        name: mypy
+        entry: poetry run mypy
+        args: ["--config-file", "pyproject.toml"]
+        files: "core"  # start with the core being type checked
+        language: system
+        types: [ python ]
+        require_serial: true
