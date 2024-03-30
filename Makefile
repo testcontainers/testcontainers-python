@@ -1,29 +1,23 @@
 .DEFAULT_GOAL := help
 
 
-PYTHON_VERSIONS = 3.9 3.10 3.11
 PYTHON_VERSION ?= 3.10
 IMAGE = testcontainers-python:${PYTHON_VERSION}
 # Get all directories that contain a setup.py and get the directory name.
 PACKAGES = core $(addprefix modules/,$(notdir $(wildcard modules/*)))
 
-# All */dist folders for each of the packages.
-DISTRIBUTIONS = $(addsuffix /dist,${PACKAGES})
 UPLOAD = $(addsuffix /upload,${PACKAGES})
-# All */tests folders for each of the test suites.
 TESTS = $(addsuffix /tests,$(filter-out meta,${PACKAGES}))
 TESTS_DIND = $(addsuffix -dind,${TESTS})
-DOCTESTS = $(addsuffix /doctests,$(filter-out modules/README.md,${PACKAGES}))
-# All linting targets.
-LINT = $(addsuffix /lint,${PACKAGES})
+DOCTESTS = $(addsuffix /doctest,$(filter-out meta,${PACKAGES}))
 
 
 install:  ## Set up the project for development
 	poetry install --all-extras
 	poetry run pre-commit install
 
-dist:  ## Build the python package
-	poetry build && poerry run twine check dist/*
+build:  ## Build the python package
+	poetry build && poetry run twine check dist/*
 
 tests: ${TESTS}  ## Run tests for each package
 ${TESTS}: %/tests:
@@ -38,18 +32,16 @@ coverage:  ## Target to combine and report coverage.
 lint:  ## Lint all files in the project, which we also run in pre-commit
 	poetry run pre-commit run -a
 
-# Targets to build docker images
-image:
+image: ## Make the docker image for dind tests
 	poetry export -f requirements.txt -o build/requirements.txt
-	docker build --build-arg version=${PYTHON_VERSION} -t ${IMAGE} .
+	docker build --build-arg PYTHON_VERSION=${PYTHON_VERSION} -t ${IMAGE} .
 
-
-DOCKER_RUN = docker run --rm -it
+DOCKER_RUN = docker run --rm -v /var/run/docker.sock:/var/run/docker.sock
 
 tests-dind: ${TESTS_DIND}  ## Run the tests in docker containers to test `dind`
 ${TESTS_DIND}: %/tests-dind: image
-	${DOCKER_RUN} -v /var/run/docker.sock:/var/run/docker.sock ${IMAGE} \
-		bash -c "make $*/lint $*/tests"
+	${DOCKER_RUN} ${IMAGE} \
+		bash -c "make $*/tests"
 
 docs: ## Build the docs for the project
 	poetry run sphinx-build -nW . docs/_build
@@ -75,7 +67,7 @@ clean-all: clean ## Remove all generated files and reset the local virtual envir
 	rm -rf .venv
 
 # Targets that do not generate file-level artifacts.
-.PHONY: clean dists ${DISTRIBUTIONS} docs doctests image tests ${TESTS}
+.PHONY: clean docs doctests image tests ${TESTS}
 
 
 # Implements this pattern for autodocumenting Makefiles:
