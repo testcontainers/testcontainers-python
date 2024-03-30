@@ -10,13 +10,8 @@
 #    WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the
 #    License for the specific language governing permissions and limitations
 #    under the License.
-import os
-from typing import Optional, Tuple, List
-
-from cassandra.cluster import Cluster, NoHostAvailable
-
 from testcontainers.core.container import DockerContainer
-from testcontainers.core.waiting_utils import wait_container_is_ready, wait_for_logs
+from testcontainers.core.waiting_utils import wait_for_logs
 
 
 class CassandraContainer(DockerContainer):
@@ -59,7 +54,7 @@ class CassandraContainer(DockerContainer):
         self._connect()
         return self
 
-    def get_contact_points(self) -> List[Tuple[str, int]]:
+    def get_contact_points(self) -> list[tuple[str, int]]:
         return [(self.get_container_host_ip(), int(self.get_exposed_port(self.CQL_PORT)))]
 
     def get_local_datacenter(self) -> str:
