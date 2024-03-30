@@ -57,3 +57,5 @@ jobs:
         run: poetry install -E ${{ matrix.module }}
       - name: Run tests
         run: make modules/${{ matrix.module }}/tests
+      - name: Run doctests
+        run: make modules/${{ matrix.module }}/doctests
