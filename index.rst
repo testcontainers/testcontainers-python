@@ -78,7 +78,7 @@ Installation
 ------------
 
 The suite of testcontainers packages is available on `PyPI <https://pypi.org/project/testcontainers/>`_,
-and individual packages can be installed using :code:`pip`.
+and the package can be installed using :code:`pip`.
 
 Version `4.0.0` onwards we do not support the `testcontainers-*` packages as it is unsutainable to maintain ownership.
 
@@ -111,17 +111,21 @@ Configuration
 Development and Contributing
 ----------------------------
 
-We recommend you use a `virtual environment <https://virtualenv.pypa.io/en/stable/>`_ for development (:code:`python>=3.7` is required). After setting up your virtual environment, you can install all dependencies and test the installation by running the following snippet.
+We recommend you use a `Poetry <https://python-poetry.org/docs/>`_ for development.
+After having installed `poetry`, you can run the following snippet to set up your local dev environment.
 
 .. code-block:: bash
 
-    poetry install --all-extras
-    make <your-module>/tests
+    make install
 
 Package Structure
 ^^^^^^^^^^^^^^^^^
 
-Testcontainers is a collection of `implicit namespace packages <https://peps.python.org/pep-0420/>`__ to decouple the development of different extensions, e.g., :code:`testcontainers-mysql` and :code:`testcontainers-postgres` for MySQL and PostgreSQL database containers, respectively. The folder structure is as follows.
+Testcontainers is a collection of `implicit namespace packages <https://peps.python.org/pep-0420/>`__
+to decouple the development of different extensions,
+e.g., :code:`testcontainers-mysql` and :code:`testcontainers-postgres` for MySQL and PostgreSQL database containers, respectively.
+
+The folder structure is as follows:
 
 .. code-block:: bash
 
@@ -141,10 +145,11 @@ Testcontainers is a collection of `implicit namespace packages <https://peps.pyt
               ...
           # README for this feature.
           README.rst
-          # Setup script for this feature.
-          setup.py
 
 Contributing a New Feature
 ^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-You want to contribute a new feature or container? Great! You can do that in six steps as outlined `here <https://github.com/testcontainers/testcontainers-python/blob/main/.github/PULL_REQUEST_TEMPLATE/new_container.md>__`.
+You want to contribute a new feature or container? Great!
+- We recommend you first `open an issue <https://github.com/testcontainers/testcontainers-python/issues/new/choose>`_
+- Then follow the suggestions from the team
+- We also have a Pull Request `template <https://github.com/testcontainers/testcontainers-python/blob/main/.github/PULL_REQUEST_TEMPLATE/new_container.md>`_ for new containers!
