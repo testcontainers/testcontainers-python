@@ -9,7 +9,7 @@ PACKAGES = core $(addprefix modules/,$(notdir $(wildcard modules/*)))
 UPLOAD = $(addsuffix /upload,${PACKAGES})
 TESTS = $(addsuffix /tests,$(filter-out meta,${PACKAGES}))
 TESTS_DIND = $(addsuffix -dind,${TESTS})
-DOCTESTS = $(addsuffix /doctest,$(filter-out meta,${PACKAGES}))
+DOCTESTS = $(addsuffix /doctest,$(filter-out modules/README.md,${PACKAGES}))
 
 
 install:  ## Set up the project for development
