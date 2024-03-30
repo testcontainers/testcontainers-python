@@ -84,6 +84,9 @@ Version `4.0.0` onwards we do not support the `testcontainers-*` packages as it 
 
 Instead packages can be installed by specifying `extras <https://setuptools.readthedocs.io/en/latest/setuptools.html#declaring-extras-optional-features-with-their-own-dependencies>`__, e.g., :code:`pip install testcontainers[postgres]`.
 
+Please note, that community modules are supported on a best-effort basis and breaking changes DO NOT create major versions in the package.
+Therefore, only the package core is strictly following SemVer. If your workflow is broken by a minor update, please look at the changelogs for guidance.
+
 
 Docker in Docker (DinD)
 -----------------------

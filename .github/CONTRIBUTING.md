@@ -55,6 +55,17 @@ We have [Issue Templates][2] to cover most cases, please try to adhere to them, 
 Try to look through the existing issues before you raise a new one.
 
 
+## Releasing Versions
+
+We have automated Semantic Versioning and release via [release-please](workflows/release-please.yml).
+This takes care of:
+- Detecting the next version, based on the commits that landed on `main`
+- When a Release PR has been merged
+  - Create a GitHub Release with the CHANGELOG included
+  - Update the [CHANGELOG](../CHANGELOG.md), similar to the GitHub Release
+  - Release to PyPI via a [trusted publisher](https://docs.pypi.org/trusted-publishers/using-a-publisher/)
+  - Automatically script updates in files where it's needed instead of hand-crafting it (i.e. in `pyproject.toml`)
+
 # Thank you!
 
 Thanks for reading, feedback on documentation is always welcome!
