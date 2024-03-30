@@ -38,9 +38,10 @@ class WeaviateContainer(DbContainer):
 
             >>> from testcontainers.weaviate import WeaviateContainer
 
-            >>> with WeaviateContainer() as weaviate:
+            >>> with WeaviateContainer() as container:
             ...     with container.get_client() as client:
             ...         client.is_live()
+            True
 
         This example shows how to start Weaviate container with additinal settings.
 
@@ -49,14 +50,15 @@ class WeaviateContainer(DbContainer):
             >>> from testcontainers.weaviate import WeaviateContainer
 
             >>> with WeaviateContainer(
-            >>>     env_vars={
-            >>>         "ENABLE_MODULES": "backup-filesystem,text2vec-openai",
-            >>>         "BACKUP_FILESYSTEM_PATH": "/tmp/backups",
-            >>>         "QUERY_DEFAULTS_LIMIT": 100,
-            >>>     }
-            >>> ) as container:
-            >>>     with container.get_client() as client:
-            >>>         client.is_live()
+            ...     env_vars={
+            ...         "ENABLE_MODULES": "backup-filesystem,text2vec-openai",
+            ...         "BACKUP_FILESYSTEM_PATH": "/tmp/backups",
+            ...         "QUERY_DEFAULTS_LIMIT": 100,
+            ...     }
+            ... ) as container:
+            ...     with container.get_client() as client:
+            ...         client.is_live()
+            True
     """
 
     def __init__(
