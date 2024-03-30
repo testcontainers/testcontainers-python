@@ -12,6 +12,8 @@ It helps reduce unnecessary work for you and the maintainers!
 
 # PR Checklist
 
+- [ ] Your PR title follows the [Conventional Commits](https://www.conventionalcommits.org/en/v1.0.0/) syntax
+  as we make use of this for detecting Semantic Versioning changes.
 - [ ] Your PR allows maintainers to edit your branch, this will speed up resolving minor issues!
 - [ ] The new container is implemented under `modules/*`
   - Your module follows [PEP 420](https://peps.python.org/pep-0420/) with implicit namespace packages
