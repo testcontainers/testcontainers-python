@@ -11,7 +11,7 @@ assignees: ''
 
 **What is the new container you'd like to have?**
 
-Please link some docker containers as well as documentation to the benefits of having this container.
+Please link some docker containers as well as documentation/arguments to the benefits of having this container.
 
 **Why not just use a generic container for this?**
 
