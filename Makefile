@@ -3,7 +3,6 @@
 
 PYTHON_VERSION ?= 3.10
 IMAGE = testcontainers-python:${PYTHON_VERSION}
-# Get all directories that contain a setup.py and get the directory name.
 PACKAGES = core $(addprefix modules/,$(notdir $(wildcard modules/*)))
 
 UPLOAD = $(addsuffix /upload,${PACKAGES})
