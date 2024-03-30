@@ -30,6 +30,10 @@ For more information, see [the docs][readthedocs].
 
 The snippet above will spin up a postgres database in a container. The `get_connection_url()` convenience method returns a `sqlalchemy` compatible url we use to connect to the database and retrieve the database version.
 
+## Contributing / Development / Release
+
+See [CONTRIBUTING.md](.github/CONTRIBUTING.md) for more details.
+
 ## Configuration
 
 | Env Variable                            | Example                     | Description                                                                        |
