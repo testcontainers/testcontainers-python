@@ -19,13 +19,15 @@ class ChromaContainer(DockerContainer):
 
         .. doctest::
 
-            >>> import io
+            >>> import chromadb
             >>> from testcontainers.chroma import ChromaContainer
 
             >>> with ChromaContainer() as chroma:
-            ...   client = chroma.get_client()
-            ...   client.heartbeat()
-            ...   client.get_or_create_collection("test")
+            ...   config = chroma.get_config()
+            ...   client = chromadb.HttpClient(host=config["host"], port=config["port"])
+            ...   col = client.get_or_create_collection("test")
+            ...   col.name
+            'test'
     """
 
     def __init__(
