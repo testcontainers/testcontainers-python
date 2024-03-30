@@ -1,8 +1,6 @@
 FROM mcr.microsoft.com/devcontainers/python:1-3.11-bookworm
 
 
-#COPY --chown=vscode:vscode .git-completion.sh /home/vscode/.git-completion.sh
-#COPY --chown=vscode:vscode .poetry-completion.sh /home/vscode/.poetry-completion.sh
 RUN \
     apt update && apt install bash-completion -y && \
     pip install pre-commit && \
