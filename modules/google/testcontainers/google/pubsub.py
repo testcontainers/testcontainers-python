@@ -57,12 +57,14 @@ class PubSubContainer(DockerContainer):
 
     def get_publisher_client(self, **kwargs) -> pubsub.PublisherClient:
         from google.auth import credentials
-        kwargs['client_options'] = dict(api_endpoint=self.get_pubsub_emulator_host())
-        kwargs['credentials'] = credentials.AnonymousCredentials()
+
+        kwargs["client_options"] = {"api_endpoint": self.get_pubsub_emulator_host()}
+        kwargs["credentials"] = credentials.AnonymousCredentials()
         return self._get_client(pubsub.PublisherClient, **kwargs)
 
     def get_subscriber_client(self, **kwargs) -> pubsub.SubscriberClient:
         from google.auth import credentials
-        kwargs['client_options'] = dict(api_endpoint=self.get_pubsub_emulator_host())
-        kwargs['credentials'] = credentials.AnonymousCredentials()
+
+        kwargs["client_options"] = {"api_endpoint": self.get_pubsub_emulator_host()}
+        kwargs["credentials"] = credentials.AnonymousCredentials()
         return self._get_client(pubsub.SubscriberClient, **kwargs)
