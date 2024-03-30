@@ -9,7 +9,7 @@ PACKAGES = core $(addprefix modules/,$(notdir $(wildcard modules/*)))
 UPLOAD = $(addsuffix /upload,${PACKAGES})
 TESTS = $(addsuffix /tests,$(filter-out meta,${PACKAGES}))
 TESTS_DIND = $(addsuffix -dind,${TESTS})
-DOCTESTS = $(addsuffix /doctest,$(filter-out modules/README.md,${PACKAGES}))
+DOCTESTS = $(addsuffix /doctests,$(filter-out modules/README.md,${PACKAGES}))
 
 
 install:  ## Set up the project for development
@@ -50,10 +50,10 @@ docs: ## Build the docs for the project
 docs-watch :
 	poetry run sphinx-autobuild . docs/_build # requires 'pip install sphinx-autobuild'
 
-doctest: ${DOCTESTS}  ## Run doctests found across the documentation.
+doctests: ${DOCTESTS}  ## Run doctests found across the documentation.
 	poetry run sphinx-build -b doctest . docs/_build
 
-${DOCTESTS}: %/doctest:  ##  Run doctests found for a module.
+${DOCTESTS}: %/doctests:  ##  Run doctests found for a module.
 	poetry run sphinx-build -b doctest -c doctests $* docs/_build
 
 
