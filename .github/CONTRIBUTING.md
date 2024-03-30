@@ -66,6 +66,14 @@ This takes care of:
   - Release to PyPI via a [trusted publisher](https://docs.pypi.org/trusted-publishers/using-a-publisher/)
   - Automatically script updates in files where it's needed instead of hand-crafting it (i.e. in `pyproject.toml`)
 
+> [!CRITICAL]
+> Community modules are supported on a best-effort basis and for maintenance reasons, any change to them
+> is only covered under minor and patch changes.
+>
+> Community modules changes DO NOT contribute to major version changes!
+>
+> If your community module container was broken by a minor or patch version change, check out the change logs!
+
 # Thank you!
 
 Thanks for reading, feedback on documentation is always welcome!
