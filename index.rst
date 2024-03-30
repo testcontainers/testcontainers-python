@@ -1,8 +1,8 @@
 testcontainers-python
 =====================
 
-.. image:: https://github.com/testcontainers/testcontainers-python/workflows/testcontainers-python/badge.svg
-   :target: https://github.com/testcontainers/testcontainers-python/actions/workflows/main.yml
+.. image:: https://github.com/testcontainers/testcontainers-python/actions/workflows/ci-core.yml/badge.svg
+   :target: https://github.com/testcontainers/testcontainers-python/actions/workflows/ci-core.yml
 .. image:: https://img.shields.io/pypi/v/testcontainers.svg
    :target: https://pypi.python.org/pypi/testcontainers
 .. image:: https://readthedocs.org/projects/testcontainers-python/badge/?version=latest
@@ -20,6 +20,8 @@ testcontainers-python facilitates the use of Docker containers for functional an
     modules/clickhouse/README
     modules/elasticsearch/README
     modules/google/README
+    modules/influxdb/README
+    modules/k3s/README
     modules/kafka/README
     modules/keycloak/README
     modules/localstack/README
@@ -35,7 +37,6 @@ testcontainers-python facilitates the use of Docker containers for functional an
     modules/rabbitmq/README
     modules/redis/README
     modules/selenium/README
-    modules/k3s/README
 
 Getting Started
 ---------------
@@ -45,15 +46,33 @@ Getting Started
     >>> from testcontainers.postgres import PostgresContainer
     >>> import sqlalchemy
 
-    >>> with PostgresContainer("postgres:9.5") as postgres:
-    ...     engine = sqlalchemy.create_engine(postgres.get_connection_url())
+    >>> with PostgresContainer("postgres:16") as postgres:
+    ...     psql_url = postgres.get_connection_url()
+    ...     engine = sqlalchemy.create_engine(psql_url)
     ...     with engine.begin() as connection:
-    ...         result = connection.execute(sqlalchemy.text("select version()"))
-    ...         version, = result.fetchone()
+    ...         version, = connection.execute(sqlalchemy.text("SELECT version()")).fetchone()
     >>> version
-    'PostgreSQL 9.5...'
+    'PostgreSQL 16...'
 
-The snippet above will spin up a postgres database in a container. The :code:`get_connection_url()` convenience method returns a :code:`sqlalchemy` compatible url we use to connect to the database and retrieve the database version.
+The snippet above will spin up the current latest version of a postgres database in a container. The :code:`get_connection_url()` convenience method returns a :code:`sqlalchemy` compatible url (using the :code:`psycopg2` driver per default) to connect to the database and retrieve the database version.
+
+.. doctest::
+
+    >>> from testcontainers.postgres import PostgresContainer
+    >>> import psycopg
+
+    >>> with PostgresContainer("postgres:16", driver=None) as postgres:
+    ...     psql_url = postgres.get_connection_url()
+    ...     with psycopg.connect(psql_url) as connection:
+    ...         with connection.cursor() as cursor:
+    ...             version, = cursor.execute("SELECT version()").fetchone()
+    >>> version
+    'PostgreSQL 16...'
+
+This snippet does the same, however using a specific version and the driver is set to None, to influence the :code:`get_connection_url()` convenience method to not include a driver in the URL (e.g. for compatibility with :code:`psycopg` v3).
+
+Note, that the :code:`sqlalchemy` and :code:`psycopg` packages are no longer a dependency of :code:`testcontainers[postgres]` and not needed to launch the Postgres container. Your project therefore needs to declare a dependency on the used driver and db access methods you use in your code.
+
 
 Installation
 ------------
@@ -73,6 +92,21 @@ When trying to launch a testcontainer from within a Docker container, e.g., in c
 
 1. The container has to provide a docker client installation. Either use an image that has docker pre-installed (e.g. the `official docker images <https://hub.docker.com/_/docker>`_) or install the client from within the `Dockerfile` specification.
 2. The container has to have access to the docker daemon which can be achieved by mounting `/var/run/docker.sock` or setting the `DOCKER_HOST` environment variable as part of your `docker run` command.
+
+Configuration
+-------------
+
++-------------------------------------------+-------------------------------+------------------------------------------+
+| Env Variable                              | Example                       | Description                              |
++===========================================+===============================+==========================================+
+| ``TESTCONTAINERS_DOCKER_SOCKET_OVERRIDE`` | ``/var/run/docker.sock``      | Path to Docker's socket used by ryuk     |
++-------------------------------------------+-------------------------------+------------------------------------------+
+| ``TESTCONTAINERS_RYUK_PRIVILEGED``        | ``false``                     | Run ryuk as a privileged container       |
++-------------------------------------------+-------------------------------+------------------------------------------+
+| ``TESTCONTAINERS_RYUK_DISABLED``          | ``false``                     | Disable ryuk                             |
++-------------------------------------------+-------------------------------+------------------------------------------+
+| ``RYUK_CONTAINER_IMAGE``                  | ``testcontainers/ryuk:0.5.1`` | Custom image for ryuk                    |
++-------------------------------------------+-------------------------------+------------------------------------------+
 
 Development and Contributing
 ----------------------------
