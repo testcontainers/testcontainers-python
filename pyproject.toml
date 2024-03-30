@@ -49,7 +49,8 @@ packages = [
     { include = "testcontainers", from = "modules/postgres" },
     { include = "testcontainers", from = "modules/rabbitmq" },
     { include = "testcontainers", from = "modules/redis" },
-    { include = "testcontainers", from = "modules/selenium" }
+    { include = "testcontainers", from = "modules/selenium" },
+    { include = "testcontainers", from = "modules/weaviate" }
 ]
 
 [tool.poetry.urls]
@@ -85,6 +86,7 @@ cx_Oracle = { version = "*", optional = true }
 pika = { version = "*", optional = true }
 redis = { version = "*", optional = true }
 selenium = { version = "*", optional = true }
+weaviate-client = { version = "^4.5.4", optional = true }
 
 [tool.poetry.extras]
 arangodb = ["python-arango"]
@@ -109,6 +111,7 @@ postgres = []
 rabbitmq = ["pika"]
 redis = ["redis"]
 selenium = ["selenium"]
+weaviate = ["weaviate-client"]
 
 [tool.poetry.group.dev.dependencies]
 mypy = "1.7.1"
@@ -241,6 +244,7 @@ mypy_path = [
 #    "modules/rabbitmq",
 #    "modules/redis",
 #    "modules/selenium"
+#    "modules/weaviate"
 ]
 enable_error_code = [
     "ignore-without-code",
