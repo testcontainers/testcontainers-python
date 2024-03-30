@@ -73,7 +73,6 @@ labels:
   - { name: '📦 package: mongodb',       color: '#0052CC', description: '' }
   - { name: '📦 package: mssql',         color: '#0052CC', description: '' }
   - { name: '📦 package: neo4j',         color: '#0052CC', description: '' }
-  - { name: '📦 package: oracle',        color: '#0052CC', description: '' }
   - { name: '📦 package: postgres',      color: '#0052CC', description: '' }
   - { name: '📦 package: rabbitmq',      color: '#0052CC', description: '' }
   - { name: '📦 package: selenium',      color: '#0052CC', description: '' }

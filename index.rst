@@ -32,7 +32,6 @@ testcontainers-python facilitates the use of Docker containers for functional an
     modules/neo4j/README
     modules/nginx/README
     modules/opensearch/README
-    modules/oracle/README
     modules/postgres/README
     modules/rabbitmq/README
     modules/redis/README

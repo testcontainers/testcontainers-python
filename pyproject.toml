@@ -45,7 +45,6 @@ packages = [
     { include = "testcontainers", from = "modules/neo4j" },
     { include = "testcontainers", from = "modules/nginx" },
     { include = "testcontainers", from = "modules/opensearch" },
-    { include = "testcontainers", from = "modules/oracle" },
     { include = "testcontainers", from = "modules/postgres" },
     { include = "testcontainers", from = "modules/rabbitmq" },
     { include = "testcontainers", from = "modules/redis" },
@@ -80,7 +79,6 @@ pymssql = { version = "*", optional = true }
 pymysql = { version = "*", extras = ["rsa"], optional = true }
 neo4j = { version = "*", optional = true }
 opensearch-py = { version = "*", optional = true }
-cx_Oracle = { version = "*", optional = true }
 pika = { version = "*", optional = true }
 redis = { version = "*", optional = true }
 selenium = { version = "*", optional = true }
@@ -103,7 +101,6 @@ mysql = ["sqlalchemy", "pymysql"]
 neo4j = ["neo4j"]
 nginx = []
 opensearch = ["opensearch-py"]
-oracle = ["sqlalchemy", "cx_Oracle"]
 postgres = []
 rabbitmq = ["pika"]
 redis = ["redis"]
@@ -138,9 +135,6 @@ log_cli_level = "INFO"
 
 [tool.coverage.run]
 branch = true
-omit = [
-    "oracle.py"
-]
 
 [tool.coverage.report]
 exclude_lines = [
@@ -235,7 +229,6 @@ mypy_path = [
 #    "modules/neo4j",
 #    "modules/nginx",
 #    "modules/opensearch",
-#    "modules/oracle",
 #    "modules/postgres",
 #    "modules/rabbitmq",
 #    "modules/redis",
