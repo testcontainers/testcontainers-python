@@ -66,4 +66,3 @@ class DatastoreContainer(DockerContainer):
         }
         with patch.dict(os.environ, env_vars):
             return datastore.Client(**kwargs)
-
