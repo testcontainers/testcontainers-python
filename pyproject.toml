@@ -80,6 +80,7 @@ pyyaml = { version = "*", optional = true }
 python-keycloak = { version = "*", optional = true }
 boto3 = { version = "*", optional = true }
 minio = { version = "*", optional = true }
+nats-py = { version = "*", optional = true }
 pymongo = { version = "*", optional = true }
 sqlalchemy = { version = "*", optional = true }
 pymssql = { version = "*", optional = true }
@@ -110,6 +111,7 @@ minio = ["minio"]
 mongodb = ["pymongo"]
 mssql = ["sqlalchemy", "pymssql"]
 mysql = ["sqlalchemy", "pymysql"]
+nats = ["nats-py"]
 neo4j = ["neo4j"]
 nginx = []
 opensearch = ["opensearch-py"]
