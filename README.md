@@ -25,9 +25,10 @@ The snippet above will spin up a postgres database in a container. The `get_conn
 
 ## Configuration
 
-| Env Variable                              | Example                       | Description                              |
-| ----------------------------------------- | ----------------------------- | ---------------------------------------- |
-| `TESTCONTAINERS_DOCKER_SOCKET_OVERRIDE`   | `/var/run/docker.sock`        | Path to Docker's socket used by ryuk     |
-| `TESTCONTAINERS_RYUK_PRIVILEGED`          | `false`                       | Run ryuk as a privileged container       |
-| `TESTCONTAINERS_RYUK_DISABLED`            | `false`                       | Disable ryuk                             |
-| `RYUK_CONTAINER_IMAGE`                    | `testcontainers/ryuk:0.5.1`   | Custom image for ryuk                    |
+| Env Variable                            | Example                     | Description                                                                        |
+| --------------------------------------- | --------------------------- | ---------------------------------------------------------------------------------- |
+| `TESTCONTAINERS_DOCKER_SOCKET_OVERRIDE` | `/var/run/docker.sock`      | Path to Docker's socket used by ryuk                                               |
+| `TESTCONTAINERS_RYUK_PRIVILEGED`        | `false`                     | Run ryuk as a privileged container                                                 |
+| `TESTCONTAINERS_RYUK_DISABLED`          | `false`                     | Disable ryuk                                                                       |
+| `RYUK_CONTAINER_IMAGE`                  | `testcontainers/ryuk:0.7.0` | Custom image for ryuk                                                              |
+| `RYUK_RECONNECTION_TIMEOUT`             | `10s`                       | Reconnection timeout for Ryuk TCP socket before Ryuk reaps all dangling containers |
