@@ -5,7 +5,8 @@ description = "Python library for throwaway instances of anything that can run i
 authors = ["Sergey Pirogov <automationremarks@gmail.com>"]
 maintainers = [
     "Balint Bartha <totallyzen@users.noreply.github.com>",
-    "David Ankin <daveankin@gmail.com>"
+    "David Ankin <daveankin@gmail.com>",
+    "Vemund Santi <vemund@santi.no>"
 ]
 readme = "README.md"
 keywords = ["testing", "logging", "docker", "test automation"]
@@ -29,6 +30,7 @@ packages = [
     { include = "testcontainers", from = "core" },
     { include = "testcontainers", from = "modules/arangodb" },
     { include = "testcontainers", from = "modules/azurite" },
+    { include = "testcontainers", from = "modules/chroma" },
     { include = "testcontainers", from = "modules/clickhouse" },
     { include = "testcontainers", from = "modules/elasticsearch" },
     { include = "testcontainers", from = "modules/google" },
@@ -49,7 +51,8 @@ packages = [
     { include = "testcontainers", from = "modules/qdrant" },
     { include = "testcontainers", from = "modules/rabbitmq" },
     { include = "testcontainers", from = "modules/redis" },
-    { include = "testcontainers", from = "modules/selenium" }
+    { include = "testcontainers", from = "modules/selenium" },
+    { include = "testcontainers", from = "modules/weaviate" }
 ]
 
 [tool.poetry.urls]
@@ -67,6 +70,7 @@ python-arango = { version = "^7.8", optional = true }
 azure-storage-blob = { version = "^12.19", optional = true }
 clickhouse-driver = { version = "*", optional = true }
 google-cloud-pubsub = { version = ">=2", optional = true }
+google-cloud-datastore = { version = ">=2", optional = true }
 influxdb = { version = "*", optional = true }
 influxdb-client = { version = "*", optional = true }
 kubernetes = { version = "*", optional = true }
@@ -84,6 +88,8 @@ cx_Oracle = { version = "*", optional = true }
 pika = { version = "*", optional = true }
 redis = { version = "*", optional = true }
 selenium = { version = "*", optional = true }
+weaviate-client = { version = "^4.5.4", optional = true }
+chromadb-client = { version = "*", optional = true }
 qdrant-client = { version = "*", optional = true }
 
 [tool.poetry.extras]
@@ -91,7 +97,7 @@ arangodb = ["python-arango"]
 azurite = ["azure-storage-blob"]
 clickhouse = ["clickhouse-driver"]
 elasticsearch = []
-google = ["google-cloud-pubsub"]
+google = ["google-cloud-pubsub", "google-cloud-datastore"]
 influxdb = ["influxdb", "influxdb-client"]
 k3s = ["kubernetes", "pyyaml"]
 kafka = []
@@ -110,6 +116,8 @@ qdrant = ["qdrant-client"]
 rabbitmq = ["pika"]
 redis = ["redis"]
 selenium = ["selenium"]
+weaviate = ["weaviate-client"]
+chroma = ["chromadb-client"]
 
 [tool.poetry.group.dev.dependencies]
 mypy = "1.7.1"
@@ -123,6 +131,7 @@ anyio = "^4.3.0"
 psycopg2-binary = "*"
 pg8000 = "*"
 sqlalchemy = "*"
+psycopg = "*"
 kafka-python = "^2.0.2"
 
 [[tool.poetry.source]]
@@ -241,6 +250,7 @@ mypy_path = [
 #    "modules/rabbitmq",
 #    "modules/redis",
 #    "modules/selenium"
+#    "modules/weaviate"
 ]
 enable_error_code = [
     "ignore-without-code",

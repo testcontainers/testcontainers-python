@@ -143,6 +143,20 @@ tests-mypy = ["mypy (>=1.6)", "pytest-mypy-plugins"]
 tests-no-zope = ["attrs[tests-mypy]", "cloudpickle", "hypothesis", "pympler", "pytest (>=4.3.0)", "pytest-xdist[psutil]"]
 
 [[package]]
+name = "authlib"
+version = "1.3.0"
+description = "The ultimate Python library in building OAuth and OpenID Connect servers and clients."
+optional = true
+python-versions = ">=3.8"
+files = [
+    {file = "Authlib-1.3.0-py2.py3-none-any.whl", hash = "sha256:9637e4de1fb498310a56900b3e2043a206b03cb11c05422014b0302cbc814be3"},
+    {file = "Authlib-1.3.0.tar.gz", hash = "sha256:959ea62a5b7b5123c5059758296122b57cd2585ae2ed1c0622c21b371ffdae06"},
+]
+
+[package.dependencies]
+cryptography = "*"
+
+[[package]]
 name = "azure-core"
 version = "1.30.1"
 description = "Microsoft Azure Core Library for Python"
@@ -194,6 +208,17 @@ files = [
 
 [package.extras]
 dev = ["freezegun (>=1.0,<2.0)", "pytest (>=6.0)", "pytest-cov"]
+
+[[package]]
+name = "backoff"
+version = "2.2.1"
+description = "Function decoration for backoff and retry"
+optional = true
+python-versions = ">=3.7,<4.0"
+files = [
+    {file = "backoff-2.2.1-py3-none-any.whl", hash = "sha256:63579f9a0628e06278f7e47b7d7d5b6ce20dc65c5e96a6f3ca99a6adca0396e8"},
+    {file = "backoff-2.2.1.tar.gz", hash = "sha256:03f829f5bb1923180821643f8753b0502c3b682293992485b0eef2807afa5cba"},
+]
 
 [[package]]
 name = "boto3"
@@ -431,6 +456,31 @@ files = [
     {file = "charset_normalizer-3.3.2-cp39-cp39-win_amd64.whl", hash = "sha256:b01b88d45a6fcb69667cd6d2f7a9aeb4bf53760d7fc536bf679ec94fe9f3ff3d"},
     {file = "charset_normalizer-3.3.2-py3-none-any.whl", hash = "sha256:3e4d1f6587322d2788836a99c69062fbb091331ec940e02d12d179c1d53e25fc"},
 ]
+
+[[package]]
+name = "chromadb-client"
+version = "0.4.25.dev0"
+description = "Chroma Client."
+optional = true
+python-versions = ">=3.8"
+files = [
+    {file = "chromadb-client-0.4.25.dev0.tar.gz", hash = "sha256:18762d04720db1ca9ac6347ecd04371064e414b22401aadc2e78a1893fd46595"},
+    {file = "chromadb_client-0.4.25.dev0-py3-none-any.whl", hash = "sha256:da52dd28e02bb168be6ab82177726c27f770f5c190ef7c3484b12c6014f2cc07"},
+]
+
+[package.dependencies]
+numpy = ">=1.22.5"
+opentelemetry-api = ">=1.2.0"
+opentelemetry-exporter-otlp-proto-grpc = ">=1.2.0"
+opentelemetry-sdk = ">=1.2.0"
+orjson = ">=3.9.12"
+overrides = ">=7.3.1"
+posthog = ">=2.4.0"
+pydantic = ">=1.9"
+PyYAML = ">=6.0.0"
+requests = ">=2.28"
+tenacity = ">=8.2.3"
+typing-extensions = ">=4.5.0"
 
 [[package]]
 name = "clickhouse-driver"
@@ -712,6 +762,23 @@ files = [
 ]
 
 [[package]]
+name = "deprecated"
+version = "1.2.14"
+description = "Python @deprecated decorator to deprecate old python classes, functions or methods."
+optional = true
+python-versions = ">=2.7, !=3.0.*, !=3.1.*, !=3.2.*, !=3.3.*"
+files = [
+    {file = "Deprecated-1.2.14-py2.py3-none-any.whl", hash = "sha256:6fac8b097794a90302bdbb17b9b815e732d3c4720583ff1b198499d78470466c"},
+    {file = "Deprecated-1.2.14.tar.gz", hash = "sha256:e5323eb936458dccc2582dc6f9c322c852a775a27065ff2b0c4970b9d53d01b3"},
+]
+
+[package.dependencies]
+wrapt = ">=1.10,<2"
+
+[package.extras]
+dev = ["PyTest", "PyTest-Cov", "bump2version (<1)", "sphinx (<2)", "tox"]
+
+[[package]]
 name = "deprecation"
 version = "2.1.0"
 description = "A library to handle automated deprecations"
@@ -870,6 +937,47 @@ enterprise-cert = ["cryptography (==36.0.2)", "pyopenssl (==22.0.0)"]
 pyopenssl = ["cryptography (>=38.0.3)", "pyopenssl (>=20.0.0)"]
 reauth = ["pyu2f (>=0.1.5)"]
 requests = ["requests (>=2.20.0,<3.0.0.dev0)"]
+
+[[package]]
+name = "google-cloud-core"
+version = "2.4.1"
+description = "Google Cloud API client core library"
+optional = true
+python-versions = ">=3.7"
+files = [
+    {file = "google-cloud-core-2.4.1.tar.gz", hash = "sha256:9b7749272a812bde58fff28868d0c5e2f585b82f37e09a1f6ed2d4d10f134073"},
+    {file = "google_cloud_core-2.4.1-py2.py3-none-any.whl", hash = "sha256:a9e6a4422b9ac5c29f79a0ede9485473338e2ce78d91f2370c01e730eab22e61"},
+]
+
+[package.dependencies]
+google-api-core = ">=1.31.6,<2.0.dev0 || >2.3.0,<3.0.0dev"
+google-auth = ">=1.25.0,<3.0dev"
+
+[package.extras]
+grpc = ["grpcio (>=1.38.0,<2.0dev)", "grpcio-status (>=1.38.0,<2.0.dev0)"]
+
+[[package]]
+name = "google-cloud-datastore"
+version = "2.19.0"
+description = "Google Cloud Datastore API client library"
+optional = true
+python-versions = ">=3.7"
+files = [
+    {file = "google-cloud-datastore-2.19.0.tar.gz", hash = "sha256:07fc5870a0261f25466c557c134df95a96dfd2537abd088b9d537fbabe99b974"},
+    {file = "google_cloud_datastore-2.19.0-py2.py3-none-any.whl", hash = "sha256:c52086670d4c3779ea7bd8f8353b093a9b5e81c6606f36ffcdf46e6ce9fc80c0"},
+]
+
+[package.dependencies]
+google-api-core = {version = ">=1.34.0,<2.0.dev0 || >=2.11.dev0,<3.0.0dev", extras = ["grpc"]}
+google-cloud-core = ">=1.4.0,<3.0.0dev"
+proto-plus = [
+    {version = ">=1.22.2,<2.0.0dev", markers = "python_version >= \"3.11\""},
+    {version = ">=1.22.0,<2.0.0dev", markers = "python_version < \"3.11\""},
+]
+protobuf = ">=3.19.5,<3.20.0 || >3.20.0,<3.20.1 || >3.20.1,<4.21.0 || >4.21.0,<4.21.1 || >4.21.1,<4.21.2 || >4.21.2,<4.21.3 || >4.21.3,<4.21.4 || >4.21.4,<4.21.5 || >4.21.5,<5.0.0dev"
+
+[package.extras]
+libcst = ["libcst (>=0.2.5)"]
 
 [[package]]
 name = "google-cloud-pubsub"
@@ -1067,6 +1175,21 @@ files = [
 
 [package.extras]
 protobuf = ["grpcio-tools (>=1.62.1)"]
+
+[[package]]
+name = "grpcio-health-checking"
+version = "1.62.1"
+description = "Standard Health Checking Service for gRPC"
+optional = true
+python-versions = ">=3.6"
+files = [
+    {file = "grpcio-health-checking-1.62.1.tar.gz", hash = "sha256:9e56180a941b1d32a077d7491e0611d0483c396358afd5349bf00152612e4583"},
+    {file = "grpcio_health_checking-1.62.1-py3-none-any.whl", hash = "sha256:9ce761c09fc383e7aa2f7e6c0b0b65d5a1157c1b98d1f5871f7c38aca47d49b9"},
+]
+
+[package.dependencies]
+grpcio = ">=1.62.1"
+protobuf = ">=4.21.6"
 
 [[package]]
 name = "grpcio-status"
@@ -1633,6 +1756,17 @@ typing-extensions = "*"
 urllib3 = "*"
 
 [[package]]
+name = "monotonic"
+version = "1.6"
+description = "An implementation of time.monotonic() for Python 2 & < 3.3"
+optional = true
+python-versions = "*"
+files = [
+    {file = "monotonic-1.6-py2.py3-none-any.whl", hash = "sha256:68687e19a14f11f26d140dd5c86f3dba4bf5df58003000ed467e0e2a69bca96c"},
+    {file = "monotonic-1.6.tar.gz", hash = "sha256:3a55207bcfed53ddd5c5bae174524062935efed17792e9de2ad0205ce9ad63f7"},
+]
+
+[[package]]
 name = "more-itertools"
 version = "10.2.0"
 description = "More routines for operating on iterables, beyond itertools"
@@ -1910,6 +2044,145 @@ docs = ["aiohttp (>=3,<4)", "myst-parser", "sphinx", "sphinx-copybutton", "sphin
 kerberos = ["requests-kerberos"]
 
 [[package]]
+name = "opentelemetry-api"
+version = "1.16.0"
+description = "OpenTelemetry Python API"
+optional = true
+python-versions = ">=3.7"
+files = [
+    {file = "opentelemetry_api-1.16.0-py3-none-any.whl", hash = "sha256:79e8f0cf88dbdd36b6abf175d2092af1efcaa2e71552d0d2b3b181a9707bf4bc"},
+    {file = "opentelemetry_api-1.16.0.tar.gz", hash = "sha256:4b0e895a3b1f5e1908043ebe492d33e33f9ccdbe6d02d3994c2f8721a63ddddb"},
+]
+
+[package.dependencies]
+deprecated = ">=1.2.6"
+setuptools = ">=16.0"
+
+[[package]]
+name = "opentelemetry-exporter-otlp-proto-grpc"
+version = "1.16.0"
+description = "OpenTelemetry Collector Protobuf over gRPC Exporter"
+optional = true
+python-versions = ">=3.7"
+files = [
+    {file = "opentelemetry_exporter_otlp_proto_grpc-1.16.0-py3-none-any.whl", hash = "sha256:ace2cedc43bc30e1b2475b14f72acf1a1528716965209d31fb0a72c59f0f4fe4"},
+    {file = "opentelemetry_exporter_otlp_proto_grpc-1.16.0.tar.gz", hash = "sha256:0853ea1e566c1fab5633e7f7bca2a650ba445b04ba02f93173920b0f5c561f63"},
+]
+
+[package.dependencies]
+backoff = {version = ">=1.10.0,<3.0.0", markers = "python_version >= \"3.7\""}
+googleapis-common-protos = ">=1.52,<2.0"
+grpcio = ">=1.0.0,<2.0.0"
+opentelemetry-api = ">=1.15,<2.0"
+opentelemetry-proto = "1.16.0"
+opentelemetry-sdk = ">=1.16.0,<1.17.0"
+
+[package.extras]
+test = ["pytest-grpc"]
+
+[[package]]
+name = "opentelemetry-proto"
+version = "1.16.0"
+description = "OpenTelemetry Python Proto"
+optional = true
+python-versions = ">=3.7"
+files = [
+    {file = "opentelemetry_proto-1.16.0-py3-none-any.whl", hash = "sha256:160326d300faf43c3f72c4a916516ee5b63289ceb9828294b698ef943697cbd5"},
+    {file = "opentelemetry_proto-1.16.0.tar.gz", hash = "sha256:e58832dfec64621972a9836f8ae163fb3063946eb02bdf43fae0f76f8cf46d0a"},
+]
+
+[package.dependencies]
+protobuf = ">=3.19,<5.0"
+
+[[package]]
+name = "opentelemetry-sdk"
+version = "1.16.0"
+description = "OpenTelemetry Python SDK"
+optional = true
+python-versions = ">=3.7"
+files = [
+    {file = "opentelemetry_sdk-1.16.0-py3-none-any.whl", hash = "sha256:15f03915eec4839f885a5e6ed959cde59b8690c8c012d07c95b4b138c98dc43f"},
+    {file = "opentelemetry_sdk-1.16.0.tar.gz", hash = "sha256:4d3bb91e9e209dbeea773b5565d901da4f76a29bf9dbc1c9500be3cabb239a4e"},
+]
+
+[package.dependencies]
+opentelemetry-api = "1.16.0"
+opentelemetry-semantic-conventions = "0.37b0"
+setuptools = ">=16.0"
+typing-extensions = ">=3.7.4"
+
+[[package]]
+name = "opentelemetry-semantic-conventions"
+version = "0.37b0"
+description = "OpenTelemetry Semantic Conventions"
+optional = true
+python-versions = ">=3.7"
+files = [
+    {file = "opentelemetry_semantic_conventions-0.37b0-py3-none-any.whl", hash = "sha256:462982278a42dab01f68641cd89f8460fe1f93e87c68a012a76fb426dcdba5ee"},
+    {file = "opentelemetry_semantic_conventions-0.37b0.tar.gz", hash = "sha256:087ce2e248e42f3ffe4d9fa2303111de72bb93baa06a0f4655980bc1557c4228"},
+]
+
+[[package]]
+name = "orjson"
+version = "3.10.0"
+description = "Fast, correct Python JSON library supporting dataclasses, datetimes, and numpy"
+optional = true
+python-versions = ">=3.8"
+files = [
+    {file = "orjson-3.10.0-cp310-cp310-macosx_10_15_x86_64.macosx_11_0_arm64.macosx_10_15_universal2.whl", hash = "sha256:47af5d4b850a2d1328660661f0881b67fdbe712aea905dadd413bdea6f792c33"},
+    {file = "orjson-3.10.0-cp310-cp310-manylinux_2_17_aarch64.manylinux2014_aarch64.whl", hash = "sha256:c90681333619d78360d13840c7235fdaf01b2b129cb3a4f1647783b1971542b6"},
+    {file = "orjson-3.10.0-cp310-cp310-manylinux_2_17_armv7l.manylinux2014_armv7l.whl", hash = "sha256:400c5b7c4222cb27b5059adf1fb12302eebcabf1978f33d0824aa5277ca899bd"},
+    {file = "orjson-3.10.0-cp310-cp310-manylinux_2_17_ppc64le.manylinux2014_ppc64le.whl", hash = "sha256:5dcb32e949eae80fb335e63b90e5808b4b0f64e31476b3777707416b41682db5"},
+    {file = "orjson-3.10.0-cp310-cp310-manylinux_2_17_s390x.manylinux2014_s390x.whl", hash = "sha256:aa7d507c7493252c0a0264b5cc7e20fa2f8622b8a83b04d819b5ce32c97cf57b"},
+    {file = "orjson-3.10.0-cp310-cp310-manylinux_2_17_x86_64.manylinux2014_x86_64.whl", hash = "sha256:e286a51def6626f1e0cc134ba2067dcf14f7f4b9550f6dd4535fd9d79000040b"},
+    {file = "orjson-3.10.0-cp310-cp310-musllinux_1_2_aarch64.whl", hash = "sha256:8acd4b82a5f3a3ec8b1dc83452941d22b4711964c34727eb1e65449eead353ca"},
+    {file = "orjson-3.10.0-cp310-cp310-musllinux_1_2_x86_64.whl", hash = "sha256:30707e646080dd3c791f22ce7e4a2fc2438765408547c10510f1f690bd336217"},
+    {file = "orjson-3.10.0-cp310-none-win32.whl", hash = "sha256:115498c4ad34188dcb73464e8dc80e490a3e5e88a925907b6fedcf20e545001a"},
+    {file = "orjson-3.10.0-cp310-none-win_amd64.whl", hash = "sha256:6735dd4a5a7b6df00a87d1d7a02b84b54d215fb7adac50dd24da5997ffb4798d"},
+    {file = "orjson-3.10.0-cp311-cp311-macosx_10_15_x86_64.macosx_11_0_arm64.macosx_10_15_universal2.whl", hash = "sha256:9587053e0cefc284e4d1cd113c34468b7d3f17666d22b185ea654f0775316a26"},
+    {file = "orjson-3.10.0-cp311-cp311-manylinux_2_17_aarch64.manylinux2014_aarch64.whl", hash = "sha256:1bef1050b1bdc9ea6c0d08468e3e61c9386723633b397e50b82fda37b3563d72"},
+    {file = "orjson-3.10.0-cp311-cp311-manylinux_2_17_armv7l.manylinux2014_armv7l.whl", hash = "sha256:d16c6963ddf3b28c0d461641517cd312ad6b3cf303d8b87d5ef3fa59d6844337"},
+    {file = "orjson-3.10.0-cp311-cp311-manylinux_2_17_ppc64le.manylinux2014_ppc64le.whl", hash = "sha256:4251964db47ef090c462a2d909f16c7c7d5fe68e341dabce6702879ec26d1134"},
+    {file = "orjson-3.10.0-cp311-cp311-manylinux_2_17_s390x.manylinux2014_s390x.whl", hash = "sha256:73bbbdc43d520204d9ef0817ac03fa49c103c7f9ea94f410d2950755be2c349c"},
+    {file = "orjson-3.10.0-cp311-cp311-manylinux_2_17_x86_64.manylinux2014_x86_64.whl", hash = "sha256:414e5293b82373606acf0d66313aecb52d9c8c2404b1900683eb32c3d042dbd7"},
+    {file = "orjson-3.10.0-cp311-cp311-musllinux_1_2_aarch64.whl", hash = "sha256:feaed5bb09877dc27ed0d37f037ddef6cb76d19aa34b108db270d27d3d2ef747"},
+    {file = "orjson-3.10.0-cp311-cp311-musllinux_1_2_x86_64.whl", hash = "sha256:5127478260db640323cea131ee88541cb1a9fbce051f0b22fa2f0892f44da302"},
+    {file = "orjson-3.10.0-cp311-none-win32.whl", hash = "sha256:b98345529bafe3c06c09996b303fc0a21961820d634409b8639bc16bd4f21b63"},
+    {file = "orjson-3.10.0-cp311-none-win_amd64.whl", hash = "sha256:658ca5cee3379dd3d37dbacd43d42c1b4feee99a29d847ef27a1cb18abdfb23f"},
+    {file = "orjson-3.10.0-cp312-cp312-macosx_10_15_x86_64.macosx_11_0_arm64.macosx_10_15_universal2.whl", hash = "sha256:4329c1d24fd130ee377e32a72dc54a3c251e6706fccd9a2ecb91b3606fddd998"},
+    {file = "orjson-3.10.0-cp312-cp312-manylinux_2_17_aarch64.manylinux2014_aarch64.whl", hash = "sha256:ef0f19fdfb6553342b1882f438afd53c7cb7aea57894c4490c43e4431739c700"},
+    {file = "orjson-3.10.0-cp312-cp312-manylinux_2_17_armv7l.manylinux2014_armv7l.whl", hash = "sha256:c4f60db24161534764277f798ef53b9d3063092f6d23f8f962b4a97edfa997a0"},
+    {file = "orjson-3.10.0-cp312-cp312-manylinux_2_17_ppc64le.manylinux2014_ppc64le.whl", hash = "sha256:1de3fd5c7b208d836f8ecb4526995f0d5877153a4f6f12f3e9bf11e49357de98"},
+    {file = "orjson-3.10.0-cp312-cp312-manylinux_2_17_s390x.manylinux2014_s390x.whl", hash = "sha256:f93e33f67729d460a177ba285002035d3f11425ed3cebac5f6ded4ef36b28344"},
+    {file = "orjson-3.10.0-cp312-cp312-manylinux_2_17_x86_64.manylinux2014_x86_64.whl", hash = "sha256:237ba922aef472761acd697eef77fef4831ab769a42e83c04ac91e9f9e08fa0e"},
+    {file = "orjson-3.10.0-cp312-cp312-musllinux_1_2_aarch64.whl", hash = "sha256:98c1bfc6a9bec52bc8f0ab9b86cc0874b0299fccef3562b793c1576cf3abb570"},
+    {file = "orjson-3.10.0-cp312-cp312-musllinux_1_2_x86_64.whl", hash = "sha256:30d795a24be16c03dca0c35ca8f9c8eaaa51e3342f2c162d327bd0225118794a"},
+    {file = "orjson-3.10.0-cp312-none-win32.whl", hash = "sha256:6a3f53dc650bc860eb26ec293dfb489b2f6ae1cbfc409a127b01229980e372f7"},
+    {file = "orjson-3.10.0-cp312-none-win_amd64.whl", hash = "sha256:983db1f87c371dc6ffc52931eb75f9fe17dc621273e43ce67bee407d3e5476e9"},
+    {file = "orjson-3.10.0-cp38-cp38-macosx_10_15_x86_64.macosx_11_0_arm64.macosx_10_15_universal2.whl", hash = "sha256:9a667769a96a72ca67237224a36faf57db0c82ab07d09c3aafc6f956196cfa1b"},
+    {file = "orjson-3.10.0-cp38-cp38-manylinux_2_17_aarch64.manylinux2014_aarch64.whl", hash = "sha256:ade1e21dfde1d37feee8cf6464c20a2f41fa46c8bcd5251e761903e46102dc6b"},
+    {file = "orjson-3.10.0-cp38-cp38-manylinux_2_17_armv7l.manylinux2014_armv7l.whl", hash = "sha256:23c12bb4ced1c3308eff7ba5c63ef8f0edb3e4c43c026440247dd6c1c61cea4b"},
+    {file = "orjson-3.10.0-cp38-cp38-manylinux_2_17_ppc64le.manylinux2014_ppc64le.whl", hash = "sha256:b2d014cf8d4dc9f03fc9f870de191a49a03b1bcda51f2a957943fb9fafe55aac"},
+    {file = "orjson-3.10.0-cp38-cp38-manylinux_2_17_s390x.manylinux2014_s390x.whl", hash = "sha256:eadecaa16d9783affca33597781328e4981b048615c2ddc31c47a51b833d6319"},
+    {file = "orjson-3.10.0-cp38-cp38-manylinux_2_17_x86_64.manylinux2014_x86_64.whl", hash = "sha256:cd583341218826f48bd7c6ebf3310b4126216920853cbc471e8dbeaf07b0b80e"},
+    {file = "orjson-3.10.0-cp38-cp38-musllinux_1_2_aarch64.whl", hash = "sha256:90bfc137c75c31d32308fd61951d424424426ddc39a40e367704661a9ee97095"},
+    {file = "orjson-3.10.0-cp38-cp38-musllinux_1_2_x86_64.whl", hash = "sha256:13b5d3c795b09a466ec9fcf0bd3ad7b85467d91a60113885df7b8d639a9d374b"},
+    {file = "orjson-3.10.0-cp38-none-win32.whl", hash = "sha256:5d42768db6f2ce0162544845facb7c081e9364a5eb6d2ef06cd17f6050b048d8"},
+    {file = "orjson-3.10.0-cp38-none-win_amd64.whl", hash = "sha256:33e6655a2542195d6fd9f850b428926559dee382f7a862dae92ca97fea03a5ad"},
+    {file = "orjson-3.10.0-cp39-cp39-macosx_10_15_x86_64.macosx_11_0_arm64.macosx_10_15_universal2.whl", hash = "sha256:4050920e831a49d8782a1720d3ca2f1c49b150953667eed6e5d63a62e80f46a2"},
+    {file = "orjson-3.10.0-cp39-cp39-manylinux_2_17_aarch64.manylinux2014_aarch64.whl", hash = "sha256:1897aa25a944cec774ce4a0e1c8e98fb50523e97366c637b7d0cddabc42e6643"},
+    {file = "orjson-3.10.0-cp39-cp39-manylinux_2_17_armv7l.manylinux2014_armv7l.whl", hash = "sha256:9bf565a69e0082ea348c5657401acec3cbbb31564d89afebaee884614fba36b4"},
+    {file = "orjson-3.10.0-cp39-cp39-manylinux_2_17_ppc64le.manylinux2014_ppc64le.whl", hash = "sha256:b6ebc17cfbbf741f5c1a888d1854354536f63d84bee537c9a7c0335791bb9009"},
+    {file = "orjson-3.10.0-cp39-cp39-manylinux_2_17_s390x.manylinux2014_s390x.whl", hash = "sha256:d2817877d0b69f78f146ab305c5975d0618df41acf8811249ee64231f5953fee"},
+    {file = "orjson-3.10.0-cp39-cp39-manylinux_2_17_x86_64.manylinux2014_x86_64.whl", hash = "sha256:57d017863ec8aa4589be30a328dacd13c2dc49de1c170bc8d8c8a98ece0f2925"},
+    {file = "orjson-3.10.0-cp39-cp39-musllinux_1_2_aarch64.whl", hash = "sha256:22c2f7e377ac757bd3476ecb7480c8ed79d98ef89648f0176deb1da5cd014eb7"},
+    {file = "orjson-3.10.0-cp39-cp39-musllinux_1_2_x86_64.whl", hash = "sha256:e62ba42bfe64c60c1bc84799944f80704e996592c6b9e14789c8e2a303279912"},
+    {file = "orjson-3.10.0-cp39-none-win32.whl", hash = "sha256:60c0b1bdbccd959ebd1575bd0147bd5e10fc76f26216188be4a36b691c937077"},
+    {file = "orjson-3.10.0-cp39-none-win_amd64.whl", hash = "sha256:175a41500ebb2fdf320bf78e8b9a75a1279525b62ba400b2b2444e274c2c8bee"},
+    {file = "orjson-3.10.0.tar.gz", hash = "sha256:ba4d8cac5f2e2cff36bea6b6481cdb92b38c202bcec603d6f5ff91960595a1ed"},
+]
+
+[[package]]
 name = "outcome"
 version = "1.3.0.post0"
 description = "Capture the outcome of Python function calls."
@@ -1922,6 +2195,17 @@ files = [
 
 [package.dependencies]
 attrs = ">=19.2.0"
+
+[[package]]
+name = "overrides"
+version = "7.7.0"
+description = "A decorator to automatically detect mismatch when overriding a method."
+optional = true
+python-versions = ">=3.6"
+files = [
+    {file = "overrides-7.7.0-py3-none-any.whl", hash = "sha256:c7ed9d062f78b8e4c1a7b70bd8796b35ead4d9f510227ef9c5dc7626c60d7e49"},
+    {file = "overrides-7.7.0.tar.gz", hash = "sha256:55158fa3d93b98cc75299b1e67078ad9003ca27945c76162c1c0766d6f91820a"},
+]
 
 [[package]]
 name = "packaging"
@@ -2029,6 +2313,29 @@ redis = ["redis"]
 tests = ["pytest (>=5.4.1)", "pytest-cov (>=2.8.1)", "pytest-mypy (>=0.8.0)", "pytest-timeout (>=2.1.0)", "redis", "sphinx (>=6.0.0)", "types-redis"]
 
 [[package]]
+name = "posthog"
+version = "3.5.0"
+description = "Integrate PostHog into any python application."
+optional = true
+python-versions = "*"
+files = [
+    {file = "posthog-3.5.0-py2.py3-none-any.whl", hash = "sha256:3c672be7ba6f95d555ea207d4486c171d06657eb34b3ce25eb043bfe7b6b5b76"},
+    {file = "posthog-3.5.0.tar.gz", hash = "sha256:8f7e3b2c6e8714d0c0c542a2109b83a7549f63b7113a133ab2763a89245ef2ef"},
+]
+
+[package.dependencies]
+backoff = ">=1.10.0"
+monotonic = ">=1.5"
+python-dateutil = ">2.1"
+requests = ">=2.7,<3.0"
+six = ">=1.5"
+
+[package.extras]
+dev = ["black", "flake8", "flake8-print", "isort", "pre-commit"]
+sentry = ["django", "sentry-sdk"]
+test = ["coverage", "flake8", "freezegun (==0.3.15)", "mock (>=2.0.0)", "pylint", "pytest", "pytest-timeout"]
+
+[[package]]
 name = "pre-commit"
 version = "3.6.2"
 description = "A framework for managing and maintaining multi-language pre-commit hooks."
@@ -2082,6 +2389,29 @@ files = [
     {file = "protobuf-4.25.3-py3-none-any.whl", hash = "sha256:f0700d54bcf45424477e46a9f0944155b46fb0639d69728739c0e47bab83f2b9"},
     {file = "protobuf-4.25.3.tar.gz", hash = "sha256:25b5d0b42fd000320bd7830b349e3b696435f3b329810427a6bcce6a5492cc5c"},
 ]
+
+[[package]]
+name = "psycopg"
+version = "3.1.18"
+description = "PostgreSQL database adapter for Python"
+optional = false
+python-versions = ">=3.7"
+files = [
+    {file = "psycopg-3.1.18-py3-none-any.whl", hash = "sha256:4d5a0a5a8590906daa58ebd5f3cfc34091377354a1acced269dd10faf55da60e"},
+    {file = "psycopg-3.1.18.tar.gz", hash = "sha256:31144d3fb4c17d78094d9e579826f047d4af1da6a10427d91dfcfb6ecdf6f12b"},
+]
+
+[package.dependencies]
+typing-extensions = ">=4.1"
+tzdata = {version = "*", markers = "sys_platform == \"win32\""}
+
+[package.extras]
+binary = ["psycopg-binary (==3.1.18)"]
+c = ["psycopg-c (==3.1.18)"]
+dev = ["black (>=24.1.0)", "codespell (>=2.2)", "dnspython (>=2.1)", "flake8 (>=4.0)", "mypy (>=1.4.1)", "types-setuptools (>=57.4)", "wheel (>=0.37)"]
+docs = ["Sphinx (>=5.0)", "furo (==2022.6.21)", "sphinx-autobuild (>=2021.3.14)", "sphinx-autodoc-typehints (>=1.12)"]
+pool = ["psycopg-pool"]
+test = ["anyio (>=3.6.2,<4.0)", "mypy (>=1.4.1)", "pproxy (>=2.7)", "pytest (>=6.2.5)", "pytest-cov (>=3.0)", "pytest-randomly (>=3.5)"]
 
 [[package]]
 name = "psycopg2-binary"
@@ -3312,6 +3642,20 @@ pymysql = ["pymysql"]
 sqlcipher = ["sqlcipher3_binary"]
 
 [[package]]
+name = "tenacity"
+version = "8.2.3"
+description = "Retry code until it succeeds"
+optional = true
+python-versions = ">=3.7"
+files = [
+    {file = "tenacity-8.2.3-py3-none-any.whl", hash = "sha256:ce510e327a630c9e1beaf17d42e6ffacc88185044ad85cf74c0a8887c6a0f88c"},
+    {file = "tenacity-8.2.3.tar.gz", hash = "sha256:5398ef0d78e63f40007c1fb4c0bff96e1911394d2fa8d194f77619c05ff6cc8a"},
+]
+
+[package.extras]
+doc = ["reno", "sphinx", "tornado (>=4.5)"]
+
+[[package]]
 name = "tomli"
 version = "2.0.1"
 description = "A lil' TOML parser"
@@ -3395,7 +3739,7 @@ files = [
 name = "tzdata"
 version = "2024.1"
 description = "Provider of IANA time zone data"
-optional = true
+optional = false
 python-versions = ">=2"
 files = [
     {file = "tzdata-2024.1-py2.py3-none-any.whl", hash = "sha256:9068bc196136463f5245e51efda838afa15aaeca9903f49050dfa2679db4d252"},
@@ -3459,6 +3803,28 @@ socks = ["pysocks (>=1.5.6,!=1.5.7,<2.0)"]
 zstd = ["zstandard (>=0.18.0)"]
 
 [[package]]
+name = "validators"
+version = "0.22.0"
+description = "Python Data Validation for Humans™"
+optional = true
+python-versions = ">=3.8"
+files = [
+    {file = "validators-0.22.0-py3-none-any.whl", hash = "sha256:61cf7d4a62bbae559f2e54aed3b000cea9ff3e2fdbe463f51179b92c58c9585a"},
+    {file = "validators-0.22.0.tar.gz", hash = "sha256:77b2689b172eeeb600d9605ab86194641670cdb73b60afd577142a9397873370"},
+]
+
+[package.extras]
+docs-offline = ["myst-parser (>=2.0.0)", "pypandoc-binary (>=1.11)", "sphinx (>=7.1.1)"]
+docs-online = ["mkdocs (>=1.5.2)", "mkdocs-git-revision-date-localized-plugin (>=1.2.0)", "mkdocs-material (>=9.2.6)", "mkdocstrings[python] (>=0.22.0)", "pyaml (>=23.7.0)"]
+hooks = ["pre-commit (>=3.3.3)"]
+package = ["build (>=1.0.0)", "twine (>=4.0.2)"]
+runner = ["tox (>=4.11.1)"]
+sast = ["bandit[toml] (>=1.7.5)"]
+testing = ["pytest (>=7.4.0)"]
+tooling = ["black (>=23.7.0)", "pyright (>=1.1.325)", "ruff (>=0.0.287)"]
+tooling-extras = ["pyaml (>=23.7.0)", "pypandoc-binary (>=1.11)", "pytest (>=7.4.0)"]
+
+[[package]]
 name = "virtualenv"
 version = "20.25.1"
 description = "Virtual Python Environment builder"
@@ -3477,6 +3843,27 @@ platformdirs = ">=3.9.1,<5"
 [package.extras]
 docs = ["furo (>=2023.7.26)", "proselint (>=0.13)", "sphinx (>=7.1.2)", "sphinx-argparse (>=0.4)", "sphinxcontrib-towncrier (>=0.2.1a0)", "towncrier (>=23.6)"]
 test = ["covdefaults (>=2.3)", "coverage (>=7.2.7)", "coverage-enable-subprocess (>=1)", "flaky (>=3.7)", "packaging (>=23.1)", "pytest (>=7.4)", "pytest-env (>=0.8.2)", "pytest-freezer (>=0.4.8)", "pytest-mock (>=3.11.1)", "pytest-randomly (>=3.12)", "pytest-timeout (>=2.1)", "setuptools (>=68)", "time-machine (>=2.10)"]
+
+[[package]]
+name = "weaviate-client"
+version = "4.5.4"
+description = "A python native Weaviate client"
+optional = true
+python-versions = ">=3.8"
+files = [
+    {file = "weaviate-client-4.5.4.tar.gz", hash = "sha256:fc53dc73cd53df453c5e6dc758e49a6a1549212d6670ddd013392107120692f8"},
+    {file = "weaviate_client-4.5.4-py3-none-any.whl", hash = "sha256:f6d3a6b759e5aa0d3350067490526ea38b9274ae4043b4a3ae0064c28d56883f"},
+]
+
+[package.dependencies]
+authlib = ">=1.2.1,<2.0.0"
+grpcio = ">=1.57.0,<2.0.0"
+grpcio-health-checking = ">=1.57.0,<2.0.0"
+grpcio-tools = ">=1.57.0,<2.0.0"
+httpx = "0.27.0"
+pydantic = ">=2.5.0,<3.0.0"
+requests = ">=2.30.0,<3.0.0"
+validators = "0.22.0"
 
 [[package]]
 name = "websocket-client"
@@ -3605,9 +3992,10 @@ testing = ["big-O", "jaraco.functools", "jaraco.itertools", "more-itertools", "p
 [extras]
 arangodb = ["python-arango"]
 azurite = ["azure-storage-blob"]
+chroma = ["chromadb-client"]
 clickhouse = ["clickhouse-driver"]
 elasticsearch = []
-google = ["google-cloud-pubsub"]
+google = ["google-cloud-datastore", "google-cloud-pubsub"]
 influxdb = ["influxdb", "influxdb-client"]
 k3s = ["kubernetes", "pyyaml"]
 kafka = []
@@ -3626,8 +4014,9 @@ qdrant = ["qdrant-client"]
 rabbitmq = ["pika"]
 redis = ["redis"]
 selenium = ["selenium"]
+weaviate = ["weaviate-client"]
 
 [metadata]
 lock-version = "2.0"
 python-versions = ">=3.9,<4.0"
-content-hash = "b57df6caa15d4e6f0b842548a77d8204edbdb653104249e659a9d06f62f82a2e"
+content-hash = "6233448540305638d942773be58d0e9580d1a48c540a10fe6d83a59abe3bbf34"

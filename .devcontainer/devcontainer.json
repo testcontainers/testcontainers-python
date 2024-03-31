@@ -3,7 +3,13 @@
 {
 	"name": "Python 3",
 	// Or use a Dockerfile or Docker Compose file. More info: https://containers.dev/guide/dockerfile
-	"image": "mcr.microsoft.com/devcontainers/python:1-3.11-bookworm",
+	"build": {
+		// Path is relative to the devcontainer.json file.
+		// We prebuild the image to get poetry into the image
+		// This saves the user a bit of time, when re-opening containers
+		"dockerfile": "Dockerfile"
+	},
+
 	"features": {
 		"ghcr.io/devcontainers/features/docker-in-docker:2": {
 			"version": "latest",
