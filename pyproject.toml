@@ -144,7 +144,6 @@ psycopg = "*"
 cassandra-driver = "*"
 pytest-asyncio = "0.23.5"
 kafka-python-ng = "^2.2.0"
-pip = "^24.0"
 
 [[tool.poetry.source]]
 name = "PyPI"
