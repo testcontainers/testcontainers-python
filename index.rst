@@ -40,6 +40,7 @@ testcontainers-python facilitates the use of Docker containers for functional an
     modules/qdrant/README
     modules/rabbitmq/README
     modules/redis/README
+    modules/registry/README
     modules/selenium/README
     modules/weaviate/README
 
