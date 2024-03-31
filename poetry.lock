@@ -2402,17 +2402,6 @@ tornado = ["tornado"]
 twisted = ["twisted"]
 
 [[package]]
-name = "pip"
-version = "24.0"
-description = "The PyPA recommended tool for installing Python packages."
-optional = false
-python-versions = ">=3.7"
-files = [
-    {file = "pip-24.0-py3-none-any.whl", hash = "sha256:ba0d021a166865d2265246961bec0152ff124de910c5cc39f1156ce3fa7c69dc"},
-    {file = "pip-24.0.tar.gz", hash = "sha256:ea9bd1a847e8c5774a5777bb398c19e80bcd4e2aa16a4b301b718fe6f593aba2"},
-]
-
-[[package]]
 name = "pkginfo"
 version = "1.10.0"
 description = "Query metadata from sdists / bdists / installed packages."
@@ -4204,4 +4193,4 @@ weaviate = ["weaviate-client"]
 [metadata]
 lock-version = "2.0"
 python-versions = ">=3.9,<4.0"
-content-hash = "40229c4a25c2b3e738ee2c89644d00a0e2806fae710f9c10e2cae5b6962ff3c4"
+content-hash = "c38637d4ecf32df935824d3dfa858bd9ef1fd4d90535f74587ec1ca87c94c285"
