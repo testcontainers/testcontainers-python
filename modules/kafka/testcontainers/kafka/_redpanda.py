@@ -15,7 +15,7 @@ class RedpandaContainer(DockerContainer):
 
         .. doctest::
 
-            >>> from testcontainers.redpanda import RedpandaContainer
+            >>> from testcontainers.kafka import RedpandaContainer
 
             >>> with RedpandaContainer() as redpanda:
             ...    connection = redpanda.get_bootstrap_server()
@@ -29,7 +29,7 @@ class RedpandaContainer(DockerContainer):
         **kwargs,
     ) -> None:
         kwargs["entrypoint"] = "sh"
-        super(RedpandaContainer, self).__init__(image, **kwargs)
+        super().__init__(image, **kwargs)
         self.redpanda_port = 9092
         self.schema_registry_port = 8081
         self.with_exposed_ports(self.redpanda_port, self.schema_registry_port)

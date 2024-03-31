@@ -1,7 +1,10 @@
-import requests
-import json
+import pytest
+from requests import post, get
+from json import dumps
+
 from kafka import KafkaConsumer, KafkaProducer, TopicPartition, KafkaAdminClient
 from kafka.admin import NewTopic
+
 from testcontainers.kafka import RedpandaContainer
 
 
@@ -10,10 +13,9 @@ def test_redpanda_producer_consumer():
         produce_and_consume_message(container)
 
 
-def test_redpanda_confluent_latest():
-    with RedpandaContainer(
-        image="docker.redpanda.com/redpandadata/redpanda:latest"
-    ) as container:
+@pytest.mark.parametrize("version", ["v23.1.13", "v23.3.10"])
+def test_redpanda_confluent_version(version):
+    with RedpandaContainer(image=f"docker.redpanda.com/redpandadata/redpanda:{version}") as container:
         produce_and_consume_message(container)
 
 
@@ -23,14 +25,12 @@ def test_schema_registry():
         subject_name = "test-subject-value"
         url = f"{address}/subjects"
 
-        payload = {"schema": json.dumps({"type": "string"})}
+        payload = {"schema": dumps({"type": "string"})}
         headers = {"Content-Type": "application/vnd.schemaregistry.v1+json"}
-        create_result = requests.post(
-            f"{url}/{subject_name}/versions", data=json.dumps(payload), headers=headers
-        )
+        create_result = post(f"{url}/{subject_name}/versions", data=dumps(payload), headers=headers)
         assert create_result.status_code == 200
 
-        result = requests.get(url)
+        result = get(url)
         assert result.status_code == 200
         assert subject_name in result.json()
 
@@ -51,6 +51,4 @@ def produce_and_consume_message(container):
     tp = TopicPartition(topic, 0)
     consumer.assign([tp])
     consumer.seek_to_beginning()
-    assert (
-        consumer.end_offsets([tp])[tp] == 1
-    ), "Expected exactly one test message to be present on test topic !"
+    assert consumer.end_offsets([tp])[tp] == 1, "Expected exactly one test message to be present on test topic !"
