@@ -31,6 +31,7 @@
 extensions = [
     "sphinx.ext.autodoc",
     "sphinx.ext.doctest",
+    "sphinx.ext.intersphinx",
     "sphinx.ext.napoleon",
 ]
 
@@ -156,3 +157,7 @@ texinfo_documents = [
         "Miscellaneous",
     ),
 ]
+
+intersphinx_mapping = {
+    "python": ("https://docs.python.org/3", None),
+}

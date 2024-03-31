@@ -49,6 +49,7 @@ packages = [
     { include = "testcontainers", from = "modules/opensearch" },
     { include = "testcontainers", from = "modules/oracle" },
     { include = "testcontainers", from = "modules/postgres" },
+    { include = "testcontainers", from = "modules/qdrant" },
     { include = "testcontainers", from = "modules/rabbitmq" },
     { include = "testcontainers", from = "modules/redis" },
     { include = "testcontainers", from = "modules/selenium" },
@@ -90,6 +91,7 @@ redis = { version = "*", optional = true }
 selenium = { version = "*", optional = true }
 weaviate-client = { version = "^4.5.4", optional = true }
 chromadb-client = { version = "*", optional = true }
+qdrant-client = { version = "*", optional = true }
 
 [tool.poetry.extras]
 arangodb = ["python-arango"]
@@ -112,6 +114,7 @@ nginx = []
 opensearch = ["opensearch-py"]
 oracle = ["sqlalchemy", "cx_Oracle"]
 postgres = []
+qdrant = ["qdrant-client"]
 rabbitmq = ["pika"]
 redis = ["redis"]
 selenium = ["selenium"]
