@@ -24,10 +24,20 @@ class NatsContainer(DockerContainer):
 
         .. doctest::
 
+            >>> import asyncio
+            >>> from nats import connect as nats_connect
             >>> from testcontainers.nats import NatsContainer
 
-            >>> with NatsContainer() as nats_container:
-            ...     nc = nats_container.get_client()
+            >>> async def test_doctest_usage():
+            ...     with NatsContainer() as nats_container:
+            ...         client = await nats_connect(nats_container.nats_uri())
+            ...         sub_tc = await client.subscribe("tc")
+            ...         await client.publish("tc", b"Test-Containers")
+            ...         next_message = await sub_tc.next_msg(timeout=5.0)
+            ...         await client.close()
+            ...     return next_message.data
+            >>> asyncio.run(test_doctest_usage())
+            b'Test-Containers'
     """
 
     def __init__(

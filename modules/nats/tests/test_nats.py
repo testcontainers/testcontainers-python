@@ -2,17 +2,6 @@ from testcontainers.nats import NatsContainer
 from uuid import uuid4
 import pytest
 
-
-"""
-If you are developing this and you want to test more advanced scenarios using a client
-Activate your poetry shell.
-pip install nats-py
-This will get nats-py into your environment but keep it out of the project
-
-
-"""
-
-
 from nats import connect as nats_connect
 from nats.aio.client import Client as NATSClient
 
@@ -41,10 +30,7 @@ def test_basic_container_ops():
         assert uri != management_uri
 
 
-pytest.mark.usefixtures("anyio_backend")
-
-
-@pytest.mark.parametrize("anyio_backend", ["asyncio"])
+@pytest.mark.asyncio
 async def test_pubsub(anyio_backend):
     with NatsContainer() as container:
         nc: NATSClient = await get_client(container)
@@ -61,17 +47,13 @@ async def test_pubsub(anyio_backend):
         await nc.close()
 
 
-pytest.mark.usefixtures("anyio_backend")
-
-
-@pytest.mark.parametrize("anyio_backend", ["asyncio"])
+@pytest.mark.asyncio
 async def test_more_complex_example(anyio_backend):
     with NatsContainer() as container:
         nc: NATSClient = await get_client(container)
 
-        await nc.publish("greet.joe", b"hello")
-
         sub = await nc.subscribe("greet.*")
+        await nc.publish("greet.joe", b"hello")
 
         try:
             await sub.next_msg(timeout=0.1)
@@ -91,3 +73,15 @@ async def test_more_complex_example(anyio_backend):
 
         await sub.unsubscribe()
         await nc.drain()
+
+
+@pytest.mark.asyncio
+async def test_doctest_usage():
+    """simpler to run test to mirror what is in the doctest"""
+    with NatsContainer() as nats_container:
+        client = await nats_connect(nats_container.nats_uri())
+        sub_tc = await client.subscribe("tc")
+        await client.publish("tc", b"Test-Containers")
+        next_message = await sub_tc.next_msg(timeout=5.0)
+        await client.close()
+    assert next_message.data == b"Test-Containers"

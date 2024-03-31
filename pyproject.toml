@@ -139,6 +139,7 @@ sqlalchemy = "*"
 psycopg = "*"
 kafka-python = "^2.0.2"
 cassandra-driver = "*"
+pytest-asyncio = "0.23.5"
 
 [[tool.poetry.source]]
 name = "PyPI"
