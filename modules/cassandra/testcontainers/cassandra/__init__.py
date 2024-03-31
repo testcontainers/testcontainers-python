@@ -23,15 +23,16 @@ class CassandraContainer(DockerContainer):
         .. doctest::
 
             >>> from testcontainers.cassandra import CassandraContainer
-            >>> from cassandra.cluster import Cluster
+            >>> from cassandra.cluster import Cluster, DCAwareRoundRobinPolicy
 
-            >>> with CassandraContainer("cassandra:latest") as cassandra:
-            ...    cluster = Cluster(
-            ....                 [cassandra.get_container_host_ip()],
-            ...                  port=cassandra.get_exposed_port(cassandra.port)
-            ...              )
+            >>> with CassandraContainer("cassandra:4.1.4") as cassandra, Cluster(
+            ...    cassandra.get_contact_points(),
+            ...    load_balancing_policy=DCAwareRoundRobinPolicy(cassandra.get_local_datacenter()),
+            ... ) as cluster:
             ...    session = cluster.connect()
             ...    result = session.execute("SELECT release_version FROM system.local;")
+            ...    result.one().release_version
+            '4.1.4'
     """
 
     CQL_PORT = 9042
