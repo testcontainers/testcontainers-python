@@ -44,6 +44,7 @@ packages = [
     { include = "testcontainers", from = "modules/mongodb" },
     { include = "testcontainers", from = "modules/mssql" },
     { include = "testcontainers", from = "modules/mysql" },
+    { include = "testcontainers", from = "modules/nats" },
     { include = "testcontainers", from = "modules/neo4j" },
     { include = "testcontainers", from = "modules/nginx" },
     { include = "testcontainers", from = "modules/opensearch" },
@@ -79,6 +80,7 @@ pyyaml = { version = "*", optional = true }
 python-keycloak = { version = "*", optional = true }
 boto3 = { version = "*", optional = true }
 minio = { version = "*", optional = true }
+nats-py = { version = "*", optional = true }
 pymongo = { version = "*", optional = true }
 sqlalchemy = { version = "*", optional = true }
 pymssql = { version = "*", optional = true }
@@ -109,6 +111,7 @@ minio = ["minio"]
 mongodb = ["pymongo"]
 mssql = ["sqlalchemy", "pymssql"]
 mysql = ["sqlalchemy", "pymysql"]
+nats = ["nats-py"]
 neo4j = ["neo4j"]
 nginx = []
 opensearch = ["opensearch-py"]
@@ -136,6 +139,7 @@ sqlalchemy = "*"
 psycopg = "*"
 kafka-python = "^2.0.2"
 cassandra-driver = "*"
+pytest-asyncio = "0.23.5"
 
 [[tool.poetry.source]]
 name = "PyPI"
