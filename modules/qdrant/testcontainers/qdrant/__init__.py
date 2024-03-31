@@ -32,6 +32,7 @@ class QdrantContainer(DbContainer):
             >>> with QdrantContainer() as qdrant:
             ...     client = qdrant.get_client()
             ...     client.get_collections()
+            CollectionsResponse(collections=[])
     """
 
     QDRANT_CONFIG_FILE_PATH = "/qdrant/config/config.yaml"

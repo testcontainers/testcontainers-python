@@ -4,7 +4,7 @@ import uuid
 from grpc import RpcError
 from pathlib import Path
 
-qdrant_client = pytest.importorskip("qdrant_client", reason="'qdrant_client' package is not installed")
+import qdrant_client
 
 
 def test_docker_run_qdrant():
