@@ -47,3 +47,14 @@ def test_containers_respect_custom_labels_if_no_collision():
 def test_if_ryuk_no_session():
     actual_labels = create_labels(RYUK_IMAGE, None)
     assert LABEL_SESSION_ID not in actual_labels
+
+
+def test_session_are_module_import_scoped():
+    """
+    Asserts that sessions are a module-level variable and don't differ between invocation
+    """
+    first_labels = create_labels("not-ryuk", None)
+    second_labels = create_labels("not-ryuk", None)
+    assert LABEL_SESSION_ID in first_labels
+    assert LABEL_SESSION_ID in second_labels
+    assert first_labels[LABEL_SESSION_ID] == second_labels[LABEL_SESSION_ID]
