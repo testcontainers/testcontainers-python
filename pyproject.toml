@@ -100,7 +100,7 @@ bcrypt = { version = "*", optional = true }
 [tool.poetry.extras]
 arangodb = ["python-arango"]
 azurite = ["azure-storage-blob"]
-cassandra = ["cassandra-driver"]
+cassandra = []
 clickhouse = ["clickhouse-driver"]
 elasticsearch = []
 google = ["google-cloud-pubsub", "google-cloud-datastore"]
