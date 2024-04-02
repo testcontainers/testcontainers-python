@@ -41,7 +41,7 @@ class DockerClient:
 
         if docker_host:
             LOGGER.info(f"using host {docker_host}")
-            kwargs["base_url"] = docker_host
+            os.environ["DOCKER_HOST"] = docker_host
             self.client = docker.from_env(**kwargs)
         else:
             self.client = docker.from_env(**kwargs)
