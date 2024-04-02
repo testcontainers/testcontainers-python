@@ -32,7 +32,7 @@ class DbContainer(DockerContainer):
     """
 
     @wait_container_is_ready(*ADDITIONAL_TRANSIENT_ERRORS)
-    def _connect(self) -> None:
+    def _wait_until_ready(self):
         import sqlalchemy
 
         engine = sqlalchemy.create_engine(self.get_connection_url())
@@ -64,12 +64,3 @@ class DbContainer(DockerContainer):
         if dbname:
             url = f"{url}/{dbname}"
         return url
-
-    def start(self) -> "DbContainer":
-        self._configure()
-        super().start()
-        self._connect()
-        return self
-
-    def _configure(self) -> None:
-        raise NotImplementedError

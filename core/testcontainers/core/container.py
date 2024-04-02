@@ -75,7 +75,14 @@ class DockerContainer:
             return self.with_kwargs(platform="linux/amd64")
         return self
 
+    def _configure(self) -> None:
+        pass
+
+    def _wait_until_ready(self) -> None:
+        pass
+
     def start(self):
+        self._configure()
         if not RYUK_DISABLED and self.image != RYUK_IMAGE:
             logger.debug("Creating Ryuk container")
             Reaper.get_instance()
@@ -92,6 +99,10 @@ class DockerContainer:
             **self._kwargs,
         )
         logger.info("Container started: %s", self._container.short_id)
+
+        self._wait_until_ready()
+        logger.info("Container ready: %s", self._container.short_id)
+
         return self
 
     def stop(self, force=True, delete_volume=True) -> None:
