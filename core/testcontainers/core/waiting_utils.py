@@ -12,10 +12,13 @@
 #    under the License.
 
 
+import contextlib
 import re
 import time
 import traceback
+from http.client import HTTPException
 from typing import TYPE_CHECKING, Any, Callable, Optional, Union
+from urllib.request import urlopen
 
 import wrapt
 
@@ -75,6 +78,18 @@ def wait_container_is_ready(*transient_exceptions) -> Callable:
 @wait_container_is_ready()
 def wait_for(condition: Callable[..., bool]) -> bool:
     return condition()
+
+
+def wait_for_http(url: str, timeout: Optional[float] = config.TIMEOUT, interval: float = 1) -> float:
+    start = time.time()
+    while True:
+        duration = time.time() - start
+        with contextlib.suppress(HTTPException), urlopen(url) as r:
+            if r.status < 300:
+                return duration
+        if timeout and duration > timeout:
+            raise TimeoutError(f"Container did not respond to URL check {url} in {timeout:.3f} seconds")
+        time.sleep(interval)
 
 
 def wait_for_logs(
