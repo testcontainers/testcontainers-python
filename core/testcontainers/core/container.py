@@ -4,6 +4,7 @@ from socket import socket
 from typing import TYPE_CHECKING, Optional
 
 import docker.errors
+from typing_extensions import Self
 
 from testcontainers.core.config import (
     RYUK_DISABLED,
@@ -95,10 +96,11 @@ class DockerContainer:
         return self
 
     def stop(self, force=True, delete_volume=True) -> None:
-        self._container.remove(force=force, v=delete_volume)
+        if self._container:
+            self._container.remove(force=force, v=delete_volume)
         self.get_docker_client().client.close()
 
-    def __enter__(self):
+    def __enter__(self) -> Self:
         return self.start()
 
     def __exit__(self, exc_type, exc_val, exc_tb) -> None:

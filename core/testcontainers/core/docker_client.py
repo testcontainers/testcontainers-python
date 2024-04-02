@@ -18,10 +18,11 @@ import urllib
 import urllib.parse
 from os.path import exists
 from pathlib import Path
-from typing import Optional, Union
+from typing import Callable, Optional, TypeVar, Union
 
 import docker
 from docker.models.containers import Container, ContainerCollection
+from typing_extensions import ParamSpec
 
 from testcontainers.core.labels import SESSION_ID, create_labels
 from testcontainers.core.utils import default_gateway_ip, inside_container, setup_logger
@@ -29,6 +30,18 @@ from testcontainers.core.utils import default_gateway_ip, inside_container, setu
 LOGGER = setup_logger(__name__)
 TC_FILE = ".testcontainers.properties"
 TC_GLOBAL = Path.home() / TC_FILE
+
+_P = ParamSpec("_P")
+_T = TypeVar("_T")
+
+
+def _wrapped_container_collection(function: Callable[_P, _T]) -> Callable[_P, _T]:
+
+    @ft.wraps(ContainerCollection.run)
+    def wrapper(*args: _P.args, **kwargs: _P.kwargs) -> _T:
+        return function(*args, **kwargs)
+
+    return wrapper
 
 
 class DockerClient:
@@ -47,7 +60,7 @@ class DockerClient:
         self.client.api.headers["x-tc-sid"] = SESSION_ID
         self.client.api.headers["User-Agent"] = "tc-python/" + importlib.metadata.version("testcontainers")
 
-    @ft.wraps(ContainerCollection.run)
+    @_wrapped_container_collection
     def run(
         self,
         image: str,
