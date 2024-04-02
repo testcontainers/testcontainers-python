@@ -1,5 +1,13 @@
 # Changelog
 
+## [4.3.1](https://github.com/testcontainers/testcontainers-python/compare/testcontainers-v4.3.0...testcontainers-v4.3.1) (2024-04-02)
+
+
+### Bug Fixes
+
+* **core:** env vars not being respected due to constructor call ([#524](https://github.com/testcontainers/testcontainers-python/issues/524)) ([4872ea5](https://github.com/testcontainers/testcontainers-python/commit/4872ea5759347e10150c0d80e4e7bbce3d59c410)), closes [#521](https://github.com/testcontainers/testcontainers-python/issues/521)
+* Pin MongoDB images and improve test coverage for maintained versions ([#448](https://github.com/testcontainers/testcontainers-python/issues/448)) ([b5c7a1b](https://github.com/testcontainers/testcontainers-python/commit/b5c7a1b95af5470ee1b5109ed1fb8e1b3af52cf7))
+
 ## [4.3.0](https://github.com/testcontainers/testcontainers-python/compare/testcontainers-v4.2.0...testcontainers-v4.3.0) (2024-04-01)
 
 
