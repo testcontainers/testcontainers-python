@@ -62,9 +62,9 @@ class MongoDbContainer(DbContainer):
     ) -> None:
         raise_for_deprecated_parameter(kwargs, "port_to_expose", "port")
         super().__init__(image=image, **kwargs)
-        self.username = username or os.environ.get("MONGO_INITDB_ROOT_USERNAME", "test")
-        self.password = password or os.environ.get("MONGO_INITDB_ROOT_PASSWORD", "test")
-        self.dbname = dbname or os.environ.get("MONGO_DB", "test")
+        self.username = username if username else os.environ.get("MONGO_INITDB_ROOT_USERNAME", "test")
+        self.password = password if password else os.environ.get("MONGO_INITDB_ROOT_PASSWORD", "test")
+        self.dbname = dbname if dbname else os.environ.get("MONGO_DB", "test")
         self.port = port
         self.with_exposed_ports(self.port)
 
