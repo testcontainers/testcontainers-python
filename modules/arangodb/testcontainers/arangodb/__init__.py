@@ -2,16 +2,18 @@
 ArangoDB container support.
 """
 
-import typing
 from os import environ
+from typing import Optional
+
+from typing_extensions import override
 
 from testcontainers.core.config import TIMEOUT
-from testcontainers.core.generic import DbContainer
+from testcontainers.core.container import DockerContainer
 from testcontainers.core.utils import raise_for_deprecated_parameter
 from testcontainers.core.waiting_utils import wait_for_logs
 
 
-class ArangoDbContainer(DbContainer):
+class ArangoDbContainer(DockerContainer):
     """
     ArangoDB container.
 
@@ -26,7 +28,7 @@ class ArangoDbContainer(DbContainer):
             >>> from testcontainers.arangodb import ArangoDbContainer
             >>> from arango import ArangoClient
 
-            >>> with ArangoDbContainer("arangodb:3.11.8") as arango:
+            >>> with ArangoDbContainer("arangodb:3.12.0") as arango:
             ...    client = ArangoClient(hosts=arango.get_connection_url())
             ...
             ...    # Connect
@@ -42,8 +44,8 @@ class ArangoDbContainer(DbContainer):
         image: str = "arangodb:latest",
         port: int = 8529,
         arango_root_password: str = "passwd",
-        arango_no_auth: typing.Optional[bool] = None,
-        arango_random_root_password: typing.Optional[bool] = None,
+        arango_no_auth: Optional[bool] = None,
+        arango_random_root_password: Optional[bool] = None,
         **kwargs,
     ) -> None:
         """
@@ -78,6 +80,7 @@ class ArangoDbContainer(DbContainer):
             )
         )
 
+    @override
     def _configure(self) -> None:
         self.with_env("ARANGO_ROOT_PASSWORD", self.arango_root_password)
         if self.arango_no_auth:
@@ -85,9 +88,10 @@ class ArangoDbContainer(DbContainer):
         if self.arango_random_root_password:
             self.with_env("ARANGO_RANDOM_ROOT_PASSWORD", "1")
 
+    @override
+    def _wait_until_ready(self) -> None:
+        wait_for_logs(self, predicate="is ready for business", timeout=TIMEOUT)
+
     def get_connection_url(self) -> str:
         port = self.get_exposed_port(self.port)
         return f"http://{self.get_container_host_ip()}:{port}"
-
-    def _connect(self) -> None:
-        wait_for_logs(self, predicate="is ready for business", timeout=TIMEOUT)

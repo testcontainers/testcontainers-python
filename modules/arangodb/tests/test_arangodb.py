@@ -48,14 +48,9 @@ def arango_test_ops(arango_client, expeced_version, username="root", password=""
     assert len(student_names) == students_to_insert_cnt
 
 
-def test_docker_run_arango():
-    """
-    Test ArangoDB container with default settings.
-    """
-    image = f"{ARANGODB_IMAGE_NAME}:{IMAGE_VERSION}"
-    arango_root_password = "passwd"
-
-    with ArangoDbContainer(image) as arango:
+@pytest.mark.parametrize("version", ["3.12.0", "3.11.8", "3.10.13"])
+def test_docker_run_arango(version: str):
+    with ArangoDbContainer(f"arangodb:{version}") as arango:
         client = ArangoClient(hosts=arango.get_connection_url())
 
         # Test invalid auth
@@ -63,7 +58,7 @@ def test_docker_run_arango():
         with pytest.raises(DatabaseCreateError):
             sys_db.create_database("test")
 
-        arango_test_ops(arango_client=client, expeced_version=IMAGE_VERSION, password=arango_root_password)
+        arango_test_ops(arango_client=client, expeced_version=version, password="passwd")
 
 
 def test_docker_run_arango_without_auth():
