@@ -30,25 +30,20 @@ class MongoDbContainer(DbContainer):
 
             >>> from testcontainers.mongodb import MongoDbContainer
 
-            >>> with MongoDbContainer("mongo:latest") as mongo:
+            >>> with MongoDbContainer("mongo:7.0.7") as mongo:
             ...    db = mongo.get_connection_client().test
             ...    # Insert a database entry
             ...    result = db.restaurants.insert_one(
             ...        {
-            ...            "address": {
-            ...                "street": "2 Avenue",
-            ...                "zipcode": "10075",
-            ...                "building": "1480",
-            ...                "coord": [-73.9557413, 40.7720266]
-            ...            },
-            ...            "borough": "Manhattan",
-            ...            "cuisine": "Italian",
             ...            "name": "Vella",
-            ...            "restaurant_id": "41704620"
+            ...            "cuisine": "Italian",
+            ...            "restaurant_id": "123456"
             ...        }
             ...    )
             ...    # Find the restaurant document
-            ...    cursor = db.restaurants.find({"borough": "Manhattan"})
+            ...    result = db.restaurants.find_one({"name": "Vella"})
+            ...    result["restaurant_id"]
+            '123456'
     """
 
     def __init__(
