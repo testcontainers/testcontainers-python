@@ -4180,7 +4180,6 @@ nats = ["nats-py"]
 neo4j = ["neo4j"]
 nginx = []
 opensearch = ["opensearch-py"]
-oracle = ["oracledb", "sqlalchemy"]
 oracle-free = ["oracledb", "sqlalchemy"]
 postgres = []
 qdrant = ["qdrant-client"]
@@ -4193,4 +4192,4 @@ weaviate = ["weaviate-client"]
 [metadata]
 lock-version = "2.0"
 python-versions = ">=3.9,<4.0"
-content-hash = "af9f21cb52ebd761ba91c852c9839d982124c149e77abdc079fc5657cecb9ff7"
+content-hash = "f984b4050f524c1b8ca83cd78303ab94471c5c044357fa201b71cfecf55b4718"
