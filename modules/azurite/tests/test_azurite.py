@@ -4,9 +4,9 @@ from testcontainers.azurite import AzuriteContainer
 
 
 def test_docker_run_azurite():
-    with AzuriteContainer() as azurite_container:
+    with AzuriteContainer("mcr.microsoft.com/azure-storage/azurite:3.29.0") as azurite_container:
         blob_service_client = BlobServiceClient.from_connection_string(
-            azurite_container.get_connection_string(), api_version="2019-12-12"
+            azurite_container.get_connection_string(), api_version="2023-11-03"
         )
 
         blob_service_client.create_container("test-container")

@@ -33,10 +33,9 @@ class AzuriteContainer(DockerContainer):
             >>> from testcontainers.azurite import AzuriteContainer
             >>> from azure.storage.blob import BlobServiceClient
 
-            >>> with AzuriteContainer() as azurite_container:
-            ...   connection_string = azurite_container.get_connection_string()
+            >>> with AzuriteContainer("mcr.microsoft.com/azure-storage/azurite:3.29.0") as azurite_container:
             ...   client = BlobServiceClient.from_connection_string(
-            ...        connection_string,
+            ...        azurite_container.get_connection_string(),
             ...        api_version="2019-12-12"
             ...   )
     """
@@ -102,12 +101,7 @@ class AzuriteContainer(DockerContainer):
 
         return connection_string
 
-    def start(self) -> "AzuriteContainer":
-        super().start()
-        self._connect()
-        return self
-
     @wait_container_is_ready(OSError)
-    def _connect(self) -> None:
+    def _wait_until_ready(self) -> None:
         with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as s:
             s.connect((self.get_container_host_ip(), int(self.get_exposed_port(next(iter(self.ports))))))
