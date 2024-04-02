@@ -82,7 +82,7 @@ class MongoDbContainer(DbContainer):
         )
 
     def _connect(self) -> None:
-        wait_for_logs(self, "mongod startup complete")
+        wait_for_logs(self, "Waiting for connections")
 
     def get_connection_client(self) -> MongoClient:
         return MongoClient(self.get_connection_url())
