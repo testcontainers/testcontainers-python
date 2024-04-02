@@ -10,6 +10,8 @@
 #    WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the
 #    License for the specific language governing permissions and limitations
 #    under the License.
+from typing_extensions import override
+
 from testcontainers.core.container import DockerContainer
 from testcontainers.core.waiting_utils import wait_for_logs
 
@@ -47,13 +49,9 @@ class CassandraContainer(DockerContainer):
         self.with_env("CASSANDRA_ENDPOINT_SNITCH", "GossipingPropertyFileSnitch")
         self.with_env("CASSANDRA_DC", self.DEFAULT_LOCAL_DATACENTER)
 
-    def _connect(self):
+    @override
+    def _wait_until_ready(self):
         wait_for_logs(self, "Startup complete")
-
-    def start(self) -> "CassandraContainer":
-        super().start()
-        self._connect()
-        return self
 
     def get_contact_points(self) -> list[tuple[str, int]]:
         return [(self.get_container_host_ip(), int(self.get_exposed_port(self.CQL_PORT)))]
