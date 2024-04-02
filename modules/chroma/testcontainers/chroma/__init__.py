@@ -1,13 +1,8 @@
-from typing import TYPE_CHECKING
-
-from requests import ConnectionError, get
+from typing_extensions import override
 
 from testcontainers.core.container import DockerContainer
 from testcontainers.core.utils import raise_for_deprecated_parameter
-from testcontainers.core.waiting_utils import wait_container_is_ready
-
-if TYPE_CHECKING:
-    from requests import Response
+from testcontainers.core.waiting_utils import wait_for_http
 
 
 class ChromaContainer(DockerContainer):
@@ -22,7 +17,7 @@ class ChromaContainer(DockerContainer):
             >>> import chromadb
             >>> from testcontainers.chroma import ChromaContainer
 
-            >>> with ChromaContainer() as chroma:
+            >>> with ChromaContainer("chromadb/chroma:0.4.24") as chroma:
             ...   config = chroma.get_config()
             ...   client = chromadb.HttpClient(host=config["host"], port=config["port"])
             ...   col = client.get_or_create_collection("test")
@@ -48,7 +43,6 @@ class ChromaContainer(DockerContainer):
         self.port = port
 
         self.with_exposed_ports(self.port)
-        # self.with_command(f"server /data --address :{self.port}")
 
     def get_config(self) -> dict:
         """This method returns the configuration of the Chroma container,
@@ -65,17 +59,6 @@ class ChromaContainer(DockerContainer):
             "port": exposed_port,
         }
 
-    @wait_container_is_ready(ConnectionError)
-    def _healthcheck(self) -> None:
-        """This is an internal method used to check if the Chroma container
-        is healthy and ready to receive requests."""
-        url = f"http://{self.get_config()['endpoint']}/api/v1/heartbeat"
-        response: Response = get(url)
-        response.raise_for_status()
-
-    def start(self) -> "ChromaContainer":
-        """This method starts the Chroma container and runs the healthcheck
-        to verify that the container is ready to use."""
-        super().start()
-        self._healthcheck()
-        return self
+    @override
+    def _wait_until_ready(self) -> None:
+        wait_for_http(f"http://{self.get_config()['endpoint']}/api/v1/heartbeat")
