@@ -38,12 +38,13 @@ jobs:
     outputs:
       changed_modules: ${{ steps.compute-changes.outputs.computed_modules }}
   test:
-    runs-on: ubuntu-22.04
+    runs-on: ${{ matrix.os }}
     needs: [track-modules]
     if: ${{ needs.track-modules.outputs.changed_modules != '[]' }}
     strategy:
       fail-fast: false
       matrix:
+        os: [ubuntu-22.04, macos-14]
         python-version: ["3.9", "3.10", "3.11", "3.12"]
         module: ${{ fromJSON(needs.track-modules.outputs.changed_modules) }}
     steps:
