@@ -54,29 +54,29 @@ class DockerContainer:
         self._name = None
         self._kwargs = kwargs
 
-    def with_env(self, key: str, value: str) -> "DockerContainer":
+    def with_env(self, key: str, value: str) -> Self:
         self.env[key] = value
         return self
 
-    def with_bind_ports(self, container: int, host: Optional[int] = None) -> "DockerContainer":
+    def with_bind_ports(self, container: int, host: Optional[int] = None) -> Self:
         self.ports[container] = host
         return self
 
-    def with_exposed_ports(self, *ports: int) -> "DockerContainer":
+    def with_exposed_ports(self, *ports: int) -> Self:
         for port in ports:
             self.ports[port] = None
         return self
 
-    def with_kwargs(self, **kwargs) -> "DockerContainer":
+    def with_kwargs(self, **kwargs) -> Self:
         self._kwargs = kwargs
         return self
 
-    def maybe_emulate_amd64(self) -> "DockerContainer":
+    def maybe_emulate_amd64(self) -> Self:
         if is_arm():
             return self.with_kwargs(platform="linux/amd64")
         return self
 
-    def start(self):
+    def start(self) -> Self:
         if not RYUK_DISABLED and self.image != RYUK_IMAGE:
             logger.debug("Creating Ryuk container")
             Reaper.get_instance()
@@ -140,15 +140,15 @@ class DockerContainer:
                 return port
         return mapped_port
 
-    def with_command(self, command: str) -> "DockerContainer":
+    def with_command(self, command: str) -> Self:
         self._command = command
         return self
 
-    def with_name(self, name: str) -> "DockerContainer":
+    def with_name(self, name: str) -> Self:
         self._name = name
         return self
 
-    def with_volume_mapping(self, host: str, container: str, mode: str = "ro") -> "DockerContainer":
+    def with_volume_mapping(self, host: str, container: str, mode: str = "ro") -> Self:
         mapping = {"bind": container, "mode": mode}
         self.volumes[host] = mapping
         return self
