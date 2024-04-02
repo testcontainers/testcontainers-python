@@ -41,7 +41,8 @@ class DockerClient:
 
         if docker_host:
             LOGGER.info(f"using host {docker_host}")
-            self.client = docker.DockerClient(base_url=docker_host)
+            os.environ["DOCKER_HOST"] = docker_host
+            self.client = docker.from_env(**kwargs)
         else:
             self.client = docker.from_env(**kwargs)
         self.client.api.headers["x-tc-sid"] = SESSION_ID
