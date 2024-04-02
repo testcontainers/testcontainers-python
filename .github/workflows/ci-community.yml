@@ -47,6 +47,9 @@ jobs:
         os: [ubuntu-22.04, macos-14]
         python-version: ["3.9", "3.10", "3.11", "3.12"]
         module: ${{ fromJSON(needs.track-modules.outputs.changed_modules) }}
+        exclude:
+          - os: macos-14
+            python-version: "3.9"
     steps:
       - name: Checkout contents
         uses: actions/checkout@v4
