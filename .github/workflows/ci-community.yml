@@ -14,7 +14,7 @@ on:
 
 jobs:
   track-modules:
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-22.04
     steps:
       - name: Checkout contents
         uses: actions/checkout@v4
@@ -38,14 +38,14 @@ jobs:
     outputs:
       changed_modules: ${{ steps.compute-changes.outputs.computed_modules }}
   test:
+    runs-on: ubuntu-22.04
     needs: [track-modules]
     if: ${{ needs.track-modules.outputs.changed_modules != '[]' }}
     strategy:
       fail-fast: false
       matrix:
-        python-version: [ "3.11" ]
+        python-version: ["3.9", "3.10", "3.11", "3.12"]
         module: ${{ fromJSON(needs.track-modules.outputs.changed_modules) }}
-    runs-on: ubuntu-latest
     steps:
       - name: Checkout contents
         uses: actions/checkout@v4
@@ -57,3 +57,5 @@ jobs:
         run: poetry install -E ${{ matrix.module }}
       - name: Run tests
         run: make modules/${{ matrix.module }}/tests
+      - name: Run doctests
+        run: make modules/${{ matrix.module }}/doctests

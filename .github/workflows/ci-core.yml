@@ -10,12 +10,11 @@ on:
 
 jobs:
   test:
+    runs-on: ubuntu-22.04
     strategy:
       fail-fast: false
       matrix:
-        os: [ ubuntu ]
         python-version: ["3.9", "3.10", "3.11", "3.12"]
-    runs-on: ${{ matrix.os }}-latest
     steps:
       - uses: actions/checkout@v4
       - name: Set up Python
@@ -28,3 +27,5 @@ jobs:
         run: poetry build && poetry run twine check dist/*.tar.gz
       - name: Run tests
         run: make core/tests
+      - name: Run doctests
+        run: make core/doctests

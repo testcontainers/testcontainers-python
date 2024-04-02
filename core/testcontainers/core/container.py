@@ -1,8 +1,17 @@
+import contextlib
 from platform import system
 from socket import socket
 from typing import TYPE_CHECKING, Optional
 
-from testcontainers.core.config import RYUK_DISABLED, RYUK_DOCKER_SOCKET, RYUK_IMAGE, RYUK_PRIVILEGED
+import docker.errors
+
+from testcontainers.core.config import (
+    RYUK_DISABLED,
+    RYUK_DOCKER_SOCKET,
+    RYUK_IMAGE,
+    RYUK_PRIVILEGED,
+    RYUK_RECONNECTION_TIMEOUT,
+)
 from testcontainers.core.docker_client import DockerClient
 from testcontainers.core.exceptions import ContainerStartException
 from testcontainers.core.labels import LABEL_SESSION_ID, SESSION_ID
@@ -148,7 +157,7 @@ class DockerContainer:
     def get_docker_client(self) -> DockerClient:
         return self._docker
 
-    def get_logs(self) -> tuple[str, str]:
+    def get_logs(self) -> tuple[bytes, bytes]:
         if not self._container:
             raise ContainerStartException("Container should be started before getting logs")
         return self._container.logs(stderr=False), self._container.logs(stdout=False)
@@ -177,8 +186,9 @@ class Reaper:
             Reaper._socket.close()
             Reaper._socket = None
 
-        if Reaper._container is not None:
-            Reaper._container.stop()
+        if Reaper._container is not None and Reaper._container._container is not None:
+            with contextlib.suppress(docker.errors.NotFound):
+                Reaper._container.stop()
             Reaper._container = None
 
         if Reaper._instance is not None:
@@ -193,7 +203,8 @@ class Reaper:
             .with_name(f"testcontainers-ryuk-{SESSION_ID}")
             .with_exposed_ports(8080)
             .with_volume_mapping(RYUK_DOCKER_SOCKET, "/var/run/docker.sock", "rw")
-            .with_kwargs(privileged=RYUK_PRIVILEGED)
+            .with_kwargs(privileged=RYUK_PRIVILEGED, auto_remove=True)
+            .with_env("RYUK_RECONNECTION_TIMEOUT", RYUK_RECONNECTION_TIMEOUT)
             .start()
         )
         wait_for_logs(Reaper._container, r".* Started!")
