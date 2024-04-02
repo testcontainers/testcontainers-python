@@ -18,6 +18,7 @@ import urllib
 import urllib.parse
 from os.path import exists
 from pathlib import Path
+from socket import socket, AF_INET, SOCK_STREAM
 from typing import Optional, Union
 
 import docker
@@ -42,9 +43,7 @@ class DockerClient:
         if docker_host:
             LOGGER.info(f"using host {docker_host}")
             os.environ["DOCKER_HOST"] = docker_host
-            self.client = docker.from_env(**kwargs)
-        else:
-            self.client = docker.from_env(**kwargs)
+        self.client = docker.from_env(**kwargs)
         self.client.api.headers["x-tc-sid"] = SESSION_ID
         self.client.api.headers["User-Agent"] = "tc-python/" + importlib.metadata.version("testcontainers")
 
@@ -195,4 +194,15 @@ def read_tc_properties() -> dict[str, str]:
 
 
 def get_docker_host() -> Optional[str]:
-    return read_tc_properties().get("tc.host") or os.getenv("DOCKER_HOST")
+    tc_host = read_tc_properties().get("tc.host")
+
+    # make sure if we have a value, that it is still valid (we can talk to it via tcp)
+    if tc_host:
+        try:
+            with socket(AF_INET, SOCK_STREAM) as sock:
+                sock.settimeout(1)
+                sock.connect(*(urllib.parse.urlparse(tc_host).netloc.rsplit(":", 1)))
+        except ConnectionRefusedError:
+            tc_host = None
+
+    return tc_host or os.getenv("DOCKER_HOST")
