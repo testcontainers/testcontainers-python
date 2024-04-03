@@ -10,11 +10,13 @@
 #    WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the
 #    License for the specific language governing permissions and limitations
 #    under the License.
+import re
 from os import environ
 from typing import Optional
 
 from testcontainers.core.generic import DbContainer
 from testcontainers.core.utils import raise_for_deprecated_parameter
+from testcontainers.core.waiting_utils import wait_for_logs
 
 
 class MySqlContainer(DbContainer):
@@ -73,6 +75,12 @@ class MySqlContainer(DbContainer):
         if self.username != "root":
             self.with_env("MYSQL_USER", self.username)
             self.with_env("MYSQL_PASSWORD", self.password)
+
+    def _connect(self) -> None:
+        wait_for_logs(
+            self,
+            re.compile(".*: ready for connections.*: ready for connections.*", flags=re.DOTALL | re.MULTILINE).search,
+        )
 
     def get_connection_url(self) -> str:
         return super()._create_connection_url(
