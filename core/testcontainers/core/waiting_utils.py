@@ -15,7 +15,7 @@
 import re
 import time
 import traceback
-from typing import TYPE_CHECKING, Any, Callable, Optional, Union
+from typing import TYPE_CHECKING, Any, Callable, Union
 
 import wrapt
 
