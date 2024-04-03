@@ -11,7 +11,9 @@
 #    License for the specific language governing permissions and limitations
 #    under the License.
 
-from testcontainers.core.config import MAX_TRIES
+from typing_extensions import override
+
+from testcontainers.core.config import TIMEOUT
 from testcontainers.core.container import DockerContainer
 from testcontainers.core.waiting_utils import wait_for_logs
 
@@ -28,7 +30,7 @@ class K3SContainer(DockerContainer):
             >>> from testcontainers.k3s import K3SContainer
             >>> from kubernetes import client, config
 
-            >>> with K3SContainer() as k3s:
+            >>> with K3SContainer("rancher/k3s:v1.29.3-k3s1") as k3s:
             ...     config.load_kube_config_from_dict(yaml.safe_load(k3s.config_yaml()))
             ...     pod = client.CoreV1Api().list_pod_for_all_namespaces(limit=1)
             ...     assert len(pod.items) > 0, "Unable to get running nodes from k3s cluster"
@@ -45,13 +47,9 @@ class K3SContainer(DockerContainer):
         self.with_kwargs(privileged=True, tmpfs={"/run": "", "/var/run": ""})
         self.with_volume_mapping("/sys/fs/cgroup", "/sys/fs/cgroup", "rw")
 
-    def _connect(self) -> None:
-        wait_for_logs(self, predicate="Node controller sync successful", timeout=MAX_TRIES)
-
-    def start(self) -> "K3SContainer":
-        super().start()
-        self._connect()
-        return self
+    @override
+    def _wait_until_ready(self) -> None:
+        wait_for_logs(self, predicate="Node controller sync successful", timeout=TIMEOUT)
 
     def config_yaml(self) -> str:
         """This function returns the kubernetes config yaml which can be used
