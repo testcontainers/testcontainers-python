@@ -13,9 +13,8 @@
 import os
 from typing import Optional
 
-from typing_extensions import override
-
 from pymongo import MongoClient
+from typing_extensions import override
 
 from testcontainers.core.container import DockerContainer
 from testcontainers.core.utils import create_connection_string, raise_for_deprecated_parameter
