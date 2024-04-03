@@ -66,18 +66,12 @@ class KeycloakContainer(DockerContainer):
         return f"http://{host}:{port}"
 
     @wait_container_is_ready(requests.exceptions.ConnectionError, requests.exceptions.ReadTimeout)
-    def _readiness_probe(self) -> None:
+    def _wait_until_ready(self) -> None:
         # Keycloak provides an REST API endpoints for health checks: https://www.keycloak.org/server/health
         response = requests.get(f"{self.get_url()}/health/ready", timeout=1)
         response.raise_for_status()
         if self._command == _DEFAULT_DEV_COMMAND:
             wait_for_logs(self, "Added user .* to realm .*")
-
-    def start(self) -> "KeycloakContainer":
-        self._configure()
-        super().start()
-        self._readiness_probe()
-        return self
 
     def get_client(self, **kwargs) -> KeycloakAdmin:
         default_kwargs = {
