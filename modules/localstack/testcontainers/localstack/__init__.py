@@ -15,6 +15,7 @@ import os
 from typing import Any, Optional
 
 import boto3
+from typing_extensions import override
 
 from testcontainers.core.container import DockerContainer
 from testcontainers.core.waiting_utils import wait_for_logs
@@ -30,7 +31,7 @@ class LocalStackContainer(DockerContainer):
 
             >>> from testcontainers.localstack import LocalStackContainer
 
-            >>> with LocalStackContainer(image="localstack/localstack:2.0.1") as localstack:
+            >>> with LocalStackContainer("localstack/localstack:2.0.1") as localstack:
             ...     dynamo_client = localstack.get_client("dynamodb")
             ...     tables = dynamo_client.list_tables()
             >>> tables
@@ -85,7 +86,6 @@ class LocalStackContainer(DockerContainer):
         kwargs_.update(kwargs)
         return boto3.client(name, **kwargs_)
 
-    def start(self, timeout: float = 60) -> "LocalStackContainer":
-        super().start()
-        wait_for_logs(self, r"Ready\.\n", timeout=timeout)
-        return self
+    @override
+    def _wait_until_ready(self) -> None:
+        wait_for_logs(self, r"Ready\.\n", timeout=60.0)

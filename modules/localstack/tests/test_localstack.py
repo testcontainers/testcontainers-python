@@ -5,7 +5,7 @@ from testcontainers.localstack import LocalStackContainer
 
 
 def test_docker_run_localstack():
-    with LocalStackContainer() as localstack:
+    with LocalStackContainer("localstack/localstack:2.0.1") as localstack:
         resp = urllib.request.urlopen(f"{localstack.get_url()}/health")
         services = json.loads(resp.read().decode())["services"]
 
@@ -18,7 +18,7 @@ def test_docker_run_localstack():
 def test_localstack_boto3():
     from testcontainers.localstack import LocalStackContainer
 
-    with LocalStackContainer(image="localstack/localstack:2.0.1") as localstack:
+    with LocalStackContainer("localstack/localstack:2.0.1") as localstack:
         dynamo_client = localstack.get_client("dynamodb")
         tables = dynamo_client.list_tables()
     assert tables["TableNames"] == []
