@@ -12,12 +12,12 @@
 #    under the License.
 import logging
 import re
-import urllib
-from urllib.error import URLError
+
+from typing_extensions import override
 
 from testcontainers.core.container import DockerContainer
-from testcontainers.core.utils import raise_for_deprecated_parameter
-from testcontainers.core.waiting_utils import wait_container_is_ready
+from testcontainers.core.utils import create_connection_string, raise_for_deprecated_parameter
+from testcontainers.core.waiting_utils import wait_for_http
 
 _FALLBACK_VERSION = 8
 """This version is used when no version could be detected from the image name."""
@@ -68,7 +68,7 @@ class ElasticSearchContainer(DockerContainer):
             >>> import urllib
             >>> from testcontainers.elasticsearch import ElasticSearchContainer
 
-            >>> with ElasticSearchContainer(f'elasticsearch:8.3.3', mem_limit='3G') as es:
+            >>> with ElasticSearchContainer(f'elasticsearch:8.12.2', mem_limit='3G') as es:
             ...    resp = urllib.request.urlopen(es.get_url())
             ...    json.loads(resp.read().decode())['version']['number']
             '8.3.3'
@@ -86,18 +86,13 @@ class ElasticSearchContainer(DockerContainer):
         for key, value in _environment_by_version(major_version).items():
             self.with_env(key, value)
 
-    @wait_container_is_ready(URLError)
-    def _connect(self) -> None:
-        res = urllib.request.urlopen(self.get_url())
-        if res.status != 200:
-            raise Exception()
+    @override
+    def _wait_until_ready(self) -> None:
+        wait_for_http(self.get_url())
 
     def get_url(self) -> str:
-        host = self.get_container_host_ip()
-        port = self.get_exposed_port(self.port)
-        return f"http://{host}:{port}"
-
-    def start(self) -> "ElasticSearchContainer":
-        super().start()
-        self._connect()
-        return self
+        return create_connection_string(
+            dialect="http",
+            host=self.get_container_host_ip(),
+            port=self.get_exposed_port(self.port),
+        )
