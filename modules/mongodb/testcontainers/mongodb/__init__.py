@@ -13,14 +13,16 @@
 import os
 from typing import Optional
 
+from typing_extensions import override
+
 from pymongo import MongoClient
 
-from testcontainers.core.generic import DbContainer
-from testcontainers.core.utils import raise_for_deprecated_parameter
+from testcontainers.core.container import DockerContainer
+from testcontainers.core.utils import create_connection_string, raise_for_deprecated_parameter
 from testcontainers.core.waiting_utils import wait_for_logs
 
 
-class MongoDbContainer(DbContainer):
+class MongoDbContainer(DockerContainer):
     """
     Mongo document-based database container.
 
@@ -63,20 +65,23 @@ class MongoDbContainer(DbContainer):
         self.port = port
         self.with_exposed_ports(self.port)
 
+    @override
     def _configure(self) -> None:
         self.with_env("MONGO_INITDB_ROOT_USERNAME", self.username)
         self.with_env("MONGO_INITDB_ROOT_PASSWORD", self.password)
         self.with_env("MONGO_DB", self.dbname)
 
     def get_connection_url(self) -> str:
-        return self._create_connection_url(
+        return create_connection_string(
             dialect="mongodb",
             username=self.username,
             password=self.password,
-            port=self.port,
+            host=self.get_container_host_ip(),
+            port=self.get_exposed_port(self.port),
         )
 
-    def _connect(self) -> None:
+    @override
+    def _wait_until_ready(self) -> None:
         wait_for_logs(self, "Waiting for connections")
 
     def get_connection_client(self) -> MongoClient:
