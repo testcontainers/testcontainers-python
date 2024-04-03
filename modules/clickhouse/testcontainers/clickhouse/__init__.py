@@ -12,15 +12,17 @@
 #    under the License.
 import os
 from typing import Optional
-from urllib.error import HTTPError, URLError
+from urllib.error import URLError
 from urllib.request import urlopen
 
-from testcontainers.core.generic import DbContainer
-from testcontainers.core.utils import raise_for_deprecated_parameter
+from typing_extensions import override
+
+from testcontainers.core.container import DockerContainer
+from testcontainers.core.utils import create_connection_string, raise_for_deprecated_parameter
 from testcontainers.core.waiting_utils import wait_container_is_ready
 
 
-class ClickHouseContainer(DbContainer):
+class ClickHouseContainer(DockerContainer):
     """
     ClickHouse database container.
 
@@ -31,11 +33,11 @@ class ClickHouseContainer(DbContainer):
 
         .. doctest::
 
-            >>> import clickhouse_driver
+            >>> from clickhouse_driver import Client
             >>> from testcontainers.clickhouse import ClickHouseContainer
 
-            >>> with ClickHouseContainer("clickhouse/clickhouse-server:21.8") as clickhouse:
-            ...     client = clickhouse_driver.Client.from_url(clickhouse.get_connection_url())
+            >>> with ClickHouseContainer("clickhouse/clickhouse-server:24.3.1") as clickhouse:
+            ...     client = Client.from_url(clickhouse.get_connection_url())
             ...     client.execute("select 'working'")
             [('working',)]
     """
@@ -58,13 +60,13 @@ class ClickHouseContainer(DbContainer):
         self.with_exposed_ports(self.port)
         self.with_exposed_ports(8123)
 
-    @wait_container_is_ready(HTTPError, URLError)
-    def _connect(self) -> None:
-        # noinspection HttpUrlsUsage
-        url = f"http://{self.get_container_host_ip()}:{self.get_exposed_port(8123)}"
-        with urlopen(url) as r:
+    @override
+    @wait_container_is_ready(URLError)
+    def _wait_until_ready(self) -> None:
+        with urlopen(f"http://{self.get_container_host_ip()}:{self.get_exposed_port(8123)}") as r:
             assert b"Ok" in r.read()
 
+    @override
     def _configure(self) -> None:
         self.with_env("CLICKHOUSE_USER", self.username)
         self.with_env("CLICKHOUSE_PASSWORD", self.password)
