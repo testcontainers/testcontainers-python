@@ -3,6 +3,8 @@ import time
 from io import BytesIO
 from textwrap import dedent
 
+from typing_extensions import override
+
 from testcontainers.core.container import DockerContainer
 from testcontainers.core.utils import raise_for_deprecated_parameter
 from testcontainers.core.waiting_utils import wait_for_logs
@@ -75,14 +77,16 @@ class KafkaContainer(DockerContainer):
         )
         self.create_file(data, KafkaContainer.TC_START_SCRIPT)
 
-    def start(self, timeout=30) -> "KafkaContainer":
+    @override
+    def _configure(self) -> None:
         script = KafkaContainer.TC_START_SCRIPT
         command = f'sh -c "while [ ! -f {script} ]; do sleep 0.1; done; sh {script}"'
         self.with_command(command)
-        super().start()
+
+    @override
+    def _wait_until_ready(self) -> None:
         self.tc_start()
-        wait_for_logs(self, r".*\[KafkaServer id=\d+\] started.*", timeout=timeout)
-        return self
+        wait_for_logs(self, r".*\[KafkaServer id=\d+\] started.*", timeout=30.0)
 
     def create_file(self, content: bytes, path: str) -> None:
         with BytesIO() as archive, tarfile.TarFile(fileobj=archive, mode="w") as tar:
