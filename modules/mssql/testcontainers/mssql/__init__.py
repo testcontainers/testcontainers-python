@@ -18,7 +18,7 @@ class SqlServerContainer(DbContainer):
             >>> import sqlalchemy
             >>> from testcontainers.mssql import SqlServerContainer
 
-            >>> with SqlServerContainer() as mssql:
+            >>> with SqlServerContainer("mcr.microsoft.com/mssql/server:2022-CU12-ubuntu-22.04") as mssql:
             ...    engine = sqlalchemy.create_engine(mssql.get_connection_url())
             ...    with engine.begin() as connection:
             ...        result = connection.execute(sqlalchemy.text("select @@VERSION"))
