@@ -77,11 +77,14 @@ def create_connection_string(
     if password:
         username_password += f":{password}"
 
+    if username_password:
+        username_password += "@"
+
     host_port = host
     if port:
         host_port += f":{port}"
 
-    connection_string = f"{dialect_driver}://{username_password}@{host_port}"
+    connection_string = f"{dialect_driver}://{username_password}{host_port}"
     if dbname:
         connection_string += f"/{dbname}"
 
