@@ -70,12 +70,6 @@ class InfluxDb2Container(InfluxDbContainer):
             if env_value:
                 self.with_env(env_key, env_value)
 
-    def start(self) -> "InfluxDb2Container":
-        """
-        Overridden for better typing reason
-        """
-        return super().start()
-
     def get_client(
         self, token: Optional[str] = None, org_name: Optional[str] = None, **influxdb_client_kwargs
     ) -> tuple[InfluxDBClient, Organization]:

@@ -28,11 +28,11 @@ The 2 containers are separated in different modules for 2 reasons:
 """
 from typing import Optional
 
-from requests import get
-from requests.exceptions import ConnectionError, ReadTimeout
+from typing_extensions import override
 
 from testcontainers.core.container import DockerContainer
-from testcontainers.core.waiting_utils import wait_container_is_ready
+from testcontainers.core.utils import create_connection_string
+from testcontainers.core.waiting_utils import wait_for_http
 
 
 class InfluxDbContainer(DockerContainer):
@@ -60,40 +60,10 @@ class InfluxDbContainer(DockerContainer):
         self.with_bind_ports(self.container_port, self.host_port)
 
     def get_url(self) -> str:
-        """
-        Returns the url to interact with the InfluxDB container (health check, REST API, etc.)
-        """
-        host = self.get_container_host_ip()
-        port = self.get_exposed_port(self.container_port)
+        return create_connection_string(
+            dialect="http", host=self.get_container_host_ip(), port=self.get_exposed_port(self.container_port)
+        )
 
-        return f"http://{host}:{port}"
-
-    @wait_container_is_ready(ConnectionError, ReadTimeout)
-    def _health_check(self) -> dict:
-        """
-        Performs a health check on the running InfluxDB container.
-        The call is retried until it works thanks to the @wait_container_is_ready decorator.
-        See its documentation for the max number of retries or the timeout.
-        """
-
-        url = self.get_url()
-        response = get(f"{url}/health", timeout=1)
-        response.raise_for_status()
-
-        return response.json()
-
-    def get_influxdb_version(self) -> str:
-        """
-        Returns the version of the InfluxDB service, as returned by the healthcheck.
-        """
-
-        return self._health_check().get("version")
-
-    def start(self) -> "InfluxDbContainer":
-        """
-        Spawns a container of the InfluxDB Docker image, ready to be used.
-        """
-        super().start()
-        self._health_check()
-
-        return self
+    @override
+    def _wait_until_ready(self) -> None:
+        wait_for_http(f"{self.get_url()}/health")

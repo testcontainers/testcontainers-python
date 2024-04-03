@@ -29,7 +29,7 @@ class InfluxDb1Container(InfluxDbContainer):
 
             >>> from testcontainers.influxdb1 import InfluxDbContainer
 
-            >>> with InfluxDbContainer() as influxdb:
+            >>> with InfluxDbContainer(influxdb:1.8-alpine) as influxdb:
             ...    version = influxdb.get_version()
     """
 
@@ -57,9 +57,3 @@ class InfluxDb1Container(InfluxDbContainer):
         """
 
         return InfluxDBClient(self.get_container_host_ip(), self.get_exposed_port(self.container_port), **client_kwargs)
-
-    def start(self) -> "InfluxDb1Container":
-        """
-        Overridden for better typing reason
-        """
-        return super().start()
