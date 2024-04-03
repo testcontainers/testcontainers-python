@@ -1,6 +1,8 @@
+import time
 from os import environ
 from typing import Optional
 
+from testcontainers.core.config import MAX_TRIES, SLEEP_TIME
 from testcontainers.core.generic import DbContainer
 from testcontainers.core.utils import raise_for_deprecated_parameter
 
@@ -30,7 +32,7 @@ class SqlServerContainer(DbContainer):
         port: int = 1433,
         dbname: str = "tempdb",
         dialect: str = "mssql+pymssql",
-        **kwargs
+        **kwargs,
     ) -> None:
         raise_for_deprecated_parameter(kwargs, "user", "username")
         super().__init__(image, **kwargs)
@@ -48,6 +50,14 @@ class SqlServerContainer(DbContainer):
         self.with_env("SQLSERVER_USER", self.username)
         self.with_env("SQLSERVER_DBNAME", self.dbname)
         self.with_env("ACCEPT_EULA", "Y")
+
+    def _connect(self) -> None:
+        for _ in range(MAX_TRIES):
+            status, _ = self.exec(f"/opt/mssql-tools/bin/sqlcmd -U {self.username} -P {self.password} -Q SELECT 1")
+            if status == 0:
+                return
+            else:
+                time.sleep(SLEEP_TIME)
 
     def get_connection_url(self) -> str:
         return super()._create_connection_url(
