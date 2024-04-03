@@ -1,14 +1,9 @@
-from typing import TYPE_CHECKING
-
-from requests import ConnectionError, get
+from typing_extensions import override
 
 from minio import Minio
 from testcontainers.core.container import DockerContainer
 from testcontainers.core.utils import raise_for_deprecated_parameter
-from testcontainers.core.waiting_utils import wait_container_is_ready
-
-if TYPE_CHECKING:
-    from requests import Response
+from testcontainers.core.waiting_utils import wait_for_http
 
 
 class MinioContainer(DockerContainer):
@@ -27,7 +22,7 @@ class MinioContainer(DockerContainer):
             >>> import io
             >>> from testcontainers.minio import MinioContainer
 
-            >>> with MinioContainer() as minio:
+            >>> with MinioContainer("minio/minio:RELEASE.2024-03-30T09-41-56Z") as minio:
             ...   client = minio.get_client()
             ...   client.make_bucket("test")
             ...   test_content = b"Hello World"
@@ -42,7 +37,7 @@ class MinioContainer(DockerContainer):
 
     def __init__(
         self,
-        image: str = "minio/minio:RELEASE.2022-12-02T19-19-22Z",
+        image: str = "minio/minio:RELEASE.2024-03-30T09-41-56Z",
         port: int = 9000,
         access_key: str = "minioadmin",
         secret_key: str = "minioadmin",
@@ -98,17 +93,6 @@ class MinioContainer(DockerContainer):
             "secret_key": self.secret_key,
         }
 
-    @wait_container_is_ready(ConnectionError)
-    def _healthcheck(self) -> None:
-        """This is an internal method used to check if the Minio container
-        is healthy and ready to receive requests."""
-        url = f"http://{self.get_config()['endpoint']}/minio/health/live"
-        response: Response = get(url)
-        response.raise_for_status()
-
-    def start(self) -> "MinioContainer":
-        """This method starts the Minio container and runs the healthcheck
-        to verify that the container is ready to use."""
-        super().start()
-        self._healthcheck()
-        return self
+    @override
+    def _wait_until_ready(self) -> None:
+        wait_for_http(f"http://{self.get_config()['endpoint']}/minio/health/live")

@@ -4,7 +4,9 @@ from testcontainers.minio import MinioContainer
 
 
 def test_docker_run_minio():
-    config = MinioContainer(access_key="test-access", secret_key="test-secret")
+    config = MinioContainer(
+        "minio/minio:RELEASE.2024-03-30T09-41-56Z", access_key="test-access", secret_key="test-secret"
+    )
     with config as minio:
         client = minio.get_client()
         client.make_bucket("test")
