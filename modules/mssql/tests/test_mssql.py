@@ -5,7 +5,7 @@ from testcontainers.core.utils import is_arm
 from testcontainers.mssql import SqlServerContainer
 
 
-@pytest.mark.skipif(is_arm(), reason="mysql container not available for ARM")
+@pytest.mark.skipif(is_arm(), reason="mssql container not available for ARM")
 @pytest.mark.parametrize("version", ["2022-CU12-ubuntu-22.04", "2019-CU25-ubuntu-20.04"])
 def test_docker_run_mssql(version: str):
     with SqlServerContainer(f"mcr.microsoft.com/mssql/server:{version}", password="1Secure*Password2") as mssql:
