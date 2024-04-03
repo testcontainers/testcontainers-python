@@ -1,12 +1,13 @@
-import clickhouse_driver
+import pytest
+
+from clickhouse_driver import Client
 
 from testcontainers.clickhouse import ClickHouseContainer
 
 
 def test_docker_run_clickhouse():
-    clickhouse_container = ClickHouseContainer()
-    with clickhouse_container as clickhouse:
-        client = clickhouse_driver.Client.from_url(clickhouse.get_connection_url())
+    with ClickHouseContainer(f"clickhouse/clickhouse-server:24.3.1-alpine") as clickhouse:
+        client = Client.from_url(clickhouse.get_connection_url())
         result = client.execute("select 'working'")
 
         assert result == [("working",)]

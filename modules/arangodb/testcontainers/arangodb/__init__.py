@@ -9,7 +9,7 @@ from typing_extensions import override
 
 from testcontainers.core.config import TIMEOUT
 from testcontainers.core.container import DockerContainer
-from testcontainers.core.utils import raise_for_deprecated_parameter
+from testcontainers.core.utils import create_connection_string, raise_for_deprecated_parameter
 from testcontainers.core.waiting_utils import wait_for_logs
 
 
@@ -93,5 +93,8 @@ class ArangoDbContainer(DockerContainer):
         wait_for_logs(self, predicate="is ready for business", timeout=TIMEOUT)
 
     def get_connection_url(self) -> str:
-        port = self.get_exposed_port(self.port)
-        return f"http://{self.get_container_host_ip()}:{port}"
+        return create_connection_string(
+            dialect="http",
+            host=self.get_container_host_ip(),
+            port=self.get_exposed_port(self.port),
+        )

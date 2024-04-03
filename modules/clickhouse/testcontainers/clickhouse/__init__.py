@@ -70,12 +70,12 @@ class ClickHouseContainer(DbContainer):
         self.with_env("CLICKHOUSE_PASSWORD", self.password)
         self.with_env("CLICKHOUSE_DB", self.dbname)
 
-    def get_connection_url(self, host: Optional[str] = None) -> str:
-        return self._create_connection_url(
+    def get_connection_url(self) -> str:
+        return create_connection_string(
             dialect="clickhouse",
             username=self.username,
             password=self.password,
+            host=self.get_container_host_ip(),
+            port=self.get_exposed_port(8123),
             dbname=self.dbname,
-            host=host,
-            port=self.port,
         )
