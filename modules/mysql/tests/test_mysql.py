@@ -26,7 +26,7 @@ def test_docker_run_legacy_mysql():
         with engine.begin() as connection:
             result = connection.execute(sqlalchemy.text("select version()"))
             for row in result:
-                assert row[0].startswith("5.7.17")
+                assert row[0].startswith("5.7.44")
 
 
 @pytest.mark.parametrize("version", ["11.3.2", "10.11.7"])
