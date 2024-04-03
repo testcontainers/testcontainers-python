@@ -6,8 +6,7 @@ from testcontainers.google import PubSubContainer, DatastoreContainer
 
 
 def test_pubsub_container():
-    pubsub: PubSubContainer
-    with PubSubContainer() as pubsub:
+    with PubSubContainer("google/cloud-sdk:471.0.0-emulators") as pubsub:
         wait_for_logs(pubsub, r"Server started, listening on \d+", timeout=60)
         # Create a new topic
         publisher = pubsub.get_publisher_client()
@@ -32,7 +31,7 @@ def test_pubsub_container():
 
 def test_datastore_container_creation():
     # Initialize the Datastore emulator container
-    with DatastoreContainer() as datastore:
+    with DatastoreContainer("google/cloud-sdk:471.0.0-emulators") as datastore:
         # Obtain a datastore client configured to connect to the emulator
         client = datastore.get_datastore_client()
 
@@ -54,7 +53,7 @@ def test_datastore_container_creation():
 
 def test_datastore_container_isolation():
     # Initialize the Datastore emulator container
-    with DatastoreContainer() as datastore:
+    with DatastoreContainer("google/cloud-sdk:471.0.0-emulators") as datastore:
         # Obtain a datastore client configured to connect to the emulator
         client = datastore.get_datastore_client()
 
@@ -67,7 +66,7 @@ def test_datastore_container_isolation():
         client.put(entity)
 
         # Create a second container and try to fetch the entity to makesure its a different container
-        with DatastoreContainer() as datastore2:
+        with DatastoreContainer("google/cloud-sdk:471.0.0-emulators") as datastore2:
             assert (
                 datastore.get_datastore_emulator_host() != datastore2.get_datastore_emulator_host()
             ), "Datastore containers use the same port."

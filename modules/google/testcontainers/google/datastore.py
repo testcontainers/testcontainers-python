@@ -13,6 +13,8 @@
 import os
 from unittest.mock import patch
 
+from typing_extensions import override
+
 from google.cloud import datastore
 from testcontainers.core.container import DockerContainer
 from testcontainers.core.waiting_utils import wait_for_logs
@@ -32,8 +34,7 @@ class DatastoreContainer(DockerContainer):
 
             >>> from testcontainers.google import DatastoreContainer
 
-            >>> config = DatastoreContainer()
-            >>> with config as datastore:
+            >>> with DatastoreContainer("google/cloud-sdk:471.0.0-emulators") as datastore:
             ...    datastore_client = datastore.get_datastore_client()
     """
 
@@ -56,7 +57,6 @@ class DatastoreContainer(DockerContainer):
         return f"{self.get_container_host_ip()}:{self.get_exposed_port(self.port)}"
 
     def get_datastore_client(self, **kwargs) -> datastore.Client:
-        wait_for_logs(self, "Dev App Server is now running.", timeout=30.0)
         env_vars = {
             "DATASTORE_DATASET": self.project,
             "DATASTORE_EMULATOR_HOST": self.get_datastore_emulator_host(),
@@ -66,3 +66,7 @@ class DatastoreContainer(DockerContainer):
         }
         with patch.dict(os.environ, env_vars):
             return datastore.Client(**kwargs)
+
+    @override
+    def _wait_until_ready(self) -> None:
+        wait_for_logs(self, "Dev App Server is now running.", timeout=30.0)
