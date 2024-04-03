@@ -1,11 +1,22 @@
 from os import environ
 from typing import Optional
 
-from testcontainers.core.generic import DbContainer
-from testcontainers.core.utils import raise_for_deprecated_parameter
+from typing_extensions import override
+
+from testcontainers.core.container import DockerContainer
+from testcontainers.core.utils import create_connection_string, raise_for_deprecated_parameter
+from testcontainers.core.waiting_utils import wait_container_is_ready
+
+ADDITIONAL_TRANSIENT_ERRORS = []
+try:
+    from sqlalchemy.exc import DBAPIError
+
+    ADDITIONAL_TRANSIENT_ERRORS.append(DBAPIError)
+except ImportError:
+    pass
 
 
-class SqlServerContainer(DbContainer):
+class SqlServerContainer(DockerContainer):
     """
     Microsoft SQL Server database container.
 
@@ -16,7 +27,7 @@ class SqlServerContainer(DbContainer):
             >>> import sqlalchemy
             >>> from testcontainers.mssql import SqlServerContainer
 
-            >>> with SqlServerContainer() as mssql:
+            >>> with SqlServerContainer("mcr.microsoft.com/azure-sql-edge:1.0.7") as mssql:
             ...    engine = sqlalchemy.create_engine(mssql.get_connection_url())
             ...    with engine.begin() as connection:
             ...        result = connection.execute(sqlalchemy.text("select @@VERSION"))
@@ -43,6 +54,17 @@ class SqlServerContainer(DbContainer):
         self.dbname = dbname
         self.dialect = dialect
 
+    @wait_container_is_ready(*ADDITIONAL_TRANSIENT_ERRORS)
+    def _wait_until_ready(self):
+        import sqlalchemy
+
+        engine = sqlalchemy.create_engine(self.get_connection_url())
+        try:
+            engine.connect()
+        finally:
+            engine.dispose()
+
+    @override
     def _configure(self) -> None:
         self.with_env("SA_PASSWORD", self.password)
         self.with_env("SQLSERVER_USER", self.username)
@@ -50,6 +72,11 @@ class SqlServerContainer(DbContainer):
         self.with_env("ACCEPT_EULA", "Y")
 
     def get_connection_url(self) -> str:
-        return super()._create_connection_url(
-            dialect=self.dialect, username=self.username, password=self.password, dbname=self.dbname, port=self.port
+        return create_connection_string(
+            dialect=self.dialect,
+            username=self.username,
+            password=self.password,
+            host=self.get_container_host_ip(),
+            port=self.get_exposed_port(self.port),
+            dbname=self.dbname,
         )

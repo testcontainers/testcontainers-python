@@ -4,7 +4,7 @@ from testcontainers.mssql import SqlServerContainer
 
 
 def test_docker_run_mssql():
-    image = "mcr.microsoft.com/azure-sql-edge"
+    image = "mcr.microsoft.com/azure-sql-edge:1.0.7"
     dialect = "mssql+pymssql"
     with SqlServerContainer(image, dialect=dialect) as mssql:
         engine = sqlalchemy.create_engine(mssql.get_connection_url())
