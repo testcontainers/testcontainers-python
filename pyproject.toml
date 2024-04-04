@@ -55,6 +55,7 @@ packages = [
     { include = "testcontainers", from = "modules/redis" },
     { include = "testcontainers", from = "modules/registry" },
     { include = "testcontainers", from = "modules/selenium" },
+    { include = "testcontainers", from = "modules/vault" },
     { include = "testcontainers", from = "modules/weaviate" }
 ]
 
@@ -74,6 +75,7 @@ azure-storage-blob = { version = "^12.19", optional = true }
 clickhouse-driver = { version = "*", optional = true }
 google-cloud-pubsub = { version = ">=2", optional = true }
 google-cloud-datastore = { version = ">=2", optional = true }
+hvac = { version = ">=2", optional = true }
 influxdb = { version = "*", optional = true }
 influxdb-client = { version = "*", optional = true }
 kubernetes = { version = "*", optional = true }
@@ -125,6 +127,7 @@ rabbitmq = ["pika"]
 redis = ["redis"]
 registry = ["bcrypt"]
 selenium = ["selenium"]
+vault = ["hvac"]
 weaviate = ["weaviate-client"]
 chroma = ["chromadb-client"]
 
