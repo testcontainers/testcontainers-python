@@ -77,7 +77,7 @@ class VaultContainer(DockerContainer):
 
     @wait_container_is_ready(requests.ConnectionError)
     def _healthcheck(self) -> None:
-        url = f"{self.config()['address']}/v1/sys/health"
+        url = f"{self.get_config()['address']}/v1/sys/health"
         response = requests.get(url, timeout=3)
         response.raise_for_status()
 

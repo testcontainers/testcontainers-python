@@ -266,6 +266,7 @@ mypy_path = [
 #    "modules/rabbitmq",
 #    "modules/redis",
 #    "modules/selenium"
+#    "modules/vault"
 #    "modules/weaviate"
 ]
 enable_error_code = [

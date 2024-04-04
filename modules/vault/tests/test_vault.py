@@ -2,7 +2,7 @@ from testcontainers.vault import VaultContainer
 
 
 def test_docker_run_vault():
-    config = VaultContainer()
+    config = VaultContainer("hashicorp/vault:1.16.1")
     with config as vault:
         client = vault.get_client()
         assert not client.is_authenticated()
@@ -11,7 +11,7 @@ def test_docker_run_vault():
 
 
 def test_docker_run_vault_act_as_root():
-    config = VaultContainer()
+    config = VaultContainer("hashicorp/vault:1.16.1")
     with config as vault:
         client = vault.get_root_client()
         assert client.is_authenticated()
@@ -32,8 +32,8 @@ def test_docker_run_vault_act_as_root():
                 "pssst": "this is secret",
             },
         )
-        resp = client.secrets.kv.v1.read_secret(
+        resp = client.secrets.kv.v2.read_secret(
             path="my-secret",
             mount_point="secrets",
         )
-        assert resp["data"]["pssst"] == "this is secret"
+        assert resp["data"]["data"]["pssst"] == "this is secret"
