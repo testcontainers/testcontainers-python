@@ -93,6 +93,7 @@ opensearch-py = { version = "*", optional = true }
 oracledb = { version = "*", optional = true }
 pika = { version = "*", optional = true }
 redis = { version = "*", optional = true }
+requests = { version = ">=2", optional = true }
 selenium = { version = "*", optional = true }
 weaviate-client = { version = "^4.5.4", optional = true }
 chromadb-client = { version = "*", optional = true }
@@ -127,7 +128,7 @@ rabbitmq = ["pika"]
 redis = ["redis"]
 registry = ["bcrypt"]
 selenium = ["selenium"]
-vault = ["hvac"]
+vault = ["hvac", "requests"]
 weaviate = ["weaviate-client"]
 chroma = ["chromadb-client"]
 
