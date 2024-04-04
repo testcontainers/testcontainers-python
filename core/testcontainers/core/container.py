@@ -70,11 +70,11 @@ class DockerContainer:
             self.ports[port] = None
         return self
 
-    def with_network(self, network: Network) -> 'DockerContainer':
+    def with_network(self, network: Network) -> Self:
         self._network = network
         return self
 
-    def with_network_aliases(self, *aliases) -> 'DockerContainer':
+    def with_network_aliases(self, *aliases) -> Self:
         self._network_aliases = aliases
         return self
 
