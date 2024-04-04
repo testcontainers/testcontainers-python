@@ -26,7 +26,7 @@ class ArangoDbContainer(DbContainer):
             >>> from testcontainers.arangodb import ArangoDbContainer
             >>> from arango import ArangoClient
 
-            >>> with ArangoDbContainer("arangodb:3.9.1") as arango:
+            >>> with ArangoDbContainer("arangodb:3.11.8") as arango:
             ...    client = ArangoClient(hosts=arango.get_connection_url())
             ...
             ...    # Connect

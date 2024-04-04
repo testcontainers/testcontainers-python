@@ -1,5 +1,77 @@
 # Changelog
 
+## [4.3.1](https://github.com/testcontainers/testcontainers-python/compare/testcontainers-v4.3.0...testcontainers-v4.3.1) (2024-04-02)
+
+
+### Bug Fixes
+
+* **core:** env vars not being respected due to constructor call ([#524](https://github.com/testcontainers/testcontainers-python/issues/524)) ([4872ea5](https://github.com/testcontainers/testcontainers-python/commit/4872ea5759347e10150c0d80e4e7bbce3d59c410)), closes [#521](https://github.com/testcontainers/testcontainers-python/issues/521)
+* Pin MongoDB images and improve test coverage for maintained versions ([#448](https://github.com/testcontainers/testcontainers-python/issues/448)) ([b5c7a1b](https://github.com/testcontainers/testcontainers-python/commit/b5c7a1b95af5470ee1b5109ed1fb8e1b3af52cf7))
+
+## [4.3.0](https://github.com/testcontainers/testcontainers-python/compare/testcontainers-v4.2.0...testcontainers-v4.3.0) (2024-04-01)
+
+
+### Features
+
+* **client:** Add custom User-Agent in Docker client as `tc-python/&lt;version&gt;` ([#507](https://github.com/testcontainers/testcontainers-python/issues/507)) ([dd55082](https://github.com/testcontainers/testcontainers-python/commit/dd55082991b3405038a90678a39e8c815f0d1fc8))
+
+
+### Bug Fixes
+
+* Add CassandraContainer ([#476](https://github.com/testcontainers/testcontainers-python/issues/476)) ([507e466](https://github.com/testcontainers/testcontainers-python/commit/507e466a1fa9ac64c254ceb9ae0d57f6bfd8c89d))
+* add chroma container ([#515](https://github.com/testcontainers/testcontainers-python/issues/515)) ([0729bf4](https://github.com/testcontainers/testcontainers-python/commit/0729bf4af957f8b6638cc204b108358745c0cfc9))
+* Add Weaviate module ([#492](https://github.com/testcontainers/testcontainers-python/issues/492)) ([90762e8](https://github.com/testcontainers/testcontainers-python/commit/90762e817bf49de6d6366212fb48e7edb67ab0c6))
+* **cassandra:** make cassandra dependency optional/test-only ([#518](https://github.com/testcontainers/testcontainers-python/issues/518)) ([bddbaeb](https://github.com/testcontainers/testcontainers-python/commit/bddbaeb20cbd147c429f8020395355402b8a7268))
+* **core:** allow setting docker command path for docker compose ([#512](https://github.com/testcontainers/testcontainers-python/issues/512)) ([63fcd52](https://github.com/testcontainers/testcontainers-python/commit/63fcd52ec2d6ded5f6413166a3690c1138e4dae0))
+* **google:** add support for Datastore emulator ([#508](https://github.com/testcontainers/testcontainers-python/issues/508)) ([3d891a5](https://github.com/testcontainers/testcontainers-python/commit/3d891a5ec62944d01d1bf3d6f70e6aec83f6e516))
+* Improved Oracle DB module ([#363](https://github.com/testcontainers/testcontainers-python/issues/363)) ([6e6d8e3](https://github.com/testcontainers/testcontainers-python/commit/6e6d8e3c919be3efa581704868193e66da54acf3))
+* inconsistent test runs for community modules ([#497](https://github.com/testcontainers/testcontainers-python/issues/497)) ([914f1e5](https://github.com/testcontainers/testcontainers-python/commit/914f1e55bcb3b10260788c3affb8426f77eb9036))
+* **kafka:** Add redpanda testcontainer module ([#441](https://github.com/testcontainers/testcontainers-python/issues/441)) ([451d278](https://github.com/testcontainers/testcontainers-python/commit/451d27865873bb75f4a09a26442572745408d013))
+* **kafka:** wait_for_logs in kafka container to reduce lib requirement ([#377](https://github.com/testcontainers/testcontainers-python/issues/377)) ([909107b](https://github.com/testcontainers/testcontainers-python/commit/909107b221417a39516f961364beb518d2756f45))
+* **keycloak:** container should use dedicated API endpoints to determine container readiness ([#490](https://github.com/testcontainers/testcontainers-python/issues/490)) ([2e27225](https://github.com/testcontainers/testcontainers-python/commit/2e272253148797759748bd40c42f797697d3163f))
+* **nats:** Client-Free(ish) NATS container ([#462](https://github.com/testcontainers/testcontainers-python/issues/462)) ([302c73d](https://github.com/testcontainers/testcontainers-python/commit/302c73ddaa7a6b5bc071ab0cc36d15461cae348b))
+* **new:** add a new Docker Registry test container ([#389](https://github.com/testcontainers/testcontainers-python/issues/389)) ([0f554fb](https://github.com/testcontainers/testcontainers-python/commit/0f554fbaa9511e0221806f57de971abedf1c0bf2))
+* pass doctests, s/doctest/doctests/, run them in gha, s/asyncpg/psycopg/ in doctest, fix keycloak flakiness: wait for first user ([#505](https://github.com/testcontainers/testcontainers-python/issues/505)) ([545240d](https://github.com/testcontainers/testcontainers-python/commit/545240dfdcb2a565ad7cef0e9813f03b9b6f910e))
+* pass updated keyword args to Publisher/Subscriber client in google/pubsub [#161](https://github.com/testcontainers/testcontainers-python/issues/161) ([#164](https://github.com/testcontainers/testcontainers-python/issues/164)) ([8addc11](https://github.com/testcontainers/testcontainers-python/commit/8addc111c94826c2a619a0880d48550673f4d7b9))
+* Qdrant module ([#463](https://github.com/testcontainers/testcontainers-python/issues/463)) ([e8876f4](https://github.com/testcontainers/testcontainers-python/commit/e8876f422abeb29a7236f2174f7e7a324b7d26cb))
+* remove accidentally added pip in dev dependencies ([#516](https://github.com/testcontainers/testcontainers-python/issues/516)) ([dee20a7](https://github.com/testcontainers/testcontainers-python/commit/dee20a76c88445b911d38b4704c2380114a66794))
+* **ryuk:** Enable Ryuk test suite. Ryuk image 0.5.1 -&gt; 0.7.0. Add RYUK_RECONNECTION_TIMEOUT env variable ([#509](https://github.com/testcontainers/testcontainers-python/issues/509)) ([472b2c2](https://github.com/testcontainers/testcontainers-python/commit/472b2c24aec232a04c00dd7dcd9a9f05f2dfaa66))
+
+## [4.2.0](https://github.com/testcontainers/testcontainers-python/compare/testcontainers-v4.1.0...testcontainers-v4.2.0) (2024-03-24)
+
+
+### Features
+
+* support influxdb ([#413](https://github.com/testcontainers/testcontainers-python/issues/413)) ([13742a5](https://github.com/testcontainers/testcontainers-python/commit/13742a5dc448c80914953c21f8f2b01177c3fa6c))
+
+
+### Bug Fixes
+
+* **arangodb:** tests to pass on ARM CPUs - change default image to 3.11.x where ARM image is published ([#479](https://github.com/testcontainers/testcontainers-python/issues/479)) ([7b58a50](https://github.com/testcontainers/testcontainers-python/commit/7b58a50f3a8703c5d5e974a4ff20bc8e52ae93c8))
+* **core:** DinD issues [#141](https://github.com/testcontainers/testcontainers-python/issues/141), [#329](https://github.com/testcontainers/testcontainers-python/issues/329) ([#368](https://github.com/testcontainers/testcontainers-python/issues/368)) ([b10d916](https://github.com/testcontainers/testcontainers-python/commit/b10d916848cccc016fc457333f7b382b18a7b3ef))
+* **core:** raise an exception when docker compose fails to start [#258](https://github.com/testcontainers/testcontainers-python/issues/258) ([#485](https://github.com/testcontainers/testcontainers-python/issues/485)) ([d61af38](https://github.com/testcontainers/testcontainers-python/commit/d61af383def6eadcd7f2b5ba667eb587c6cc84f1))
+* **core:** use auto_remove=True with reaper instance ([#499](https://github.com/testcontainers/testcontainers-python/issues/499)) ([274a400](https://github.com/testcontainers/testcontainers-python/commit/274a4002600ae70662a5785c7a903cf8846b2ffc))
+* **docs:** update the non-existent main.yml badge ([#493](https://github.com/testcontainers/testcontainers-python/issues/493)) ([1d10c1c](https://github.com/testcontainers/testcontainers-python/commit/1d10c1ca8c8163b8d68338e1d50d0e26d7b0515e))
+* Fix the return type of `DockerContainer.get_logs` ([#487](https://github.com/testcontainers/testcontainers-python/issues/487)) ([cd72f68](https://github.com/testcontainers/testcontainers-python/commit/cd72f6896db3eb1fd5ea60f9c051cb719568a12f))
+* **keycloak:** tests on aarch64, use image from [jboss -&gt; quay], change supported version [16+ -> 18+] ([#480](https://github.com/testcontainers/testcontainers-python/issues/480)) ([5758310](https://github.com/testcontainers/testcontainers-python/commit/5758310532b8a8e1303a24bc534fa8aeb0f75eb2))
+* **postgres:** doctest ([#473](https://github.com/testcontainers/testcontainers-python/issues/473)) ([c9c6f92](https://github.com/testcontainers/testcontainers-python/commit/c9c6f92348299a2cc04988af8d69a53a23a7c7d5))
+* read the docs build works again ([#496](https://github.com/testcontainers/testcontainers-python/issues/496)) ([dfd1781](https://github.com/testcontainers/testcontainers-python/commit/dfd17814a7fc9ede510ae17569004bd92f2a6fa6))
+* readthedocs build - take 1 ([#495](https://github.com/testcontainers/testcontainers-python/issues/495)) ([b3b9901](https://github.com/testcontainers/testcontainers-python/commit/b3b990159154857239e2fb86da3cb85a6a13ab8e))
+
+## [4.1.0](https://github.com/testcontainers/testcontainers-python/compare/testcontainers-v4.0.1...testcontainers-v4.1.0) (2024-03-19)
+
+
+### Features
+
+* **reliability:** integrate the ryuk container for better container cleanup ([#314](https://github.com/testcontainers/testcontainers-python/issues/314)) ([d019874](https://github.com/testcontainers/testcontainers-python/commit/d0198744c3bdc97a7fe41879b54acb2f5ee7becb))
+
+
+### Bug Fixes
+
+* changelog after release-please ([#469](https://github.com/testcontainers/testcontainers-python/issues/469)) ([dcb4f68](https://github.com/testcontainers/testcontainers-python/commit/dcb4f6842cbfe6e880a77b0d4aabb3f396c6dc19))
+* **configuration:** strip whitespaces when reading .testcontainers.properties ([#474](https://github.com/testcontainers/testcontainers-python/issues/474)) ([ade144e](https://github.com/testcontainers/testcontainers-python/commit/ade144ee2888d4044ac0c1dc627f47da92789e06))
+* try to fix release-please by setting a bootstrap sha ([#472](https://github.com/testcontainers/testcontainers-python/issues/472)) ([ca65a91](https://github.com/testcontainers/testcontainers-python/commit/ca65a916b719168c57c174d2af77d45fd026ec05))
+
 ## [4.0.1](https://github.com/testcontainers/testcontainers-python/compare/testcontainers-v4.0.0...testcontainers-v4.0.1) (2024-03-11)
 
 

@@ -63,6 +63,7 @@ labels:
   - { name: '🐧 linux',                  color: '#3ED4D',, description: '' }
   - { name: '👀 requires attention',     color: '#fef2c0', description: '' }
   - { name: '📖 documentation',          color: '#d93f0b', description: '' }
+  - { name: '📦 package: cassandra',     color: '#0052CC', description: '' }
   - { name: '📦 package: clickhouse',    color: '#0052CC', description: '' }
   - { name: '📦 package: compose',       color: '#0052CC', description: '' }
   - { name: '📦 package: core',          color: '#0052CC', description: '' }

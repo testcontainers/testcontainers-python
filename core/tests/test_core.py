@@ -28,4 +28,6 @@ def test_can_get_logs():
     with DockerContainer("hello-world") as container:
         wait_for_logs(container, "Hello from Docker!")
         stdout, stderr = container.get_logs()
+        assert isinstance(stdout, bytes)
+        assert isinstance(stderr, bytes)
         assert stdout, "There should be something on stdout"

@@ -38,14 +38,13 @@ class PostgresContainer(DbContainer):
             >>> from testcontainers.postgres import PostgresContainer
             >>> import sqlalchemy
 
-            >>> postgres_container = PostgresContainer("postgres:16")
-            >>> with postgres_container as postgres:
+            >>> with PostgresContainer("postgres:16") as postgres:
             ...     engine = sqlalchemy.create_engine(postgres.get_connection_url())
             ...     with engine.begin() as connection:
             ...         result = connection.execute(sqlalchemy.text("select version()"))
             ...         version, = result.fetchone()
             >>> version
-            'PostgreSQL 9.5...'
+            'PostgreSQL 16...'
     """
 
     def __init__(
