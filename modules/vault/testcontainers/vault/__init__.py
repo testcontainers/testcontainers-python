@@ -27,10 +27,14 @@ class VaultContainer(DockerContainer):
         .. doctest::
 
             >>> from testcontainers.vault import VaultContainer
+            >>> import hvac
 
             >>> with VaultContainer("hashicorp/vault:1.16.1") as vault_container:
             ...     connection_url = vault_container.get_connection_url()
-            ...     root_token = vault_container.root_token
+            ...     client = hvac.Client(url=connection_url, token=vault_container.root_token)
+            ...     assert client.is_authenticated()
+            ...     # use root client to perform desired actions, e.g.
+            ...     policies = client.sys.list_acl_policies()
     """
     def __init__(self, image: str = "hashicorp/vault:latest", port: int = 8200,
                  root_token: str = "toor", **kwargs) -> None:
