@@ -30,7 +30,7 @@ class SqlServerContainer(DbContainer):
         port: int = 1433,
         dbname: str = "tempdb",
         dialect: str = "mssql+pymssql",
-        **kwargs
+        **kwargs,
     ) -> None:
         raise_for_deprecated_parameter(kwargs, "user", "username")
         super().__init__(image, **kwargs)

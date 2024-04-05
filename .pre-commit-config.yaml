@@ -9,18 +9,14 @@ repos:
       - id: trailing-whitespace
       - id: end-of-file-fixer
 
-  - repo: https://github.com/psf/black-pre-commit-mirror
-    rev: '24.2.0'
-    hooks:
-      - id: black
-        args: [ '--config', 'pyproject.toml' ]
-
   - repo: https://github.com/astral-sh/ruff-pre-commit
-    rev: 'v0.3.0'
+    rev: 'v0.3.5'
     hooks:
       - id: ruff
         # Explicitly setting config to prevent Ruff from using `pyproject.toml` in sub packages.
         args: [ '--fix', '--exit-non-zero-on-fix', '--config', 'pyproject.toml' ]
+      - id: ruff-format
+        args: [ '--config', 'pyproject.toml' ]
 
 #  - repo: local
 #    hooks:
