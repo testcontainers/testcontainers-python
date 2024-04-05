@@ -31,7 +31,7 @@ class RabbitMqContainer(DockerContainer):
         port: Optional[int] = None,
         username: Optional[str] = None,
         password: Optional[str] = None,
-        **kwargs
+        **kwargs,
     ) -> None:
         """Initialize the RabbitMQ test container.
 
