@@ -11,10 +11,10 @@
 #    License for the specific language governing permissions and limitations
 #    under the License.
 
-from urllib.request import urlopen
 from http.client import HTTPException
+from urllib.request import urlopen
+
 from testcontainers.core.container import DockerContainer
-from testcontainers.core.utils import raise_for_deprecated_parameter
 from testcontainers.core.waiting_utils import wait_container_is_ready
 
 
@@ -36,9 +36,15 @@ class VaultContainer(DockerContainer):
             ...     # use root client to perform desired actions, e.g.
             ...     policies = client.sys.list_acl_policies()
     """
-    def __init__(self, image: str = "hashicorp/vault:latest", port: int = 8200,
-                 root_token: str = "toor", **kwargs) -> None:
-        super(VaultContainer, self).__init__(image, **kwargs)
+
+    def __init__(
+        self,
+        image: str = "hashicorp/vault:latest",
+        port: int = 8200,
+        root_token: str = "toor",
+        **kwargs,
+    ) -> None:
+        super().__init__(image, **kwargs)
         self.port = port
         self.root_token = root_token
         self.with_exposed_ports(self.port)
