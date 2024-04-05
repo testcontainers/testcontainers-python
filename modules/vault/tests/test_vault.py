@@ -1,11 +1,12 @@
+import hvac
 from testcontainers.vault import VaultContainer
 
 
 def test_docker_run_vault():
     config = VaultContainer("hashicorp/vault:1.16.1")
     with config as vault:
-        client = vault.get_client()
-        assert not client.is_authenticated()
+        url = vault.get_connection_url()
+        client = hvac.Client(url=url)
         status = client.sys.read_health_status()
         assert status.status_code == 200
 
@@ -13,7 +14,8 @@ def test_docker_run_vault():
 def test_docker_run_vault_act_as_root():
     config = VaultContainer("hashicorp/vault:1.16.1")
     with config as vault:
-        client = vault.get_root_client()
+        url = vault.get_connection_url()
+        client = hvac.Client(url=url, token=vault.root_token)
         assert client.is_authenticated()
         assert client.sys.is_initialized()
         assert not client.sys.is_sealed()

@@ -1453,7 +1453,7 @@ socks = ["socksio (==1.*)"]
 name = "hvac"
 version = "2.1.0"
 description = "HashiCorp Vault API client"
-optional = true
+optional = false
 python-versions = ">=3.8,<4.0"
 files = [
     {file = "hvac-2.1.0-py3-none-any.whl", hash = "sha256:73bc91e58c3fc7c6b8107cdaca9cb71fa0a893dfd80ffbc1c14e20f24c0c29d7"},
@@ -4205,10 +4205,9 @@ rabbitmq = ["pika"]
 redis = ["redis"]
 registry = ["bcrypt"]
 selenium = ["selenium"]
-vault = ["hvac"]
 weaviate = ["weaviate-client"]
 
 [metadata]
 lock-version = "2.0"
 python-versions = ">=3.9,<4.0"
-content-hash = "ac3493c50538b9b40d51671b22fcb679b9624ec6daf47e7ce37e750f2c8fc00d"
+content-hash = "8a46a48099cce46e1334e60022ceff6922be432a8ba021dc6c1cb93ce7c55866"
