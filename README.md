@@ -5,7 +5,7 @@
 ![Community Tests](https://github.com/testcontainers/testcontainers-python/actions/workflows/ci-community.yml/badge.svg)
 [![Docs](https://readthedocs.org/projects/testcontainers-python/badge/?version=latest)](http://testcontainers-python.readthedocs.io/en/latest/?badge=latest)
 
-[![Codescpace](https://github.com/codespaces/badge.svg)](https://codespaces.new/testcontainers/testcontainers-python)
+[![Codespace](https://github.com/codespaces/badge.svg)](https://codespaces.new/testcontainers/testcontainers-python)
 # Testcontainers Python
 
 `testcontainers-python` facilitates the use of Docker containers for functional and integration testing.
