@@ -12,7 +12,8 @@
 #    under the License.
 
 import hvac
-import requests
+from urllib.request import urlopen
+from http.client import HTTPException
 from testcontainers.core.container import DockerContainer
 from testcontainers.core.utils import raise_for_deprecated_parameter
 from testcontainers.core.waiting_utils import wait_container_is_ready
@@ -28,7 +29,7 @@ class VaultContainer(DockerContainer):
 
             >>> from testcontainers.vault import VaultContainer
 
-            >>> with VaultContainer() as vault_container:
+            >>> with VaultContainer("hashicorp/vault:1.16.1") as vault_container:
             ...     vault_client = vault_container.get_client()
     """
     def __init__(self, image: str = "hashicorp/vault:latest", port: int = 8200,
@@ -75,11 +76,12 @@ class VaultContainer(DockerContainer):
         config = self.get_config()
         return hvac.Client(url=config["address"], token=config["root_token"])
 
-    @wait_container_is_ready(requests.ConnectionError)
+    @wait_container_is_ready(HTTPException)
     def _healthcheck(self) -> None:
         url = f"{self.get_config()['address']}/v1/sys/health"
-        response = requests.get(url, timeout=3)
-        response.raise_for_status()
+        with urlopen(url) as res:
+            if res.status > 299:
+                raise HTTPException()
 
     def start(self) -> "VaultContainer":
         super().start()

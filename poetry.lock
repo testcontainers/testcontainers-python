@@ -4205,10 +4205,10 @@ rabbitmq = ["pika"]
 redis = ["redis"]
 registry = ["bcrypt"]
 selenium = ["selenium"]
-vault = ["hvac", "requests"]
+vault = ["hvac"]
 weaviate = ["weaviate-client"]
 
 [metadata]
 lock-version = "2.0"
 python-versions = ">=3.9,<4.0"
-content-hash = "30c865efa5bbb0556ac549c822acd26e33ef7b33bab402e29339a1f0bf5c8c50"
+content-hash = "ac3493c50538b9b40d51671b22fcb679b9624ec6daf47e7ce37e750f2c8fc00d"
