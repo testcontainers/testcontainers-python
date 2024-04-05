@@ -126,6 +126,7 @@ rabbitmq = ["pika"]
 redis = ["redis"]
 registry = ["bcrypt"]
 selenium = ["selenium"]
+vault = []
 weaviate = ["weaviate-client"]
 chroma = ["chromadb-client"]
 
