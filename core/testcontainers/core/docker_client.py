@@ -36,7 +36,6 @@ _T = TypeVar("_T")
 
 
 def _wrapped_container_collection(function: Callable[_P, _T]) -> Callable[_P, _T]:
-
     @ft.wraps(ContainerCollection.run)
     def wrapper(*args: _P.args, **kwargs: _P.kwargs) -> _T:
         return function(*args, **kwargs)

@@ -48,7 +48,7 @@ class MySqlContainer(DbContainer):
         password: Optional[str] = None,
         dbname: Optional[str] = None,
         port: int = 3306,
-        **kwargs
+        **kwargs,
     ) -> None:
         raise_for_deprecated_parameter(kwargs, "MYSQL_USER", "username")
         raise_for_deprecated_parameter(kwargs, "MYSQL_ROOT_PASSWORD", "root_password")

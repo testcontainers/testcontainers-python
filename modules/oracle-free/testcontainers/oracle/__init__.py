@@ -36,7 +36,7 @@ class OracleDbContainer(DbContainer):
         password: Optional[str] = None,
         port: int = 1521,
         dbname: Optional[str] = None,
-        **kwargs
+        **kwargs,
     ) -> None:
         super().__init__(image=image, **kwargs)
 
