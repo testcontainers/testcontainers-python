@@ -1,5 +1,6 @@
 [![Poetry](https://img.shields.io/endpoint?url=https://python-poetry.org/badge/v0.json)](https://python-poetry.org/)
 [![Ruff](https://img.shields.io/endpoint?url=https://raw.githubusercontent.com/astral-sh/ruff/main/assets/badge/v2.json)](https://github.com/astral-sh/ruff)
+![PyPI - Version](https://img.shields.io/pypi/v/testcontainers)
 ![PyPI - Python Version](https://img.shields.io/pypi/pyversions/testcontainers)
 ![Core Tests](https://github.com/testcontainers/testcontainers-python/actions/workflows/ci-core.yml/badge.svg)
 ![Community Tests](https://github.com/testcontainers/testcontainers-python/actions/workflows/ci-community.yml/badge.svg)
