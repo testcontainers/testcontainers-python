@@ -55,6 +55,7 @@ packages = [
     { include = "testcontainers", from = "modules/redis" },
     { include = "testcontainers", from = "modules/registry" },
     { include = "testcontainers", from = "modules/selenium" },
+    { include = "testcontainers", from = "modules/vault" },
     { include = "testcontainers", from = "modules/weaviate" }
 ]
 
@@ -125,6 +126,7 @@ rabbitmq = ["pika"]
 redis = ["redis"]
 registry = ["bcrypt"]
 selenium = ["selenium"]
+vault = []
 weaviate = ["weaviate-client"]
 chroma = ["chromadb-client"]
 
@@ -144,6 +146,7 @@ psycopg = "*"
 cassandra-driver = "*"
 pytest-asyncio = "0.23.5"
 kafka-python-ng = "^2.2.0"
+hvac = "*"
 
 [[tool.poetry.source]]
 name = "PyPI"
@@ -262,6 +265,7 @@ mypy_path = [
 #    "modules/rabbitmq",
 #    "modules/redis",
 #    "modules/selenium"
+#    "modules/vault"
 #    "modules/weaviate"
 ]
 enable_error_code = [
