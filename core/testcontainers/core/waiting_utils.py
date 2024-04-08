@@ -19,7 +19,7 @@ from typing import TYPE_CHECKING, Any, Callable, Optional, Union
 
 import wrapt
 
-from testcontainers.core.config import testcontainers_config as c
+from testcontainers.core.config import testcontainers_config as config
 from testcontainers.core.utils import setup_logger
 
 if TYPE_CHECKING:
@@ -54,18 +54,18 @@ def wait_container_is_ready(*transient_exceptions) -> Callable:
             logger.info("Waiting for %s to be ready ...", instance)
 
         exception = None
-        for attempt_no in range(c.max_tries):
+        for attempt_no in range(config.max_tries):
             try:
                 return wrapped(*args, **kwargs)
             except transient_exceptions as e:
                 logger.debug(
-                    f"Connection attempt '{attempt_no + 1}' of '{c.max_tries + 1}' "
+                    f"Connection attempt '{attempt_no + 1}' of '{config.max_tries + 1}' "
                     f"failed: {traceback.format_exc()}"
                 )
-                time.sleep(c.sleep_time)
+                time.sleep(config.sleep_time)
                 exception = e
         raise TimeoutError(
-            f"Wait time ({c.timeout}s) exceeded for {wrapped.__name__}(args: {args}, kwargs: "
+            f"Wait time ({config.timeout}s) exceeded for {wrapped.__name__}(args: {args}, kwargs: "
             f"{kwargs}). Exception: {exception}"
         )
 
