@@ -1,5 +1,7 @@
-from dataclasses import dataclass
+from dataclasses import dataclass, field
 from os import environ
+from os.path import exists
+from pathlib import Path
 
 MAX_TRIES = int(environ.get("TC_MAX_TRIES", 120))
 SLEEP_TIME = int(environ.get("TC_POOLING_INTERVAL", 1))
@@ -11,6 +13,28 @@ RYUK_DISABLED: bool = environ.get("TESTCONTAINERS_RYUK_DISABLED", "false") == "t
 RYUK_DOCKER_SOCKET: str = environ.get("TESTCONTAINERS_DOCKER_SOCKET_OVERRIDE", "/var/run/docker.sock")
 RYUK_RECONNECTION_TIMEOUT: str = environ.get("RYUK_RECONNECTION_TIMEOUT", "10s")
 
+TC_FILE = ".testcontainers.properties"
+TC_GLOBAL = Path.home() / TC_FILE
+
+
+def read_tc_properties() -> dict[str, str]:
+    """
+    Read the .testcontainers.properties for settings. (see the Java implementation for details)
+    Currently we only support the ~/.testcontainers.properties but may extend to per-project variables later.
+
+    :return: the merged properties from the sources.
+    """
+    tc_files = [item for item in [TC_GLOBAL] if exists(item)]
+    if not tc_files:
+        return {}
+    settings = {}
+
+    for file in tc_files:
+        with open(file) as contents:
+            tuples = [line.split("=") for line in contents.readlines() if "=" in line]
+            settings = {**settings, **{item[0].strip(): item[1].strip() for item in tuples}}
+    return settings
+
 
 @dataclass
 class TestcontainersConfiguration:
@@ -21,6 +45,7 @@ class TestcontainersConfiguration:
     ryuk_disabled: bool = RYUK_DISABLED
     ryuk_docker_socket: str = RYUK_DOCKER_SOCKET
     ryuk_reconnection_timeout: str = RYUK_RECONNECTION_TIMEOUT
+    tc_properties: dict[str, str] = field(default_factory=read_tc_properties)
 
     @property
     def timeout(self):
