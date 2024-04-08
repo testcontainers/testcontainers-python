@@ -2,7 +2,7 @@ from testcontainers.core.container import DockerContainer
 from testcontainers.core.docker_client import DockerClient
 from testcontainers.core.network import Network
 
-NGINX_ALPINE_SLIM_IMAGE = "nginx:alpine-slim"
+NGINX_ALPINE_SLIM_IMAGE = "nginx:1.25.4-alpine-slim"
 
 
 def test_network_gets_created_and_cleaned_up():
