@@ -57,4 +57,16 @@ class TestcontainersConfiguration:
 
 testcontainers_config = TestcontainersConfiguration()
 
-__all__ = ["testcontainers_config"]
+__all__ = [
+    # the public API of this module
+    "testcontainers_config",
+    # and all the legacy things that are deprecated:
+    "MAX_TRIES",
+    "SLEEP_TIME",
+    "TIMEOUT",
+    "RYUK_IMAGE",
+    "RYUK_PRIVILEGED",
+    "RYUK_DISABLED",
+    "RYUK_DOCKER_SOCKET",
+    "RYUK_RECONNECTION_TIMEOUT",
+]
