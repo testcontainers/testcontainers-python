@@ -1,7 +1,7 @@
 from typing import Optional
 from uuid import uuid4
 
-from testcontainers.core.config import RYUK_IMAGE
+from testcontainers.core import config
 
 SESSION_ID: str = str(uuid4())
 LABEL_SESSION_ID = "org.testcontainers.session-id"
@@ -13,7 +13,7 @@ def create_labels(image: str, labels: Optional[dict[str, str]]) -> dict[str, str
         labels = {}
     labels[LABEL_LANG] = "python"
 
-    if image == RYUK_IMAGE:
+    if image == config.RYUK_IMAGE:
         return labels
 
     labels[LABEL_SESSION_ID] = SESSION_ID

@@ -15,7 +15,7 @@ import os
 from typing import Optional
 
 from neo4j import Driver, GraphDatabase
-from testcontainers.core.config import TIMEOUT
+from testcontainers.core import config
 from testcontainers.core.generic import DbContainer
 from testcontainers.core.utils import raise_for_deprecated_parameter
 from testcontainers.core.waiting_utils import wait_container_is_ready, wait_for_logs
@@ -62,7 +62,7 @@ class Neo4jContainer(DbContainer):
 
     @wait_container_is_ready()
     def _connect(self) -> None:
-        wait_for_logs(self, "Remote interface available at", TIMEOUT)
+        wait_for_logs(self, "Remote interface available at", config.TIMEOUT)
 
         # Then we actually check that the container really is listening
         with self.get_driver() as driver:

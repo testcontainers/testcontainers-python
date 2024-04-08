@@ -15,7 +15,7 @@ from functools import cached_property
 from pathlib import Path
 from typing import Optional
 
-from testcontainers.core.config import TIMEOUT
+from testcontainers.core import config
 from testcontainers.core.generic import DbContainer
 from testcontainers.core.waiting_utils import wait_container_is_ready, wait_for_logs
 
@@ -61,7 +61,7 @@ class QdrantContainer(DbContainer):
 
     @wait_container_is_ready()
     def _connect(self) -> None:
-        wait_for_logs(self, ".*Actix runtime found; starting in Actix runtime.*", TIMEOUT)
+        wait_for_logs(self, ".*Actix runtime found; starting in Actix runtime.*", config.TIMEOUT)
 
     def get_client(self, **kwargs):
         """

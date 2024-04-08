@@ -11,7 +11,7 @@
 #    License for the specific language governing permissions and limitations
 #    under the License.
 
-from testcontainers.core.config import MAX_TRIES
+from testcontainers.core import config
 from testcontainers.core.container import DockerContainer
 from testcontainers.core.waiting_utils import wait_for_logs
 
@@ -46,7 +46,7 @@ class K3SContainer(DockerContainer):
         self.with_volume_mapping("/sys/fs/cgroup", "/sys/fs/cgroup", "rw")
 
     def _connect(self) -> None:
-        wait_for_logs(self, predicate="Node controller sync successful", timeout=MAX_TRIES)
+        wait_for_logs(self, predicate="Node controller sync successful", timeout=config.MAX_TRIES)
 
     def start(self) -> "K3SContainer":
         super().start()

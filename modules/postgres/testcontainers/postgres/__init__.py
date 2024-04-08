@@ -14,7 +14,7 @@ import os
 from time import sleep
 from typing import Optional
 
-from testcontainers.core.config import MAX_TRIES, SLEEP_TIME
+from testcontainers.core import config
 from testcontainers.core.generic import DbContainer
 from testcontainers.core.utils import raise_for_deprecated_parameter
 from testcontainers.core.waiting_utils import wait_container_is_ready, wait_for_logs
@@ -91,15 +91,15 @@ class PostgresContainer(DbContainer):
 
     @wait_container_is_ready()
     def _connect(self) -> None:
-        wait_for_logs(self, ".*database system is ready to accept connections.*", MAX_TRIES, SLEEP_TIME)
+        wait_for_logs(self, ".*database system is ready to accept connections.*", config.MAX_TRIES, config.SLEEP_TIME)
 
         count = 0
-        while count < MAX_TRIES:
+        while count < config.MAX_TRIES:
             status, _ = self.exec(f"pg_isready -hlocalhost -p{self.port} -U{self.username}")
             if status == 0:
                 return
 
-            sleep(SLEEP_TIME)
+            sleep(config.SLEEP_TIME)
             count += 1
 
         raise RuntimeError("Postgres could not get into a ready state")
