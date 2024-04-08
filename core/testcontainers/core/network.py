@@ -16,7 +16,7 @@ from typing import Optional
 from testcontainers.core.docker_client import DockerClient
 
 
-class Network(object):
+class Network:
     """
     Network context manager for programmatically connecting containers.
     """
