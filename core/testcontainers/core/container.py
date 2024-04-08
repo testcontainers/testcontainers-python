@@ -6,13 +6,7 @@ from typing import TYPE_CHECKING, Optional
 import docker.errors
 from typing_extensions import Self
 
-from testcontainers.core.config import (
-    RYUK_DISABLED,
-    RYUK_DOCKER_SOCKET,
-    RYUK_IMAGE,
-    RYUK_PRIVILEGED,
-    RYUK_RECONNECTION_TIMEOUT,
-)
+from testcontainers.core.config import testcontainers_config as c
 from testcontainers.core.docker_client import DockerClient
 from testcontainers.core.exceptions import ContainerStartException
 from testcontainers.core.labels import LABEL_SESSION_ID, SESSION_ID
@@ -77,7 +71,7 @@ class DockerContainer:
         return self
 
     def start(self) -> Self:
-        if not RYUK_DISABLED and self.image != RYUK_IMAGE:
+        if not c.ryuk_disabled and self.image != c.ryuk_image:
             logger.debug("Creating Ryuk container")
             Reaper.get_instance()
         logger.info("Pulling image %s", self.image)
@@ -201,12 +195,12 @@ class Reaper:
         logger.debug(f"Creating new Reaper for session: {SESSION_ID}")
 
         Reaper._container = (
-            DockerContainer(RYUK_IMAGE)
+            DockerContainer(c.ryuk_image)
             .with_name(f"testcontainers-ryuk-{SESSION_ID}")
             .with_exposed_ports(8080)
-            .with_volume_mapping(RYUK_DOCKER_SOCKET, "/var/run/docker.sock", "rw")
-            .with_kwargs(privileged=RYUK_PRIVILEGED, auto_remove=True)
-            .with_env("RYUK_RECONNECTION_TIMEOUT", RYUK_RECONNECTION_TIMEOUT)
+            .with_volume_mapping(c.ryuk_docker_socket, "/var/run/docker.sock", "rw")
+            .with_kwargs(privileged=c.ryuk_privileged, auto_remove=True)
+            .with_env("RYUK_RECONNECTION_TIMEOUT", c.ryuk_reconnection_timeout)
             .start()
         )
         wait_for_logs(Reaper._container, r".* Started!")
