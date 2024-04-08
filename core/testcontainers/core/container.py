@@ -54,7 +54,7 @@ class DockerContainer:
         self._command = None
         self._name = None
         self._network: Optional[Network] = None
-        self._network_aliases: Optional[list] = None
+        self._network_aliases: Optional[list[str]] = None
         self._kwargs = kwargs
 
     def with_env(self, key: str, value: str) -> Self:
