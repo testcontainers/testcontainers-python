@@ -183,4 +183,4 @@ class DockerClient:
 
 
 def get_docker_host() -> Optional[str]:
-    return c.tc_properties.get("tc.host") or os.getenv("DOCKER_HOST")
+    return c.tc_properties_get_tc_host() or os.getenv("DOCKER_HOST")
