@@ -1,5 +1,4 @@
 from dataclasses import dataclass
-from functools import cached_property
 from os import environ
 
 MAX_TRIES = int(environ.get("TC_MAX_TRIES", 120))
@@ -23,7 +22,7 @@ class TestcontainersConfiguration:
     ryuk_docker_socket: str = RYUK_DOCKER_SOCKET
     ryuk_reconnection_timeout: str = RYUK_RECONNECTION_TIMEOUT
 
-    @cached_property
+    @property
     def timeout(self):
         return self.max_tries * self.sleep_time
 
