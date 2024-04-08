@@ -21,10 +21,10 @@ class Network(object):
     Network context manager for programmatically connecting containers.
     """
 
-    def __init__(self, docker_client_kw: Optional[dict] = None, **kwargs) -> None:
+    def __init__(self, docker_client_kw: Optional[dict] = None, docker_network_kw: Optional[dict] = None) -> None:
         self.name = str(uuid.uuid4())
         self._docker = DockerClient(**(docker_client_kw or {}))
-        self._kwargs = kwargs
+        self._docker_network_kw = docker_network_kw or {}
 
     def connect(self, container_id: str, network_aliases: Optional[list] = None):
         self._network.connect(container_id, aliases=network_aliases)
@@ -33,7 +33,7 @@ class Network(object):
         self._network.remove()
 
     def __enter__(self) -> 'Network':
-        self._network = self._docker.client.networks.create(self.name, **self._kwargs)
+        self._network = self._docker.client.networks.create(self.name, **self._docker_network_kw)
         self.id = self._network.id
         return self
 
