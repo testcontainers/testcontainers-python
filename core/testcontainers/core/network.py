@@ -39,10 +39,3 @@ class Network(object):
 
     def __exit__(self, exc_type, exc_val, exc_tb) -> None:
         self.remove()
-
-    def __del__(self) -> None:
-        if self._network is not None:
-            try:
-                self.remove()
-            except:  # noqa: E722
-                pass
