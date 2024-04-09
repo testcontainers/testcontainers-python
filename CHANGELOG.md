@@ -1,5 +1,12 @@
 # Changelog
 
+## [4.3.3](https://github.com/testcontainers/testcontainers-python/compare/testcontainers-v4.3.2...testcontainers-v4.3.3) (2024-04-09)
+
+
+### Bug Fixes
+
+* missing typing-extensions dependency ([#534](https://github.com/testcontainers/testcontainers-python/issues/534)) ([ef86d15](https://github.com/testcontainers/testcontainers-python/commit/ef86d15f5c63159dcbeb3dbefe9b8fa1964177d9)), closes [#533](https://github.com/testcontainers/testcontainers-python/issues/533)
+
 ## [4.3.2](https://github.com/testcontainers/testcontainers-python/compare/testcontainers-v4.3.1...testcontainers-v4.3.2) (2024-04-08)
 
 
