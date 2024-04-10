@@ -1,10 +1,10 @@
 from testcontainers.core.labels import (
     LABEL_LANG,
     LABEL_SESSION_ID,
-    LABEL_TEST_CONTAINERS,
+    LABEL_TESTCONTAINERS,
     LABEL_VERSION,
     create_labels,
-    TEST_CONTAINERS_NAMESPACE,
+    TESTCONTAINERS_NAMESPACE,
 )
 import pytest
 from testcontainers.core.config import RYUK_IMAGE
@@ -18,7 +18,7 @@ def assert_in_with_value(labels: dict, label: str, value: str, known_before_test
 
 testdata = [
     (LABEL_LANG, "python", True),
-    (LABEL_TEST_CONTAINERS, "true", True),
+    (LABEL_TESTCONTAINERS, "true", True),
     (LABEL_SESSION_ID, "some", False),
     (LABEL_VERSION, "some", False),
 ]
@@ -33,7 +33,7 @@ def test_containers_creates_expected_labels(label, value, known_before_test_time
 def test_containers_throws_on_namespace_collision():
 
     with pytest.raises(ValueError):
-        create_labels("not-ryuk", {TEST_CONTAINERS_NAMESPACE: "fake"})
+        create_labels("not-ryuk", {TESTCONTAINERS_NAMESPACE: "fake"})
 
 
 def test_containers_respect_custom_labels_if_no_collision():
