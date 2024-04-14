@@ -78,7 +78,7 @@ def wait_for(condition: Callable[..., bool]) -> bool:
 
 
 def wait_for_logs(
-    container: "DockerContainer", predicate: Union[Callable, str], timeout: float = config.TIMEOUT, interval: float = 1
+    container: "DockerContainer", predicate: Union[Callable, str], timeout: float = config.timeout, interval: float = 1
 ) -> float:
     """
     Wait for the container to emit logs satisfying the predicate.
