@@ -40,9 +40,10 @@ def test_docker_run_mariadb(version: str):
 
 
 def test_docker_env_variables():
-    with mock.patch.dict("os.environ", MYSQL_USER="demo", MYSQL_DATABASE="custom_db"), MySqlContainer(
-        "mariadb:10.6.5"
-    ).with_bind_ports(3306, 32785) as container:
+    with (
+        mock.patch.dict("os.environ", MYSQL_USER="demo", MYSQL_DATABASE="custom_db"),
+        MySqlContainer("mariadb:10.6.5").with_bind_ports(3306, 32785) as container,
+    ):
         url = container.get_connection_url()
         pattern = r"mysql\+pymysql:\/\/demo:test@[\w,.]+:(3306|32785)\/custom_db"
         assert re.match(pattern, url)
