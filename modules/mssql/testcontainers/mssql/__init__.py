@@ -1,10 +1,9 @@
-import time
 from os import environ
 from typing import Optional
 
-from testcontainers.core.config import testcontainers_config as c
 from testcontainers.core.generic import DbContainer
 from testcontainers.core.utils import raise_for_deprecated_parameter
+from testcontainers.core.waiting_utils import wait_container_is_ready
 
 
 class SqlServerContainer(DbContainer):
@@ -51,13 +50,10 @@ class SqlServerContainer(DbContainer):
         self.with_env("SQLSERVER_DBNAME", self.dbname)
         self.with_env("ACCEPT_EULA", "Y")
 
+    @wait_container_is_ready(AssertionError)
     def _connect(self) -> None:
-        for _ in range(c.max_tries):
-            status, _ = self.exec(f"/opt/mssql-tools/bin/sqlcmd -U {self.username} -P {self.password} -Q SELECT 1")
-            if status == 0:
-                return
-            else:
-                time.sleep(c.sleep_time)
+        status, _ = self.exec(f"/opt/mssql-tools/bin/sqlcmd -U {self.username} -P {self.password} -Q 'SELECT 1'")
+        assert status == 0, "Cannot run 'SELECT 1': container is not ready"
 
     def get_connection_url(self) -> str:
         return super()._create_connection_url(
