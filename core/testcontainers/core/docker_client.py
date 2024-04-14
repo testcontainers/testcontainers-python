@@ -16,27 +16,23 @@ import ipaddress
 import os
 import urllib
 import urllib.parse
-from os.path import exists
-from pathlib import Path
 from typing import Callable, Optional, TypeVar, Union
 
 import docker
 from docker.models.containers import Container, ContainerCollection
 from typing_extensions import ParamSpec
 
+from testcontainers.core.config import testcontainers_config as c
 from testcontainers.core.labels import SESSION_ID, create_labels
 from testcontainers.core.utils import default_gateway_ip, inside_container, setup_logger
 
 LOGGER = setup_logger(__name__)
-TC_FILE = ".testcontainers.properties"
-TC_GLOBAL = Path.home() / TC_FILE
 
 _P = ParamSpec("_P")
 _T = TypeVar("_T")
 
 
 def _wrapped_container_collection(function: Callable[_P, _T]) -> Callable[_P, _T]:
-
     @ft.wraps(ContainerCollection.run)
     def wrapper(*args: _P.args, **kwargs: _P.kwargs) -> _T:
         return function(*args, **kwargs)
@@ -186,26 +182,5 @@ class DockerClient:
         return "localhost"
 
 
-@ft.cache
-def read_tc_properties() -> dict[str, str]:
-    """
-    Read the .testcontainers.properties for settings. (see the Java implementation for details)
-    Currently we only support the ~/.testcontainers.properties but may extend to per-project variables later.
-
-    :return: the merged properties from the sources.
-    """
-    tc_files = [item for item in [TC_GLOBAL] if exists(item)]
-    if not tc_files:
-        return {}
-    settings = {}
-
-    for file in tc_files:
-        tuples = []
-        with open(file) as contents:
-            tuples = [line.split("=") for line in contents.readlines() if "=" in line]
-            settings = {**settings, **{item[0].strip(): item[1].strip() for item in tuples}}
-    return settings
-
-
 def get_docker_host() -> Optional[str]:
-    return read_tc_properties().get("tc.host") or os.getenv("DOCKER_HOST")
+    return c.tc_properties_get_tc_host() or os.getenv("DOCKER_HOST")

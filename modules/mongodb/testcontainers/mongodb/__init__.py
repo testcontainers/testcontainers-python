@@ -53,7 +53,7 @@ class MongoDbContainer(DbContainer):
         username: Optional[str] = None,
         password: Optional[str] = None,
         dbname: Optional[str] = None,
-        **kwargs
+        **kwargs,
     ) -> None:
         raise_for_deprecated_parameter(kwargs, "port_to_expose", "port")
         super().__init__(image=image, **kwargs)

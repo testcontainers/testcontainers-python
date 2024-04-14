@@ -1,6 +1,6 @@
 [tool.poetry]
 name = "testcontainers"
-version = "4.3.1"  # auto-incremented by release-please
+version = "4.3.3"  # auto-incremented by release-please
 description = "Python library for throwaway instances of anything that can run in a Docker container"
 authors = ["Sergey Pirogov <automationremarks@gmail.com>"]
 maintainers = [
@@ -55,6 +55,7 @@ packages = [
     { include = "testcontainers", from = "modules/redis" },
     { include = "testcontainers", from = "modules/registry" },
     { include = "testcontainers", from = "modules/selenium" },
+    { include = "testcontainers", from = "modules/vault" },
     { include = "testcontainers", from = "modules/weaviate" }
 ]
 
@@ -67,6 +68,7 @@ python = ">=3.9,<4.0"
 docker = "*" # ">=4.0"
 urllib3 = "*" # "<2.0"
 wrapt = "*" # "^1.16.0"
+typing-extensions = "*"
 
 # community modules
 python-arango = { version = "^7.8", optional = true }
@@ -125,6 +127,7 @@ rabbitmq = ["pika"]
 redis = ["redis"]
 registry = ["bcrypt"]
 selenium = ["selenium"]
+vault = []
 weaviate = ["weaviate-client"]
 chroma = ["chromadb-client"]
 
@@ -144,6 +147,7 @@ psycopg = "*"
 cassandra-driver = "*"
 pytest-asyncio = "0.23.5"
 kafka-python-ng = "^2.2.0"
+hvac = "*"
 
 [[tool.poetry.source]]
 name = "PyPI"
@@ -262,6 +266,7 @@ mypy_path = [
 #    "modules/rabbitmq",
 #    "modules/redis",
 #    "modules/selenium"
+#    "modules/vault"
 #    "modules/weaviate"
 ]
 enable_error_code = [

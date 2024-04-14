@@ -26,6 +26,7 @@ The 2 containers are separated in different modules for 2 reasons:
 - because the InfluxDB clients are different for 1.x and 2.x versions,
   so you won't have to install dependencies that you do not need
 """
+
 from typing import Optional
 
 from requests import get

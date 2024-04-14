@@ -1,5 +1,21 @@
 # Changelog
 
+## [4.3.3](https://github.com/testcontainers/testcontainers-python/compare/testcontainers-v4.3.2...testcontainers-v4.3.3) (2024-04-09)
+
+
+### Bug Fixes
+
+* missing typing-extensions dependency ([#534](https://github.com/testcontainers/testcontainers-python/issues/534)) ([ef86d15](https://github.com/testcontainers/testcontainers-python/commit/ef86d15f5c63159dcbeb3dbefe9b8fa1964177d9)), closes [#533](https://github.com/testcontainers/testcontainers-python/issues/533)
+
+## [4.3.2](https://github.com/testcontainers/testcontainers-python/compare/testcontainers-v4.3.1...testcontainers-v4.3.2) (2024-04-08)
+
+
+### Bug Fixes
+
+* **core:** Improve typing for common container usage scenarios ([#523](https://github.com/testcontainers/testcontainers-python/issues/523)) ([d5b8553](https://github.com/testcontainers/testcontainers-python/commit/d5b855323be06f8d1395dd480a347f0efef75703))
+* **core:** make config editable to avoid monkeypatching.1 ([#532](https://github.com/testcontainers/testcontainers-python/issues/532)) ([3be6da3](https://github.com/testcontainers/testcontainers-python/commit/3be6da335ba2026b4800dfd6a19cda4ca8e52be8))
+* **vault:** add support for HashiCorp Vault container ([#366](https://github.com/testcontainers/testcontainers-python/issues/366)) ([1326278](https://github.com/testcontainers/testcontainers-python/commit/13262785dedf32a97e392afc1a758616995dc9d9))
+
 ## [4.3.1](https://github.com/testcontainers/testcontainers-python/compare/testcontainers-v4.3.0...testcontainers-v4.3.1) (2024-04-02)
 
 

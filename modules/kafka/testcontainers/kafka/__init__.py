@@ -30,7 +30,7 @@ class KafkaContainer(DockerContainer):
 
     TC_START_SCRIPT = "/tc-start.sh"
 
-    def __init__(self, image: str = "confluentinc/cp-kafka:5.4.3", port: int = 9093, **kwargs) -> None:
+    def __init__(self, image: str = "confluentinc/cp-kafka:7.6.0", port: int = 9093, **kwargs) -> None:
         raise_for_deprecated_parameter(kwargs, "port_to_expose", "port")
         super().__init__(image, **kwargs)
         self.port = port

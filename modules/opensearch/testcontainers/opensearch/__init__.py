@@ -35,7 +35,7 @@ class OpenSearchContainer(DockerContainer):
         image: str = "opensearchproject/opensearch:2.4.0",
         port: int = 9200,
         security_enabled: bool = False,
-        **kwargs
+        **kwargs,
     ) -> None:
         """
         Args:
