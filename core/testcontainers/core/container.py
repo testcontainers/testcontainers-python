@@ -210,7 +210,7 @@ class Reaper:
 
         Reaper._socket = socket()
 
-        last_connection_exception: Optional[ConnectionRefusedError] = None
+        last_connection_exception: Optional[Exception] = None
         for _ in range(50):
             try:
                 Reaper._socket.connect((container_host, container_port))
