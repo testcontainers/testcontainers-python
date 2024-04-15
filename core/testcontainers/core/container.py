@@ -216,7 +216,7 @@ class Reaper:
                 Reaper._socket.connect((container_host, container_port))
                 last_connection_exception = None
                 break
-            except ConnectionRefusedError as e:
+            except (ConnectionRefusedError, OSError) as e:
                 last_connection_exception = e
                 from time import sleep
 
