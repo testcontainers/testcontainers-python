@@ -165,9 +165,12 @@ class DockerClient:
         """
         # https://github.com/testcontainers/testcontainers-go/blob/dd76d1e39c654433a3d80429690d07abcec04424/docker.go#L644
         # if os env TC_HOST is set, use it
-        host = os.environ.get("TC_HOST")
-        if host:
-            return host
+        if deprecated_host_override := os.environ.get("TC_HOST"):
+            return deprecated_host_override
+
+        if host_override := c.ryuk_docker_host:
+            return host_override
+
         try:
             url = urllib.parse.urlparse(self.client.api.base_url)
 

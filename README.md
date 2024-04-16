@@ -28,6 +28,7 @@ The snippet above will spin up a postgres database in a container. The `get_conn
 | Env Variable                            | Example                     | Description                                                                        |
 | --------------------------------------- | --------------------------- | ---------------------------------------------------------------------------------- |
 | `TESTCONTAINERS_DOCKER_SOCKET_OVERRIDE` | `/var/run/docker.sock`      | Path to Docker's socket used by ryuk                                               |
+| `TESTCONTAINERS_HOST_OVERRIDE`          | `192.16.4.0`                | Path to Docker's host IP used by ryuk                                               |
 | `TESTCONTAINERS_RYUK_PRIVILEGED`        | `false`                     | Run ryuk as a privileged container                                                 |
 | `TESTCONTAINERS_RYUK_DISABLED`          | `false`                     | Disable ryuk                                                                       |
 | `RYUK_CONTAINER_IMAGE`                  | `testcontainers/ryuk:0.7.0` | Custom image for ryuk                                                              |

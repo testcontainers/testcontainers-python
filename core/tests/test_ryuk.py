@@ -14,7 +14,7 @@ from testcontainers.core.waiting_utils import wait_for_logs
 def test_wait_for_reaper(monkeypatch: MonkeyPatch):
     Reaper.delete_instance()
     monkeypatch.setattr(testcontainers_config, "ryuk_reconnection_timeout", "0.1s")
-    docker_client = DockerClient()
+    docker_client = DockerClient.from_env()
     container = DockerContainer("hello-world").start()
 
     container_id = container.get_wrapped_container().short_id
