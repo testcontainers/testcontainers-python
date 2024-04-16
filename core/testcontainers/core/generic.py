@@ -10,6 +10,7 @@
 #    WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the
 #    License for the specific language governing permissions and limitations
 #    under the License.
+from pathlib import Path
 from typing import Optional
 
 from testcontainers.core.container import DockerContainer
@@ -69,7 +70,20 @@ class DbContainer(DockerContainer):
         self._configure()
         super().start()
         self._connect()
+        self._seed()
         return self
 
     def _configure(self) -> None:
         raise NotImplementedError
+
+    def _seed(self) -> None:
+        raise NotImplementedError
+
+    def _setup_seed(self, seed):
+        self.seed_scripts = None
+        self.seed_mount = "/seeds"  # TODO: Should it be configurable?
+        if seed is not None:
+            seed_localpath, seed_scripts = seed
+            seed_abspath = Path(seed_localpath).absolute()
+            self.with_volume_mapping(seed_abspath, self.seed_mount)
+            self.seed_scripts = seed_scripts

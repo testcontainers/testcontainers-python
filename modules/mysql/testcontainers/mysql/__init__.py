@@ -40,6 +40,25 @@ class MySqlContainer(DbContainer):
             ...     with engine.begin() as connection:
             ...         result = connection.execute(sqlalchemy.text("select version()"))
             ...         version, = result.fetchone()
+
+        The optional :code:`seed` param enables arbitrary SQL files to be loaded. This
+        is perfect for schema and sample data. The format is a tuple, made up of the
+        path to local data, and list of script files to load. Each script will be loaded
+        by exec in the container, using the MySQL root user, before yielding the
+        container. Any errors loading the scripts, will cause a ValueError.
+
+        .. doctest::
+
+            >>> import sqlalchemy
+            >>> from testcontainers.mysql import MySqlContainer
+            >>> seed_data = ("../../tests/", ["schema.sql", "data.sql"])
+            >>> with MySqlContainer(seed=seed_data) as mysql:
+            ...     engine = sqlalchemy.create_engine(mysql.get_connection_url())
+            ...     with engine.begin() as connection:
+            ...         query = "select * from stuff"  # Can now rely on schema/data
+            ...         result = connection.execute(sqlalchemy.text(query))
+            ...         first_stuff, = result.fetchone()
+
     """
 
     def __init__(
@@ -50,6 +69,7 @@ class MySqlContainer(DbContainer):
         password: Optional[str] = None,
         dbname: Optional[str] = None,
         port: int = 3306,
+        seed: Optional[tuple[str, list[str]]] = None,
         **kwargs,
     ) -> None:
         raise_for_deprecated_parameter(kwargs, "MYSQL_USER", "username")
@@ -65,6 +85,7 @@ class MySqlContainer(DbContainer):
         self.password = password or environ.get("MYSQL_PASSWORD", "test")
         self.dbname = dbname or environ.get("MYSQL_DATABASE", "test")
 
+        self._setup_seed(seed)
         if self.username == "root":
             self.root_password = self.password
 
@@ -86,3 +107,15 @@ class MySqlContainer(DbContainer):
         return super()._create_connection_url(
             dialect="mysql+pymysql", username=self.username, password=self.password, dbname=self.dbname, port=self.port
         )
+
+    def _seed(self) -> None:
+        """Apply the seed scripts given"""
+        if not self.seed_scripts:  # Defined in DbContainer._setup_seed(s)
+            return
+        container = self.get_wrapped_container()
+        for script in self.seed_scripts:
+            mysql_query = f"source {self.seed_mount}/{script}"
+            schema_cmd = ["mysql", f"-p{self.root_password}", self.dbname, "-e", mysql_query]
+            exit_code, _out = container.exec_run(schema_cmd)
+            if exit_code != 0:
+                raise ValueError(f"Error seeding the database with {script=}")

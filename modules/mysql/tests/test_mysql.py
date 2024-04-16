@@ -29,6 +29,26 @@ def test_docker_run_legacy_mysql():
                 assert row[0].startswith("5.7.44")
 
 
+@pytest.mark.skipif(is_arm(), reason="mysql container not available for ARM")
+def test_docker_run_mysql_8_seed():
+    seeds = ("modules/mysql/tests/", ["schema.sql", "seeds.sql"])
+    config = MySqlContainer("mysql:8", seed=seeds)
+    with config as mysql:
+        engine = sqlalchemy.create_engine(mysql.get_connection_url())
+        with engine.begin() as connection:
+            result = connection.execute(sqlalchemy.text("select * from stuff"))
+            assert len(list(result)) == 4, "Should have gotten all the stuff"
+
+
+@pytest.mark.skipif(is_arm(), reason="mysql container not available for ARM")
+def test_docker_run_mysql_8_seed_missing():
+    seeds = ("modules/mysql/tests/", ["schema.sql", "nosuchfile.sql"])
+    config = MySqlContainer("mysql:8", seed=seeds)
+    with pytest.raises(ValueError, match="Error seeding the database with script"):
+        with config as mysql:
+            pass
+
+
 @pytest.mark.parametrize("version", ["11.3.2", "10.11.7"])
 def test_docker_run_mariadb(version: str):
     with MySqlContainer(f"mariadb:{version}") as mariadb:
