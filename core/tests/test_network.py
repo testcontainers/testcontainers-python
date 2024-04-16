@@ -16,15 +16,18 @@ def test_network_gets_created_and_cleaned_up():
 
 def test_containers_can_communicate_over_network():
     with Network() as network:
-        with DockerContainer(NGINX_ALPINE_SLIM_IMAGE)\
-                .with_name("alpine1")\
-                .with_network_aliases("alpine1-alias-1", "alpine1-alias-2")\
-                .with_network(network) as alpine1:
-            with DockerContainer(NGINX_ALPINE_SLIM_IMAGE)\
-                    .with_name("alpine2")\
-                    .with_network_aliases("alpine2-alias-1", "alpine2-alias-2")\
-                    .with_network(network) as alpine2:
-
+        with (
+            DockerContainer(NGINX_ALPINE_SLIM_IMAGE)
+            .with_name("alpine1")
+            .with_network_aliases("alpine1-alias-1", "alpine1-alias-2")
+            .with_network(network) as alpine1
+        ):
+            with (
+                DockerContainer(NGINX_ALPINE_SLIM_IMAGE)
+                .with_name("alpine2")
+                .with_network_aliases("alpine2-alias-1", "alpine2-alias-2")
+                .with_network(network) as alpine2
+            ):
                 assert_can_ping(alpine1, "alpine2")
                 assert_can_ping(alpine1, "alpine2-alias-1")
                 assert_can_ping(alpine1, "alpine2-alias-2")
