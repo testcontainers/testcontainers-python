@@ -3,6 +3,7 @@ from secrets import randbits
 from typing import Optional
 
 from testcontainers.core.generic import DbContainer
+from testcontainers.core.waiting_utils import wait_for_logs
 
 
 class OracleDbContainer(DbContainer):
@@ -56,6 +57,9 @@ class OracleDbContainer(DbContainer):
             port=self.port,
         ) + "/?service_name={}".format(self.dbname or "FREEPDB1")
         # Default DB is "FREEPDB1"
+
+    def _connect(self) -> None:
+        wait_for_logs(self, "DATABASE IS READY TO USE!")
 
     def _configure(self) -> None:
         # if self.oracle_password is not None:
