@@ -10,6 +10,7 @@ from testcontainers.core.config import testcontainers_config as c
 from testcontainers.core.docker_client import DockerClient
 from testcontainers.core.exceptions import ContainerStartException
 from testcontainers.core.labels import LABEL_SESSION_ID, SESSION_ID
+from testcontainers.core.network import Network
 from testcontainers.core.utils import inside_container, is_arm, setup_logger
 from testcontainers.core.waiting_utils import wait_container_is_ready, wait_for_logs
 
@@ -46,6 +47,8 @@ class DockerContainer:
         self._container = None
         self._command = None
         self._name = None
+        self._network: Optional[Network] = None
+        self._network_aliases: Optional[list[str]] = None
         self._kwargs = kwargs
 
     def with_env(self, key: str, value: str) -> Self:
@@ -59,6 +62,14 @@ class DockerContainer:
     def with_exposed_ports(self, *ports: int) -> Self:
         for port in ports:
             self.ports[port] = None
+        return self
+
+    def with_network(self, network: Network) -> Self:
+        self._network = network
+        return self
+
+    def with_network_aliases(self, *aliases) -> Self:
+        self._network_aliases = aliases
         return self
 
     def with_kwargs(self, **kwargs) -> Self:
@@ -87,6 +98,8 @@ class DockerContainer:
             **self._kwargs,
         )
         logger.info("Container started: %s", self._container.short_id)
+        if self._network:
+            self._network.connect(self._container.id, self._network_aliases)
         return self
 
     def stop(self, force=True, delete_volume=True) -> None:
