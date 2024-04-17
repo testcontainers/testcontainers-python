@@ -1,5 +1,21 @@
 # Changelog
 
+## [4.4.0](https://github.com/testcontainers/testcontainers-python/compare/testcontainers-v4.3.3...testcontainers-v4.4.0) (2024-04-17)
+
+
+### Features
+
+* **labels:** Add common testcontainers labels ([#519](https://github.com/testcontainers/testcontainers-python/issues/519)) ([e04b7ac](https://github.com/testcontainers/testcontainers-python/commit/e04b7ac78ccf6b79fce75ebd3a4626e00d764aa9))
+* **network:** Add network context manager ([#367](https://github.com/testcontainers/testcontainers-python/issues/367)) ([11964de](https://github.com/testcontainers/testcontainers-python/commit/11964deb9e84c0559a391280202811b83a065ab8))
+
+
+### Bug Fixes
+
+* **core:** [#486](https://github.com/testcontainers/testcontainers-python/issues/486) for colima delay for port avail for connect ([#543](https://github.com/testcontainers/testcontainers-python/issues/543)) ([90bb780](https://github.com/testcontainers/testcontainers-python/commit/90bb780c30f42d3cfa2f724fb9ca3b6048d1dd9f))
+* **core:** add TESTCONTAINERS_HOST_OVERRIDE as alternative to TC_HOST ([#384](https://github.com/testcontainers/testcontainers-python/issues/384)) ([8073874](https://github.com/testcontainers/testcontainers-python/commit/807387425913906b214f09c141a0bd0c337d788a))
+* **dependencies:** remove usage of `sqlalchemy` in DB extras. Add default wait timeout for `wait_for_logs` ([#525](https://github.com/testcontainers/testcontainers-python/issues/525)) ([fefb9d0](https://github.com/testcontainers/testcontainers-python/commit/fefb9d0845bf6e0cbddad6868da5336b5b82bcb0))
+* tests for Kafka container running on ARM64 CPU ([#536](https://github.com/testcontainers/testcontainers-python/issues/536)) ([29b5179](https://github.com/testcontainers/testcontainers-python/commit/29b51790ba31acf732eb5f017108bcb6622468f9))
+
 ## [4.3.3](https://github.com/testcontainers/testcontainers-python/compare/testcontainers-v4.3.2...testcontainers-v4.3.3) (2024-04-09)
 
 
