@@ -221,8 +221,26 @@ class Reaper:
         container_host = Reaper._container.get_container_host_ip()
         container_port = int(Reaper._container.get_exposed_port(8080))
 
-        Reaper._socket = socket()
-        Reaper._socket.connect((container_host, container_port))
+        last_connection_exception: Optional[Exception] = None
+        for _ in range(50):
+            try:
+                Reaper._socket = socket()
+                Reaper._socket.connect((container_host, container_port))
+                last_connection_exception = None
+                break
+            except (ConnectionRefusedError, OSError) as e:
+                if Reaper._socket is not None:
+                    with contextlib.suppress(Exception):
+                        Reaper._socket.close()
+                    Reaper._socket = None
+                last_connection_exception = e
+
+                from time import sleep
+
+                sleep(0.5)
+        if last_connection_exception:
+            raise last_connection_exception
+
         Reaper._socket.send(f"label={LABEL_SESSION_ID}={SESSION_ID}\r\n".encode())
 
         Reaper._instance = Reaper()
