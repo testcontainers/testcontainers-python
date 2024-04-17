@@ -139,7 +139,7 @@ Package Structure
 
 Testcontainers is a collection of `implicit namespace packages <https://peps.python.org/pep-0420/>`__
 to decouple the development of different extensions,
-e.g., :code:`testcontainers-mysql` and :code:`testcontainers-postgres` for MySQL and PostgreSQL database containers, respectively.
+e.g., :code:`testcontainers[mysql]` and :code:`testcontainers[postgres]` for MySQL and PostgreSQL database containers, respectively.
 
 The folder structure is as follows:
 
