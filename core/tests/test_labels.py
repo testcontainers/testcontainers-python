@@ -31,13 +31,11 @@ def test_containers_creates_expected_labels(label, value, known_before_test_time
 
 
 def test_containers_throws_on_namespace_collision():
-
     with pytest.raises(ValueError):
         create_labels("not-ryuk", {TESTCONTAINERS_NAMESPACE: "fake"})
 
 
 def test_containers_respect_custom_labels_if_no_collision():
-
     custom_namespace = "org.foo.bar"
     value = "fake"
     actual_labels = create_labels("not-ryuk", {custom_namespace: value})
