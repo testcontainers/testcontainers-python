@@ -42,3 +42,27 @@ def test_docker_run_postgres_with_driver_pg8000():
         engine = sqlalchemy.create_engine(postgres.get_connection_url())
         with engine.begin() as connection:
             connection.execute(sqlalchemy.text("select 1=1"))
+
+
+# This is a feature in the generic DbContainer class
+# but it can't be tested on its own
+# so is tested in various database modules:
+# - mysql / mariadb
+# - postgresql
+# - sqlserver
+# - oracle
+def test_quoted_password():
+    user = "root"
+    password = "p@$%25+0&%rd :/!=?"
+    quoted_password = "p%40%24%2525+0%26%25rd %3A%2F%21%3D%3F"
+    driver = "psycopg2"
+    port = 5432
+    expected_url = f"postgresql+{driver}://{user}:{quoted_password}@localhost:{port}/test"
+    kwargs = {
+        "driver": driver,
+        "username": user,
+        "password": password,
+    }
+    with PostgresContainer("postgres:16", **kwargs).with_bind_ports(port, port) as container:
+        url = container.get_connection_url()
+        assert url == expected_url
