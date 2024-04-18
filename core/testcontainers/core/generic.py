@@ -11,6 +11,7 @@
 #    License for the specific language governing permissions and limitations
 #    under the License.
 from typing import Optional
+from urllib.parse import quote
 
 from testcontainers.core.container import DockerContainer
 from testcontainers.core.exceptions import ContainerStartException
@@ -60,7 +61,8 @@ class DbContainer(DockerContainer):
             raise ContainerStartException("container has not been started")
         host = host or self.get_container_host_ip()
         port = self.get_exposed_port(port)
-        url = f"{dialect}://{username}:{password}@{host}:{port}"
+        quoted_password = quote(password, safe=" +")
+        url = f"{dialect}://{username}:{quoted_password}@{host}:{port}"
         if dbname:
             url = f"{url}/{dbname}"
         return url
