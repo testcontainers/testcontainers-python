@@ -61,8 +61,17 @@ def test_quoted_password():
     password = "p@$%25+0&%rd :/!=?"
     quoted_password = "p%40%24%2525+0%26%25rd %3A%2F%21%3D%3F"
     driver = "pymysql"
-    port = 3306
-    expected_url = f"mysql+{driver}://{user}:{quoted_password}@localhost:{port}/test"
-    with MySqlContainer("mariadb:10.6.5", username=user, password=password).with_bind_ports(port, port) as container:
+    with MySqlContainer("mariadb:10.6.5", username=user, password=password) as container:
+        host = container.get_container_host_ip()
+        port = container.get_exposed_port(3306)
+        expected_url = f"mysql+{driver}://{user}:{quoted_password}@{host}:{port}/test"
         url = container.get_connection_url()
         assert url == expected_url
+
+        with sqlalchemy.create_engine(expected_url).begin() as connection:
+            connection.execute(sqlalchemy.text("select version()"))
+
+        raw_pass_url = f"mysql+{driver}://{user}:{password}@{host}:{port}/test"
+        with pytest.raises(Exception):
+            with sqlalchemy.create_engine(raw_pass_url).begin() as connection:
+                connection.execute(sqlalchemy.text("select version()"))
