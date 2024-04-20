@@ -26,3 +26,26 @@ def test_docker_run_mongodb(version: str):
 
         cursor = db.restaurants.find({"borough": "Manhattan"})
         assert cursor.next()["restaurant_id"] == doc["restaurant_id"]
+
+
+# This is a feature in the generic DbContainer class
+# but it can't be tested on its own
+# so is tested in various database modules:
+# - mysql / mariadb
+# - postgresql
+# - sqlserver
+# - mongodb
+def test_quoted_password():
+    user = "root"
+    password = "p@$%25+0&%rd :/!=?"
+    quoted_password = "p%40%24%2525+0%26%25rd %3A%2F%21%3D%3F"
+    driver = "pymongo"
+    port = 27017
+    expected_url = f"mongodb://{user}:{quoted_password}@localhost:{port}"
+    kwargs = {
+        "username": user,
+        "password": password,
+    }
+    with MongoDbContainer("mongo:7.0.7", **kwargs).with_bind_ports(port, port) as container:
+        url = container.get_connection_url()
+        assert url == expected_url

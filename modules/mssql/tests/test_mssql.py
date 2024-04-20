@@ -31,7 +31,7 @@ def test_docker_run_azure_sql_edge():
 # - mysql / mariadb
 # - postgresql
 # - sqlserver
-# - oracle
+# - mongodb
 def test_quoted_password():
     user = "SA"
     # spaces seem to cause issues?

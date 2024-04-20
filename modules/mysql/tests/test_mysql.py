@@ -55,7 +55,7 @@ def test_docker_env_variables():
 # - mysql / mariadb
 # - postgresql
 # - sqlserver
-# - oracle
+# - mongodb
 def test_quoted_password():
     user = "root"
     password = "p@$%25+0&%rd :/!=?"
