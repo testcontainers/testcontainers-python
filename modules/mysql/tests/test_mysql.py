@@ -1,3 +1,4 @@
+from pathlib import Path
 import re
 from unittest import mock
 
@@ -27,6 +28,18 @@ def test_docker_run_legacy_mysql():
             result = connection.execute(sqlalchemy.text("select version()"))
             for row in result:
                 assert row[0].startswith("5.7.44")
+
+
+@pytest.mark.skipif(is_arm(), reason="mysql container not available for ARM")
+def test_docker_run_mysql_8_seed():
+    # Avoid pytest CWD path issues
+    SEEDS_PATH = (Path(__file__).parent / "seeds").absolute()
+    config = MySqlContainer("mysql:8", seed=SEEDS_PATH)
+    with config as mysql:
+        engine = sqlalchemy.create_engine(mysql.get_connection_url())
+        with engine.begin() as connection:
+            result = connection.execute(sqlalchemy.text("select * from stuff"))
+            assert len(list(result)) == 4, "Should have gotten all the stuff"
 
 
 @pytest.mark.parametrize("version", ["11.3.2", "10.11.7"])
