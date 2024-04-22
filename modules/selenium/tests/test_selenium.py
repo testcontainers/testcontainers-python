@@ -1,3 +1,6 @@
+import tempfile
+from pathlib import Path
+
 import pytest
 from selenium.webdriver import DesiredCapabilities
 from selenium.webdriver.common.by import By
@@ -23,3 +26,19 @@ def test_selenium_custom_image():
     chrome = BrowserWebDriverContainer(DesiredCapabilities.CHROME, image=image)
     assert "image" in dir(chrome), "`image` attribute was not instantialized."
     assert chrome.image == image, "`image` attribute was not set to the user provided value"
+
+
+@pytest.mark.parametrize("caps", [DesiredCapabilities.CHROME, DesiredCapabilities.FIREFOX])
+def test_selenium_video(caps, workdir):
+    video_path = workdir / Path("video.mp4")
+    with BrowserWebDriverContainer(caps).with_video(video_path=video_path) as chrome:
+        chrome.get_driver().get("https://google.com")
+
+    assert video_path.exists(), "Selenium video file does not exists"
+
+
+@pytest.fixture
+def workdir() -> Path:
+    tmpdir = tempfile.TemporaryDirectory()
+    yield Path(tmpdir.name)
+    tmpdir.cleanup()
