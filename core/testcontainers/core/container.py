@@ -87,6 +87,7 @@ class DockerContainer:
             Reaper.get_instance()
         logger.info("Pulling image %s", self.image)
         docker_client = self.get_docker_client()
+        self._configure()
         self._container = docker_client.run(
             self.image,
             command=self._command,
@@ -175,6 +176,10 @@ class DockerContainer:
         if not self._container:
             raise ContainerStartException("Container should be started before executing a command")
         return self._container.exec_run(command)
+
+    def _configure(self) -> None:
+        # placeholder if subclasses want to define this and use the default start method
+        pass
 
 
 class Reaper:
