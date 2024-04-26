@@ -71,7 +71,11 @@ class DbContainer(DockerContainer):
         self._configure()
         super().start()
         self._connect()
+        self._transfer_seed()
         return self
 
     def _configure(self) -> None:
         raise NotImplementedError
+
+    def _transfer_seed(self) -> None:
+        pass
