@@ -87,8 +87,7 @@ class MySqlContainer(DbContainer):
 
         if self.username == "root":
             self.root_password = self.password
-        if seed is not None:
-            self.seed = seed
+        self.seed = seed
 
     def _configure(self) -> None:
         self.with_env("MYSQL_ROOT_PASSWORD", self.root_password)
@@ -110,6 +109,8 @@ class MySqlContainer(DbContainer):
         )
 
     def _transfer_seed(self) -> None:
+        if self.seed is None:
+            return
         src_path = Path(self.seed)
         dest_path = "/docker-entrypoint-initdb.d/"
         with BytesIO() as archive, tarfile.TarFile(fileobj=archive, mode="w") as tar:
