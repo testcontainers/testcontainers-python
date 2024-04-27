@@ -1,6 +1,8 @@
 import pytest
+import tempfile
 
 from testcontainers.core.container import DockerContainer
+from testcontainers.core.image import DockerImage
 from testcontainers.core.waiting_utils import wait_for_logs
 
 
@@ -31,3 +33,24 @@ def test_can_get_logs():
         assert isinstance(stdout, bytes)
         assert isinstance(stderr, bytes)
         assert stdout, "There should be something on stdout"
+
+
+def test_from_image():
+    test_image_tag = "test-image:latest"
+    with tempfile.TemporaryDirectory() as temp_directory:
+        with open(f"{temp_directory}/Dockerfile", "w") as f:
+            f.write(
+                """
+                FROM alpine:latest
+                CMD echo "Hello from Docker Image!"
+                """
+            )
+            f.close()
+            with DockerImage(tag=test_image_tag, path=temp_directory) as image:
+                assert image.tag == test_image_tag
+                logs = image.get_logs()
+                assert isinstance(logs, list)
+                assert logs[0] == {"stream": "Step 1/2 : FROM alpine:latest"}
+                assert logs[3] == {"stream": 'Step 2/2 : CMD echo "Hello from Docker Image!"'}
+                with DockerContainer(image.tag) as container:
+                    wait_for_logs(container, "Hello from Docker Image!")
