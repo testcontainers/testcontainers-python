@@ -47,7 +47,7 @@ class TestcontainersConfiguration:
     ryuk_reconnection_timeout: str = RYUK_RECONNECTION_TIMEOUT
     tc_properties: dict[str, str] = field(default_factory=read_tc_properties)
 
-    def tc_properties_get_tc_host(self):
+    def tc_properties_get_tc_host(self) -> str | None:
         return self.tc_properties.get("tc.host")
 
     @property
