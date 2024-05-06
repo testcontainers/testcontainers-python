@@ -7,13 +7,16 @@ testcontainers-core
 
 .. autoclass:: testcontainers.core.image.DockerImage
 
-Conjoint usage:
+.. autoclass:: testcontainers.core.generic.SrvContainer
+
+Using `DockerContainer` and `DockerImage` directly:
 
 .. doctest::
+
     >>> from testcontainers.core.container import DockerContainer
     >>> from testcontainers.core.waiting_utils import wait_for_logs
     >>> from testcontainers.core.image import DockerImage
 
-    >>> with DockerImage(tag="test-image:latest", path=".") as image:
-    ...     with DockerContainer(tag=image.tag) as container:
-    ...         delay = wait_for_log(container, "Server ready", 60)
+    >>> with DockerImage(path="./core/tests/image_fixtures/sample/", tag="test-sample:latest") as image:
+    ...     with DockerContainer(str(image)) as container:
+    ...         delay = wait_for_logs(container, "Test Sample Image")
