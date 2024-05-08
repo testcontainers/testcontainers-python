@@ -23,6 +23,8 @@ _DEFAULT_DEV_COMMAND = "start-dev"
 
 
 class KeycloakContainer(DockerContainer):
+    has_realm_imports = False
+
     """
     Keycloak container.
 
@@ -58,8 +60,9 @@ class KeycloakContainer(DockerContainer):
         self.with_env("KC_HEALTH_ENABLED", "true")
         # Starting Keycloak in development mode
         # see: https://www.keycloak.org/server/configuration#_starting_keycloak_in_development_mode
-        self.with_command(_DEFAULT_DEV_COMMAND)
-
+        cmd = f"{_DEFAULT_DEV_COMMAND} {'--import-realm' if self.has_realm_imports else ''}"
+        self.with_command(cmd)
+ 
     def get_url(self) -> str:
         host = self.get_container_host_ip()
         port = self.get_exposed_port(self.port)
@@ -70,6 +73,7 @@ class KeycloakContainer(DockerContainer):
         # Keycloak provides an REST API endpoints for health checks: https://www.keycloak.org/server/health
         response = requests.get(f"{self.get_url()}/health/ready", timeout=1)
         response.raise_for_status()
+        print("Waiting until keycloak has added a user...")
         if self._command == _DEFAULT_DEV_COMMAND:
             wait_for_logs(self, "Added user .* to realm .*")
 
@@ -79,6 +83,23 @@ class KeycloakContainer(DockerContainer):
         self._readiness_probe()
         return self
 
+    def with_realm_import_file(self, realm_import_file: str) -> "KeycloakContainer":
+        file = os.path.abspath(realm_import_file)
+        if not os.path.exists(file):
+            raise FileNotFoundError(f"Realm file {file} does not exist")
+        self.with_volume_mapping(file, "/opt/keycloak/data/import/realm.json")
+        self.has_realm_imports = True
+        return self
+
+    def with_realm_import_folder(self, realm_import_folder: str) -> "KeycloakContainer":
+        folder = os.path.abspath(realm_import_folder)
+        if not os.path.exists(folder):
+            raise FileNotFoundError(f"Realm folder {folder} does not exist")
+        self.with_volume_mapping(folder, "/opt/keycloak/data/import/")
+        self.has_realm_imports = True
+        return self
+    
+    
     def get_client(self, **kwargs) -> KeycloakAdmin:
         default_kwargs = {
             "server_url": self.get_url(),
