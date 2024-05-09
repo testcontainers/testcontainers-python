@@ -45,12 +45,14 @@ class KeycloakContainer(DockerContainer):
         username: Optional[str] = None,
         password: Optional[str] = None,
         port: int = 8080,
+        cmd: Optional[str] = _DEFAULT_DEV_COMMAND,
     ) -> None:
         super().__init__(image=image)
         self.username = username or os.environ.get("KEYCLOAK_ADMIN", "test")
         self.password = password or os.environ.get("KEYCLOAK_ADMIN_PASSWORD", "test")
         self.port = port
         self.with_exposed_ports(self.port)
+        self.cmd = cmd
 
     def _configure(self) -> None:
         self.with_env("KEYCLOAK_ADMIN", self.username)
@@ -58,10 +60,11 @@ class KeycloakContainer(DockerContainer):
         # Enable health checks
         # see: https://www.keycloak.org/server/health#_relevant_options
         self.with_env("KC_HEALTH_ENABLED", "true")
-        # Starting Keycloak in development mode
+        # Start Keycloak in development mode
         # see: https://www.keycloak.org/server/configuration#_starting_keycloak_in_development_mode
-        cmd = f"{_DEFAULT_DEV_COMMAND}{' --import-realm' if self.has_realm_imports else ''}"
-        self.with_command(cmd)
+        if self.has_realm_imports:
+            self.cmd += " --import-realm"
+        self.with_command(self.cmd)
  
     def get_url(self) -> str:
         host = self.get_container_host_ip()
@@ -70,10 +73,10 @@ class KeycloakContainer(DockerContainer):
 
     @wait_container_is_ready(requests.exceptions.ConnectionError, requests.exceptions.ReadTimeout)
     def _readiness_probe(self) -> None:
-        # Keycloak provides an REST API endpoints for health checks: https://www.keycloak.org/server/health
+        # Keycloak provides REST API endpoints for health checks: https://www.keycloak.org/server/health
         response = requests.get(f"{self.get_url()}/health/ready", timeout=1)
         response.raise_for_status()
-        if self._command == _DEFAULT_DEV_COMMAND:
+        if _DEFAULT_DEV_COMMAND in self._command:
             wait_for_logs(self, "Added user .* to realm .*")
 
     def start(self) -> "KeycloakContainer":
