@@ -65,7 +65,7 @@ class KeycloakContainer(DockerContainer):
         if self.has_realm_imports:
             self.cmd += " --import-realm"
         self.with_command(self.cmd)
- 
+
     def get_url(self) -> str:
         host = self.get_container_host_ip()
         port = self.get_exposed_port(self.port)
@@ -100,7 +100,7 @@ class KeycloakContainer(DockerContainer):
         self.with_volume_mapping(folder, "/opt/keycloak/data/import/")
         self.has_realm_imports = True
         return self
-    
+
     def get_client(self, **kwargs) -> KeycloakAdmin:
         default_kwargs = {
             "server_url": self.get_url(),
