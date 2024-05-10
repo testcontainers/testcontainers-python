@@ -82,8 +82,9 @@ class BrowserWebDriverContainer(DockerContainer):
         video_path = video_path or Path.cwd()
 
         self.video = SeleniumVideoContainer(image)
-        video_folder_path = video_path.parent.resolve()
-        self.video.set_videos_host_path(str(video_folder_path))
+
+        video_folder_path = video_path.parent if video_path.suffix else video_path
+        self.video.set_videos_host_path(str(video_folder_path.resolve()))
 
         if video_path.name:
             self.video.set_video_name(video_path.name)

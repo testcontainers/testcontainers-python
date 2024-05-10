@@ -34,7 +34,7 @@ def test_selenium_video(caps, workdir):
     with BrowserWebDriverContainer(caps).with_video(video_path=video_path) as chrome:
         chrome.get_driver().get("https://google.com")
 
-    assert video_path.exists(), "Selenium video file does not exists"
+    assert video_path.exists(), "Selenium video file does not exist"
 
 
 @pytest.fixture
