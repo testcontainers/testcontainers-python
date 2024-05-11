@@ -34,8 +34,8 @@ class MemcachedContainer(DockerContainer):
             ...    host, port = memcached_container.get_host_and_port()
     """
 
-    def __init__(self, image="memcached:latest", port_to_expose=11211, **kwargs):
-        super(MemcachedContainer, self).__init__(image, **kwargs)
+    def __init__(self, image="memcached:1", port_to_expose=11211, **kwargs):
+        super().__init__(image, **kwargs)
         self.port_to_expose = port_to_expose
         self.with_exposed_ports(port_to_expose)
 
