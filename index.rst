@@ -70,6 +70,17 @@ Please note, that community modules are supported on a best-effort basis and bre
 Therefore, only the package core is strictly following SemVer. If your workflow is broken by a minor update, please look at the changelogs for guidance.
 
 
+Custom Containers
+-----------------
+
+Crafting containers that are based on custom images is supported by the `core` module. Please check the `core documentation <core/README.html>`_ for more information.
+
+This allows you to create containers from images that are not part of the modules provided by testcontainers-python.
+
+For common use cases, you can also use the generic containers provided by the `testcontainers-generic` module. Please check the `generic documentation <modules/generic/README.html>`_ for more information.
+(example: `ServerContainer` for running a FastAPI server)
+
+
 Docker in Docker (DinD)
 -----------------------
 
