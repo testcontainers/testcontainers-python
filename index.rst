@@ -21,6 +21,7 @@ testcontainers-python facilitates the use of Docker containers for functional an
     modules/chroma/README
     modules/clickhouse/README
     modules/elasticsearch/README
+    modules/fastapi/README
     modules/google/README
     modules/influxdb/README
     modules/k3s/README

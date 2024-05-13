@@ -4183,6 +4183,7 @@ cassandra = []
 chroma = ["chromadb-client"]
 clickhouse = ["clickhouse-driver"]
 elasticsearch = []
+fastapi = ["httpx"]
 google = ["google-cloud-datastore", "google-cloud-pubsub"]
 influxdb = ["influxdb", "influxdb-client"]
 k3s = ["kubernetes", "pyyaml"]
@@ -4212,4 +4213,4 @@ weaviate = ["weaviate-client"]
 [metadata]
 lock-version = "2.0"
 python-versions = ">=3.9,<4.0"
-content-hash = "95a2e0ef23d8dfb1cbc74d72f534028aeff5da8bc26cc194f464f6fe282ba38f"
+content-hash = "8676827f49237bd96b95c4cf9686728d401bddf78d09a2e3e018ac2dc882a8a9"
