@@ -40,6 +40,7 @@ packages = [
     { include = "testcontainers", from = "modules/kafka" },
     { include = "testcontainers", from = "modules/keycloak" },
     { include = "testcontainers", from = "modules/localstack" },
+    { include = "testcontainers", from = "modules/memcached" },
     { include = "testcontainers", from = "modules/minio" },
     { include = "testcontainers", from = "modules/mongodb" },
     { include = "testcontainers", from = "modules/mssql" },
@@ -111,6 +112,7 @@ k3s = ["kubernetes", "pyyaml"]
 kafka = []
 keycloak = ["python-keycloak"]
 localstack = ["boto3"]
+memcached = []
 minio = ["minio"]
 mongodb = ["pymongo"]
 mssql = ["sqlalchemy", "pymssql"]

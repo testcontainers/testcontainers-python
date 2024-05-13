@@ -11,7 +11,10 @@
 #    License for the specific language governing permissions and limitations
 #    under the License.
 import re
+import tarfile
+from io import BytesIO
 from os import environ
+from pathlib import Path
 from typing import Optional
 
 from testcontainers.core.generic import DbContainer
@@ -40,6 +43,22 @@ class MySqlContainer(DbContainer):
             ...     with engine.begin() as connection:
             ...         result = connection.execute(sqlalchemy.text("select version()"))
             ...         version, = result.fetchone()
+
+        The optional :code:`seed` parameter enables arbitrary SQL files to be loaded.
+        This is perfect for schema and sample data. This works by mounting the seed to
+        `/docker-entrypoint-initdb./d`, which containerized MySQL are set up to load
+        automatically.
+
+        .. doctest::
+            >>> import sqlalchemy
+            >>> from testcontainers.mysql import MySqlContainer
+            >>> with MySqlContainer(seed="../../tests/seeds/") as mysql:
+            ...     engine = sqlalchemy.create_engine(mysql.get_connection_url())
+            ...     with engine.begin() as connection:
+            ...         query = "select * from stuff"  # Can now rely on schema/data
+            ...         result = connection.execute(sqlalchemy.text(query))
+            ...         first_stuff, = result.fetchone()
+
     """
 
     def __init__(
@@ -50,6 +69,7 @@ class MySqlContainer(DbContainer):
         password: Optional[str] = None,
         dbname: Optional[str] = None,
         port: int = 3306,
+        seed: Optional[str] = None,
         **kwargs,
     ) -> None:
         raise_for_deprecated_parameter(kwargs, "MYSQL_USER", "username")
@@ -67,6 +87,7 @@ class MySqlContainer(DbContainer):
 
         if self.username == "root":
             self.root_password = self.password
+        self.seed = seed
 
     def _configure(self) -> None:
         self.with_env("MYSQL_ROOT_PASSWORD", self.root_password)
@@ -86,3 +107,14 @@ class MySqlContainer(DbContainer):
         return super()._create_connection_url(
             dialect="mysql+pymysql", username=self.username, password=self.password, dbname=self.dbname, port=self.port
         )
+
+    def _transfer_seed(self) -> None:
+        if self.seed is None:
+            return
+        src_path = Path(self.seed)
+        dest_path = "/docker-entrypoint-initdb.d/"
+        with BytesIO() as archive, tarfile.TarFile(fileobj=archive, mode="w") as tar:
+            for filename in src_path.iterdir():
+                tar.add(filename.absolute(), arcname=filename.relative_to(src_path))
+            archive.seek(0)
+            self.get_wrapped_container().put_archive(dest_path, archive)
