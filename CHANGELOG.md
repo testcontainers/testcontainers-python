@@ -1,5 +1,18 @@
 # Changelog
 
+## [4.4.1](https://github.com/testcontainers/testcontainers-python/compare/testcontainers-v4.4.0...testcontainers-v4.4.1) (2024-05-14)
+
+
+### Bug Fixes
+
+* Add memcached container ([#322](https://github.com/testcontainers/testcontainers-python/issues/322)) ([690b9b4](https://github.com/testcontainers/testcontainers-python/commit/690b9b4526dcdf930c0733c227009af208f47cda))
+* Add selenium video support [#6](https://github.com/testcontainers/testcontainers-python/issues/6) ([#364](https://github.com/testcontainers/testcontainers-python/issues/364)) ([3c8006c](https://github.com/testcontainers/testcontainers-python/commit/3c8006cb6b94d074d2e33d27e972409886bcc7f3))
+* **core:** add empty _configure to DockerContainer ([#556](https://github.com/testcontainers/testcontainers-python/issues/556)) ([08916c8](https://github.com/testcontainers/testcontainers-python/commit/08916c8fa29c835bc5c62fdbdd26ac1546c0c061))
+* **core:** remove version from compose tests ([#571](https://github.com/testcontainers/testcontainers-python/issues/571)) ([38946d4](https://github.com/testcontainers/testcontainers-python/commit/38946d41dacdc4985fc696a5d58cf7d97e367a1c))
+* **keycloak:** add realm imports ([#565](https://github.com/testcontainers/testcontainers-python/issues/565)) ([f761b98](https://github.com/testcontainers/testcontainers-python/commit/f761b983613e16dc56e560a947247c01052c19f6))
+* **mysql:** Add seed support in MySQL ([#552](https://github.com/testcontainers/testcontainers-python/issues/552)) ([396079a](https://github.com/testcontainers/testcontainers-python/commit/396079a5af4c550084df2be5037a0ff52cd9fb5a))
+* url quote passwords ([#549](https://github.com/testcontainers/testcontainers-python/issues/549)) ([6c5d227](https://github.com/testcontainers/testcontainers-python/commit/6c5d227730d415111c54e7ea3cb5d86b549cc901))
+
 ## [4.4.0](https://github.com/testcontainers/testcontainers-python/compare/testcontainers-v4.3.3...testcontainers-v4.4.0) (2024-04-17)
 
 
