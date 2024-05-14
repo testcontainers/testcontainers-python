@@ -13,7 +13,7 @@ ARANGODB_IMAGE_NAME = "arangodb"
 IMAGE_VERSION = "3.11.8"
 
 
-def arango_test_ops(arango_client, expeced_version, username="root", password=""):
+def arango_test_ops(arango_client, expected_version, username="root", password=""):
     """
     Basic ArangoDB operations to test DB really up and running.
     """
@@ -22,7 +22,7 @@ def arango_test_ops(arango_client, expeced_version, username="root", password=""
     # Taken from https://github.com/ArangoDB-Community/python-arango/blob/main/README.md
     # Connect to "_system" database as root user.
     sys_db = arango_client.db("_system", username=username, password=password)
-    assert sys_db.version() == expeced_version
+    assert sys_db.version() == expected_version
 
     # Create a new database named "test".
     sys_db.create_database("test")
@@ -63,7 +63,7 @@ def test_docker_run_arango():
         with pytest.raises(DatabaseCreateError):
             sys_db.create_database("test")
 
-        arango_test_ops(arango_client=client, expeced_version=IMAGE_VERSION, password=arango_root_password)
+        arango_test_ops(arango_client=client, expected_version=IMAGE_VERSION, password=arango_root_password)
 
 
 def test_docker_run_arango_without_auth():
@@ -75,7 +75,7 @@ def test_docker_run_arango_without_auth():
     with ArangoDbContainer(image, arango_no_auth=True) as arango:
         client = ArangoClient(hosts=arango.get_connection_url())
 
-        arango_test_ops(arango_client=client, expeced_version=IMAGE_VERSION, password="")
+        arango_test_ops(arango_client=client, expected_version=IMAGE_VERSION, password="")
 
 
 @pytest.mark.skipif(platform.processor() == "arm", reason="Test does not run on machines with ARM CPU")
@@ -94,7 +94,7 @@ def test_docker_run_arango_older_version():
     with ArangoDbContainer(image, arango_no_auth=True) as arango:
         client = ArangoClient(hosts=arango.get_connection_url())
 
-        arango_test_ops(arango_client=client, expeced_version=image_version, password="")
+        arango_test_ops(arango_client=client, expected_version=image_version, password="")
 
 
 def test_docker_run_arango_random_root_password():

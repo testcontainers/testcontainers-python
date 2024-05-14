@@ -44,7 +44,7 @@ class InfluxDb2Container(InfluxDbContainer):
         # parameters used by the InfluxDSB 2.x Docker container when spawned in setup mode
         # (which is likely what you want). In setup mode, init_mode should be "setup" and all
         # the other parameters should be set (via this constructor or their respective
-        # environment variables); retention does not need to be explicitely set.
+        # environment variables); retention does not need to be explicitly set.
         init_mode: Optional[str] = None,
         admin_token: Optional[str] = None,
         username: Optional[str] = None,
