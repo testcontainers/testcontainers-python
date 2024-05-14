@@ -1,3 +1,5 @@
+from pathlib import Path
+
 import pytest
 
 from testcontainers.postgres import PostgresContainer
@@ -77,3 +79,24 @@ def test_quoted_password():
             # it raises ValueError, but auth (OperationalError) = more interesting
             with sqlalchemy.create_engine(raw_pass_url).begin() as connection:
                 connection.execute(sqlalchemy.text("select 1=1"))
+
+
+def test_show_how_to_initialize_db_via_initdb_dir():
+    postgres_container = PostgresContainer("postgres:16-alpine")
+    script = Path(__file__).parent / "fixtures" / "postgres_create_example_table.sql"
+    postgres_container.with_volume_mapping(
+        host=str(script),
+        container=f"/docker-entrypoint-initdb.d/{script.name}"
+    )
+
+    insert_query = "insert into example(name, description) VALUES ('sally', 'sells seashells');"
+    select_query = "select id, name, description from example;"
+
+    with postgres_container as postgres:
+        engine = sqlalchemy.create_engine(postgres.get_connection_url())
+        with engine.begin() as connection:
+            connection.execute(sqlalchemy.text(insert_query))
+            result = connection.execute(sqlalchemy.text(select_query))
+            result = result.fetchall()
+            assert len(result) == 1
+            assert result[0] == (1, 'sally', 'sells seashells')
