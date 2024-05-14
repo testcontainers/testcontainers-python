@@ -1,3 +1,4 @@
+import os
 import tempfile
 from pathlib import Path
 
@@ -40,5 +41,7 @@ def test_selenium_video(caps, workdir):
 @pytest.fixture
 def workdir() -> Path:
     tmpdir = tempfile.TemporaryDirectory()
+    # Enable write permissions for the Docker user container.
+    os.chmod(tmpdir.name, 0o777)
     yield Path(tmpdir.name)
     tmpdir.cleanup()
