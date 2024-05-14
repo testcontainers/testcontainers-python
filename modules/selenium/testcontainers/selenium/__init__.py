@@ -10,17 +10,20 @@
 #    WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the
 #    License for the specific language governing permissions and limitations
 #    under the License.
-
+from pathlib import Path
 from typing import Optional
 
 import urllib3
+from typing_extensions import Self
 
 from selenium import webdriver
 from selenium.webdriver.common.options import ArgOptions
 from testcontainers.core.container import DockerContainer
+from testcontainers.core.network import Network
 from testcontainers.core.waiting_utils import wait_container_is_ready
+from testcontainers.selenium.video import SeleniumVideoContainer
 
-IMAGES = {"firefox": "selenium/standalone-firefox-debug:latest", "chrome": "selenium/standalone-chrome-debug:latest"}
+IMAGES = {"firefox": "selenium/standalone-firefox:latest", "chrome": "selenium/standalone-chrome:latest"}
 
 
 def get_image_name(capabilities: str) -> str:
@@ -51,6 +54,8 @@ class BrowserWebDriverContainer(DockerContainer):
         self.image = image or get_image_name(capabilities)
         self.port = port
         self.vnc_port = vnc_port
+        self.video = None
+        self.__video_network = None
         super().__init__(image=self.image, **kwargs)
         self.with_exposed_ports(self.port, self.vnc_port)
 
@@ -72,3 +77,44 @@ class BrowserWebDriverContainer(DockerContainer):
         ip = self.get_container_host_ip()
         port = self.get_exposed_port(self.port)
         return f"http://{ip}:{port}/wd/hub"
+
+    def with_video(self, image: Optional[str] = None, video_path: Optional[Path] = None) -> Self:
+        video_path = video_path or Path.cwd()
+
+        self.video = SeleniumVideoContainer(image)
+
+        video_folder_path = video_path.parent if video_path.suffix else video_path
+        self.video.set_videos_host_path(str(video_folder_path.resolve()))
+
+        if video_path.name:
+            self.video.set_video_name(video_path.name)
+
+        return self
+
+    def start(self) -> "DockerContainer":
+        if not self.video:
+            super().start()
+            return self
+
+        self.__video_network = Network().__enter__()
+
+        self.with_kwargs(network=self.__video_network.name)
+        super().start()
+
+        self.video.with_kwargs(network=self.__video_network.name).set_selenium_container_host(
+            self.get_wrapped_container().short_id
+        ).start()
+
+        return self
+
+    def stop(self, force=True, delete_volume=True) -> None:
+        if self.video:
+            # get_wrapped_container().stop -> stop the container
+            # video.stop -> remove the container
+            self.video.get_wrapped_container().stop()
+            self.video.stop(force, delete_volume)
+
+        super().stop(force, delete_volume)
+
+        if self.__video_network:
+            self.__video_network.remove()
