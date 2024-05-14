@@ -84,10 +84,7 @@ def test_quoted_password():
 def test_show_how_to_initialize_db_via_initdb_dir():
     postgres_container = PostgresContainer("postgres:16-alpine")
     script = Path(__file__).parent / "fixtures" / "postgres_create_example_table.sql"
-    postgres_container.with_volume_mapping(
-        host=str(script),
-        container=f"/docker-entrypoint-initdb.d/{script.name}"
-    )
+    postgres_container.with_volume_mapping(host=str(script), container=f"/docker-entrypoint-initdb.d/{script.name}")
 
     insert_query = "insert into example(name, description) VALUES ('sally', 'sells seashells');"
     select_query = "select id, name, description from example;"
@@ -99,4 +96,4 @@ def test_show_how_to_initialize_db_via_initdb_dir():
             result = connection.execute(sqlalchemy.text(select_query))
             result = result.fetchall()
             assert len(result) == 1
-            assert result[0] == (1, 'sally', 'sells seashells')
+            assert result[0] == (1, "sally", "sells seashells")
