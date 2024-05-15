@@ -29,6 +29,7 @@ classifiers = [
 packages = [
     { include = "testcontainers", from = "core" },
     { include = "testcontainers", from = "modules/arangodb" },
+    { include = "testcontainers", from = "modules/aws"},
     { include = "testcontainers", from = "modules/azurite" },
     { include = "testcontainers", from = "modules/cassandra" },
     { include = "testcontainers", from = "modules/chroma" },
@@ -104,6 +105,7 @@ httpx = { version = "*", optional = true }
 
 [tool.poetry.extras]
 arangodb = ["python-arango"]
+aws = ["boto3", "httpx"]
 azurite = ["azure-storage-blob"]
 cassandra = []
 clickhouse = ["clickhouse-driver"]
