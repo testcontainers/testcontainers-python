@@ -4558,6 +4558,7 @@ testing = ["big-O", "jaraco.functools", "jaraco.itertools", "more-itertools", "p
 
 [extras]
 arangodb = ["python-arango"]
+aws = ["boto3", "httpx"]
 azurite = ["azure-storage-blob"]
 cassandra = []
 chroma = ["chromadb-client"]
@@ -4602,4 +4603,4 @@ weaviate = ["weaviate-client"]
 [metadata]
 lock-version = "2.0"
 python-versions = ">=3.9,<4.0"
-content-hash = "ef48ca48ddc2bc6ac68487e1674d1e6973c3a14b2b5c41235262af20695fe432"
+content-hash = "00155615fffa7f316221c1fafb895105911a3cce003b57713d9b76b7fd3e3214"
