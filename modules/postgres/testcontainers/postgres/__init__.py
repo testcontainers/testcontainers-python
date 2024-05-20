@@ -11,6 +11,9 @@
 #    License for the specific language governing permissions and limitations
 #    under the License.
 import os
+import tarfile
+from io import BytesIO
+from pathlib import Path
 from time import sleep
 from typing import Optional
 
@@ -45,6 +48,24 @@ class PostgresContainer(DbContainer):
             ...         version, = result.fetchone()
             >>> version
             'PostgreSQL 16...'
+
+        The optional :code:`seed` parameter enables arbitrary SQL files to be loaded.
+        This is perfect for schema and sample data. This works by mounting the seed to
+        `/docker-entrypoint-initdb./d`, which containerized Postgres are set up to load
+        automatically.
+
+        .. doctest::
+
+            >>> from testcontainers.postgres import PostgresContainer
+            >>> import sqlalchemy
+            >>>
+            >>> with PostgresContainer(seed="../../tests/seeds/") as postgres:
+            ...     engine = sqlalchemy.create_engine(postgres.get_connection_url())
+            ...     with engine.begin() as connection:
+            ...         query = "select * from stuff"  # Can now rely on schema/data
+            ...         result = connection.execute(sqlalchemy.text(query))
+            ...         first_stuff, = result.fetchone()
+
     """
 
     def __init__(
@@ -55,6 +76,7 @@ class PostgresContainer(DbContainer):
         password: Optional[str] = None,
         dbname: Optional[str] = None,
         driver: Optional[str] = "psycopg2",
+        seed: Optional[str] = None,
         **kwargs,
     ) -> None:
         raise_for_deprecated_parameter(kwargs, "user", "username")
@@ -64,6 +86,7 @@ class PostgresContainer(DbContainer):
         self.dbname: str = dbname or os.environ.get("POSTGRES_DB", "test")
         self.port = port
         self.driver = f"+{driver}" if driver else ""
+        self.seed = seed
 
         self.with_exposed_ports(self.port)
 
@@ -103,3 +126,14 @@ class PostgresContainer(DbContainer):
             count += 1
 
         raise RuntimeError("Postgres could not get into a ready state")
+
+    def _transfer_seed(self) -> None:
+        if self.seed is None:
+            return
+        src_path = Path(self.seed)
+        dest_path = "/docker-entrypoint-initdb.d/"
+        with BytesIO() as archive, tarfile.TarFile(fileobj=archive, mode="w") as tar:
+            for filename in src_path.iterdir():
+                tar.add(filename.absolute(), arcname=filename.relative_to(src_path))
+            archive.seek(0)
+            self.get_wrapped_container().put_archive(dest_path, archive)
