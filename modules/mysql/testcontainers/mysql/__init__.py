@@ -50,8 +50,10 @@ class MySqlContainer(DbContainer):
         automatically.
 
         .. doctest::
+
             >>> import sqlalchemy
             >>> from testcontainers.mysql import MySqlContainer
+
             >>> with MySqlContainer(seed="../../tests/seeds/") as mysql:
             ...     engine = sqlalchemy.create_engine(mysql.get_connection_url())
             ...     with engine.begin() as connection:
