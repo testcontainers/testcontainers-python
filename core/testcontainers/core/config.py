@@ -2,6 +2,7 @@ from dataclasses import dataclass, field
 from os import environ
 from os.path import exists
 from pathlib import Path
+from typing import Union
 
 MAX_TRIES = int(environ.get("TC_MAX_TRIES", 120))
 SLEEP_TIME = int(environ.get("TC_POOLING_INTERVAL", 1))
@@ -47,7 +48,7 @@ class TestcontainersConfiguration:
     ryuk_reconnection_timeout: str = RYUK_RECONNECTION_TIMEOUT
     tc_properties: dict[str, str] = field(default_factory=read_tc_properties)
 
-    def tc_properties_get_tc_host(self):
+    def tc_properties_get_tc_host(self) -> Union[str, None]:
         return self.tc_properties.get("tc.host")
 
     @property
