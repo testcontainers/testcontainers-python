@@ -71,22 +71,11 @@ class CosmosDBEmulatorContainer(DockerContainer):
 			**docker_client_kw,
 		):
 		super().__init__(image=image, **docker_client_kw)
-
 		self.partition_count = partition_count
 		self.key = key
 		self.enable_data_persistence = enable_data_persistence
 		self.endpoints = frozenset(endpoints)
-		
-		self.with_bind_ports(EMULATOR_PORT, EMULATOR_PORT)
-
-		endpoints_ports = []
-		for endpoint in self.endpoints:
-			endpoints_ports.extend(endpoint_ports[endpoint])
-
-		if bind_ports:
-			[ self.with_bind_ports(port, port) for port in endpoints_ports ]
-		else:
-			self.with_exposed_ports(*endpoints_ports)
+		self.bind_ports = bind_ports
 
 	def start(self) -> Self:
 		self._configure()
@@ -122,6 +111,17 @@ class CosmosDBEmulatorContainer(DockerContainer):
 		return SyncCosmosClient(url=self.url, credential=self.key, connection_verify=False)
 
 	def _configure(self) -> None:
+		self.with_bind_ports(EMULATOR_PORT, EMULATOR_PORT)
+
+		endpoints_ports = []
+		for endpoint in self.endpoints:
+			endpoints_ports.extend(endpoint_ports[endpoint])
+
+		if self.bind_ports:
+			[ self.with_bind_ports(port, port) for port in endpoints_ports ]
+		else:
+			self.with_exposed_ports(*endpoints_ports)
+
 		(
 			self
 				.with_env("AZURE_COSMOS_EMULATOR_PARTITION_COUNT", str(self.partition_count))
