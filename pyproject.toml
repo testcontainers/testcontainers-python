@@ -33,6 +33,7 @@ packages = [
     { include = "testcontainers", from = "modules/cassandra" },
     { include = "testcontainers", from = "modules/chroma" },
     { include = "testcontainers", from = "modules/clickhouse" },
+    { include = "testcontainers", from = "modules/cosmosdb" },
     { include = "testcontainers", from = "modules/elasticsearch" },
     { include = "testcontainers", from = "modules/google" },
     { include = "testcontainers", from = "modules/influxdb" },
@@ -75,6 +76,7 @@ typing-extensions = "*"
 python-arango = { version = "^7.8", optional = true }
 azure-storage-blob = { version = "^12.19", optional = true }
 clickhouse-driver = { version = "*", optional = true }
+azure-cosmos = { version = "*", optional = true }
 google-cloud-pubsub = { version = ">=2", optional = true }
 google-cloud-datastore = { version = ">=2", optional = true }
 influxdb = { version = "*", optional = true }
@@ -105,6 +107,7 @@ arangodb = ["python-arango"]
 azurite = ["azure-storage-blob"]
 cassandra = []
 clickhouse = ["clickhouse-driver"]
+cosmosdb = ["azure-cosmos"]
 elasticsearch = []
 google = ["google-cloud-pubsub", "google-cloud-datastore"]
 influxdb = ["influxdb", "influxdb-client"]
@@ -250,6 +253,7 @@ mypy_path = [
 #    "modules/azurite",
 #    "modules/cassandra",
 #    "modules/clickhouse",
+#    "modules/cosmosdb",
 #    "modules/elasticsearch",
 #    "modules/google",
 #    "modules/k3s",
