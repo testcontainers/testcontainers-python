@@ -1,6 +1,6 @@
 [tool.poetry]
 name = "testcontainers"
-version = "4.6.0"  # auto-incremented by release-please
+version = "4.5.0"  # auto-incremented by release-please
 description = "Python library for throwaway instances of anything that can run in a Docker container"
 authors = ["Sergey Pirogov <automationremarks@gmail.com>"]
 maintainers = [
@@ -34,6 +34,7 @@ packages = [
     { include = "testcontainers", from = "modules/chroma" },
     { include = "testcontainers", from = "modules/clickhouse" },
     { include = "testcontainers", from = "modules/cockroachdb" },
+    { include = "testcontainers", from = "modules/cosmosdb" },
     { include = "testcontainers", from = "modules/elasticsearch" },
     { include = "testcontainers", from = "modules/google" },
     { include = "testcontainers", from = "modules/influxdb" },
@@ -43,15 +44,12 @@ packages = [
     { include = "testcontainers", from = "modules/localstack" },
     { include = "testcontainers", from = "modules/memcached" },
     { include = "testcontainers", from = "modules/minio" },
-    { include = "testcontainers", from = "modules/milvus" },
     { include = "testcontainers", from = "modules/mongodb" },
-    { include = "testcontainers", from = "modules/mqtt" },
     { include = "testcontainers", from = "modules/mssql" },
     { include = "testcontainers", from = "modules/mysql" },
     { include = "testcontainers", from = "modules/nats" },
     { include = "testcontainers", from = "modules/neo4j" },
     { include = "testcontainers", from = "modules/nginx" },
-    { include = "testcontainers", from = "modules/ollama" },
     { include = "testcontainers", from = "modules/opensearch" },
     { include = "testcontainers", from = "modules/oracle-free" },
     { include = "testcontainers", from = "modules/postgres" },
@@ -109,6 +107,7 @@ arangodb = ["python-arango"]
 azurite = ["azure-storage-blob"]
 cassandra = []
 clickhouse = ["clickhouse-driver"]
+cosmosdb = ["azure-cosmos"]
 cockroachdb = []
 elasticsearch = []
 google = ["google-cloud-pubsub", "google-cloud-datastore"]
@@ -119,16 +118,13 @@ keycloak = ["python-keycloak"]
 localstack = ["boto3"]
 memcached = []
 minio = ["minio"]
-milvus = []
 mongodb = ["pymongo"]
-mqtt = []
 mssql = ["sqlalchemy", "pymssql"]
 mysql = ["sqlalchemy", "pymysql"]
 nats = ["nats-py"]
 neo4j = ["neo4j"]
 nginx = []
 opensearch = ["opensearch-py"]
-ollama = []
 oracle = ["sqlalchemy", "oracledb"]
 oracle-free = ["sqlalchemy", "oracledb"]
 postgres = []
@@ -146,22 +142,18 @@ mypy = "1.7.1"
 pre-commit = "^3.6"
 pytest = "7.4.3"
 pytest-cov = "4.1.0"
-sphinx = "7.2.6"
-twine = "4.0.2"
-anyio = "4.3.0"
+sphinx = "^7.2.6"
+twine = "^4.0.2"
+anyio = "^4.3.0"
 # for tests only
-psycopg2-binary = "2.9.9"
-pg8000 = "1.30.5"
-sqlalchemy = "2.0.28"
-psycopg = "3.1.18"
-cassandra-driver = "3.29.1"
+psycopg2-binary = "*"
+pg8000 = "*"
+sqlalchemy = "*"
+psycopg = "*"
+cassandra-driver = "*"
 pytest-asyncio = "0.23.5"
 kafka-python-ng = "^2.2.0"
-hvac = "2.1.0"
-pymilvus = "2.4.3"
-httpx = "0.27.0"
-paho-mqtt = "2.1.0"
-sqlalchemy-cockroachdb = "2.0.2"
+hvac = "*"
 
 [[tool.poetry.source]]
 name = "PyPI"
@@ -171,7 +163,7 @@ priority = "primary"
 line-length = 120
 
 [tool.pytest.ini_options]
-addopts = "--tb=short --strict-markers"
+addopts = "--cov-report=term --cov-report=html --tb=short --strict-markers"
 log_cli = true
 log_cli_level = "INFO"
 
@@ -274,7 +266,6 @@ mypy_path = [
 #    "modules/mysql",
 #    "modules/neo4j",
 #    "modules/nginx",
-#    "modules/ollama",
 #    "modules/opensearch",
 #    "modules/oracle",
 #    "modules/postgres",
