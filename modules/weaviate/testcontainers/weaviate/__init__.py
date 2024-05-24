@@ -32,7 +32,7 @@ class WeaviateContainer(DbContainer):
             Additional environment variables to include with the container, e.g. ENABLE_MODULES list, QUERY_DEFAULTS_LIMIT setting.
 
     Example:
-        This example shows how to start Weaviate container with defualt settings.
+        This example shows how to start Weaviate container with default settings.
 
         .. doctest::
 
@@ -43,7 +43,7 @@ class WeaviateContainer(DbContainer):
             ...         client.is_live()
             True
 
-        This example shows how to start Weaviate container with additinal settings.
+        This example shows how to start Weaviate container with additional settings.
 
         .. doctest::
 
