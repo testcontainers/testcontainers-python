@@ -67,7 +67,7 @@ class CosmosDBEmulatorContainer(DockerContainer):
 			enable_data_persistence: bool  = is_truthy_string(os.getenv("AZURE_COSMOS_EMULATOR_ENABLE_DATA_PERSISTENCE", "false")),
 			bind_ports: bool               = is_truthy_string(os.getenv("AZURE_COSMOS_EMULATOR_BIND_PORTS", "true")),
 			key: str                       = os.getenv("AZURE_COSMOS_EMULATOR_KEY", "C2y6yDjf5/R+ob0N8A7Cgv30VRDJIWEHLM+4QDU5DE2nQ9nDuVTqobD4b8mGGyPMbIZnqyMsEcaGQy67XIw/Jw=="),
-			endpoints: Iterable[Endpoints] = ALL_ENDPOINTS, # the emulator image does not support host-container port mapping
+			endpoints: Iterable[Endpoints] = [], # the emulator image does not support host-container port mapping
 			**docker_client_kw,
 		):
 		super().__init__(image=image, **docker_client_kw)
