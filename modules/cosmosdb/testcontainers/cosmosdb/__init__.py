@@ -130,7 +130,6 @@ class CosmosDBEmulatorContainer(DockerContainer):
 				.with_env("AZURE_COSMOS_EMULATOR_KEY", str(self.key))
 		)
 
-	@wait_container_is_ready(HTTPError, URLError, ServiceRequestError)
 	def _wait_until_ready(self) -> Self:
 		"""
 		Waits until the CosmosDB Emulator image is ready to be used.
@@ -143,6 +142,7 @@ class CosmosDBEmulatorContainer(DockerContainer):
 		)
 		return self
 
+	@wait_container_is_ready(HTTPError, URLError)
 	def _wait_for_url(self, url: str) -> Self:
 		with urlopen(url, context=ssl._create_unverified_context()) as response:
 			response.read()
@@ -152,6 +152,7 @@ class CosmosDBEmulatorContainer(DockerContainer):
 		wait_for_logs(*args, **kwargs)
 		return self
 
+	@wait_container_is_ready(ServiceRequestError)
 	def _wait_for_query_success(self, query: Callable[[SyncCosmosClient], None]) -> Self:
 		with self.sync_client() as c:
 			query(c)
