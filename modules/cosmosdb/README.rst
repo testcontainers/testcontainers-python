@@ -1,3 +1,3 @@
-.. autoclass:: testcontainers.cosmosdb.CosmosDBEmulatorContainer
-.. autoclass:: testcontainers.cosmosdb.Endpoints
+.. autoclass:: testcontainers.cosmosdb.MongoDBEmulatorContainer
+.. autoclass:: testcontainers.cosmosdb.NoSQLEmulatorContainer
 .. title:: testcontainers.cosmosdb.CosmosDBEmulatorContainer
