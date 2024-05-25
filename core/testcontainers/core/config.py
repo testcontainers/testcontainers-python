@@ -1,8 +1,9 @@
 from dataclasses import dataclass, field
+from logging import warning
 from os import environ
 from os.path import exists
 from pathlib import Path
-from typing import Union
+from typing import Optional, Union
 
 MAX_TRIES = int(environ.get("TC_MAX_TRIES", 120))
 SLEEP_TIME = int(environ.get("TC_POOLING_INTERVAL", 1))
@@ -37,6 +38,9 @@ def read_tc_properties() -> dict[str, str]:
     return settings
 
 
+_WARNINGS = {"DOCKER_AUTH_CONFIG": "DOCKER_AUTH_CONFIG is experimental, see testcontainers/testcontainers-python#566"}
+
+
 @dataclass
 class TestcontainersConfiguration:
     max_tries: int = MAX_TRIES
@@ -47,6 +51,19 @@ class TestcontainersConfiguration:
     ryuk_docker_socket: str = RYUK_DOCKER_SOCKET
     ryuk_reconnection_timeout: str = RYUK_RECONNECTION_TIMEOUT
     tc_properties: dict[str, str] = field(default_factory=read_tc_properties)
+    _docker_auth_config: Optional[str] = field(default_factory=lambda: environ.get("DOCKER_AUTH_CONFIG"))
+
+    @property
+    def docker_auth_config(self):
+        if "DOCKER_AUTH_CONFIG" in _WARNINGS:
+            warning(_WARNINGS.pop("DOCKER_AUTH_CONFIG"))
+        return self._docker_auth_config
+
+    @docker_auth_config.setter
+    def docker_auth_config(self, value: str):
+        if "DOCKER_AUTH_CONFIG" in _WARNINGS:
+            warning(_WARNINGS.pop("DOCKER_AUTH_CONFIG"))
+        self._docker_auth_config = value
 
     def tc_properties_get_tc_host(self) -> Union[str, None]:
         return self.tc_properties.get("tc.host")

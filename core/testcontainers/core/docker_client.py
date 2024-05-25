@@ -200,4 +200,4 @@ def get_docker_host() -> Optional[str]:
 
 
 def get_docker_auth_config() -> Optional[str]:
-    return os.getenv("DOCKER_AUTH_CONFIG")
+    return c.docker_auth_config
