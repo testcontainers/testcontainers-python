@@ -41,7 +41,7 @@ class CosmosDBEmulatorContainer(DockerContainer):
         .. doctest::
                 >>> from testcontainers.cosmosdb import CosmosDBEmulatorContainer
                 >>> with CosmosDBEmulatorContainer() as cosmosdb:
-                ...    db = cosmosdb.sync_client().create_database_if_not_exists("test")
+                ...    db = cosmosdb.insecure_sync_client().create_database_if_not_exists("test")
 
         .. doctest::
                 >>> from testcontainers.cosmosdb import CosmosDBEmulatorContainer
@@ -84,16 +84,10 @@ class CosmosDBEmulatorContainer(DockerContainer):
         ), "A MongoDB version is required to use the MongoDB Endpoint"
         self.mongodb_version = mongodb_version
 
-    def start(self) -> Self:
-        self._configure()
-        super().start()
-        self._wait_until_ready()
-        return self
-
     @property
     def url(self) -> str:
         """
-        Returns the url to interact with the emulator
+        The url to the CosmosDB server
         """
         return f"https://{self.host}:{self.get_exposed_port(EMULATOR_PORT)}"
 
@@ -101,21 +95,39 @@ class CosmosDBEmulatorContainer(DockerContainer):
     def host(self) -> str:
         return self.get_container_host_ip()
 
+    @property
+    def certificate_pem(self) -> bytes:
+        """
+        PEM-encoded certificate of the CosmosDB server
+        """
+        return self._cert_pem_bytes
+
     def ports(self, endpoint: Endpoints) -> Iterable[int]:
+        """
+        Returns the set of exposed ports for a given endpoint.
+        If bind_ports is True, the returned ports will be the NAT-ed ports reachable from the host.
+        """
         assert endpoint in self.endpoints, f"Endpoint {endpoint} is not exposed"
         return {self.get_exposed_port(p) for p in endpoint_ports[endpoint]}
 
-    def async_client(self) -> AsyncCosmosClient:
+    def insecure_async_client(self) -> AsyncCosmosClient:
         """
-        Returns an asynchronous CosmosClient instance to interact with the CosmosDB server
+        Returns an asynchronous CosmosClient instance
         """
         return AsyncCosmosClient(url=self.url, credential=self.key, connection_verify=False)
 
-    def sync_client(self) -> SyncCosmosClient:
+    def insecure_sync_client(self) -> SyncCosmosClient:
         """
-        Returns a synchronous CosmosClient instance to interact with the CosmosDB server
+        Returns a synchronous CosmosClient instance
         """
         return SyncCosmosClient(url=self.url, credential=self.key, connection_verify=False)
+
+    def start(self) -> Self:
+        self._configure()
+        super().start()
+        self._wait_until_ready()
+        self._cert_pem_bytes = self._download_cert()
+        return self
 
     def _configure(self) -> None:
         self.with_bind_ports(EMULATOR_PORT, EMULATOR_PORT)
@@ -162,6 +174,10 @@ class CosmosDBEmulatorContainer(DockerContainer):
 
     @wait_container_is_ready(ServiceRequestError)
     def _wait_for_query_success(self, query: Callable[[SyncCosmosClient], None]) -> Self:
-        with self.sync_client() as c:
+        with self.insecure_sync_client() as c:
             query(c)
         return self
+
+    def _download_cert(self) -> bytes:
+        with urlopen(f"{self.url}/_explorer/emulator.pem", context=ssl._create_unverified_context()) as response:
+            return response.read()
