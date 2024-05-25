@@ -4,7 +4,8 @@ from testcontainers.cosmosdb import CosmosDBEmulatorContainer, Endpoints
 
 def test_docker_run():
     with CosmosDBEmulatorContainer(partition_count=1) as cosmosdb:
-        list(cosmosdb.sync_client().list_databases())
+        list(cosmosdb.insecure_sync_client().list_databases())
+        assert cosmosdb.certificate_pem is not None
 
 
 def test_enabling_mondogb_endpoint_requires_a_version():
