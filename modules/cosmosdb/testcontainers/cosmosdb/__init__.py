@@ -19,21 +19,13 @@ __all__ = ["CosmosDBEmulatorContainer", "Endpoints"]
 
 
 class Endpoints(Enum):
-    Direct = auto()
-    Gremlin = auto()
-    Table = auto()
     MongoDB = auto()
-    Cassandra = auto()
 
 
 # Ports mostly derived from https://docs.microsoft.com/en-us/azure/cosmos-db/emulator-command-line-parameters
 EMULATOR_PORT = 8081
 endpoint_ports = {
-    Endpoints.Direct: frozenset([10251, 10252, 10253, 10254]),
-    Endpoints.Gremlin: frozenset([8901]),
-    Endpoints.Table: frozenset([8902]),
     Endpoints.MongoDB: frozenset([10255]),
-    Endpoints.Cassandra: frozenset([10350]),
 }
 
 
