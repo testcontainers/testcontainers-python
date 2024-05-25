@@ -1,7 +1,8 @@
-from dataclasses import dataclass, field, fields
+from dataclasses import asdict, dataclass, field, fields
 from functools import cached_property
 from json import loads
 from os import PathLike
+from platform import system
 from re import split
 from subprocess import CompletedProcess
 from subprocess import run as subprocess_run
@@ -37,6 +38,14 @@ class PublishedPort:
     TargetPort: Optional[str] = None
     PublishedPort: Optional[str] = None
     Protocol: Optional[str] = None
+
+    def normalize(self):
+        url_not_usable = system() == "Windows" and self.URL == "0.0.0.0"
+        if url_not_usable:
+            self_dict = asdict(self)
+            self_dict.update({"URL": "127.0.0.1"})
+            return PublishedPort(**self_dict)
+        return self
 
 
 OT = TypeVar("OT")
@@ -357,7 +366,7 @@ class DockerCompose:
         str:
             The mapped port on the host
         """
-        return self.get_container(service_name).get_publisher(by_port=port).PublishedPort
+        return self.get_container(service_name).get_publisher(by_port=port).normalize().PublishedPort
 
     def get_service_host(
         self,
@@ -379,14 +388,14 @@ class DockerCompose:
         str:
             The hostname for the service
         """
-        return self.get_container(service_name).get_publisher(by_port=port).URL
+        return self.get_container(service_name).get_publisher(by_port=port).normalize().URL
 
     def get_service_host_and_port(
         self,
         service_name: Optional[str] = None,
         port: Optional[int] = None,
     ):
-        publisher = self.get_container(service_name).get_publisher(by_port=port)
+        publisher = self.get_container(service_name).get_publisher(by_port=port).normalize()
         return publisher.URL, publisher.PublishedPort
 
     @wait_container_is_ready(HTTPError, URLError)
