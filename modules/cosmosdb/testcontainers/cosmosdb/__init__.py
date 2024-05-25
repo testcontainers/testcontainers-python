@@ -3,7 +3,7 @@ import socket
 import ssl
 from collections.abc import Iterable
 from enum import Enum, auto
-from typing import Callable
+from typing import Callable, Optional
 from urllib.error import HTTPError, URLError
 from urllib.request import urlopen
 
@@ -25,8 +25,6 @@ class Endpoints(Enum):
     MongoDB = auto()
     Cassandra = auto()
 
-
-ALL_ENDPOINTS = set(Endpoints)
 
 # Ports mostly derived from https://docs.microsoft.com/en-us/azure/cosmos-db/emulator-command-line-parameters
 EMULATOR_PORT = 8081
@@ -61,8 +59,8 @@ class CosmosDBEmulatorContainer(DockerContainer):
 
         .. doctest::
                 >>> from testcontainers.cosmosdb import CosmosDBEmulatorContainer, Endpoints
-                >>> with CosmosDBEmulatorContainer(endpoints=[Endpoints.MongoDB]) as emulator:
-                ...    print(f"Point yout MongoDB client to {emulator.host}:{emulator.ports(Endpoints.MongoDB)[0]}")
+                >>> with CosmosDBEmulatorContainer(endpoints=[Endpoints.MongoDB], mongodb_version="4.0") as emulator:
+                ...    print(f"Point yout MongoDB client to {emulator.host}:{next(iter(emulator.ports(Endpoints.MongoDB)))}")
     """
 
     def __init__(
@@ -80,6 +78,7 @@ class CosmosDBEmulatorContainer(DockerContainer):
             "C2y6yDjf5/R+ob0N8A7Cgv30VRDJIWEHLM+4QDU5DE2nQ9nDuVTqobD4b8mGGyPMbIZnqyMsEcaGQy67XIw/Jw==",
         ),
         endpoints: Iterable[Endpoints] = [],  # the emulator image does not support host-container port mapping
+        mongodb_version: Optional[str] = None,
         **docker_client_kw,
     ):
         super().__init__(image=image, **docker_client_kw)
@@ -88,6 +87,10 @@ class CosmosDBEmulatorContainer(DockerContainer):
         self.enable_data_persistence = enable_data_persistence
         self.endpoints = frozenset(endpoints)
         self.bind_ports = bind_ports
+        assert (Endpoints.MongoDB not in self.endpoints) or (
+            mongodb_version is not None
+        ), "A MongoDB version is required to use the MongoDB Endpoint"
+        self.mongodb_version = mongodb_version
 
     def start(self) -> Self:
         self._configure()
@@ -140,6 +143,9 @@ class CosmosDBEmulatorContainer(DockerContainer):
             .with_env("AZURE_COSMOS_EMULATOR_ENABLE_DATA_PERSISTENCE", str(self.enable_data_persistence))
             .with_env("AZURE_COSMOS_EMULATOR_KEY", str(self.key))
         )
+
+        if Endpoints.MongoDB in self.endpoints:
+            self.with_env("AZURE_COSMOS_EMULATOR_ENABLE_MONGODB_ENDPOINT", self.mongodb_version)
 
     def _wait_until_ready(self) -> Self:
         """
