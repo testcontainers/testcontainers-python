@@ -5,13 +5,10 @@ from unittest.mock import MagicMock, patch
 
 import docker
 
+from testcontainers.core.config import testcontainers_config as c
 from testcontainers.core.container import DockerContainer
 from testcontainers.core.docker_client import DockerClient
 from testcontainers.core.utils import parse_docker_auth_config
-
-
-def mockenv(**envvars):
-    return mock.patch.dict(os.environ, envvars)
 
 
 def test_docker_client_from_env():
@@ -32,7 +29,6 @@ def test_docker_client_login_no_login():
         mock_docker.from_env.return_value.login.assert_not_called()
 
 
-@mockenv(DOCKER_AUTH_CONFIG="test")
 def test_docker_client_login():
     mock_docker = MagicMock(spec=docker)
     mock_parse_docker_auth_config = MagicMock(spec=parse_docker_auth_config)
@@ -42,6 +38,7 @@ def test_docker_client_login():
     mock_parse_docker_auth_config.return_value = [TestAuth("test")]
 
     with (
+        mock.patch.object(c, "_docker_auth_config", "test"),
         patch("testcontainers.core.docker_client.docker", mock_docker),
         patch("testcontainers.core.docker_client.parse_docker_auth_config", mock_parse_docker_auth_config),
     ):
