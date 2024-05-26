@@ -19,7 +19,7 @@ def create_labels(image: str, labels: Optional[dict[str, str]]) -> dict[str, str
     else:
         for k in labels:
             if k.startswith(TESTCONTAINERS_NAMESPACE):
-                raise ValueError("The org.testcontainers namespace is reserved for interal use")
+                raise ValueError("The org.testcontainers namespace is reserved for internal use")
 
     labels[LABEL_LANG] = "python"
     labels[LABEL_TESTCONTAINERS] = "true"

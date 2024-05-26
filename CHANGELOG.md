@@ -1,5 +1,18 @@
 # Changelog
 
+## [4.5.0](https://github.com/testcontainers/testcontainers-python/compare/testcontainers-v4.4.1...testcontainers-v4.5.0) (2024-05-25)
+
+
+### Features
+
+* **core:** Private registry ([#566](https://github.com/testcontainers/testcontainers-python/issues/566)) ([59fbcfa](https://github.com/testcontainers/testcontainers-python/commit/59fbcfaf512d1f094e6d8346d45766e810ee2d44))
+
+
+### Bug Fixes
+
+* added types to exec & tc_properties_get_tc_host ([#561](https://github.com/testcontainers/testcontainers-python/issues/561)) ([9eabb79](https://github.com/testcontainers/testcontainers-python/commit/9eabb79f213cfb6d8e60173ff4c40f580ae0972a))
+* on windows, DockerCompose.get_service_host returns an unusable "0.0.0.0" - adjust to 127.0.0.1 ([#457](https://github.com/testcontainers/testcontainers-python/issues/457)) ([2aa3d37](https://github.com/testcontainers/testcontainers-python/commit/2aa3d371647877db45eac1663814dcc99de0f6af))
+
 ## [4.4.1](https://github.com/testcontainers/testcontainers-python/compare/testcontainers-v4.4.0...testcontainers-v4.4.1) (2024-05-14)
 
 

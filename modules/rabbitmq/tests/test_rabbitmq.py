@@ -42,7 +42,7 @@ def test_docker_run_rabbitmq(port: Optional[int], username: Optional[str], passw
         channel.queue_declare(QUEUE, arguments={})
         channel.queue_bind(QUEUE, EXCHANGE, ROUTING_KEY)
 
-        # pulish message:
+        # publish message:
         encoded_message = json.dumps(MESSAGE)
         channel.basic_publish(EXCHANGE, ROUTING_KEY, body=encoded_message)
 
