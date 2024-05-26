@@ -1,20 +1,22 @@
 import os
 from ._emulator import CosmosDBEmulatorContainer
 
-__all__ = ["MongoDBEmulatorContainer"]
+__all__ = ["CosmosDBMongoEndpointContainer"]
 
 ENDPOINT_PORT = 10255
 
-class MongoDBEmulatorContainer(CosmosDBEmulatorContainer):
+class CosmosDBMongoEndpointContainer(CosmosDBEmulatorContainer):
     """
     CosmosDB MongoDB enpoint Emulator.
 
     Example:
 
         .. doctest::
-                >>> from testcontainers.cosmosdb import MongoDBEmulatorContainer
-                >>> with CosmosDBEmulatorContainer(mongodb_version="4.0") as emulator:
-                ...    print(f"Point yout MongoDB client to {emulator.host}:{emulator.port}}")
+
+            >>> from testcontainers.cosmosdb import CosmosDBMongoEndpointContainer
+
+            >>> with CosmosDBMongoEndpointContainer(mongodb_version="4.0") as emulator:
+            ...    print(f"Point your MongoDB client at {emulator.host}:{emulator.port}}")
     """
 
     def __init__(
@@ -31,6 +33,9 @@ class MongoDBEmulatorContainer(CosmosDBEmulatorContainer):
 
     @property
     def port(self) -> str:
+        """
+        The exposed port to the MongoDB endpoint
+        """
         return self.get_exposed_port(ENDPOINT_PORT)
     
     def _configure(self) -> None:

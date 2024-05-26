@@ -4,25 +4,30 @@ from azure.cosmos.aio import CosmosClient as AsyncCosmosClient
 from testcontainers.core.waiting_utils import wait_container_is_ready
 
 from ._emulator import CosmosDBEmulatorContainer
-__all__ = ["NoSQLEmulatorContainer"]
+__all__ = ["CosmosDBNoSQLEndpointContainer"]
 
 NOSQL_PORT = 8081
 
-class NoSQLEmulatorContainer(CosmosDBEmulatorContainer):
+class CosmosDBNoSQLEndpointContainer(CosmosDBEmulatorContainer):
     """
     CosmosDB NoSQL enpoint Emulator.
 
     Example:
-        .. doctest::
-                >>> from testcontainers.cosmosdb import NoSQLEmulatorContainer
-                >>> with NoSQLEmulatorContainer() as emulator:
-                ...    db = emulator.insecure_sync_client().create_database_if_not_exists("test")
 
         .. doctest::
-                >>> from testcontainers.cosmosdb import NoSQLEmulatorContainer
-                >>> with NoSQLEmulatorContainer() as emulator:
-                ...    client = CosmosClient(url=emulator.url, credential=emulator.key, connection_verify=False)
-                ...    db = client.create_database_if_not_exists("test")
+
+            >>> from testcontainers.cosmosdb import CosmosDBNoSQLEndpointContainer
+            >>> with CosmosDBNoSQLEndpointContainer() as emulator:
+            ...    db = emulator.insecure_sync_client().create_database_if_not_exists("test")
+
+        .. doctest::
+
+            >>> from testcontainers.cosmosdb import CosmosDBNoSQLEndpointContainer
+            >>> from azure.cosmos import CosmosClient
+
+            >>> with CosmosDBNoSQLEndpointContainer() as emulator:
+            ...    client = CosmosClient(url=emulator.url, credential=emulator.key, connection_verify=False)
+            ...    db = client.create_database_if_not_exists("test")
 
     """
 
@@ -43,13 +48,13 @@ class NoSQLEmulatorContainer(CosmosDBEmulatorContainer):
         """
         return f"https://{self.host}:{self.port}"
 
-    def insecure_async_client(self) -> AsyncCosmosClient:
+    def insecure_async_client(self):
         """
         Returns an asynchronous CosmosClient instance
         """
         return AsyncCosmosClient(url=self.url, credential=self.key, connection_verify=False)
 
-    def insecure_sync_client(self) -> SyncCosmosClient:
+    def insecure_sync_client(self):
         """
         Returns a synchronous CosmosClient instance
         """
