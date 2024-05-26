@@ -1,4 +1,4 @@
-from .mongodb import MongoDBEmulatorContainer
-from .nosql import NoSQLEmulatorContainer
+from .mongodb import CosmosDBMongoEndpointContainer
+from .nosql import CosmosDBNoSQLEndpointContainer
 
-__all__ = ["MongoDBEmulatorContainer", "NoSQLEmulatorContainer"]
+__all__ = ["CosmosDBMongoEndpointContainer", "CosmosDBNoSQLEndpointContainer"]

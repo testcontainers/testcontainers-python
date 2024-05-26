@@ -4,14 +4,15 @@ from os import path
 import tarfile
 import tempfile
 from contextlib import contextmanager
+from docker.models.containers import Container
 
 @contextmanager
-def file(container, target):
+def file(container: Container, target: str):
 	target_path = Path(target)
 	assert target_path.is_absolute(), "target must be an absolute path"
 
-	with tempfile.TemporaryDirectory() as tmpdirname:
-		archive = Path(tmpdirname) / 'grabbed.tar'
+	with tempfile.TemporaryDirectory() as tmp:
+		archive = Path(tmp) / 'grabbed.tar'
 
 		# download from container as tar archive
 		with open(archive, 'wb') as f:

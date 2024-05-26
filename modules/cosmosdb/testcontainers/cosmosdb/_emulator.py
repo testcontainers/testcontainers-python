@@ -16,7 +16,10 @@ EMULATOR_PORT = 8081
 
 class CosmosDBEmulatorContainer(DockerContainer):
     """
-    CosmosDB Emulator container.
+    Abstract class for CosmosDB Emulator endpoints.
+
+    Concrete implementations for each endpoint is provided by a separate class:
+    NoSQLEmulatorContainer and MongoDBEmulatorContainer.
     """
 
     def __init__(
@@ -45,6 +48,9 @@ class CosmosDBEmulatorContainer(DockerContainer):
 
     @property
     def host(self) -> str:
+        """
+        Emulator host
+        """
         return self.get_container_host_ip()
     
     @property
@@ -88,7 +94,7 @@ class CosmosDBEmulatorContainer(DockerContainer):
 
     def _download_cert(self) -> bytes:
         with grab.file(
-            self._container, "/tmp/cosmos/appdata/.system/profiles/Client/AppData/Local/CosmosDBEmulator/emulator.pem"
+            self.get_wrapped_container(), "/tmp/cosmos/appdata/.system/profiles/Client/AppData/Local/CosmosDBEmulator/emulator.pem"
         ) as cert:
             return cert.read()
 
