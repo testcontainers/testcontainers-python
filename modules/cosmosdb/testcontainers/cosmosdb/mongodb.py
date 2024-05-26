@@ -1,9 +1,11 @@
 import os
+
 from ._emulator import CosmosDBEmulatorContainer
 
 __all__ = ["CosmosDBMongoEndpointContainer"]
 
 ENDPOINT_PORT = 10255
+
 
 class CosmosDBMongoEndpointContainer(CosmosDBEmulatorContainer):
     """
@@ -21,7 +23,7 @@ class CosmosDBMongoEndpointContainer(CosmosDBEmulatorContainer):
 
     def __init__(
         self,
-        mongodb_version: str = None,
+        mongodb_version: str,
         image: str = os.getenv(
             "AZURE_COSMOS_EMULATOR_IMAGE", "mcr.microsoft.com/cosmosdb/linux/azure-cosmos-emulator:mongodb"
         ),
@@ -37,7 +39,7 @@ class CosmosDBMongoEndpointContainer(CosmosDBEmulatorContainer):
         The exposed port to the MongoDB endpoint
         """
         return self.get_exposed_port(ENDPOINT_PORT)
-    
+
     def _configure(self) -> None:
         super()._configure()
         self.with_env("AZURE_COSMOS_EMULATOR_ENABLE_MONGODB_ENDPOINT", self.mongodb_version)

@@ -2,17 +2,21 @@ import os
 import socket
 import ssl
 from collections.abc import Iterable
-from typing_extensions import Self
-from testcontainers.core.container import DockerContainer
-from testcontainers.core.waiting_utils import wait_container_is_ready, wait_for_logs
-from . import _grab as grab
 from distutils.util import strtobool
 from urllib.error import HTTPError, URLError
 from urllib.request import urlopen
 
+from typing_extensions import Self
+
+from testcontainers.core.container import DockerContainer
+from testcontainers.core.waiting_utils import wait_container_is_ready, wait_for_logs
+
+from . import _grab as grab
+
 __all__ = ["CosmosDBEmulatorContainer"]
 
 EMULATOR_PORT = 8081
+
 
 class CosmosDBEmulatorContainer(DockerContainer):
     """
@@ -28,9 +32,7 @@ class CosmosDBEmulatorContainer(DockerContainer):
             "AZURE_COSMOS_EMULATOR_IMAGE", "mcr.microsoft.com/cosmosdb/linux/azure-cosmos-emulator:latest"
         ),
         partition_count: int = os.getenv("AZURE_COSMOS_EMULATOR_PARTITION_COUNT", None),
-        enable_data_persistence: bool = strtobool(
-            os.getenv("AZURE_COSMOS_EMULATOR_ENABLE_DATA_PERSISTENCE", "false")
-        ),
+        enable_data_persistence: bool = strtobool(os.getenv("AZURE_COSMOS_EMULATOR_ENABLE_DATA_PERSISTENCE", "false")),
         key: str = os.getenv(
             "AZURE_COSMOS_EMULATOR_KEY",
             "C2y6yDjf5/R+ob0N8A7Cgv30VRDJIWEHLM+4QDU5DE2nQ9nDuVTqobD4b8mGGyPMbIZnqyMsEcaGQy67XIw/Jw==",
@@ -52,7 +54,7 @@ class CosmosDBEmulatorContainer(DockerContainer):
         Emulator host
         """
         return self.get_container_host_ip()
-    
+
     @property
     def server_certificate_pem(self) -> bytes:
         """
@@ -66,9 +68,9 @@ class CosmosDBEmulatorContainer(DockerContainer):
         self._wait_until_ready()
         self._cert_pem_bytes = self._download_cert()
         return self
-    
+
     def _configure(self) -> None:
-        all_ports = set([EMULATOR_PORT] + self.endpoint_ports)
+        all_ports = {EMULATOR_PORT, *self.endpoint_ports}
         if self.bind_ports:
             for port in all_ports:
                 self.with_bind_ports(port, port)
@@ -76,8 +78,7 @@ class CosmosDBEmulatorContainer(DockerContainer):
             self.with_exposed_ports(*all_ports)
 
         (
-            self
-						.with_env("AZURE_COSMOS_EMULATOR_PARTITION_COUNT", str(self.partition_count))
+            self.with_env("AZURE_COSMOS_EMULATOR_PARTITION_COUNT", str(self.partition_count))
             .with_env("AZURE_COSMOS_EMULATOR_IP_ADDRESS_OVERRIDE", socket.gethostbyname(socket.gethostname()))
             .with_env("AZURE_COSMOS_EMULATOR_ENABLE_DATA_PERSISTENCE", str(self.enable_data_persistence))
             .with_env("AZURE_COSMOS_EMULATOR_KEY", str(self.key))
@@ -89,12 +90,13 @@ class CosmosDBEmulatorContainer(DockerContainer):
         if self.bind_ports:
             self._wait_for_url(f"https://{self.host}:{EMULATOR_PORT}/_explorer/index.html")
             self._wait_for_query_success()
-						
+
         return self
 
     def _download_cert(self) -> bytes:
         with grab.file(
-            self.get_wrapped_container(), "/tmp/cosmos/appdata/.system/profiles/Client/AppData/Local/CosmosDBEmulator/emulator.pem"
+            self.get_wrapped_container(),
+            "/tmp/cosmos/appdata/.system/profiles/Client/AppData/Local/CosmosDBEmulator/emulator.pem",
         ) as cert:
             return cert.read()
 
@@ -103,6 +105,6 @@ class CosmosDBEmulatorContainer(DockerContainer):
         with urlopen(url, context=ssl._create_unverified_context()) as response:
             response.read()
         return self
-    
+
     def _wait_for_query_success(self) -> None:
         pass
