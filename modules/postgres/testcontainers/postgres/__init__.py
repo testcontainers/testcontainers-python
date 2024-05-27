@@ -79,7 +79,7 @@ class PostgresContainer(DbContainer):
         driver. The optional driver argument to :code:`get_connection_url` overwrites the constructor
         set value. Pass :code:`driver=None` to get URLs without a driver.
         """
-        driver_str = self.driver if driver is _UNSET else f"+{driver}"
+        driver_str = "" if driver is None else self.driver if driver is _UNSET else f"+{driver}"
         return super()._create_connection_url(
             dialect=f"postgresql{driver_str}",
             username=self.username,
