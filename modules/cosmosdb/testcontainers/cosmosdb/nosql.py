@@ -17,20 +17,20 @@ class CosmosDBNoSQLEndpointContainer(CosmosDBEmulatorContainer):
 
     Example:
 
-        .. doctest::
+        .. code-block:: python
 
             >>> from testcontainers.cosmosdb import CosmosDBNoSQLEndpointContainer
             >>> with CosmosDBNoSQLEndpointContainer() as emulator:
-            ...    db = emulator.insecure_sync_client().create_database_if_not_exists("test")
+            ...   db = emulator.insecure_sync_client().create_database_if_not_exists("test")
 
-        .. doctest::
+        .. code-block:: python
 
             >>> from testcontainers.cosmosdb import CosmosDBNoSQLEndpointContainer
             >>> from azure.cosmos import CosmosClient
 
             >>> with CosmosDBNoSQLEndpointContainer() as emulator:
-            ...    client = CosmosClient(url=emulator.url, credential=emulator.key, connection_verify=False)
-            ...    db = client.create_database_if_not_exists("test")
+            ...   client = CosmosClient(url=emulator.url, credential=emulator.key, connection_verify=False)
+            ...   db = client.create_database_if_not_exists("test")
 
     """
 
