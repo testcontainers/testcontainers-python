@@ -12,6 +12,7 @@ import pytest
 
 from docker.errors import NotFound
 
+from testcontainers.core.config import testcontainers_config
 from testcontainers.core.container import DockerContainer
 from testcontainers.core.docker_client import DockerClient
 from testcontainers.core.waiting_utils import wait_container_is_ready
@@ -70,8 +71,8 @@ def test_with_private_registry(image, tag, username, password, monkeypatch):
         # prepare auth config
         creds: bytes = base64.b64encode(f"{username}:{password}".encode("utf-8"))
         config = {"auths": {f"{registry_url}": {"auth": creds.decode("utf-8")}}}
-        monkeypatch.setenv("DOCKER_AUTH_CONFIG", json.dumps(config))
-        assert os.environ.get("DOCKER_AUTH_CONFIG"), "DOCKER_AUTH_CONFIG not set"
+        monkeypatch.setattr(testcontainers_config, name="docker_auth_config", value=json.dumps(config))
+        assert testcontainers_config.docker_auth_config, "docker_auth_config not set"
 
         # Test a container with image from private registry
         with DockerContainer(f"{registry_url}/{image}:{tag}") as test_container:
