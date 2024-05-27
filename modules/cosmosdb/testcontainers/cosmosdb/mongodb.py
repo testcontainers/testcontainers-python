@@ -13,12 +13,14 @@ class CosmosDBMongoEndpointContainer(CosmosDBEmulatorContainer):
 
     Example:
 
-        .. doctest::
+        .. code-block:: python
 
             >>> from testcontainers.cosmosdb import CosmosDBMongoEndpointContainer
 
             >>> with CosmosDBMongoEndpointContainer(mongodb_version="4.0") as emulator:
-            ...    print(f"Point your MongoDB client at {emulator.host}:{emulator.port}}")
+            ...   print(f"Point your MongoDB client at {emulator.host}:{emulator.port} using key {emulator.key}")
+            ...   print(f"and eiher disable TLS server auth or trust the server's self signed cert (emulator.server_certificate_pem)")
+
     """
 
     def __init__(
