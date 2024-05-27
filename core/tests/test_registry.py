@@ -32,8 +32,8 @@ def test_missing_on_private_registry(monkeypatch):
         # prepare auth config
         creds: bytes = base64.b64encode(f"{username}:{password}".encode("utf-8"))
         config = {"auths": {f"{registry_url}": {"auth": creds.decode("utf-8")}}}
-        monkeypatch.setenv("DOCKER_AUTH_CONFIG", json.dumps(config))
-        assert os.environ.get("DOCKER_AUTH_CONFIG"), "DOCKER_AUTH_CONFIG not set"
+        monkeypatch.setattr(testcontainers_config, name="docker_auth_config", value=json.dumps(config))
+        assert testcontainers_config.docker_auth_config, "docker_auth_config not set"
 
         with pytest.raises(NotFound):
             # Test a container with image from private registry
