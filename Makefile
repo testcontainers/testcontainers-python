@@ -31,6 +31,7 @@ ${TESTS} : %/tests :
 coverage:
 	poetry run coverage combine
 	poetry run coverage report
+	poetry run coverage xml
 	poetry run coverage html
 
 # Target to lint the code.
