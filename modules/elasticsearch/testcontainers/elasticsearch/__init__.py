@@ -79,6 +79,8 @@ class ElasticSearchContainer(DockerContainer):
         super().__init__(image, **kwargs)
         self.port = port
         self.with_exposed_ports(self.port)
+        if self.port != 9200:
+            self.with_env("http.port", str(self.port))
         self.with_env("transport.host", "127.0.0.1")
         self.with_env("http.host", "0.0.0.0")
 
