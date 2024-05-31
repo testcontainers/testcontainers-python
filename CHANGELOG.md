@@ -1,5 +1,13 @@
 # Changelog
 
+## [4.5.1](https://github.com/testcontainers/testcontainers-python/compare/testcontainers-v4.5.0...testcontainers-v4.5.1) (2024-05-31)
+
+
+### Bug Fixes
+
+* **k3s:** add configuration parameter for disabling cgroup mount to avoid "unable to apply cgroup configuration" ([#592](https://github.com/testcontainers/testcontainers-python/issues/592)) ([8917772](https://github.com/testcontainers/testcontainers-python/commit/8917772d8c90d26086af3b9606657c95928e2b9d))
+* **keycloak:** realm import ([#584](https://github.com/testcontainers/testcontainers-python/issues/584)) ([111bd09](https://github.com/testcontainers/testcontainers-python/commit/111bd094428b83233d7eca693d94e10b34ee8ae8))
+
 ## [4.5.0](https://github.com/testcontainers/testcontainers-python/compare/testcontainers-v4.4.1...testcontainers-v4.5.0) (2024-05-25)
 
 
