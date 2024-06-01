@@ -18,6 +18,7 @@ class DockerImage:
     .. doctest::
 
             >>> from testcontainers.core.image import DockerImage
+
             >>> with DockerImage(path="./core/tests/image_fixtures/sample/", tag="test-image") as image:
             ...    logs = image.get_logs()
 
