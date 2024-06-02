@@ -11,9 +11,6 @@
 #    License for the specific language governing permissions and limitations
 #    under the License.
 import os
-import tarfile
-from io import BytesIO
-from pathlib import Path
 from time import sleep
 from typing import Optional
 
@@ -68,6 +65,9 @@ class PostgresContainer(DbContainer):
 
     """
 
+    seed_mountpoint: str = "/docker-entrypoint-initdb.d/"
+    startup_command: str = "source /usr/local/bin/docker-entrypoint.sh; _main "
+
     def __init__(
         self,
         image: str = "postgres:latest",
@@ -87,6 +87,8 @@ class PostgresContainer(DbContainer):
         self.port = port
         self.driver = f"+{driver}" if driver else ""
         self.seed = seed
+        if self.seed is not None:
+            super().override_command_for_seed(self.startup_command)
 
         self.with_exposed_ports(self.port)
 
@@ -126,14 +128,3 @@ class PostgresContainer(DbContainer):
             count += 1
 
         raise RuntimeError("Postgres could not get into a ready state")
-
-    def _transfer_seed(self) -> None:
-        if self.seed is None:
-            return
-        src_path = Path(self.seed)
-        dest_path = "/docker-entrypoint-initdb.d/"
-        with BytesIO() as archive, tarfile.TarFile(fileobj=archive, mode="w") as tar:
-            for filename in src_path.iterdir():
-                tar.add(filename.absolute(), arcname=filename.relative_to(src_path))
-            archive.seek(0)
-            self.get_wrapped_container().put_archive(dest_path, archive)
