@@ -11,15 +11,14 @@
 #    License for the specific language governing permissions and limitations
 #    under the License.
 import re
-import tarfile
-from io import BytesIO
 from os import environ
-from pathlib import Path
 from typing import Optional
 
 from testcontainers.core.generic import DbContainer
-from testcontainers.core.utils import raise_for_deprecated_parameter
+from testcontainers.core.utils import raise_for_deprecated_parameter, setup_logger
 from testcontainers.core.waiting_utils import wait_for_logs
+
+LOGGER = setup_logger(__name__)
 
 
 class MySqlContainer(DbContainer):
@@ -70,8 +69,8 @@ class MySqlContainer(DbContainer):
         root_password: Optional[str] = None,
         password: Optional[str] = None,
         dbname: Optional[str] = None,
-        port: int = 3306,
         seed: Optional[str] = None,
+        port: int = 3306,
         **kwargs,
     ) -> None:
         raise_for_deprecated_parameter(kwargs, "MYSQL_USER", "username")
@@ -90,6 +89,8 @@ class MySqlContainer(DbContainer):
         if self.username == "root":
             self.root_password = self.password
         self.seed = seed
+        if self.seed is not None:
+            super().override_command_for_seed()
 
     def _configure(self) -> None:
         self.with_env("MYSQL_ROOT_PASSWORD", self.root_password)
@@ -109,14 +110,3 @@ class MySqlContainer(DbContainer):
         return super()._create_connection_url(
             dialect="mysql+pymysql", username=self.username, password=self.password, dbname=self.dbname, port=self.port
         )
-
-    def _transfer_seed(self) -> None:
-        if self.seed is None:
-            return
-        src_path = Path(self.seed)
-        dest_path = "/docker-entrypoint-initdb.d/"
-        with BytesIO() as archive, tarfile.TarFile(fileobj=archive, mode="w") as tar:
-            for filename in src_path.iterdir():
-                tar.add(filename.absolute(), arcname=filename.relative_to(src_path))
-            archive.seek(0)
-            self.get_wrapped_container().put_archive(dest_path, archive)
