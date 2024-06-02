@@ -62,6 +62,9 @@ class MySqlContainer(DbContainer):
 
     """
 
+    seed_mountpoint: str = "/docker-entrypoint-initdb.d/"
+    startup_command: str = "source /usr/local/bin/docker-entrypoint.sh; _main "
+
     def __init__(
         self,
         image: str = "mysql:latest",
@@ -90,7 +93,7 @@ class MySqlContainer(DbContainer):
             self.root_password = self.password
         self.seed = seed
         if self.seed is not None:
-            super().override_command_for_seed()
+            super().override_command_for_seed(self.startup_command)
 
     def _configure(self) -> None:
         self.with_env("MYSQL_ROOT_PASSWORD", self.root_password)
