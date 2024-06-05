@@ -103,20 +103,43 @@ When trying to launch a testcontainer from within a Docker container, e.g., in c
 1. The container has to provide a docker client installation. Either use an image that has docker pre-installed (e.g. the `official docker images <https://hub.docker.com/_/docker>`_) or install the client from within the `Dockerfile` specification.
 2. The container has to have access to the docker daemon which can be achieved by mounting `/var/run/docker.sock` or setting the `DOCKER_HOST` environment variable as part of your `docker run` command.
 
+Private Docker registry
+-----------------------
+
+Using a private docker registry requires the `DOCKER_AUTH_CONFIG` environment variable to be set. `official documentation <https://docs.docker.com/engine/reference/commandline/login/#credential-helpers>`
+
+The value of this variable should be a JSON string containing the authentication information for the registry.
+
+In order to generate the JSON string, you can use the following command:
+``echo -n '{"auths": {"<url>": {"auth": "'$(echo -n "<username>:<password>" | base64 -w 0)'"}}}'``
+
+Example:
+``DOCKER_AUTH_CONFIG='{"auths": {"https://myregistry.com": {"auth": "dXNlcm5hbWU6cGFzc3dvcmQ="}}}'``
+
+Fetching passwords from cloud providers:
+
+* ``ECR_PASSWORD = $(aws ecr get-login-password  --region eu-west-1)``
+* ``GCP_PASSWORD = $(gcloud auth print-access-token)``
+* ``AZURE_PASSWORD = $(az acr login --name <registry-name> --expose-token --output tsv)``
+
+
+
 Configuration
 -------------
 
-+-------------------------------------------+-------------------------------+------------------------------------------+
-| Env Variable                              | Example                       | Description                              |
-+===========================================+===============================+==========================================+
-| ``TESTCONTAINERS_DOCKER_SOCKET_OVERRIDE`` | ``/var/run/docker.sock``      | Path to Docker's socket used by ryuk     |
-+-------------------------------------------+-------------------------------+------------------------------------------+
-| ``TESTCONTAINERS_RYUK_PRIVILEGED``        | ``false``                     | Run ryuk as a privileged container       |
-+-------------------------------------------+-------------------------------+------------------------------------------+
-| ``TESTCONTAINERS_RYUK_DISABLED``          | ``false``                     | Disable ryuk                             |
-+-------------------------------------------+-------------------------------+------------------------------------------+
-| ``RYUK_CONTAINER_IMAGE``                  | ``testcontainers/ryuk:0.7.0`` | Custom image for ryuk                    |
-+-------------------------------------------+-------------------------------+------------------------------------------+
++-------------------------------------------+---------------------------------------------------+------------------------------------------+
+| Env Variable                              | Example                                           | Description                              |
++===========================================+===================================================+==========================================+
+| ``TESTCONTAINERS_DOCKER_SOCKET_OVERRIDE`` | ``/var/run/docker.sock``                          | Path to Docker's socket used by ryuk     |
++-------------------------------------------+---------------------------------------------------+------------------------------------------+
+| ``TESTCONTAINERS_RYUK_PRIVILEGED``        | ``false``                                         | Run ryuk as a privileged container       |
++-------------------------------------------+---------------------------------------------------+------------------------------------------+
+| ``TESTCONTAINERS_RYUK_DISABLED``          | ``false``                                         | Disable ryuk                             |
++-------------------------------------------+---------------------------------------------------+------------------------------------------+
+| ``RYUK_CONTAINER_IMAGE``                  | ``testcontainers/ryuk:0.7.0``                     | Custom image for ryuk                    |
++-------------------------------------------+---------------------------------------------------+------------------------------------------+
+| ``DOCKER_AUTH_CONFIG``                    | ``{"auths": {"<url>": {"auth": "<encoded>"}}}``   | Custom registry auth config              |
++-------------------------------------------+---------------------------------------------------+------------------------------------------+
 
 Development and Contributing
 ----------------------------
