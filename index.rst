@@ -117,9 +117,10 @@ Example:
 ``DOCKER_AUTH_CONFIG='{"auths": {"https://myregistry.com": {"auth": "dXNlcm5hbWU6cGFzc3dvcmQ="}}}'``
 
 Fetching passwords from cloud providers:
-- ``ECR_PASSWORD = $(aws ecr get-login-password  --region eu-west-1)``
-- ``GCP_PASSWORD = $(gcloud auth print-access-token)``
-- ``AZURE_PASSWORD = $(az acr login --name <registry-name> --expose-token --output tsv)``
+
+* ``ECR_PASSWORD = $(aws ecr get-login-password  --region eu-west-1)``
+* ``GCP_PASSWORD = $(gcloud auth print-access-token)``
+* ``AZURE_PASSWORD = $(az acr login --name <registry-name> --expose-token --output tsv)``
 
 
 
