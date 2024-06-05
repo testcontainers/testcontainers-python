@@ -159,7 +159,7 @@ priority = "primary"
 line-length = 120
 
 [tool.pytest.ini_options]
-addopts = "--cov-report=term --cov-report=html --tb=short --strict-markers"
+addopts = "--tb=short --strict-markers"
 log_cli = true
 log_cli_level = "INFO"
 

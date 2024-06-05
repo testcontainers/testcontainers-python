@@ -1,3 +1,10 @@
+[![Ruff](https://img.shields.io/endpoint?url=https://raw.githubusercontent.com/astral-sh/ruff/main/assets/badge/v2.json)](https://github.com/astral-sh/ruff)
+[![image](https://img.shields.io/pypi/v/testcontainers.svg)](https://pypi.python.org/pypi/testcontainers)
+[![image](https://img.shields.io/pypi/l/testcontainers.svg)](https://github.com/testcontainers/testcontainers-python/blob/main/LICENSE)
+[![image](https://img.shields.io/pypi/pyversions/testcontainers.svg)](https://pypi.python.org/pypi/testcontainers)
+[![codecov](https://codecov.io/gh/testcontainers/testcontainers-python/branch/master/graph/badge.svg)](https://codecov.io/gh/testcontainers/testcontainers-python)
+
+
 # Testcontainers Python
 
 `testcontainers-python` facilitates the use of Docker containers for functional and integration testing.

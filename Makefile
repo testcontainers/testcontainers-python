@@ -27,6 +27,13 @@ tests : ${TESTS}
 ${TESTS} : %/tests :
 	poetry run pytest -v --cov=testcontainers.$* $*/tests
 
+# Target to combine and report coverage.
+coverage:
+	poetry run coverage combine
+	poetry run coverage report
+	poetry run coverage xml
+	poetry run coverage html
+
 # Target to lint the code.
 lint:
 	pre-commit run -a
