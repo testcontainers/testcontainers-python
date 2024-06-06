@@ -40,7 +40,6 @@ def read_tc_properties() -> dict[str, str]:
 
 _WARNINGS = {"DOCKER_AUTH_CONFIG": "DOCKER_AUTH_CONFIG is experimental, see testcontainers/testcontainers-python#566"}
 
-
 @dataclass
 class TestcontainersConfiguration:
     max_tries: int = MAX_TRIES
@@ -52,6 +51,11 @@ class TestcontainersConfiguration:
     ryuk_reconnection_timeout: str = RYUK_RECONNECTION_TIMEOUT
     tc_properties: dict[str, str] = field(default_factory=read_tc_properties)
     _docker_auth_config: Optional[str] = field(default_factory=lambda: environ.get("DOCKER_AUTH_CONFIG"))
+    tc_host_override: str = environ.get("TC_HOST", environ.get("TESTCONTAINERS_HOST_OVERRIDE"))
+    """
+    https://github.com/testcontainers/testcontainers-go/blob/dd76d1e39c654433a3d80429690d07abcec04424/docker.go#L644
+    if os env TC_HOST is set, use it
+    """
 
     @property
     def docker_auth_config(self):
