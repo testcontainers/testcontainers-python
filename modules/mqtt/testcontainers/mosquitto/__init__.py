@@ -22,8 +22,6 @@ import paho.mqtt.enums
 from queue import Queue
 from typing import Optional
 
-# MosquittoContainer
-
 
 class MosquittoContainer(DockerContainer):
     """
@@ -84,18 +82,8 @@ class MosquittoContainer(DockerContainer):
         client, err = self.get_client()
         if err != paho.mqtt.enums.MQTTErrorCode.MQTT_ERR_SUCCESS:
             raise RuntimeError(f"Failed to estabilish a connection: {err}")
-
-        interval = 1.0
-        timeout = 5
-        start = time.time()
-        while True:
-            duration = time.time() - start
-            if client.is_connected():
-                return
-            if duration > timeout:
-                raise TimeoutError(f"Failed to estabilish a connection after {timeout:.3f} " "seconds")
-            # wait till secondary thread manages to connect successfully:
-            time.sleep(interval)
+        if not client.is_connected():
+            raise TimeoutError(f"The Paho MQTT secondary thread has not connected yet!")
 
     def get_client(self, **kwargs) -> tuple[mqtt_client.Client, paho.mqtt.enums.MQTTErrorCode]:
         """
@@ -239,9 +227,3 @@ class MosquittoContainer(DockerContainer):
         ret.wait_for_publish(timeout=2)
         if not ret.is_published():
             raise RuntimeError(f"Could not publish a message on topic {topic} to Mosquitto broker: {ret}")
-
-    def print_logs(self) -> str:
-        print("** BROKER LOGS [STDOUT]:")
-        print(self.get_logs()[0].decode())
-        print("** BROKER LOGS [STDERR]:")
-        print(self.get_logs()[1].decode())
