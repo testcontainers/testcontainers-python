@@ -41,6 +41,7 @@ def read_tc_properties() -> dict[str, str]:
 
 _WARNINGS = {"DOCKER_AUTH_CONFIG": "DOCKER_AUTH_CONFIG is experimental, see testcontainers/testcontainers-python#566"}
 
+
 @dataclass
 class TestcontainersConfiguration:
     max_tries: int = MAX_TRIES
