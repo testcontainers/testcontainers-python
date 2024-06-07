@@ -84,7 +84,7 @@ class DbContainer(DockerContainer):
         pass
 
 
-class SrvContainer(DockerContainer):
+class ServerContainer(DockerContainer):
     """
     Container for a generic server that is based on a custom image.
 
@@ -93,10 +93,10 @@ class SrvContainer(DockerContainer):
     .. doctest::
 
         >>> import httpx
-        >>> from testcontainers.core.generic import SrvContainer
+        >>> from testcontainers.core.generic import ServerContainer
         >>> from testcontainers.core.waiting_utils import wait_for_logs
 
-        >>> with SrvContainer(path="./core/tests/image_fixtures/python_server", port=9000, tag="test-srv:latest") as srv:
+        >>> with ServerContainer(path="./core/tests/image_fixtures/python_server", port=9000, tag="test-srv:latest") as srv:
         ...     url = srv._create_connection_url()
         ...     response = httpx.get(f"{url}", timeout=5)
         ...     assert response.status_code == 200, "Response status code is not 200"
@@ -138,7 +138,7 @@ class SrvContainer(DockerContainer):
         url = f"http://{host}:{exposed_port}"
         return url
 
-    def start(self) -> "SrvContainer":
+    def start(self) -> "ServerContainer":
         super().start()
         self._connect()
         return self

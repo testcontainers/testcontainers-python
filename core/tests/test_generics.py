@@ -1,6 +1,6 @@
 import pytest
 from typing import Optional
-from testcontainers.core.generic import SrvContainer
+from testcontainers.core.generic import ServerContainer
 
 import re
 
@@ -8,7 +8,7 @@ import re
 @pytest.mark.parametrize("test_image_cleanup", [True, False])
 @pytest.mark.parametrize("test_image_tag", [None, "custom-image:test"])
 def test_srv_container(test_image_tag: Optional[str], test_image_cleanup: bool, check_for_image, port=9000):
-    with SrvContainer(
+    with ServerContainer(
         path="./core/tests/image_fixtures/python_server",
         port=port,
         tag=test_image_tag,

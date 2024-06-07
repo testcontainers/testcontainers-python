@@ -7,7 +7,7 @@ testcontainers-core
 
 .. autoclass:: testcontainers.core.image.DockerImage
 
-.. autoclass:: testcontainers.core.generic.SrvContainer
+.. autoclass:: testcontainers.core.generic.ServerContainer
 
 Using `DockerContainer` and `DockerImage` directly:
 
