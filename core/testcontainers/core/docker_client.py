@@ -187,18 +187,14 @@ class DockerClient:
         """
         Get the hostname or ip address of the docker host.
         """
-        # https://github.com/testcontainers/testcontainers-go/blob/dd76d1e39c654433a3d80429690d07abcec04424/docker.go#L644
-        # if os env TC_HOST is set, use it
-        host = os.environ.get("TC_HOST")
-        if not host:
-            host = os.environ.get("TESTCONTAINERS_HOST_OVERRIDE")
+        host = c.tc_host_override
         if host:
             return host
         try:
             url = urllib.parse.urlparse(self.client.api.base_url)
 
         except ValueError:
-            return None
+            return "localhost"
         if "http" in url.scheme or "tcp" in url.scheme:
             return url.hostname
         if inside_container() and ("unix" in url.scheme or "npipe" in url.scheme):
