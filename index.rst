@@ -106,22 +106,30 @@ When trying to launch a testcontainer from within a Docker container, e.g., in c
 Private Docker registry
 -----------------------
 
-Using a private docker registry requires the `DOCKER_AUTH_CONFIG` environment variable to be set. `official documentation <https://docs.docker.com/engine/reference/commandline/login/#credential-helpers>`
+Using a private docker registry requires the `DOCKER_AUTH_CONFIG` environment variable to be set.
+`official documentation <https://docs.docker.com/engine/reference/commandline/login/#credential-helpers>`_
 
 The value of this variable should be a JSON string containing the authentication information for the registry.
 
-In order to generate the JSON string, you can use the following command:
-``echo -n '{"auths": {"<url>": {"auth": "'$(echo -n "<username>:<password>" | base64 -w 0)'"}}}'``
-
 Example:
-``DOCKER_AUTH_CONFIG='{"auths": {"https://myregistry.com": {"auth": "dXNlcm5hbWU6cGFzc3dvcmQ="}}}'``
+
+.. code-block:: bash
+
+    DOCKER_AUTH_CONFIG='{"auths": {"https://myregistry.com": {"auth": "dXNlcm5hbWU6cGFzc3dvcmQ="}}}'
+
+In order to generate the JSON string, you can use the following command:
+
+.. code-block:: bash
+
+    echo -n '{"auths": {"<url>": {"auth": "'$(echo -n "<username>:<password>" | base64 -w 0)'"}}}'
 
 Fetching passwords from cloud providers:
 
-* ``ECR_PASSWORD = $(aws ecr get-login-password  --region eu-west-1)``
-* ``GCP_PASSWORD = $(gcloud auth print-access-token)``
-* ``AZURE_PASSWORD = $(az acr login --name <registry-name> --expose-token --output tsv)``
+.. code-block:: bash
 
+    ECR_PASSWORD = $(aws ecr get-login-password --region eu-west-1)
+    GCP_PASSWORD = $(gcloud auth print-access-token)
+    AZURE_PASSWORD = $(az acr login --name <registry-name> --expose-token --output tsv)
 
 
 Configuration
