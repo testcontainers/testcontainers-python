@@ -12,10 +12,10 @@
 #    under the License.
 
 import os
-import time
 from testcontainers.core.container import DockerContainer
 from testcontainers.core.waiting_utils import wait_container_is_ready
 from typing_extensions import Self
+from pathlib import Path
 
 from paho.mqtt import client as mqtt_client
 import paho.mqtt.enums
@@ -44,11 +44,9 @@ class MosquittoContainer(DockerContainer):
         self,
         image: str = "eclipse-mosquitto:latest",
         port: int = None,
-        configfile: Optional[str] = None,
         password: Optional[str] = None,
         **kwargs,
     ) -> None:
-        # raise_for_deprecated_parameter(kwargs, "port_to_expose", "port")
         super().__init__(image, **kwargs)
 
         if port is None:
@@ -56,20 +54,6 @@ class MosquittoContainer(DockerContainer):
         else:
             self.port = port
         self.password = password
-
-        # setup container:
-        self.with_exposed_ports(self.port)
-        if configfile is None:
-            # default config ifle
-            TEST_DIR = os.path.dirname(os.path.abspath(__file__))
-            configfile = os.path.join(TEST_DIR, MosquittoContainer.CONFIG_FILE)
-        self.with_volume_mapping(configfile, "/mosquitto/config/mosquitto.conf")
-        if self.password:
-            # TODO: add authentication
-            pass
-
-        # helper used to turn asynchronous methods into synchronous:
-        self.msg_queue = Queue()
 
         # reusable client context:
         self.client = None
@@ -110,8 +94,21 @@ class MosquittoContainer(DockerContainer):
 
         return self.client, err
 
-    def start(self) -> Self:
+    def start(self, configfile: Optional[str] = None) -> Self:
+        # setup container:
+        self.with_exposed_ports(self.port)
+        if configfile is None:
+            # default config file
+            configfile = Path(__file__).parent / MosquittoContainer.CONFIG_FILE
+        self.with_volume_mapping(configfile, "/mosquitto/config/mosquitto.conf")
+        if self.password:
+            # TODO: add authentication
+            pass
+
+        # do container start
         super().start()
+
+        # now create the MQTT client
         self._connect()
         return self
 
