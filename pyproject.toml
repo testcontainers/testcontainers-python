@@ -29,11 +29,13 @@ classifiers = [
 packages = [
     { include = "testcontainers", from = "core" },
     { include = "testcontainers", from = "modules/arangodb" },
+    { include = "testcontainers", from = "modules/aws"},
     { include = "testcontainers", from = "modules/azurite" },
     { include = "testcontainers", from = "modules/cassandra" },
     { include = "testcontainers", from = "modules/chroma" },
     { include = "testcontainers", from = "modules/clickhouse" },
     { include = "testcontainers", from = "modules/elasticsearch" },
+    { include = "testcontainers", from = "modules/fastapi" },
     { include = "testcontainers", from = "modules/google" },
     { include = "testcontainers", from = "modules/influxdb" },
     { include = "testcontainers", from = "modules/k3s" },
@@ -57,7 +59,7 @@ packages = [
     { include = "testcontainers", from = "modules/registry" },
     { include = "testcontainers", from = "modules/selenium" },
     { include = "testcontainers", from = "modules/vault" },
-    { include = "testcontainers", from = "modules/weaviate" }
+    { include = "testcontainers", from = "modules/weaviate" },
 ]
 
 [tool.poetry.urls]
@@ -99,13 +101,16 @@ weaviate-client = { version = "^4.5.4", optional = true }
 chromadb-client = { version = "*", optional = true }
 qdrant-client = { version = "*", optional = true }
 bcrypt = { version = "*", optional = true }
+httpx = { version = "*", optional = true }
 
 [tool.poetry.extras]
 arangodb = ["python-arango"]
+aws = ["boto3", "httpx"]
 azurite = ["azure-storage-blob"]
 cassandra = []
 clickhouse = ["clickhouse-driver"]
 elasticsearch = []
+fastapi = ["httpx"]
 google = ["google-cloud-pubsub", "google-cloud-datastore"]
 influxdb = ["influxdb", "influxdb-client"]
 k3s = ["kubernetes", "pyyaml"]

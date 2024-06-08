@@ -4178,11 +4178,13 @@ testing = ["big-O", "jaraco.functools", "jaraco.itertools", "more-itertools", "p
 
 [extras]
 arangodb = ["python-arango"]
+aws = ["boto3", "httpx"]
 azurite = ["azure-storage-blob"]
 cassandra = []
 chroma = ["chromadb-client"]
 clickhouse = ["clickhouse-driver"]
 elasticsearch = []
+fastapi = ["httpx"]
 google = ["google-cloud-datastore", "google-cloud-pubsub"]
 influxdb = ["influxdb", "influxdb-client"]
 k3s = ["kubernetes", "pyyaml"]
@@ -4212,4 +4214,4 @@ weaviate = ["weaviate-client"]
 [metadata]
 lock-version = "2.0"
 python-versions = ">=3.9,<4.0"
-content-hash = "95a2e0ef23d8dfb1cbc74d72f534028aeff5da8bc26cc194f464f6fe282ba38f"
+content-hash = "6ffdb1e5432de9dc656cc0b2722ad883d57266b7111f6cab336990ac52a75a2e"
