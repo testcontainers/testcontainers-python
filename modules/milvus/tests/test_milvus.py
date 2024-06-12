@@ -19,7 +19,7 @@ def test_run_milvus_success(version: str):
 @pytest.mark.parametrize("version", VERSIONS)
 def test_milvus_client_success(version: str):
     image = f"milvusdb/milvus:{version}"
-    test_collection = 'test_collection'
+    test_collection = "test_collection"
 
     with MilvusContainer(image=image) as milvus_container:
         client = milvus_container.get_client()

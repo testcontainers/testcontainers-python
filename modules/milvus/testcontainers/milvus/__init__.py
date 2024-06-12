@@ -38,10 +38,10 @@ class MilvusContainer(DockerContainer):
     """
 
     def __init__(
-            self,
-            image: str = "milvusdb/milvus:latest",
-            port: int = 19530,
-            **kwargs,
+        self,
+        image: str = "milvusdb/milvus:latest",
+        port: int = 19530,
+        **kwargs,
     ) -> None:
         super().__init__(image=image, **kwargs)
         self.port = port
@@ -49,11 +49,7 @@ class MilvusContainer(DockerContainer):
         self.with_exposed_ports(self.port, self.healthcheck_port)
         self.cmd = "milvus run standalone"
 
-        envs = dict(
-            ETCD_USE_EMBED='true',
-            ETCD_DATA_DIR='/var/lib/milvus/etcd',
-            COMMON_STORAGETYPE='local'
-        )
+        envs = {"ETCD_USE_EMBED": "true", "ETCD_DATA_DIR": "/var/lib/milvus/etcd", "COMMON_STORAGETYPE": "local"}
 
         for env, value in envs.items():
             self.with_env(env, value)
