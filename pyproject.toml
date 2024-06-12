@@ -41,8 +41,8 @@ packages = [
     { include = "testcontainers", from = "modules/keycloak" },
     { include = "testcontainers", from = "modules/localstack" },
     { include = "testcontainers", from = "modules/memcached" },
-    { include = "testcontainers", from = "modules/milvus" },
     { include = "testcontainers", from = "modules/minio" },
+    { include = "testcontainers", from = "modules/milvus" },
     { include = "testcontainers", from = "modules/mongodb" },
     { include = "testcontainers", from = "modules/mssql" },
     { include = "testcontainers", from = "modules/mysql" },
@@ -100,7 +100,7 @@ weaviate-client = { version = "^4.5.4", optional = true }
 chromadb-client = { version = "*", optional = true }
 qdrant-client = { version = "*", optional = true }
 bcrypt = { version = "*", optional = true }
-pymilvus = "^2.4.3"
+pymilvus = {version = "^2.4.3", optional = true}
 
 [tool.poetry.extras]
 arangodb = ["python-arango"]
@@ -116,6 +116,7 @@ keycloak = ["python-keycloak"]
 localstack = ["boto3"]
 memcached = []
 minio = ["minio"]
+milvus = ["pymilvus"]
 mongodb = ["pymongo"]
 mssql = ["sqlalchemy", "pymssql"]
 mysql = ["sqlalchemy", "pymysql"]
@@ -300,4 +301,3 @@ ignore_missing_imports = true
 [build-system]
 requires = ["poetry-core"]
 build-backend = "poetry.core.masonry.api"
-
