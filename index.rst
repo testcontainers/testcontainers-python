@@ -31,6 +31,7 @@ testcontainers-python facilitates the use of Docker containers for functional an
     modules/milvus/README
     modules/minio/README
     modules/mongodb/README
+    modules/mqtt/README
     modules/mssql/README
     modules/mysql/README
     modules/nats/README
