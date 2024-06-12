@@ -11,16 +11,16 @@
 #    License for the specific language governing permissions and limitations
 #    under the License.
 
-import os
 from testcontainers.core.container import DockerContainer
-from testcontainers.core.waiting_utils import wait_container_is_ready
+from testcontainers.core.waiting_utils import wait_container_is_ready, wait_for_logs
 from typing_extensions import Self
 from pathlib import Path
 
-from paho.mqtt import client as mqtt_client
-import paho.mqtt.enums
-from queue import Queue
-from typing import Optional
+from typing import Optional, TYPE_CHECKING
+
+if TYPE_CHECKING:
+    from paho.mqtt.enums import MQTTErrorCode
+    from paho.mqtt.client import Client
 
 
 class MosquittoContainer(DockerContainer):
@@ -30,46 +30,58 @@ class MosquittoContainer(DockerContainer):
 
         .. doctest::
 
-            >>> from testcontainers.mosquitto import MosquittoContainer
+            >>> from testcontainers.mqtt import MosquittoContainer
 
             >>> with MosquittoContainer() as mosquitto_broker:
             ...     mqtt_client = mosquitto_broker.get_client()
     """
 
-    TESTCONTAINER_CLIENT_ID = "TESTCONTAINER-CLIENT"
-    DEFAULT_PORT = 1883
+    TESTCONTAINERS_CLIENT_ID = "TESTCONTAINERS-CLIENT"
+    MQTT_PORT = 1883
     CONFIG_FILE = "integration-test-mosquitto.conf"
 
     def __init__(
         self,
         image: str = "eclipse-mosquitto:latest",
-        port: int = None,
-        password: Optional[str] = None,
+        # password: Optional[str] = None,
         **kwargs,
     ) -> None:
         super().__init__(image, **kwargs)
-
-        if port is None:
-            self.port = MosquittoContainer.DEFAULT_PORT
-        else:
-            self.port = port
-        self.password = password
-
+        # self.password = password
         # reusable client context:
-        self.client = None
+        self.client: Optional["Client"] = None
 
     @wait_container_is_ready()
-    def _connect(self) -> None:
-        client, err = self.get_client()
-        if err != paho.mqtt.enums.MQTTErrorCode.MQTT_ERR_SUCCESS:
-            raise RuntimeError(f"Failed to estabilish a connection: {err}")
+    def get_client(self) -> "Client":
+        """
+        Creates and connects a client, caching the result in `self.client`
+        returning that if it exists.
+
+        Connection attempts are retried using `@wait_container_is_ready`.
+
+        Returns:
+            a client from the paho library
+        """
+        if self.client: return self.client
+        client, err = self.new_client()
+        # 0 is a conventional "success" value in C, which is falsy in python
+        if err:
+            # retry, maybe it is not available yet
+            raise ConnectionError(f"Failed to establish a connection: {err}")
         if not client.is_connected():
             raise TimeoutError(f"The Paho MQTT secondary thread has not connected yet!")
+        self.client = client
+        return client
 
-    def get_client(self, **kwargs) -> tuple[mqtt_client.Client, paho.mqtt.enums.MQTTErrorCode]:
+    def new_client(self, **kwargs) -> tuple["Client", "MQTTErrorCode"]:
         """
         Get a paho.mqtt client connected to this container.
         Check the returned object is_connected() method before use
+
+        Usage of this method is required for versions <2;
+        versions >=2 will wait for log messages to determine container readiness.
+        There is no way to pass arguments to new_client in versions <2,
+        please use an up-to-date version.
 
         Args:
             **kwargs: Keyword arguments passed to `paho.mqtt.client`.
@@ -78,47 +90,59 @@ class MosquittoContainer(DockerContainer):
             client: MQTT client to connect to the container.
             error: an error code or MQTT_ERR_SUCCESS.
         """
-        err = paho.mqtt.enums.MQTTErrorCode.MQTT_ERR_SUCCESS
+        try:
+            from paho.mqtt.enums import MQTTErrorCode
+            from paho.mqtt.client import CallbackAPIVersion, Client
+        except ImportError:
+            raise ImportError("'pip install paho-mqtt' required for MosquittoContainer.new_client")
+
+        err = MQTTErrorCode.MQTT_ERR_SUCCESS
         if self.client is None:
-            self.client = mqtt_client.Client(
-                client_id=MosquittoContainer.TESTCONTAINER_CLIENT_ID,
-                callback_api_version=mqtt_client.CallbackAPIVersion.VERSION2,
+            self.client = Client(
+                client_id=MosquittoContainer.TESTCONTAINERS_CLIENT_ID,
+                callback_api_version=CallbackAPIVersion.VERSION2,
                 userdata=self,
                 **kwargs,
             )
             self.client._connect_timeout = 1.0
 
             # connect() is a blocking call:
-            err = self.client.connect(self.get_container_host_ip(), int(self.get_exposed_port(self.port)))
+            err = self.client.connect(self.get_container_host_ip(), int(self.get_exposed_port(self.MQTT_PORT)))
             self.client.loop_start()  # launch a thread to call loop() and dequeue the message
 
         return self.client, err
 
     def start(self, configfile: Optional[str] = None) -> Self:
         # setup container:
-        self.with_exposed_ports(self.port)
+        self.with_exposed_ports(self.MQTT_PORT)
         if configfile is None:
             # default config file
             configfile = Path(__file__).parent / MosquittoContainer.CONFIG_FILE
-        self.with_volume_mapping(configfile, "/mosquitto/config/mosquitto.conf")
-        if self.password:
-            # TODO: add authentication
-            pass
+        self.with_volume_mapping(configfile, "/mosquitto/config/mosquitto.conf", "rw")
+        # if self.password:
+        #     # TODO: add authentication
+        #     pass
 
         # do container start
         super().start()
 
-        # now create the MQTT client
-        self._connect()
+        self._wait()
         return self
 
+    def _wait(self):
+        if self.image.split(":")[-1].startswith("1"):
+            self.get_client()
+        else:
+            wait_for_logs(self, r"mosquitto version \d+.\d+.\d+ running", timeout=30)
+
     def stop(self, force=True, delete_volume=True) -> None:
-        self.client.disconnect()
-        self.client = None  # force recreation of the client object at next start()
+        if self.client is not None:
+            self.client.disconnect()
+            self.client = None  # force recreation of the client object at next start()
         super().stop(force, delete_volume)
 
     def publish_message(self, topic: str, payload: str, timeout: int = 2) -> None:
-        ret = self.client.publish(topic, payload)
+        ret = self.get_client().publish(topic, payload)
         ret.wait_for_publish(timeout=timeout)
         if not ret.is_published():
             raise RuntimeError(f"Could not publish a message on topic {topic} to Mosquitto broker: {ret}")
