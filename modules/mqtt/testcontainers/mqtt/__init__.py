@@ -120,7 +120,7 @@ class MosquittoContainer(DockerContainer):
         if configfile is None:
             # default config file
             configfile = Path(__file__).parent / MosquittoContainer.CONFIG_FILE
-        self.with_volume_mapping(configfile, "/mosquitto/config/mosquitto.conf", "rw")
+        self.with_volume_mapping(configfile, "/mosquitto/config/mosquitto.conf")
         # if self.password:
         #     # TODO: add authentication
         #     pass
