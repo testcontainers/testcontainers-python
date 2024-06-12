@@ -11,16 +11,17 @@
 #    License for the specific language governing permissions and limitations
 #    under the License.
 
+from pathlib import Path
+from typing import TYPE_CHECKING, Optional
+
+from typing_extensions import Self
+
 from testcontainers.core.container import DockerContainer
 from testcontainers.core.waiting_utils import wait_container_is_ready, wait_for_logs
-from typing_extensions import Self
-from pathlib import Path
-
-from typing import Optional, TYPE_CHECKING
 
 if TYPE_CHECKING:
-    from paho.mqtt.enums import MQTTErrorCode
     from paho.mqtt.client import Client
+    from paho.mqtt.enums import MQTTErrorCode
 
 
 class MosquittoContainer(DockerContainer):
@@ -38,7 +39,7 @@ class MosquittoContainer(DockerContainer):
 
     TESTCONTAINERS_CLIENT_ID = "TESTCONTAINERS-CLIENT"
     MQTT_PORT = 1883
-    CONFIG_FILE = "integration-test-mosquitto.conf"
+    CONFIG_FILE = "testcontainers-mosquitto-default-configuration.conf"
 
     def __init__(
         self,
@@ -62,14 +63,15 @@ class MosquittoContainer(DockerContainer):
         Returns:
             a client from the paho library
         """
-        if self.client: return self.client
+        if self.client:
+            return self.client
         client, err = self.new_client()
         # 0 is a conventional "success" value in C, which is falsy in python
         if err:
             # retry, maybe it is not available yet
             raise ConnectionError(f"Failed to establish a connection: {err}")
         if not client.is_connected():
-            raise TimeoutError(f"The Paho MQTT secondary thread has not connected yet!")
+            raise TimeoutError("The Paho MQTT secondary thread has not connected yet!")
         self.client = client
         return client
 
@@ -91,10 +93,10 @@ class MosquittoContainer(DockerContainer):
             error: an error code or MQTT_ERR_SUCCESS.
         """
         try:
-            from paho.mqtt.enums import MQTTErrorCode
             from paho.mqtt.client import CallbackAPIVersion, Client
-        except ImportError:
-            raise ImportError("'pip install paho-mqtt' required for MosquittoContainer.new_client")
+            from paho.mqtt.enums import MQTTErrorCode
+        except ImportError as i:
+            raise ImportError("'pip install paho-mqtt' required for MosquittoContainer.new_client") from i
 
         err = MQTTErrorCode.MQTT_ERR_SUCCESS
         if self.client is None:
