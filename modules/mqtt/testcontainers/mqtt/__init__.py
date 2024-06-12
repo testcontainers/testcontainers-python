@@ -133,6 +133,11 @@ class MosquittoContainer(DockerContainer):
 
     def _wait(self):
         if self.image.split(":")[-1].startswith("1"):
+            import logging
+
+            logging.warning(
+                "You are using version 1 of eclipse-mosquitto which is not supported for use by this module without paho-mqtt also installed"
+            )
             self.get_client()
         else:
             wait_for_logs(self, r"mosquitto version \d+.\d+.\d+ running", timeout=30)
