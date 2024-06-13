@@ -27,13 +27,13 @@ class MilvusContainer(DockerContainer):
     Example:
 
         The example spins up a Milvus database and connects to it client using MilvisClient.
+
         .. doctest::
 
             >>> from testcontainers.milvus import MilvusContainer
-            >>> import sqlalchemy
-
-            >>> with MilvusContainer("milvusdb/milvus:v2.4.1") as milvus_container:
-            ...     client = milvus_container.get_client()
+            >>> with MilvusContainer("milvusdb/milvus:v2.4.4") as milvus_container:
+            ...     milvus_container.get_exposed_port(milvus_container.port) in milvus_container.get_connection_url()
+            True
     """
 
     def __init__(
@@ -83,4 +83,3 @@ class MilvusContainer(DockerContainer):
         self._connect()
         self._healthcheck()
         return self
-
