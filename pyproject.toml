@@ -42,6 +42,7 @@ packages = [
     { include = "testcontainers", from = "modules/localstack" },
     { include = "testcontainers", from = "modules/memcached" },
     { include = "testcontainers", from = "modules/minio" },
+    { include = "testcontainers", from = "modules/milvus" },
     { include = "testcontainers", from = "modules/mongodb" },
     { include = "testcontainers", from = "modules/mssql" },
     { include = "testcontainers", from = "modules/mysql" },
@@ -114,6 +115,7 @@ keycloak = ["python-keycloak"]
 localstack = ["boto3"]
 memcached = []
 minio = ["minio"]
+milvus = []
 mongodb = ["pymongo"]
 mssql = ["sqlalchemy", "pymssql"]
 mysql = ["sqlalchemy", "pymysql"]
@@ -150,6 +152,7 @@ cassandra-driver = "*"
 pytest-asyncio = "0.23.5"
 kafka-python-ng = "^2.2.0"
 hvac = "*"
+pymilvus = "2.4.3"
 
 [[tool.poetry.source]]
 name = "PyPI"
