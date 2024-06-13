@@ -12,7 +12,6 @@
 #    under the License.
 
 import requests
-from pymilvus import MilvusClient
 
 from testcontainers.core.config import testcontainers_config as c
 from testcontainers.core.generic import DockerContainer
@@ -63,6 +62,7 @@ class MilvusContainer(DockerContainer):
     def _connect(self) -> None:
         msg = "Welcome to use Milvus!"
         wait_for_logs(self, f".*{msg}.*", c.max_tries, c.sleep_time)
+        self._healthcheck()
 
     def _get_healthcheck_url(self) -> str:
         ip = self.get_container_host_ip()
@@ -84,7 +84,3 @@ class MilvusContainer(DockerContainer):
         self._healthcheck()
         return self
 
-    def get_client(self, *, dbname: str = "default", token: str = "root:Milvus") -> MilvusClient:
-        connection_url = self.get_connection_url()
-        client = MilvusClient(uri=connection_url, dbname=dbname, token=token)
-        return client

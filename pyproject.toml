@@ -100,7 +100,6 @@ weaviate-client = { version = "^4.5.4", optional = true }
 chromadb-client = { version = "*", optional = true }
 qdrant-client = { version = "*", optional = true }
 bcrypt = { version = "*", optional = true }
-pymilvus = {version = "^2.4.3", optional = true}
 
 [tool.poetry.extras]
 arangodb = ["python-arango"]
@@ -116,7 +115,7 @@ keycloak = ["python-keycloak"]
 localstack = ["boto3"]
 memcached = []
 minio = ["minio"]
-milvus = ["pymilvus"]
+milvus = []
 mongodb = ["pymongo"]
 mssql = ["sqlalchemy", "pymssql"]
 mysql = ["sqlalchemy", "pymysql"]
@@ -153,6 +152,7 @@ cassandra-driver = "*"
 pytest-asyncio = "0.23.5"
 kafka-python-ng = "^2.2.0"
 hvac = "*"
+pymilvus = "2.4.3"
 
 [[tool.poetry.source]]
 name = "PyPI"

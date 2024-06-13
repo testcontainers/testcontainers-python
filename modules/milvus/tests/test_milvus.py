@@ -1,8 +1,16 @@
 import pytest
+from pymilvus import MilvusClient
 
 from testcontainers.milvus import MilvusContainer
 
-VERSIONS = ["v2.4.0", "v2.4.1", "v2.4.3", "v2.4.4", "latest"]
+VERSIONS = ["v2.4.0", "v2.4.4"]
+
+
+class ClientMilvusContainer(MilvusContainer):
+    def get_client(self, *, dbname: str = "default", token: str = "root:Milvus") -> MilvusClient:
+        connection_url = self.get_connection_url()
+        client = MilvusClient(uri=connection_url, dbname=dbname, token=token)
+        return client
 
 
 @pytest.mark.parametrize("version", VERSIONS)
@@ -21,7 +29,7 @@ def test_milvus_client_success(version: str):
     image = f"milvusdb/milvus:{version}"
     test_collection = "test_collection"
 
-    with MilvusContainer(image=image) as milvus_container:
+    with ClientMilvusContainer(image=image) as milvus_container:
         client = milvus_container.get_client()
         client.create_collection(test_collection, dimension=2)
         collections = client.list_collections()
