@@ -61,9 +61,10 @@ class TestcontainersConfiguration:
 
     @property
     def docker_auth_config(self):
-        if "DOCKER_AUTH_CONFIG" in _WARNINGS:
+        config = self._docker_auth_config
+        if config and "DOCKER_AUTH_CONFIG" in _WARNINGS:
             warning(_WARNINGS.pop("DOCKER_AUTH_CONFIG"))
-        return self._docker_auth_config
+        return config
 
     @docker_auth_config.setter
     def docker_auth_config(self, value: str):

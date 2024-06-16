@@ -94,8 +94,7 @@ class ServerContainer(DockerContainer):
 
     Example:
 
-    todo re-enable this test:
-    .. code-block::
+    .. doctest::
 
         >>> import httpx
         >>> from testcontainers.core.generic import ServerContainer
@@ -103,7 +102,7 @@ class ServerContainer(DockerContainer):
         >>> from testcontainers.core.image import DockerImage
 
         >>> with DockerImage(path="./core/tests/image_fixtures/python_server", tag="test-srv:latest") as image:
-        >>>     with ServerContainer(port=9000, image=image) as srv:
+        ...     with ServerContainer(port=9000, image=image) as srv:
         ...         url = srv._create_connection_url()
         ...         response = httpx.get(f"{url}", timeout=5)
         ...         assert response.status_code == 200, "Response status code is not 200"

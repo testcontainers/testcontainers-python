@@ -1,4 +1,5 @@
-from typing import TYPE_CHECKING, Optional
+from os import PathLike
+from typing import TYPE_CHECKING, Optional, Union
 
 from typing_extensions import Self
 
@@ -28,7 +29,7 @@ class DockerImage:
 
     def __init__(
         self,
-        path: str,
+        path: Union[str, PathLike],
         docker_client_kw: Optional[dict] = None,
         tag: Optional[str] = None,
         clean_up: bool = True,
@@ -45,7 +46,7 @@ class DockerImage:
     def build(self, **kwargs) -> Self:
         logger.info(f"Building image from {self.path}")
         docker_client = self.get_docker_client()
-        self._image, self._logs = docker_client.build(path=self.path, tag=self.tag, **kwargs)
+        self._image, self._logs = docker_client.build(path=str(self.path), tag=self.tag, **kwargs)
         logger.info(f"Built image {self.short_id} with tag {self.tag}")
         return self
 
