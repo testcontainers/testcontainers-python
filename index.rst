@@ -13,39 +13,10 @@ testcontainers-python
 testcontainers-python facilitates the use of Docker containers for functional and integration testing. The collection of packages currently supports the following features.
 
 .. toctree::
+    :maxdepth: 1
 
     core/README
-    modules/arangodb/README
-    modules/azurite/README
-    modules/cassandra/README
-    modules/chroma/README
-    modules/clickhouse/README
-    modules/elasticsearch/README
-    modules/google/README
-    modules/influxdb/README
-    modules/k3s/README
-    modules/kafka/README
-    modules/keycloak/README
-    modules/localstack/README
-    modules/memcached/README
-    modules/milvus/README
-    modules/minio/README
-    modules/mongodb/README
-    modules/mssql/README
-    modules/mysql/README
-    modules/nats/README
-    modules/neo4j/README
-    modules/nginx/README
-    modules/opensearch/README
-    modules/oracle-free/README
-    modules/postgres/README
-    modules/qdrant/README
-    modules/rabbitmq/README
-    modules/redis/README
-    modules/registry/README
-    modules/selenium/README
-    modules/vault/README
-    modules/weaviate/README
+    modules/index
 
 Getting Started
 ---------------
@@ -189,4 +160,6 @@ Testcontainers is a collection of `implicit namespace packages <https://peps.pyt
 Contributing a New Feature
 ^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-You want to contribute a new feature or container? Great! You can do that in six steps as outlined `here <https://github.com/testcontainers/testcontainers-python/blob/main/.github/PULL_REQUEST_TEMPLATE/new_container.md>__`.
+You want to contribute a new feature or container?
+Great! You can do that in six steps as outlined
+`here <https://github.com/testcontainers/testcontainers-python/blob/main/.github/PULL_REQUEST_TEMPLATE/new_container.md>`_.

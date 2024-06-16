@@ -36,10 +36,11 @@ class DockerImage:
     ) -> None:
         self.tag = tag
         self.path = path
-        self.id = None
         self._docker = DockerClient(**(docker_client_kw or {}))
         self.clean_up = clean_up
         self._kwargs = kwargs
+        self._image = None
+        self._logs = None
 
     def build(self, **kwargs) -> Self:
         logger.info(f"Building image from {self.path}")

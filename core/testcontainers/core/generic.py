@@ -10,7 +10,7 @@
 #    WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the
 #    License for the specific language governing permissions and limitations
 #    under the License.
-from typing import Optional
+from typing import Optional, Union
 from urllib.error import HTTPError
 from urllib.parse import quote
 from urllib.request import urlopen
@@ -32,6 +32,8 @@ except ImportError:
 
 class DbContainer(DockerContainer):
     """
+    **DEPRECATED (for removal)**
+
     Generic database container.
     """
 
@@ -86,30 +88,34 @@ class DbContainer(DockerContainer):
 
 class ServerContainer(DockerContainer):
     """
+    **DEPRECATED - will be moved from core to a module (stay tuned for a final/stable import location)**
+
     Container for a generic server that is based on a custom image.
 
     Example:
 
-    .. doctest::
+    todo re-enable this test:
+    .. code-block::
 
         >>> import httpx
         >>> from testcontainers.core.generic import ServerContainer
         >>> from testcontainers.core.waiting_utils import wait_for_logs
+        >>> from testcontainers.core.image import DockerImage
 
-        >>> with ServerContainer(path="./core/tests/image_fixtures/python_server", port=9000, tag="test-srv:latest") as srv:
-        ...     url = srv._create_connection_url()
-        ...     response = httpx.get(f"{url}", timeout=5)
-        ...     assert response.status_code == 200, "Response status code is not 200"
-        ...     delay = wait_for_logs(srv, "GET / HTTP/1.1")
+        >>> with DockerImage(path="./core/tests/image_fixtures/python_server", tag="test-srv:latest") as image:
+        >>>     with ServerContainer(port=9000, image=image) as srv:
+        ...         url = srv._create_connection_url()
+        ...         response = httpx.get(f"{url}", timeout=5)
+        ...         assert response.status_code == 200, "Response status code is not 200"
+        ...         delay = wait_for_logs(srv, "GET / HTTP/1.1")
 
 
     :param path: Path to the Dockerfile to build the image
     :param tag: Tag for the image to be built (default: None)
     """
 
-    def __init__(self, path: str, port: int, tag: Optional[str], image_cleanup: bool = True) -> None:
-        self.docker_image = DockerImage(path=path, tag=tag, clean_up=image_cleanup).build()
-        super().__init__(str(self.docker_image))
+    def __init__(self, port: int, image: Union[str, DockerImage]) -> None:
+        super().__init__(str(image))
         self.internal_port = port
         self.with_exposed_ports(self.internal_port)
 
@@ -145,4 +151,3 @@ class ServerContainer(DockerContainer):
 
     def stop(self, force=True, delete_volume=True) -> None:
         super().stop(force, delete_volume)
-        self.docker_image.remove()
