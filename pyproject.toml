@@ -33,6 +33,7 @@ packages = [
     { include = "testcontainers", from = "modules/cassandra" },
     { include = "testcontainers", from = "modules/chroma" },
     { include = "testcontainers", from = "modules/clickhouse" },
+    { include = "testcontainers", from = "modules/cockroachdb" },
     { include = "testcontainers", from = "modules/elasticsearch" },
     { include = "testcontainers", from = "modules/google" },
     { include = "testcontainers", from = "modules/influxdb" },
