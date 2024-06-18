@@ -2440,6 +2440,20 @@ files = [
 ]
 
 [[package]]
+name = "paho-mqtt"
+version = "2.1.0"
+description = "MQTT version 5.0/3.1.1 client class"
+optional = false
+python-versions = ">=3.7"
+files = [
+    {file = "paho_mqtt-2.1.0-py3-none-any.whl", hash = "sha256:6db9ba9b34ed5bc6b6e3812718c7e06e2fd7444540df2455d2c51bd58808feee"},
+    {file = "paho_mqtt-2.1.0.tar.gz", hash = "sha256:12d6e7511d4137555a3f6ea167ae846af2c7357b10bc6fa4f7c3968fc1723834"},
+]
+
+[package.extras]
+proxy = ["pysocks"]
+
+[[package]]
 name = "pandas"
 version = "2.2.2"
 description = "Powerful data structures for data analysis, time series, and statistics"
@@ -4444,6 +4458,7 @@ memcached = []
 milvus = []
 minio = ["minio"]
 mongodb = ["pymongo"]
+mqtt = []
 mssql = ["pymssql", "sqlalchemy"]
 mysql = ["pymysql", "sqlalchemy"]
 nats = ["nats-py"]

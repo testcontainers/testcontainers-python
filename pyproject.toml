@@ -44,6 +44,7 @@ packages = [
     { include = "testcontainers", from = "modules/minio" },
     { include = "testcontainers", from = "modules/milvus" },
     { include = "testcontainers", from = "modules/mongodb" },
+    { include = "testcontainers", from = "modules/mqtt" },
     { include = "testcontainers", from = "modules/mssql" },
     { include = "testcontainers", from = "modules/mysql" },
     { include = "testcontainers", from = "modules/nats" },
@@ -117,6 +118,7 @@ memcached = []
 minio = ["minio"]
 milvus = []
 mongodb = ["pymongo"]
+mqtt = []
 mssql = ["sqlalchemy", "pymssql"]
 mysql = ["sqlalchemy", "pymysql"]
 nats = ["nats-py"]
@@ -154,6 +156,7 @@ kafka-python-ng = "^2.2.0"
 hvac = "2.1.0"
 pymilvus = "2.4.3"
 httpx = "0.27.0"
+paho-mqtt = "2.1.0"
 
 [[tool.poetry.source]]
 name = "PyPI"
