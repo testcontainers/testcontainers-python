@@ -63,6 +63,10 @@ ${TESTS_DIND} : %/tests-dind : image
 docs :
 	poetry run sphinx-build -nW . docs/_build
 
+# Target to build docs watching for changes as per https://stackoverflow.com/a/21389615
+docs-watch :
+	poetry run sphinx-autobuild . docs/_build # requires 'pip install sphinx-autobuild'
+
 doctests : ${DOCTESTS}
 	poetry run sphinx-build -b doctest . docs/_build
 
