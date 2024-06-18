@@ -1,5 +1,27 @@
 # Changelog
 
+## [4.6.0](https://github.com/testcontainers/testcontainers-python/compare/testcontainers-v4.5.1...testcontainers-v4.6.0) (2024-06-18)
+
+
+### Features
+
+* **core:** Added ServerContainer ([#595](https://github.com/testcontainers/testcontainers-python/issues/595)) ([0768490](https://github.com/testcontainers/testcontainers-python/commit/076849015ad3542384ecf8cf6c205d5d498e4986))
+* **core:** Image build (Dockerfile support) ([#585](https://github.com/testcontainers/testcontainers-python/issues/585)) ([54c88cf](https://github.com/testcontainers/testcontainers-python/commit/54c88cf00ad7bb08eb7894c52bed7a9010fd7786))
+
+
+### Bug Fixes
+
+* Add Cockroach DB Module to Testcontainers ([#608](https://github.com/testcontainers/testcontainers-python/issues/608)) ([4aff679](https://github.com/testcontainers/testcontainers-python/commit/4aff6793f28fbeb8358adcc728283ea9a7b94e5f))
+* Container for Milvus database ([#606](https://github.com/testcontainers/testcontainers-python/issues/606)) ([ec76df2](https://github.com/testcontainers/testcontainers-python/commit/ec76df27c3d95ac1b79df3a049b4e2c12539081d))
+* move TESTCONTAINERS_HOST_OVERRIDE to config.py ([#603](https://github.com/testcontainers/testcontainers-python/issues/603)) ([2a5a190](https://github.com/testcontainers/testcontainers-python/commit/2a5a1904391020a9da4be17b32f23b36d9385c29)), closes [#602](https://github.com/testcontainers/testcontainers-python/issues/602)
+* **mqtt:** Add mqtt.MosquittoContainer ([#568](https://github.com/testcontainers/testcontainers-python/issues/568)) ([#599](https://github.com/testcontainers/testcontainers-python/issues/599)) ([59cb6fc](https://github.com/testcontainers/testcontainers-python/commit/59cb6fc4e7d93870ff2d0d961d14ccd5142a8a05))
+
+
+### Documentation
+
+* **main:** Private registry ([#598](https://github.com/testcontainers/testcontainers-python/issues/598)) ([9045c0a](https://github.com/testcontainers/testcontainers-python/commit/9045c0aea6029283490c89aea985e625dcdfc7b9))
+* Update private registry instructions ([#604](https://github.com/testcontainers/testcontainers-python/issues/604)) ([f5a019b](https://github.com/testcontainers/testcontainers-python/commit/f5a019b6d2552788478e4a10cd17f7a2b453abb9))
+
 ## [4.5.1](https://github.com/testcontainers/testcontainers-python/compare/testcontainers-v4.5.0...testcontainers-v4.5.1) (2024-05-31)
 
 
