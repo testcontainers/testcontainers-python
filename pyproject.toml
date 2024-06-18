@@ -33,6 +33,7 @@ packages = [
     { include = "testcontainers", from = "modules/cassandra" },
     { include = "testcontainers", from = "modules/chroma" },
     { include = "testcontainers", from = "modules/clickhouse" },
+    { include = "testcontainers", from = "modules/cockroachdb" },
     { include = "testcontainers", from = "modules/elasticsearch" },
     { include = "testcontainers", from = "modules/google" },
     { include = "testcontainers", from = "modules/influxdb" },
@@ -107,6 +108,7 @@ arangodb = ["python-arango"]
 azurite = ["azure-storage-blob"]
 cassandra = []
 clickhouse = ["clickhouse-driver"]
+cockroachdb = []
 elasticsearch = []
 google = ["google-cloud-pubsub", "google-cloud-datastore"]
 influxdb = ["influxdb", "influxdb-client"]
@@ -157,6 +159,7 @@ hvac = "2.1.0"
 pymilvus = "2.4.3"
 httpx = "0.27.0"
 paho-mqtt = "2.1.0"
+sqlalchemy-cockroachdb = "2.0.2"
 
 [[tool.poetry.source]]
 name = "PyPI"
