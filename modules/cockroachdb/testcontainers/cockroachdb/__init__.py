@@ -12,8 +12,11 @@
 #    under the License.
 from os import environ
 from typing import Optional
+from urllib.error import HTTPError, URLError
+from urllib.request import urlopen
 
 from testcontainers.core.generic import DbContainer
+from testcontainers.core.waiting_utils import wait_container_is_ready, wait_for_logs
 
 
 class CockroachDBContainer(DbContainer):
@@ -32,7 +35,7 @@ class CockroachDBContainer(DbContainer):
             >>> import sqlalchemy
             >>> from testcontainers.cockroachdb import CockroachDBContainer
 
-            >>> with CockroachDBContainer('cockroachdb/cockroach:latest') as crdb:
+            >>> with CockroachDBContainer('cockroachdb/cockroach:v24.1.1') as crdb:
             ...     engine = sqlalchemy.create_engine(crdb.get_connection_url())
             ...     with engine.begin() as connection:
             ...         result = connection.execute(sqlalchemy.text("select version()"))
@@ -40,20 +43,21 @@ class CockroachDBContainer(DbContainer):
 
     """
 
+    COCKROACH_DB_PORT: int = 26257
+    COCKROACH_API_PORT: int = 8080
+
     def __init__(
         self,
-        image: str = "cockroachdb/cockroach:latest",
+        image: str = "cockroachdb/cockroach:v24.1.1",
         username: Optional[str] = None,
         password: Optional[str] = None,
         dbname: Optional[str] = None,
-        port: int = 26257,
         dialect="cockroachdb+psycopg2",
         **kwargs,
     ) -> None:
         super().__init__(image, **kwargs)
 
-        self.port = port
-        self.with_exposed_ports(self.port)
+        self.with_exposed_ports(self.COCKROACH_DB_PORT, self.COCKROACH_API_PORT)
         self.username = username or environ.get("COCKROACH_USER", "cockroach")
         self.password = password or environ.get("COCKROACH_PASSWORD", "arthropod")
         self.dbname = dbname or environ.get("COCKROACH_DATABASE", "roach")
@@ -69,9 +73,25 @@ class CockroachDBContainer(DbContainer):
             cmd += " --insecure"
         self.with_command(cmd)
 
+    @wait_container_is_ready(HTTPError, URLError)
+    def _connect(self) -> None:
+        host = self.get_container_host_ip()
+        url = f"http://{host}:{self.get_exposed_port(self.COCKROACH_API_PORT)}/health"
+        self._wait_for_health(url)
+        wait_for_logs(self, "finished creating default user*")
+
+    @staticmethod
+    def _wait_for_health(url):
+        with urlopen(url) as response:
+            response.read()
+
     def get_connection_url(self) -> str:
         conn_str = super()._create_connection_url(
-            dialect=self.dialect, username=self.username, password=self.password, dbname=self.dbname, port=self.port
+            dialect=self.dialect,
+            username=self.username,
+            password=self.password,
+            dbname=self.dbname,
+            port=self.COCKROACH_DB_PORT,
         )
 
         if self.password:

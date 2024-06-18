@@ -4007,6 +4007,20 @@ pymysql = ["pymysql"]
 sqlcipher = ["sqlcipher3_binary"]
 
 [[package]]
+name = "sqlalchemy-cockroachdb"
+version = "2.0.2"
+description = "CockroachDB dialect for SQLAlchemy"
+optional = false
+python-versions = "*"
+files = [
+    {file = "sqlalchemy-cockroachdb-2.0.2.tar.gz", hash = "sha256:119756eb905855d6a11345b99cfe853031a3fe598a9c4bf35a8ddac9f89fe8cc"},
+    {file = "sqlalchemy_cockroachdb-2.0.2-py3-none-any.whl", hash = "sha256:0d5d50e805b024cb2ccd85423a5c1a367d1a56a5cd0ea47765233fd47665070d"},
+]
+
+[package.dependencies]
+SQLAlchemy = "*"
+
+[[package]]
 name = "tenacity"
 version = "8.2.3"
 description = "Retry code until it succeeds"
@@ -4447,6 +4461,7 @@ azurite = ["azure-storage-blob"]
 cassandra = []
 chroma = ["chromadb-client"]
 clickhouse = ["clickhouse-driver"]
+cockroachdb = []
 elasticsearch = []
 google = ["google-cloud-datastore", "google-cloud-pubsub"]
 influxdb = ["influxdb", "influxdb-client"]
@@ -4479,4 +4494,4 @@ weaviate = ["weaviate-client"]
 [metadata]
 lock-version = "2.0"
 python-versions = ">=3.9,<4.0"
-content-hash = "043c7eea4ca72646a19a705891b26577a27149673ba38c8a6dd4732d30ce081c"
+content-hash = "040fa3576807a8bd7b129b889c934d5c4bca9e95376c50e15fa870f4d8336fdb"
