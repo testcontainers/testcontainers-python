@@ -31,6 +31,10 @@ class KafkaContainer(DockerContainer):
 
             >>> with KafkaContainer() as kafka:
             ...    connection = kafka.get_bootstrap_server()
+
+            # Using KRaft protocol
+            >>> with KafkaContainer().with_kraft() as kafka:
+            ...    connection = kafka.get_bootstrap_server()
     """
 
     TC_START_SCRIPT = "/tc-start.sh"
