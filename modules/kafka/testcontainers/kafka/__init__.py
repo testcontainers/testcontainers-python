@@ -1,7 +1,5 @@
-import base64
 import tarfile
 import time
-import uuid
 from io import BytesIO
 from textwrap import dedent
 
@@ -47,7 +45,7 @@ class KafkaContainer(DockerContainer):
         self.kraft_enabled = False
         self.wait_for = r".*\[KafkaServer id=\d+\] started.*"
         self.boot_command = ""
-        self.cluster_id = self._random_uuid()
+        self.cluster_id = "MkU3OEVBNTcwNTJENDM2Qk"
         self.listeners = f"PLAINTEXT://0.0.0.0:{self.port},BROKER://0.0.0.0:9092"
         self.security_protocol_map = "BROKER:PLAINTEXT,PLAINTEXT:PLAINTEXT"
 
@@ -80,14 +78,6 @@ class KafkaContainer(DockerContainer):
     def with_cluster_id(self, cluster_id: str) -> Self:
         self.cluster_id = cluster_id
         return self
-
-    @classmethod
-    def _random_uuid(cls):
-        uuid_value = uuid.uuid4()
-        uuid_bytes = uuid_value.bytes
-        base64_encoded_uuid = base64.b64encode(uuid_bytes)
-
-        return base64_encoded_uuid.decode()
 
     def configure(self):
         if self.kraft_enabled:
