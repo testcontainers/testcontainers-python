@@ -4490,10 +4490,11 @@ rabbitmq = ["pika"]
 redis = ["redis"]
 registry = ["bcrypt"]
 selenium = ["selenium"]
+testmoduleimport = ["httpx"]
 vault = []
 weaviate = ["weaviate-client"]
 
 [metadata]
 lock-version = "2.0"
 python-versions = ">=3.9,<4.0"
-content-hash = "50e1887a83e3923e66ec25e52d35c3da035025b6e268bd76f772232315c00d47"
+content-hash = "e07f8edf8cefba872bbf48dcfa187163cefb00a60122daa62de8891b61fc55de"

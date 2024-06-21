@@ -36,6 +36,7 @@ packages = [
     { include = "testcontainers", from = "modules/cockroachdb" },
     { include = "testcontainers", from = "modules/elasticsearch" },
     { include = "testcontainers", from = "modules/generic" },
+    { include = "testcontainers", from = "modules/testmoduleimport"},
     { include = "testcontainers", from = "modules/google" },
     { include = "testcontainers", from = "modules/influxdb" },
     { include = "testcontainers", from = "modules/k3s" },
@@ -114,6 +115,7 @@ clickhouse = ["clickhouse-driver"]
 cockroachdb = []
 elasticsearch = []
 generic = ["httpx"]
+testmoduleimport = ["httpx"]
 google = ["google-cloud-pubsub", "google-cloud-datastore"]
 influxdb = ["influxdb", "influxdb-client"]
 k3s = ["kubernetes", "pyyaml"]
