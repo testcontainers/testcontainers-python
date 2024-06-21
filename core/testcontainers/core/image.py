@@ -1,5 +1,5 @@
 from os import PathLike
-from typing import TYPE_CHECKING, Optional, Union
+from typing import TYPE_CHECKING, Optional, Union, Dict
 
 from typing_extensions import Self
 
@@ -25,6 +25,7 @@ class DockerImage:
 
     :param tag: Tag for the image to be built (default: None)
     :param path: Path to the Dockerfile to build the image
+    :param build_args: Dict of build args; equivalent to CLI's --build-arg
     """
 
     def __init__(
@@ -33,6 +34,7 @@ class DockerImage:
         docker_client_kw: Optional[dict] = None,
         tag: Optional[str] = None,
         clean_up: bool = True,
+        build_args: Dict[str, str] = None,
         **kwargs,
     ) -> None:
         self.tag = tag
@@ -42,11 +44,14 @@ class DockerImage:
         self._kwargs = kwargs
         self._image = None
         self._logs = None
+        self._build_args = build_args
 
     def build(self, **kwargs) -> Self:
         logger.info(f"Building image from {self.path}")
         docker_client = self.get_docker_client()
-        self._image, self._logs = docker_client.build(path=str(self.path), tag=self.tag, **kwargs)
+        self._image, self._logs = docker_client.build(
+            path=str(self.path), tag=self.tag, buildargs=self._build_args, **kwargs
+        )
         logger.info(f"Built image {self.short_id} with tag {self.tag}")
         return self
 
