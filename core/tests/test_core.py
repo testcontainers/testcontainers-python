@@ -1,7 +1,9 @@
 import pytest
 import tempfile
 import random
+import os
 
+from pathlib import Path
 from typing import Optional
 
 from testcontainers.core.container import DockerContainer
@@ -64,3 +66,29 @@ def test_docker_image(test_image_tag: Optional[str], test_cleanup: bool, check_f
                 assert container.get_logs() == ((random_string + "\n").encode(), b""), "Container logs mismatch"
 
         check_for_image(image_short_id, test_cleanup)
+
+
+@pytest.mark.parametrize("dockerfile_path", [None, Path("subdir/my.Dockerfile")])
+def test_docker_image_with_custom_dockerfile_path(dockerfile_path: Optional[Path]):
+    with tempfile.TemporaryDirectory() as temp_directory:
+        temp_dir_path = Path(temp_directory)
+        if dockerfile_path:
+            os.makedirs(temp_dir_path / dockerfile_path.parent, exist_ok=True)
+            dockerfile_rel_path = dockerfile_path
+            dockerfile_kwargs = {"dockerfile_path": dockerfile_path}
+        else:
+            dockerfile_rel_path = Path("Dockerfile")  # default
+            dockerfile_kwargs = {}
+
+        with open(temp_dir_path / dockerfile_rel_path, "x") as f:
+            f.write(
+                f"""
+                FROM alpine:latest
+                CMD echo "Hello world!"
+                """
+            )
+        with DockerImage(path=temp_directory, tag="test", clean_up=True, no_cache=True, **dockerfile_kwargs) as image:
+            image_short_id = image.short_id
+            with DockerContainer(str(image)) as container:
+                assert container._container.image.short_id.endswith(image_short_id), "Image ID mismatch"
+                assert container.get_logs() == (("Hello world!\n").encode(), b""), "Container logs mismatch"
