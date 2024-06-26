@@ -73,7 +73,5 @@ class OllamaContainer(ServerContainer):
         existing_images = docker_client.client.images.list(name=image_name)
         if not existing_images and self.id:
             docker_client.client.containers.get(self.id).commit(
-                repository=image_name,
-                tag=image_name.split(":")[-1] if ":" in image_name else "latest",
-                conf={"Labels": {"org.testcontainers.session-id": ""}},
+                repository=image_name, conf={"Labels": {"org.testcontainers.session-id": ""}}
             )
