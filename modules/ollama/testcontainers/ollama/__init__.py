@@ -12,7 +12,7 @@
 #    under the License.
 
 from os import PathLike
-from typing import Any, Optional, TypedDict
+from typing import Any, Optional, TypedDict, Union
 
 from docker.types.containers import DeviceRequest
 from requests import get
@@ -49,7 +49,7 @@ class OllamaContainer(DockerContainer):
     def __init__(
         self,
         image: str = "ollama/ollama:0.1.44",
-        ollama_dir: Optional[str | PathLike] = None,
+        ollama_dir: Optional[Union[str, PathLike]] = None,
         **kwargs,
         #
     ):
