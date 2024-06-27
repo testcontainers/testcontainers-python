@@ -37,6 +37,55 @@ def test_compose_start_stop():
     basic.stop()
 
 
+def test_start_stop_multiple():
+    """Start and stop multiple containers individually."""
+
+    # Create two DockerCompose instances from the same file, one service each.
+    dc_a = DockerCompose(context=FIXTURES / "basic_multiple", services=["alpine1"])
+    dc_b = DockerCompose(context=FIXTURES / "basic_multiple", services=["alpine2"])
+
+    # After starting the first instance, alpine1 should be running
+    dc_a.start()
+    dc_a.get_container("alpine1")  # Raises if it isn't running
+    dc_b.get_container("alpine1")  # Raises if it isn't running
+
+    # Both instances report the same number of containers
+    assert len(dc_a.get_containers()) == 1
+    assert len(dc_b.get_containers()) == 1
+
+    # Although alpine1 is running, alpine2 has not started yet.
+    with pytest.raises(ContainerIsNotRunning):
+        dc_a.get_container("alpine2")
+    with pytest.raises(ContainerIsNotRunning):
+        dc_b.get_container("alpine2")
+
+    # After starting the second instance, alpine2 should also be running
+    dc_b.start()
+    dc_a.get_container("alpine2")  # No longer raises
+    dc_b.get_container("alpine2")  # No longer raises
+    assert len(dc_a.get_containers()) == 2
+    assert len(dc_b.get_containers()) == 2
+
+    # After stopping the first instance, alpine1 should no longer be running
+    dc_a.stop()
+    dc_a.get_container("alpine2")
+    dc_b.get_container("alpine2")
+    assert len(dc_a.get_containers()) == 1
+    assert len(dc_b.get_containers()) == 1
+
+    # alpine1 no longer running
+    with pytest.raises(ContainerIsNotRunning):
+        dc_a.get_container("alpine1")
+    with pytest.raises(ContainerIsNotRunning):
+        dc_b.get_container("alpine1")
+
+    # Stop the second instance
+    dc_b.stop()
+
+    assert len(dc_a.get_containers()) == 0
+    assert len(dc_b.get_containers()) == 0
+
+
 def test_compose():
     """stream-of-consciousness e2e test"""
     basic = DockerCompose(context=FIXTURES / "basic")
