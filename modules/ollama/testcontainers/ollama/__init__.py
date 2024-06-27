@@ -43,6 +43,7 @@ class OllamaContainer(DockerContainer):
             ...     ollama.list_models()
             []
     """
+
     OLLAMA_PORT = 11434
 
     def __init__(
