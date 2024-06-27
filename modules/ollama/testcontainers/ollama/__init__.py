@@ -11,32 +11,65 @@
 #    License for the specific language governing permissions and limitations
 #    under the License.
 
-import docker
+from os import PathLike
+from typing import Any, Optional, TypedDict
+
 from docker.types.containers import DeviceRequest
+from requests import get
 
-from testcontainers.core.generic import ServerContainer
-from testcontainers.core.waiting_utils import wait_container_is_ready
+from testcontainers.core.container import DockerContainer
+from testcontainers.core.waiting_utils import wait_for_logs
 
 
-class OllamaContainer(ServerContainer):
-    def __init__(self, image="ollama/ollama:latest"):
-        self.port = 11434
-        super().__init__(port=self.port, image=image)
-        self.with_exposed_ports(self.port)
+class OllamaModel(TypedDict):
+    name: str
+    model: str
+    modified_at: str
+    size: int
+    digest: str
+    details: dict[str, Any]
+
+
+class OllamaContainer(DockerContainer):
+    """
+    Ollama Container
+
+    Example:
+
+        .. doctest::
+
+            >>> from testcontainers.ollama import OllamaContainer
+            >>> with OllamaContainer() as ollama:
+            ...     ollama.list_models()
+            []
+    """
+    OLLAMA_PORT = 11434
+
+    def __init__(
+        self,
+        image: str = "ollama/ollama:0.1.44",
+        ollama_dir: Optional[str | PathLike] = None,
+        **kwargs,
+        #
+    ):
+        super().__init__(image=image, **kwargs)
+        self.ollama_dir = ollama_dir
+        self.with_exposed_ports(OllamaContainer.OLLAMA_PORT)
         self._check_and_add_gpu_capabilities()
 
     def _check_and_add_gpu_capabilities(self):
-        info = docker.APIClient().info()
+        info = self.get_docker_client().client.info()
         if "nvidia" in info["Runtimes"]:
-            self.with_kwargs(device_requests=DeviceRequest(count=-1, capabilities=[["gpu"]]))
+            self._kwargs = {**self._kwargs, "device_requests": DeviceRequest(count=-1, capabilities=[["gpu"]])}
 
     def start(self) -> "OllamaContainer":
         """
         Start the Ollama server
         """
+        if self.ollama_dir:
+            self.with_volume_mapping(self.ollama_dir, "/root/.ollama", "rw")
         super().start()
-        wait_container_is_ready(self, "Ollama started successfully")
-        self._connect()
+        wait_for_logs(self, "Listening on ", timeout=30)
 
         return self
 
@@ -44,7 +77,10 @@ class OllamaContainer(ServerContainer):
         """
         Return the endpoint of the Ollama server
         """
-        return self._create_connection_url()
+        host = self.get_container_host_ip()
+        exposed_port = self.get_exposed_port(OllamaContainer.OLLAMA_PORT)
+        url = f"http://{host}:{exposed_port}"
+        return url
 
     @property
     def id(self) -> str:
@@ -61,6 +97,12 @@ class OllamaContainer(ServerContainer):
             model_name (str): Name of the model
         """
         self.exec(f"ollama pull {model_name}")
+
+    def list_models(self) -> list[OllamaModel]:
+        endpoint = self.get_endpoint()
+        response = get(url=f"{endpoint}/api/tags")
+        response.raise_for_status()
+        return response.json().get("models", [])
 
     def commit_to_image(self, image_name: str) -> None:
         """

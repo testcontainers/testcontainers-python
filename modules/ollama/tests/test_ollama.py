@@ -1,7 +1,9 @@
-import requests
-from testcontainers.ollama import OllamaContainer
 import random
 import string
+from pathlib import Path
+
+import requests
+from testcontainers.ollama import OllamaContainer
 
 
 def random_string(length=6):
@@ -32,7 +34,7 @@ def test_download_model_and_commit_to_image():
         ollama.pull_model("all-minilm")
 
         response = requests.get(f"{ollama.get_endpoint()}/api/tags")
-        model_name = response.json().get("models", [])[0].get("name")
+        model_name = ollama.list_models()[0].get("name")
         assert "all-minilm" in model_name
 
         # Commit the container state to a new image
@@ -44,3 +46,15 @@ def test_download_model_and_commit_to_image():
         response = requests.get(f"{ollama.get_endpoint()}/api/tags")
         model_name = response.json().get("models", [])[0].get("name")
         assert "all-minilm" in model_name
+
+
+def test_models_saved_in_folder(tmp_path: Path):
+    with OllamaContainer("ollama/ollama:0.1.26", ollama_dir=tmp_path) as ollama:
+        assert len(ollama.list_models()) == 0
+        ollama.pull_model("all-minilm")
+        assert len(ollama.list_models()) == 1
+        assert "all-minilm" in ollama.list_models()[0].get("name")
+
+    with OllamaContainer("ollama/ollama:0.1.26", ollama_dir=tmp_path) as ollama:
+        assert len(ollama.list_models()) == 1
+        assert "all-minilm" in ollama.list_models()[0].get("name")
