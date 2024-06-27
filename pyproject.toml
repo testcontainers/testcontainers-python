@@ -51,6 +51,7 @@ packages = [
     { include = "testcontainers", from = "modules/nats" },
     { include = "testcontainers", from = "modules/neo4j" },
     { include = "testcontainers", from = "modules/nginx" },
+    { include = "testcontainers", from = "modules/ollama" },
     { include = "testcontainers", from = "modules/opensearch" },
     { include = "testcontainers", from = "modules/oracle-free" },
     { include = "testcontainers", from = "modules/postgres" },
@@ -127,6 +128,7 @@ nats = ["nats-py"]
 neo4j = ["neo4j"]
 nginx = []
 opensearch = ["opensearch-py"]
+ollama = []
 oracle = ["sqlalchemy", "oracledb"]
 oracle-free = ["sqlalchemy", "oracledb"]
 postgres = []
@@ -272,6 +274,7 @@ mypy_path = [
 #    "modules/mysql",
 #    "modules/neo4j",
 #    "modules/nginx",
+#    "modules/ollama",
 #    "modules/opensearch",
 #    "modules/oracle",
 #    "modules/postgres",
