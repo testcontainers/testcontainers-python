@@ -49,12 +49,12 @@ def test_download_model_and_commit_to_image():
 
 
 def test_models_saved_in_folder(tmp_path: Path):
-    with OllamaContainer("ollama/ollama:0.1.26", ollama_dir=tmp_path) as ollama:
+    with OllamaContainer("ollama/ollama:0.1.26", ollama_home=tmp_path) as ollama:
         assert len(ollama.list_models()) == 0
         ollama.pull_model("all-minilm")
         assert len(ollama.list_models()) == 1
         assert "all-minilm" in ollama.list_models()[0].get("name")
 
-    with OllamaContainer("ollama/ollama:0.1.26", ollama_dir=tmp_path) as ollama:
+    with OllamaContainer("ollama/ollama:0.1.26", ollama_home=tmp_path) as ollama:
         assert len(ollama.list_models()) == 1
         assert "all-minilm" in ollama.list_models()[0].get("name")
