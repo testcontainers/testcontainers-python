@@ -176,6 +176,21 @@ typing-extensions = ">=4.6.0"
 aio = ["aiohttp (>=3.0)"]
 
 [[package]]
+name = "azure-cosmos"
+version = "4.7.0"
+description = "Microsoft Azure Cosmos Client Library for Python"
+optional = true
+python-versions = ">=3.8"
+files = [
+    {file = "azure-cosmos-4.7.0.tar.gz", hash = "sha256:72d714033134656302a2e8957c4b93590673bd288b0ca60cb123e348ae99a241"},
+    {file = "azure_cosmos-4.7.0-py3-none-any.whl", hash = "sha256:03d8c7740ddc2906fb16e07b136acc0fe6a6a02656db46c5dd6f1b127b58cc96"},
+]
+
+[package.dependencies]
+azure-core = ">=1.25.1"
+typing-extensions = ">=4.6.0"
+
+[[package]]
 name = "azure-storage-blob"
 version = "12.19.1"
 description = "Microsoft Azure Blob Storage Client Library for Python"
@@ -4462,6 +4477,7 @@ cassandra = []
 chroma = ["chromadb-client"]
 clickhouse = ["clickhouse-driver"]
 cockroachdb = []
+cosmosdb = ["azure-cosmos"]
 elasticsearch = []
 generic = ["httpx"]
 google = ["google-cloud-datastore", "google-cloud-pubsub"]
@@ -4497,4 +4513,4 @@ weaviate = ["weaviate-client"]
 [metadata]
 lock-version = "2.0"
 python-versions = ">=3.9,<4.0"
-content-hash = "e07f8edf8cefba872bbf48dcfa187163cefb00a60122daa62de8891b61fc55de"
+content-hash = "2b87af7b69af2cc83f8198ab0fcfef7ceaf8411a8300c4ca72c0521e5d966445"

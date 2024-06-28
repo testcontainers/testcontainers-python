@@ -34,6 +34,7 @@ packages = [
     { include = "testcontainers", from = "modules/chroma" },
     { include = "testcontainers", from = "modules/clickhouse" },
     { include = "testcontainers", from = "modules/cockroachdb" },
+    { include = "testcontainers", from = "modules/cosmosdb" },
     { include = "testcontainers", from = "modules/elasticsearch" },
     { include = "testcontainers", from = "modules/generic" },
     { include = "testcontainers", from = "modules/testmoduleimport"},
@@ -106,12 +107,14 @@ chromadb-client = { version = "*", optional = true }
 qdrant-client = { version = "*", optional = true }
 bcrypt = { version = "*", optional = true }
 httpx = { version = "*", optional = true }
+azure-cosmos = { version = "*", optional = true }
 
 [tool.poetry.extras]
 arangodb = ["python-arango"]
 azurite = ["azure-storage-blob"]
 cassandra = []
 clickhouse = ["clickhouse-driver"]
+cosmosdb = ["azure-cosmos"]
 cockroachdb = []
 elasticsearch = []
 generic = ["httpx"]
