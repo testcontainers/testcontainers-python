@@ -1,6 +1,6 @@
 [tool.poetry]
 name = "testcontainers"
-version = "4.6.0"  # auto-incremented by release-please
+version = "4.7.0"  # auto-incremented by release-please
 description = "Python library for throwaway instances of anything that can run in a Docker container"
 authors = ["Sergey Pirogov <automationremarks@gmail.com>"]
 maintainers = [

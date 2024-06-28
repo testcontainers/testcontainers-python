@@ -1,5 +1,27 @@
 # Changelog
 
+## [4.7.0](https://github.com/testcontainers/testcontainers-python/compare/testcontainers-v4.6.0...testcontainers-v4.7.0) (2024-06-28)
+
+
+### Features
+
+* **core:** Add support for ollama module ([#618](https://github.com/testcontainers/testcontainers-python/issues/618)) ([5442d05](https://github.com/testcontainers/testcontainers-python/commit/5442d054cb8bc11887e09d24e29d9f91dd943307))
+* **core:** Added Generic module ([#612](https://github.com/testcontainers/testcontainers-python/issues/612)) ([e575b28](https://github.com/testcontainers/testcontainers-python/commit/e575b28da912147c5b806abab40a0c92329e2eb7))
+* **core:** allow custom dockerfile path for image build and bypassing build cache ([#615](https://github.com/testcontainers/testcontainers-python/issues/615)) ([ead0f79](https://github.com/testcontainers/testcontainers-python/commit/ead0f797902a94d3b2558e489fe2a0a55c3bb7ad)), closes [#610](https://github.com/testcontainers/testcontainers-python/issues/610)
+* **core:** DockerCompose.stop now stops only services that it starts (does not stop the other services) ([#620](https://github.com/testcontainers/testcontainers-python/issues/620)) ([e711800](https://github.com/testcontainers/testcontainers-python/commit/e71180039441e3c7d49467298ef0f498fe786149))
+
+
+### Bug Fixes
+
+* **cosmosdb:** Add support for the CosmosDB Emulator ([#579](https://github.com/testcontainers/testcontainers-python/issues/579)) ([8045a80](https://github.com/testcontainers/testcontainers-python/commit/8045a806fcb6908567339a14f2f0d7a169461675))
+* improve ollama docs, s/ollama_dir/ollama_home/g ([#619](https://github.com/testcontainers/testcontainers-python/issues/619)) ([27f2a6b](https://github.com/testcontainers/testcontainers-python/commit/27f2a6bdca8b9c860a96920eebc96f53682ea750))
+* **kafka:** Add Kraft to Kafka containers ([#611](https://github.com/testcontainers/testcontainers-python/issues/611)) ([762d2a2](https://github.com/testcontainers/testcontainers-python/commit/762d2a2130f7ce17dacaed5a96a6898a08cf2bc5))
+
+
+### Documentation
+
+* **contributing:** add contribution and new-container guide  ([#460](https://github.com/testcontainers/testcontainers-python/issues/460)) ([3519f4b](https://github.com/testcontainers/testcontainers-python/commit/3519f4bdad6eac6c172977303b51cf52b4fa4c04))
+
 ## [4.6.0](https://github.com/testcontainers/testcontainers-python/compare/testcontainers-v4.5.1...testcontainers-v4.6.0) (2024-06-18)
 
 
