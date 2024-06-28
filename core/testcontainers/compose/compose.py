@@ -236,6 +236,10 @@ class DockerCompose:
             down_cmd += ["down", "--volumes"]
         else:
             down_cmd += ["stop"]
+
+        if self.services:
+            down_cmd.extend(self.services)
+
         self._run_command(cmd=down_cmd)
 
     def get_logs(self, *services: str) -> tuple[str, str]:

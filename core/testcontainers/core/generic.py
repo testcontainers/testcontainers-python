@@ -29,6 +29,8 @@ except ImportError:
 
 class DbContainer(DockerContainer):
     """
+    **DEPRECATED (for removal)**
+
     Generic database container.
     """
 

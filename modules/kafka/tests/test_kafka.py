@@ -8,6 +8,12 @@ def test_kafka_producer_consumer():
         produce_and_consume_kafka_message(container)
 
 
+def test_kafka_with_kraft_producer_consumer():
+    with KafkaContainer().with_kraft() as container:
+        assert container.kraft_enabled
+        produce_and_consume_kafka_message(container)
+
+
 def test_kafka_producer_consumer_custom_port():
     with KafkaContainer(port=9888) as container:
         assert container.port == 9888

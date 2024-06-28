@@ -15,36 +15,7 @@ testcontainers-python facilitates the use of Docker containers for functional an
 .. toctree::
 
     core/README
-    modules/arangodb/README
-    modules/azurite/README
-    modules/cassandra/README
-    modules/chroma/README
-    modules/clickhouse/README
-    modules/elasticsearch/README
-    modules/google/README
-    modules/influxdb/README
-    modules/k3s/README
-    modules/kafka/README
-    modules/keycloak/README
-    modules/localstack/README
-    modules/memcached/README
-    modules/minio/README
-    modules/mongodb/README
-    modules/mssql/README
-    modules/mysql/README
-    modules/nats/README
-    modules/neo4j/README
-    modules/nginx/README
-    modules/opensearch/README
-    modules/oracle-free/README
-    modules/postgres/README
-    modules/qdrant/README
-    modules/rabbitmq/README
-    modules/redis/README
-    modules/registry/README
-    modules/selenium/README
-    modules/vault/README
-    modules/weaviate/README
+    modules/index
 
 Getting Started
 ---------------
@@ -93,6 +64,17 @@ and individual packages can be installed using :code:`pip`.
 Version `4.0.0` onwards we do not support the `testcontainers-*` packages as it is unsutainable to maintain ownership.
 
 Instead packages can be installed by specifying `extras <https://setuptools.readthedocs.io/en/latest/setuptools.html#declaring-extras-optional-features-with-their-own-dependencies>`__, e.g., :code:`pip install testcontainers[postgres]`.
+
+
+Custom Containers
+-----------------
+
+Crafting containers that are based on custom images is supported by the `core` module. Please check the `core documentation <core/README.html>`_ for more information.
+
+This allows you to create containers from images that are not part of the modules provided by testcontainers-python.
+
+For common use cases, you can also use the generic containers provided by the `testcontainers-generic` module. Please check the `generic documentation <modules/generic/README.html>`_ for more information.
+(example: `ServerContainer` for running a FastAPI server)
 
 
 Docker in Docker (DinD)
