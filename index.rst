@@ -60,17 +60,20 @@ Installation
 ------------
 
 The suite of testcontainers packages is available on `PyPI <https://pypi.org/project/testcontainers/>`_,
-and individual packages can be installed using :code:`pip`.
+and the package can be installed using :code:`pip`.
 
-Version `4.0.0` onwards we do not support the `testcontainers-*` packages as it is unsutainable to maintain ownership.
+Version `4.0.0` onwards we do not support the `testcontainers-*` packages as it is unsustainable to maintain ownership.
 
 Instead packages can be installed by specifying `extras <https://setuptools.readthedocs.io/en/latest/setuptools.html#declaring-extras-optional-features-with-their-own-dependencies>`__, e.g., :code:`pip install testcontainers[postgres]`.
+
+Please note, that community modules are supported on a best-effort basis and breaking changes DO NOT create major versions in the package.
+Therefore, only the package core is strictly following SemVer. If your workflow is broken by a minor update, please look at the changelogs for guidance.
 
 
 Docker in Docker (DinD)
 -----------------------
 
-When trying to launch a testcontainer from within a Docker container, e.g., in continuous integration testing, two things have to be provided:
+When trying to launch Testcontainers from within a Docker container, e.g., in continuous integration testing, two things have to be provided:
 
 1. The container has to provide a docker client installation. Either use an image that has docker pre-installed (e.g. the `official docker images <https://hub.docker.com/_/docker>`_) or install the client from within the `Dockerfile` specification.
 2. The container has to have access to the docker daemon which can be achieved by mounting `/var/run/docker.sock` or setting the `DOCKER_HOST` environment variable as part of your `docker run` command.
@@ -124,17 +127,21 @@ Configuration
 Development and Contributing
 ----------------------------
 
-We recommend you use a `virtual environment <https://virtualenv.pypa.io/en/stable/>`_ for development (:code:`python>=3.7` is required). After setting up your virtual environment, you can install all dependencies and test the installation by running the following snippet.
+We recommend you use a `Poetry <https://python-poetry.org/docs/>`_ for development.
+After having installed `poetry`, you can run the following snippet to set up your local dev environment.
 
 .. code-block:: bash
 
-    poetry install --all-extras
-    make <your-module>/tests
+    make install
 
 Package Structure
 ^^^^^^^^^^^^^^^^^
 
-Testcontainers is a collection of `implicit namespace packages <https://peps.python.org/pep-0420/>`__ to decouple the development of different extensions, e.g., :code:`testcontainers-mysql` and :code:`testcontainers-postgres` for MySQL and PostgreSQL database containers, respectively. The folder structure is as follows.
+Testcontainers is a collection of `implicit namespace packages <https://peps.python.org/pep-0420/>`__
+to decouple the development of different extensions,
+e.g., :code:`testcontainers[mysql]` and :code:`testcontainers[postgres]` for MySQL and PostgreSQL database containers, respectively.
+
+The folder structure is as follows:
 
 .. code-block:: bash
 
@@ -154,12 +161,11 @@ Testcontainers is a collection of `implicit namespace packages <https://peps.pyt
               ...
           # README for this feature.
           README.rst
-          # Setup script for this feature.
-          setup.py
 
 Contributing a New Feature
 ^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-You want to contribute a new feature or container?
-Great! You can do that in six steps as outlined
-`here <https://github.com/testcontainers/testcontainers-python/blob/main/.github/PULL_REQUEST_TEMPLATE/new_container.md>`_.
+You want to contribute a new feature or container? Great!
+- We recommend you first `open an issue <https://github.com/testcontainers/testcontainers-python/issues/new/choose>`_
+- Then follow the suggestions from the team
+- We also have a Pull Request `template <https://github.com/testcontainers/testcontainers-python/blob/main/.github/PULL_REQUEST_TEMPLATE/new_container.md>`_ for new containers!

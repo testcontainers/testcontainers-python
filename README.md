@@ -1,9 +1,14 @@
+[![Poetry](https://img.shields.io/endpoint?url=https://python-poetry.org/badge/v0.json)](https://python-poetry.org/)
 [![Ruff](https://img.shields.io/endpoint?url=https://raw.githubusercontent.com/astral-sh/ruff/main/assets/badge/v2.json)](https://github.com/astral-sh/ruff)
-[![image](https://img.shields.io/pypi/v/testcontainers.svg)](https://pypi.python.org/pypi/testcontainers)
-[![image](https://img.shields.io/pypi/l/testcontainers.svg)](https://github.com/testcontainers/testcontainers-python/blob/main/LICENSE)
-[![image](https://img.shields.io/pypi/pyversions/testcontainers.svg)](https://pypi.python.org/pypi/testcontainers)
+![PyPI - Version](https://img.shields.io/pypi/v/testcontainers)
+[![PyPI - License](https://img.shields.io/pypi/l/testcontainers.svg)](https://github.com/testcontainers/testcontainers-python/blob/main/LICENSE)
+[![PyPI - Python Version](https://img.shields.io/pypi/pyversions/testcontainers.svg)](https://pypi.python.org/pypi/testcontainers)
 [![codecov](https://codecov.io/gh/testcontainers/testcontainers-python/branch/master/graph/badge.svg)](https://codecov.io/gh/testcontainers/testcontainers-python)
+![Core Tests](https://github.com/testcontainers/testcontainers-python/actions/workflows/ci-core.yml/badge.svg)
+![Community Tests](https://github.com/testcontainers/testcontainers-python/actions/workflows/ci-community.yml/badge.svg)
+[![Docs](https://readthedocs.org/projects/testcontainers-python/badge/?version=latest)](http://testcontainers-python.readthedocs.io/en/latest/?badge=latest)
 
+[![Codespace](https://github.com/codespaces/badge.svg)](https://codespaces.new/testcontainers/testcontainers-python)
 
 # Testcontainers Python
 
@@ -29,6 +34,10 @@ For more information, see [the docs][readthedocs].
 ```
 
 The snippet above will spin up a postgres database in a container. The `get_connection_url()` convenience method returns a `sqlalchemy` compatible url we use to connect to the database and retrieve the database version.
+
+## Contributing / Development / Release
+
+See [CONTRIBUTING.md](.github/CONTRIBUTING.md) for more details.
 
 ## Configuration
 
