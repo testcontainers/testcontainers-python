@@ -44,6 +44,7 @@ packages = [
     { include = "testcontainers", from = "modules/kafka" },
     { include = "testcontainers", from = "modules/keycloak" },
     { include = "testcontainers", from = "modules/localstack" },
+    { include = "testcontainers", from = "modules/mailpit" },
     { include = "testcontainers", from = "modules/memcached" },
     { include = "testcontainers", from = "modules/minio" },
     { include = "testcontainers", from = "modules/milvus" },
@@ -108,6 +109,7 @@ qdrant-client = { version = "*", optional = true }
 bcrypt = { version = "*", optional = true }
 httpx = { version = "*", optional = true }
 azure-cosmos = { version = "*", optional = true }
+cryptography = { version = "*", optional = true }
 
 [tool.poetry.extras]
 arangodb = ["python-arango"]
@@ -125,6 +127,7 @@ k3s = ["kubernetes", "pyyaml"]
 kafka = []
 keycloak = ["python-keycloak"]
 localstack = ["boto3"]
+mailpit = ["cryptography"]
 memcached = []
 minio = ["minio"]
 milvus = []
@@ -276,6 +279,7 @@ mypy_path = [
 #    "modules/kafka",
 #    "modules/keycloak",
 #    "modules/localstack",
+    "modules/mailpit",
 #    "modules/minio",
 #    "modules/mongodb",
 #    "modules/mssql",
