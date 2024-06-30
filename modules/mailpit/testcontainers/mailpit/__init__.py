@@ -12,7 +12,7 @@
 #    under the License.
 import os
 import tempfile
-from datetime import UTC, datetime, timedelta
+from datetime import datetime, timedelta, timezone
 from typing import NamedTuple, Self
 
 from cryptography import x509
@@ -178,8 +178,8 @@ def _generate_self_signed_certificate(
         .issuer_name(issuer)
         .public_key(private_key.public_key())
         .serial_number(x509.random_serial_number())
-        .not_valid_before(datetime.now(UTC))
-        .not_valid_after(datetime.now(UTC) + timedelta(days=3650))  # 10 years
+        .not_valid_before(datetime.now(timezone.utc))
+        .not_valid_after(datetime.now(timezone.utc) + timedelta(days=3650))  # 10 years
         .add_extension(
             x509.SubjectAlternativeName([x509.DNSName(domain)]),
             critical=False,
