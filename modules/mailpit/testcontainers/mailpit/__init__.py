@@ -15,7 +15,7 @@ from __future__ import annotations
 import os
 import tempfile
 from datetime import datetime, timedelta, timezone
-from typing import NamedTuple, Self
+from typing import TYPE_CHECKING, NamedTuple
 
 from cryptography import x509
 from cryptography.hazmat.primitives import hashes, serialization
@@ -28,6 +28,11 @@ from cryptography.x509.oid import NameOID
 from testcontainers.core.container import DockerContainer
 from testcontainers.core.waiting_utils import wait_for_logs
 
+if TYPE_CHECKING:
+    from typing_extensions import ParamSpec, Self
+
+    P = ParamSpec("P")
+
 
 class MailpitUser(NamedTuple):
     """Mailpit user for authentication"""
@@ -36,7 +41,7 @@ class MailpitUser(NamedTuple):
     password: str
 
 
-class MailpitContainer(DockerContainer):  # type: ignore[misc]
+class MailpitContainer(DockerContainer):
     """
     Test container for Mailpit. The example below spins up a Mailpit server
 
