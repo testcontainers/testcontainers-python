@@ -71,6 +71,7 @@ labels:
   - { name: '📦 package: google',        color: '#0052CC', description: '' }
   - { name: '📦 package: kafka',         color: '#0052CC', description: '' }
   - { name: '📦 package: keycloak',      color: '#0052CC', description: '' }
+  - { name: '📦 package: mailpit',       color: '#0052CC', description: '' }
   - { name: '📦 package: mongodb',       color: '#0052CC', description: '' }
   - { name: '📦 package: mssql',         color: '#0052CC', description: '' }
   - { name: '📦 package: neo4j',         color: '#0052CC', description: '' }
