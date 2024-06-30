@@ -33,7 +33,35 @@ if TYPE_CHECKING:
 
 
 class MailpitUser(NamedTuple):
-    """Mailpit user for authentication"""
+    """Mailpit user for authentication
+
+    Helper class to define a user for Mailpit authentication.
+
+    This is just a named tuple for username and password.
+
+
+    Example:
+
+        .. doctest::
+
+            >>> from testcontainers.mailpit import MailpitUser
+
+            >>> users = [
+            ...     MailpitUser("jane", "secret"),
+            ...     MailpitUser("ron", "pass2"),
+            ... ]
+
+            >>> for user in users:
+            ...     print(user.username, user.password)
+            ...
+            jane secret
+            ron pass2
+
+            >>> username, password = users[0]
+
+            >>> print(username, password)
+            jane secret
+    """
 
     username: str
     password: str
@@ -47,11 +75,12 @@ class MailpitContainer(DockerContainer):
     user/password.
 
     Options:
-    - ``require_tls = True`` forces the use of SSL
-    - ``users = [MailpitUser("jane", "secret"), MailpitUser("ron", "pass2")]``
+
+    * ``require_tls = True`` forces the use of SSL
+    * ``users = [MailpitUser("jane", "secret"), MailpitUser("ron", "pass2")]`` \
     only allows login with ``jane:secret`` or ``ron:pass2``
 
-    Example:
+    Simple example:
 
         .. doctest::
 
@@ -67,6 +96,27 @@ class MailpitContainer(DockerContainer):
             ...         mailpit_container.get_exposed_smtp_port(),
             ...     )
             ...     code, _ = server.login("any", "auth")
+            ...     assert code == 235  # authentication successful
+            ...     # use server.sendmail(...) to send emails
+
+    Example with auth and forced TLS:
+
+        .. doctest::
+
+            >>> import smtplib
+
+            >>> from testcontainers.mailpit import MailpitContainer, MailpitUser
+
+            >>> users = [MailpitUser("jane", "secret"), MailpitUser("ron", "pass2")]
+
+            >>> with MailpitContainer(users=users, require_tls=True) as mailpit_container:
+            ...     host_ip = mailpit_container.get_container_host_ip()
+            ...     host_port = mailpit_container.get_exposed_smtp_port()
+            ...     server = smtplib.SMTP_SSL(
+            ...         mailpit_container.get_container_host_ip(),
+            ...         mailpit_container.get_exposed_smtp_port(),
+            ...     )
+            ...     code, _ = server.login("jane", "secret")
             ...     assert code == 235  # authentication successful
             ...     # use server.sendmail(...) to send emails
     """
