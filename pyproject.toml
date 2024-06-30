@@ -63,6 +63,7 @@ packages = [
     { include = "testcontainers", from = "modules/rabbitmq" },
     { include = "testcontainers", from = "modules/redis" },
     { include = "testcontainers", from = "modules/registry" },
+    { include = "testcontainers", from = "modules/sftp" },
     { include = "testcontainers", from = "modules/selenium" },
     { include = "testcontainers", from = "modules/vault" },
     { include = "testcontainers", from = "modules/weaviate" },
@@ -148,6 +149,7 @@ rabbitmq = ["pika"]
 redis = ["redis"]
 registry = ["bcrypt"]
 selenium = ["selenium"]
+sftp = ["cryptography"]
 vault = []
 weaviate = ["weaviate-client"]
 chroma = ["chromadb-client"]
@@ -173,6 +175,8 @@ pymilvus = "2.4.3"
 httpx = "0.27.0"
 paho-mqtt = "2.1.0"
 sqlalchemy-cockroachdb = "2.0.2"
+paramiko = "^3.4.0"
+types-paramiko = "^3.4.0.20240423"
 
 [[tool.poetry.source]]
 name = "PyPI"
@@ -293,6 +297,7 @@ mypy_path = [
 #    "modules/rabbitmq",
 #    "modules/redis",
 #    "modules/selenium"
+    "modules/sftp",
 #    "modules/vault"
 #    "modules/weaviate"
 ]

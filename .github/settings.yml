@@ -79,6 +79,7 @@ labels:
   - { name: '📦 package: postgres',      color: '#0052CC', description: '' }
   - { name: '📦 package: rabbitmq',      color: '#0052CC', description: '' }
   - { name: '📦 package: selenium',      color: '#0052CC', description: '' }
+  - { name: '📦 package: sftp',          color: '#0052CC', description: '' }
   - { name: '🔀 requires triage',        color: '#bfdadc', description: '' }
   - { name: '🔧 maintenance',            color: '#c2f759', description: '' }
   - { name: '🚀 enhancement',            color: '#84b6eb', description: '' }
