@@ -87,11 +87,11 @@ class MailpitContainer(DockerContainer):  # type: ignore[misc]
 
         self.require_tls = int(require_tls)
         self.tls_key, self.tls_cert = _generate_tls_certificates()
-        with tempfile.NamedTemporaryFile(delete=False, delete_on_close=False) as tls_key_file:
+        with tempfile.NamedTemporaryFile(delete=False) as tls_key_file:
             tls_key_file.write(self.tls_key)
             self.tls_key_file = tls_key_file.name
 
-        with tempfile.NamedTemporaryFile(delete=False, delete_on_close=False) as tls_cert_file:
+        with tempfile.NamedTemporaryFile(delete=False) as tls_cert_file:
             tls_cert_file.write(self.tls_cert)
             self.tls_cert_file = tls_cert_file.name
 
