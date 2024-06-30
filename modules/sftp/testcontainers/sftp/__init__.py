@@ -244,16 +244,6 @@ class SFTPContainer(DockerContainer):
         self.port = port
         self.users = users
 
-        for user in self.users:
-            if user.public_key is not None:
-                with tempfile.NamedTemporaryFile(delete=False) as f:
-                    f.write(user.public_key)
-                    user.public_key_file = f.name
-            if user.private_key is not None:
-                with tempfile.NamedTemporaryFile(delete=False) as f:
-                    f.write(user.private_key)
-                    user.private_key_file = f.name
-
     @property
     def _users_conf(self) -> str:
         return " ".join(user.conf for user in self.users)
