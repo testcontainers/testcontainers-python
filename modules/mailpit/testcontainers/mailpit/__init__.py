@@ -10,7 +10,6 @@
 #    WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the
 #    License for the specific language governing permissions and limitations
 #    under the License.
-import logging
 import os
 import tempfile
 from datetime import UTC, datetime, timedelta
@@ -27,10 +26,10 @@ from cryptography.x509.oid import NameOID
 from testcontainers.core.container import DockerContainer
 from testcontainers.core.waiting_utils import wait_for_logs
 
-logger = logging.getLogger(__name__)
-
 
 class MailpitUser(NamedTuple):
+    """Mailpit user for authentication"""
+
     username: str
     password: str
 
@@ -43,9 +42,9 @@ class MailpitContainer(DockerContainer):  # type: ignore[misc]
     user/password.
 
     Options:
-    - require_tls = True forces the use of SSL
-    - users = [MailpitUser("jane", "secret"), MailpitUser("ron", "pass2")] only
-      allows login with jane:secret or ron:pass2
+    - ``require_tls = True`` forces the use of SSL
+    - ``users = [MailpitUser("jane", "secret"), MailpitUser("ron", "pass2")]``
+    only allows login with ``jane:secret`` or ``ron:pass2``
 
     Example:
 
@@ -65,7 +64,6 @@ class MailpitContainer(DockerContainer):  # type: ignore[misc]
             ...     code, _ = server.login("any", "auth")
             ...     assert code == 235  # authentication successful
             ...     # use server.sendmail(...) to send emails
-
     """
 
     def __init__(  # type: ignore[no-untyped-def]
