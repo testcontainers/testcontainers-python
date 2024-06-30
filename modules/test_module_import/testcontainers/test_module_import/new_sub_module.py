@@ -9,19 +9,19 @@ class NewSubModuleContainer(ServerContainer):
 
         >>> import httpx
         >>> from testcontainers.core.image import DockerImage
-        >>> from testcontainers.testmoduleimport import NewSubModuleContainer
+        >>> from testcontainers.test_module_import import NewSubModuleContainer
 
-        >>> with DockerImage(path="./modules/generic/tests/samples/python_server", tag="test-mod:latest") as image:
-        ...     with NewSubModuleContainer(port=9000, image=image) as srv:
-        ...         url = srv._create_connection_url()
+        >>> with DockerImage(path="./modules/generic/tests/samples/python_server", tag="test-new-mod:latest") as image:
+        ...     with NewSubModuleContainer(port=9000, image=image) as new_mod:
+        ...         url = new_mod._create_connection_url()
         ...         response = httpx.get(f"{url}", timeout=5)
         ...         assert response.status_code == 200, "Response status code is not 200"
-        ...         assert srv.print_mock() == "NewSubModuleContainer"
+        ...         assert new_mod.additional_capability() == "NewSubModuleContainer"
 
     """
 
     def __init__(self, port: int, image: str) -> None:
         super().__init__(port, image)
 
-    def print_mock(self) -> str:
+    def additional_capability(self) -> str:
         return "NewSubModuleContainer"

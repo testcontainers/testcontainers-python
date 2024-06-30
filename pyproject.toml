@@ -37,7 +37,7 @@ packages = [
     { include = "testcontainers", from = "modules/cosmosdb" },
     { include = "testcontainers", from = "modules/elasticsearch" },
     { include = "testcontainers", from = "modules/generic" },
-    { include = "testcontainers", from = "modules/testmoduleimport"},
+    { include = "testcontainers", from = "modules/test_module_import"},
     { include = "testcontainers", from = "modules/google" },
     { include = "testcontainers", from = "modules/influxdb" },
     { include = "testcontainers", from = "modules/k3s" },
@@ -120,7 +120,7 @@ cosmosdb = ["azure-cosmos"]
 cockroachdb = []
 elasticsearch = []
 generic = ["httpx"]
-testmoduleimport = ["httpx"]
+test_module_import = ["httpx"]
 google = ["google-cloud-pubsub", "google-cloud-datastore"]
 influxdb = ["influxdb", "influxdb-client"]
 k3s = ["kubernetes", "pyyaml"]
