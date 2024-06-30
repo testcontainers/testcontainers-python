@@ -15,7 +15,7 @@ from __future__ import annotations
 import os
 import tempfile
 from datetime import datetime, timedelta, timezone
-from typing import TYPE_CHECKING, NamedTuple
+from typing import TYPE_CHECKING, Any, NamedTuple
 
 from cryptography import x509
 from cryptography.hazmat.primitives import hashes, serialization
@@ -29,9 +29,7 @@ from testcontainers.core.container import DockerContainer
 from testcontainers.core.waiting_utils import wait_for_logs
 
 if TYPE_CHECKING:
-    from typing_extensions import ParamSpec, Self
-
-    P = ParamSpec("P")
+    from typing_extensions import Self
 
 
 class MailpitUser(NamedTuple):
@@ -73,7 +71,7 @@ class MailpitContainer(DockerContainer):
             ...     # use server.sendmail(...) to send emails
     """
 
-    def __init__(  # type: ignore[no-untyped-def]
+    def __init__(
         self,
         image: str = "axllent/mailpit",
         *,
@@ -81,7 +79,7 @@ class MailpitContainer(DockerContainer):
         ui_port: int = 8025,
         users: list[MailpitUser] | None = None,
         require_tls: bool = False,
-        **kwargs,
+        **kwargs: Any,
     ) -> None:
         super().__init__(image=image, **kwargs)
         self.smtp_port = smtp_port
@@ -127,7 +125,7 @@ class MailpitContainer(DockerContainer):
         wait_for_logs(self, ".*accessible via.*")
         return self
 
-    def stop(self, *args, **kwargs) -> None:
+    def stop(self, *args: Any, **kwargs: Any) -> None:
         super().stop(*args, **kwargs)
         os.remove(self.tls_key_file)
         os.remove(self.tls_cert_file)
