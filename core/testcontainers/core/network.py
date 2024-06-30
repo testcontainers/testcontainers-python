@@ -32,10 +32,13 @@ class Network:
     def remove(self) -> None:
         self._network.remove()
 
-    def __enter__(self) -> "Network":
+    def create(self) -> "Network":
         self._network = self._docker.client.networks.create(self.name, **self._docker_network_kw)
         self.id = self._network.id
         return self
+
+    def __enter__(self) -> "Network":
+        return self.create()
 
     def __exit__(self, exc_type, exc_val, exc_tb) -> None:
         self.remove()

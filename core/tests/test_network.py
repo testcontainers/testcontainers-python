@@ -1,6 +1,10 @@
+from http import HTTPStatus
 from testcontainers.core.container import DockerContainer
 from testcontainers.core.docker_client import DockerClient
 from testcontainers.core.network import Network
+
+import docker.errors
+import pytest
 
 NGINX_ALPINE_SLIM_IMAGE = "nginx:1.25.4-alpine-slim"
 
@@ -12,6 +16,31 @@ def test_network_gets_created_and_cleaned_up():
         assert networks_list[0].name == network.name
         assert networks_list[0].id == network.id
     assert not docker.client.networks.list(network.name)
+
+
+def test_network_create_wo_cm():
+    network = Network()
+    network.create()
+    docker = DockerClient()
+    networks_list = docker.client.networks.list(network.name)
+    assert networks_list[0].name == network.name
+    assert networks_list[0].id == network.id
+
+    network.remove()
+    assert not docker.client.networks.list(network.name)
+
+
+def test_network_create_errors():
+    network = Network()
+    network.create()
+
+    # calling create the second time should raise an error
+    with pytest.raises(docker.errors.APIError) as excinfo:
+        network.create()
+
+    assert excinfo.value.response.status_code == HTTPStatus.CONFLICT
+    excinfo.match(f"network with name {network.name} already exists")
+    network.remove()
 
 
 def test_containers_can_communicate_over_network():
