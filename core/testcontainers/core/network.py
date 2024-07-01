@@ -33,7 +33,7 @@ class Network:
         self._network.remove()
 
     def create(self) -> "Network":
-        self._network = self._docker.client.networks.create(self.name, **self._docker_network_kw)
+        self._network = self._docker.client_networks_create(self.name, self._docker_network_kw)
         self.id = self._network.id
         return self
 

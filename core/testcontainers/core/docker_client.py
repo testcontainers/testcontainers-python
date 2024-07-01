@@ -211,6 +211,10 @@ class DockerClient:
         login_info = self.client.login(**auth_config._asdict())
         LOGGER.debug(f"logged in using {login_info}")
 
+    def client_networks_create(self, name: str, param: dict):
+        labels = create_labels("", param.get("labels"))
+        return self.client.networks.create(name, **{**param, "labels": labels})
+
 
 def get_docker_host() -> Optional[str]:
     return c.tc_properties_get_tc_host() or os.getenv("DOCKER_HOST")
