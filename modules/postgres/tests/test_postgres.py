@@ -38,6 +38,17 @@ def test_docker_run_postgres_with_sqlalchemy():
                 assert row[0].lower().startswith("postgresql 9.5")
 
 
+def test_docker_run_postgres_seeds_with_sqlalchemy():
+    # Avoid pytest CWD path issues
+    SEEDS_PATH = (Path(__file__).parent / "seeds").absolute()
+    postgres_container = PostgresContainer("postgres:latest", seed=SEEDS_PATH)
+    with postgres_container as postgres:
+        engine = sqlalchemy.create_engine(postgres.get_connection_url())
+        with engine.begin() as connection:
+            result = connection.execute(sqlalchemy.text("select * from stuff"))
+            assert len(list(result)) == 4, "Should have gotten all the stuff"
+
+
 def test_docker_run_postgres_with_driver_pg8000():
     postgres_container = PostgresContainer("postgres:9.5", driver="pg8000")
     with postgres_container as postgres:
