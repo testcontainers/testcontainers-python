@@ -13,6 +13,7 @@ testcontainers-python
 testcontainers-python facilitates the use of Docker containers for functional and integration testing. The collection of packages currently supports the following features.
 
 .. toctree::
+    :maxdepth: 1
 
     core/README
     modules/index
@@ -59,11 +60,14 @@ Installation
 ------------
 
 The suite of testcontainers packages is available on `PyPI <https://pypi.org/project/testcontainers/>`_,
-and individual packages can be installed using :code:`pip`.
+the package can be installed using :code:`pip`.
 
-Version `4.0.0` onwards we do not support the `testcontainers-*` packages as it is unsutainable to maintain ownership.
+Version `4.0.0` onwards we do not support the `testcontainers-*` packages as it is unsustainable to maintain ownership.
 
 Instead packages can be installed by specifying `extras <https://setuptools.readthedocs.io/en/latest/setuptools.html#declaring-extras-optional-features-with-their-own-dependencies>`__, e.g., :code:`pip install testcontainers[postgres]`.
+
+Please note, that community modules are supported on a best-effort basis and breaking changes DO NOT create major versions in the package.
+Therefore, only the package core is strictly following SemVer. If your workflow is broken by a minor update, please look at the changelogs for guidance.
 
 
 Custom Containers
@@ -80,40 +84,75 @@ For common use cases, you can also use the generic containers provided by the `t
 Docker in Docker (DinD)
 -----------------------
 
-When trying to launch a testcontainer from within a Docker container, e.g., in continuous integration testing, two things have to be provided:
+When trying to launch Testcontainers from within a Docker container, e.g., in continuous integration testing, two things have to be provided:
 
 1. The container has to provide a docker client installation. Either use an image that has docker pre-installed (e.g. the `official docker images <https://hub.docker.com/_/docker>`_) or install the client from within the `Dockerfile` specification.
 2. The container has to have access to the docker daemon which can be achieved by mounting `/var/run/docker.sock` or setting the `DOCKER_HOST` environment variable as part of your `docker run` command.
 
+
+Private Docker registry
+-----------------------
+
+Using a private docker registry requires the `DOCKER_AUTH_CONFIG` environment variable to be set.
+`official documentation <https://docs.docker.com/engine/reference/commandline/login/#credential-helpers>`_
+
+The value of this variable should be a JSON string containing the authentication information for the registry.
+
+Example:
+
+.. code-block:: bash
+
+    DOCKER_AUTH_CONFIG='{"auths": {"https://myregistry.com": {"auth": "dXNlcm5hbWU6cGFzc3dvcmQ="}}}'
+In order to generate the JSON string, you can use the following command:
+
+.. code-block:: bash
+
+    echo -n '{"auths": {"<url>": {"auth": "'$(echo -n "<username>:<password>" | base64 -w 0)'"}}}'
+Fetching passwords from cloud providers:
+
+.. code-block:: bash
+
+    ECR_PASSWORD = $(aws ecr get-login-password --region eu-west-1)
+    GCP_PASSWORD = $(gcloud auth print-access-token)
+    AZURE_PASSWORD = $(az acr login --name <registry-name> --expose-token --output tsv)
+
+
 Configuration
 -------------
 
-+-------------------------------------------+-------------------------------+------------------------------------------+
-| Env Variable                              | Example                       | Description                              |
-+===========================================+===============================+==========================================+
-| ``TESTCONTAINERS_DOCKER_SOCKET_OVERRIDE`` | ``/var/run/docker.sock``      | Path to Docker's socket used by ryuk     |
-+-------------------------------------------+-------------------------------+------------------------------------------+
-| ``TESTCONTAINERS_RYUK_PRIVILEGED``        | ``false``                     | Run ryuk as a privileged container       |
-+-------------------------------------------+-------------------------------+------------------------------------------+
-| ``TESTCONTAINERS_RYUK_DISABLED``          | ``false``                     | Disable ryuk                             |
-+-------------------------------------------+-------------------------------+------------------------------------------+
-| ``RYUK_CONTAINER_IMAGE``                  | ``testcontainers/ryuk:0.7.0`` | Custom image for ryuk                    |
-+-------------------------------------------+-------------------------------+------------------------------------------+
++-------------------------------------------+---------------------------------------------------+------------------------------------------+
+| Env Variable                              | Example                                           | Description                              |
++===========================================+===================================================+==========================================+
+| ``TESTCONTAINERS_DOCKER_SOCKET_OVERRIDE`` | ``/var/run/docker.sock``                          | Path to Docker's socket used by ryuk     |
++-------------------------------------------+---------------------------------------------------+------------------------------------------+
+| ``TESTCONTAINERS_RYUK_PRIVILEGED``        | ``false``                                         | Run ryuk as a privileged container       |
++-------------------------------------------+---------------------------------------------------+------------------------------------------+
+| ``TESTCONTAINERS_RYUK_DISABLED``          | ``false``                                         | Disable ryuk                             |
++-------------------------------------------+---------------------------------------------------+------------------------------------------+
+| ``RYUK_CONTAINER_IMAGE``                  | ``testcontainers/ryuk:0.7.0``                     | Custom image for ryuk                    |
++-------------------------------------------+---------------------------------------------------+------------------------------------------+
+| ``DOCKER_AUTH_CONFIG``                    | ``{"auths": {"<url>": {"auth": "<encoded>"}}}``   | Custom registry auth config              |
++-------------------------------------------+---------------------------------------------------+------------------------------------------+
 
 Development and Contributing
 ----------------------------
 
-We recommend you use a `virtual environment <https://virtualenv.pypa.io/en/stable/>`_ for development (:code:`python>=3.7` is required). After setting up your virtual environment, you can install all dependencies and test the installation by running the following snippet.
+
+We recommend you use a `Poetry <https://python-poetry.org/docs/>`_ for development.
+After having installed `poetry`, you can run the following snippet to set up your local dev environment.
 
 .. code-block:: bash
 
-    poetry install --all-extras
-    make <your-module>/tests
+    make install
 
 Package Structure
 ^^^^^^^^^^^^^^^^^
 
-Testcontainers is a collection of `implicit namespace packages <https://peps.python.org/pep-0420/>`__ to decouple the development of different extensions, e.g., :code:`testcontainers-mysql` and :code:`testcontainers-postgres` for MySQL and PostgreSQL database containers, respectively. The folder structure is as follows.
+Testcontainers is a collection of `implicit namespace packages <https://peps.python.org/pep-0420/>`__
+to decouple the development of different extensions,
+e.g., :code:`testcontainers[mysql]` and :code:`testcontainers[postgres]` for MySQL and PostgreSQL database containers, respectively.
+
+The folder structure is as follows:
 
 .. code-block:: bash
 
@@ -133,8 +172,6 @@ Testcontainers is a collection of `implicit namespace packages <https://peps.pyt
               ...
           # README for this feature.
           README.rst
-          # Setup script for this feature.
-          setup.py
 
 Contributing a New Feature
 ^^^^^^^^^^^^^^^^^^^^^^^^^^
