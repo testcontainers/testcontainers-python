@@ -49,6 +49,7 @@ class DockerContainer:
         self._name = None
         self._network: Optional[Network] = None
         self._network_aliases: Optional[list[str]] = None
+        self._reuse: bool = kwargs.pop("reuse", False)
         self._kwargs = kwargs
 
     def with_env(self, key: str, value: str) -> Self:
@@ -74,6 +75,10 @@ class DockerContainer:
 
     def with_kwargs(self, **kwargs) -> Self:
         self._kwargs = kwargs
+        return self
+
+    def with_reuse(self, reuse=True) -> Self:
+        self._reuse = reuse
         return self
 
     def maybe_emulate_amd64(self) -> Self:
