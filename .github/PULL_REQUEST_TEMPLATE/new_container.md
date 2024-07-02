@@ -17,7 +17,7 @@ It helps reduce unnecessary work for you and the maintainers!
   - Additions to the community modules do not contribute to SemVer scheme:
     all community features will be tagged [community-feat](https://github.com/testcontainers/testcontainers-python/issues?q=label%3Acommunity-feat+),
     but we do not want to release minor or major versions due to features or breaking changes outside of core.
-    So please use `fix(postgres):` or `fix(my_new_vector_db):` if you want to add or modify community modules. 
+    So please use `fix(postgres):` or `fix(my_new_vector_db):` if you want to add or modify community modules.
     This may change in the future if we have a separate package released with community modules.
 - [ ] Your PR allows maintainers to edit your branch, this will speed up resolving minor issues!
 - [ ] The new container is implemented under `modules/*`
