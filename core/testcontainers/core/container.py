@@ -1,4 +1,6 @@
 import contextlib
+import hashlib
+import logging
 from platform import system
 from socket import socket
 from typing import TYPE_CHECKING, Optional
@@ -49,6 +51,7 @@ class DockerContainer:
         self._name = None
         self._network: Optional[Network] = None
         self._network_aliases: Optional[list[str]] = None
+        self._reuse: bool = False
         self._kwargs = kwargs
 
     def with_env(self, key: str, value: str) -> Self:
@@ -76,6 +79,10 @@ class DockerContainer:
         self._kwargs = kwargs
         return self
 
+    def with_reuse(self, reuse=True) -> Self:
+        self._reuse = reuse
+        return self
+
     def maybe_emulate_amd64(self) -> Self:
         if is_arm():
             return self.with_kwargs(platform="linux/amd64")
@@ -86,8 +93,49 @@ class DockerContainer:
             logger.debug("Creating Ryuk container")
             Reaper.get_instance()
         logger.info("Pulling image %s", self.image)
-        docker_client = self.get_docker_client()
         self._configure()
+
+        # container hash consisting of run arguments
+        args = (
+            self.image,
+            self._command,
+            self.env,
+            self.ports,
+            self._name,
+            self.volumes,
+            str(tuple(sorted(self._kwargs.items()))),
+        )
+        hash_ = hashlib.sha256(bytes(str(args), encoding="utf-8")).hexdigest()
+
+        # TODO: check also if ryuk is disabled
+        if self._reuse and not c.tc_properties_testcontainers_reuse_enable:
+            logging.warning(
+                "Reuse was requested (`with_reuse`) but the environment does not "
+                + "support the reuse of containers. To enable container reuse, add "
+                + "the property 'testcontainers.reuse.enable=true' to a file at "
+                + "~/.testcontainers.properties (you may need to create it)."
+            )
+
+        if self._reuse and c.tc_properties_testcontainers_reuse_enable:
+            docker_client = self.get_docker_client()
+            container = docker_client.find_container_by_hash(hash_)
+            if container:
+                if container.status != "running":
+                    container.start()
+                    logger.info("Existing container started: %s", container.id)
+                logger.info("Container is already running: %s", container.id)
+                self._container = container
+            else:
+                self._start(hash_)
+        else:
+            self._start(hash_)
+
+        if self._network:
+            self._network.connect(self._container.id, self._network_aliases)
+        return self
+
+    def _start(self, hash_):
+        docker_client = self.get_docker_client()
         self._container = docker_client.run(
             self.image,
             command=self._command,
@@ -96,16 +144,17 @@ class DockerContainer:
             ports=self.ports,
             name=self._name,
             volumes=self.volumes,
+            labels={"hash": hash_},
             **self._kwargs,
         )
         logger.info("Container started: %s", self._container.short_id)
-        if self._network:
-            self._network.connect(self._container.id, self._network_aliases)
-        return self
 
     def stop(self, force=True, delete_volume=True) -> None:
         if self._container:
-            self._container.remove(force=force, v=delete_volume)
+            if self._reuse and c.tc_properties_testcontainers_reuse_enable:
+                self._container.stop()
+            else:
+                self._container.remove(force=force, v=delete_volume)
         self.get_docker_client().client.close()
 
     def __enter__(self) -> Self:
