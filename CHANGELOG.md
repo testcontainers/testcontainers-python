@@ -1,5 +1,17 @@
 # Changelog
 
+## [4.7.1](https://github.com/testcontainers/testcontainers-python/compare/testcontainers-v4.7.0...testcontainers-v4.7.1) (2024-07-02)
+
+
+### Bug Fixes
+
+* **core:** bad rebase from [#579](https://github.com/testcontainers/testcontainers-python/issues/579) ([#635](https://github.com/testcontainers/testcontainers-python/issues/635)) ([4766e48](https://github.com/testcontainers/testcontainers-python/commit/4766e4829407c19de039effc7ea8fcc8b6dcc214))
+* **modules:** Mailpit Container ([#625](https://github.com/testcontainers/testcontainers-python/issues/625)) ([0b866ff](https://github.com/testcontainers/testcontainers-python/commit/0b866ff3c2d462fa5032945dfa2efd4bd59079da))
+* **modules:** SFTP Server Container ([#629](https://github.com/testcontainers/testcontainers-python/issues/629)) ([2e7dbf1](https://github.com/testcontainers/testcontainers-python/commit/2e7dbf1185c68c7cbfb6bdac7457d1d5f86aba19))
+* **network:** Now able to use Network without context, and has labels to be automatically cleaned up ([#627](https://github.com/testcontainers/testcontainers-python/issues/627)) ([#630](https://github.com/testcontainers/testcontainers-python/issues/630)) ([e93bc29](https://github.com/testcontainers/testcontainers-python/commit/e93bc29c1781c4e73840c4c587160f8e5805feea))
+* **postgres:** get_connection_url(driver=None) should return postgres://... ([#588](https://github.com/testcontainers/testcontainers-python/issues/588)) ([01d6c18](https://github.com/testcontainers/testcontainers-python/commit/01d6c182485555ee83f560739c34f089b0e54e0b)), closes [#587](https://github.com/testcontainers/testcontainers-python/issues/587)
+* update test module import ([#623](https://github.com/testcontainers/testcontainers-python/issues/623)) ([16f6ca4](https://github.com/testcontainers/testcontainers-python/commit/16f6ca42621866d8ff87ca539a84da27dbe9a4c4))
+
 ## [4.7.0](https://github.com/testcontainers/testcontainers-python/compare/testcontainers-v4.6.0...testcontainers-v4.7.0) (2024-06-28)
 
 
