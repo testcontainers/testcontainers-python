@@ -139,4 +139,7 @@ Testcontainers is a collection of `implicit namespace packages <https://peps.pyt
 Contributing a New Feature
 ^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-You want to contribute a new feature or container? Great! You can do that in six steps as outlined `here <https://github.com/testcontainers/testcontainers-python/blob/main/.github/PULL_REQUEST_TEMPLATE/new_container.md>__`.
+You want to contribute a new feature or container? Great!
+- We recommend you first `open an issue <https://github.com/testcontainers/testcontainers-python/issues/new/choose>`_
+- Then follow the suggestions from the team
+- We also have a Pull Request `template <https://github.com/testcontainers/testcontainers-python/blob/main/.github/PULL_REQUEST_TEMPLATE/new_container.md>`_ for new containers!

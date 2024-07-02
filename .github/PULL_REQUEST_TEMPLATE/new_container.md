@@ -28,7 +28,6 @@ It helps reduce unnecessary work for you and the maintainers!
   - it is declared under `tool.poetry.extras` with the same name as your module name,
     we still prefer adding _NO EXTRA DEPENDENCIES_, meaning `mymodule = []` is the preferred addition
     (see the notes at the bottom)
-- [ ] The `INDEX.rst` at the project root includes your module under the `.. toctree` directive
 - [ ] Your branch is up to date (or we'll use GH's "update branch" function through the UI)
 
 # Preferred implementation
