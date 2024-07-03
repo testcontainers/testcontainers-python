@@ -21,6 +21,7 @@ def test_docker_container_reuse_default():
 def test_docker_container_with_reuse_reuse_disabled():
     with DockerContainer("hello-world").with_reuse() as container:
         assert container._reuse == True
+        assert testcontainers_config.tc_properties_testcontainers_reuse_enable == False
         id = container._container.id
         wait_for_logs(container, "Hello from Docker!")
     containers = DockerClient().client.containers.list(all=True)
@@ -30,6 +31,7 @@ def test_docker_container_with_reuse_reuse_disabled():
 def test_docker_container_with_reuse_reuse_enabled_ryuk_enabled(monkeypatch):
     # Make sure Ryuk cleanup is not active from previous test runs
     Reaper.delete_instance()
+
     tc_properties_mock = testcontainers_config.tc_properties | {"testcontainers.reuse.enable": "true"}
     monkeypatch.setattr(testcontainers_config, "tc_properties", tc_properties_mock)
     monkeypatch.setattr(testcontainers_config, "ryuk_reconnection_timeout", "0.1s")
@@ -52,15 +54,32 @@ def test_docker_container_with_reuse_reuse_enabled_ryuk_enabled(monkeypatch):
 def test_docker_container_with_reuse_reuse_enabled_ryuk_disabled(monkeypatch):
     # Make sure Ryuk cleanup is not active from previous test runs
     Reaper.delete_instance()
+
     tc_properties_mock = testcontainers_config.tc_properties | {"testcontainers.reuse.enable": "true"}
     monkeypatch.setattr(testcontainers_config, "tc_properties", tc_properties_mock)
     monkeypatch.setattr(testcontainers_config, "ryuk_disabled", True)
+
     with DockerContainer("hello-world").with_reuse() as container:
-        assert container._reuse == True
         id = container._container.id
         wait_for_logs(container, "Hello from Docker!")
     containers = DockerClient().client.containers.list(all=True)
     assert id in [container.id for container in containers]
+    # Cleanup after keeping container alive (with_reuse)
+    container._container.remove(force=True)
+
+
+def test_docker_container_with_reuse_reuse_enabled_ryuk_disabled_same_id(monkeypatch):
+    # Make sure Ryuk cleanup is not active from previous test runs
+    Reaper.delete_instance()
+
+    tc_properties_mock = testcontainers_config.tc_properties | {"testcontainers.reuse.enable": "true"}
+    monkeypatch.setattr(testcontainers_config, "tc_properties", tc_properties_mock)
+    monkeypatch.setattr(testcontainers_config, "ryuk_disabled", True)
+
+    with DockerContainer("hello-world").with_reuse() as container:
+        id = container._container.id
+    with DockerContainer("hello-world").with_reuse() as container:
+        assert id == container._container.id
     # Cleanup after keeping container alive (with_reuse)
     container._container.remove(force=True)
 
