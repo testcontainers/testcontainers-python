@@ -89,7 +89,6 @@ When trying to launch Testcontainers from within a Docker container, e.g., in co
 1. The container has to provide a docker client installation. Either use an image that has docker pre-installed (e.g. the `official docker images <https://hub.docker.com/_/docker>`_) or install the client from within the `Dockerfile` specification.
 2. The container has to have access to the docker daemon which can be achieved by mounting `/var/run/docker.sock` or setting the `DOCKER_HOST` environment variable as part of your `docker run` command.
 
-
 Private Docker registry
 -----------------------
 
@@ -118,6 +117,28 @@ Fetching passwords from cloud providers:
     GCP_PASSWORD = $(gcloud auth print-access-token)
     AZURE_PASSWORD = $(az acr login --name <registry-name> --expose-token --output tsv)
 
+Reusable Containers (Experimental)
+----------------------------------
+
+Containers can be reused across consecutive test runs.
+
+How to use?
+^^^^^^^^^^^
+
+1. Add `testcontainers.reuse.enable=true` to `~/.testcontainers.properties`
+2. Disable ryuk by setting the environment variable `TESTCONTAINERS_RYUK_DISABLED=true`
+3. Instantiate a container using `with_reuse`
+
+.. doctest::
+
+    >>> from testcontainers.core.container import DockerContainer
+
+    >>> with DockerContainer("hello-world").with_reuse() as container:
+    ...     first_id = container._container.id
+    >>> with DockerContainer("hello-world").with_reuse() as container:
+    ...     second_id == container._container.id
+    >>> print(first_id == second_id)
+    True
 
 Configuration
 -------------
