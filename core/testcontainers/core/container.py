@@ -108,12 +108,13 @@ class DockerContainer:
         hash_ = hashlib.sha256(bytes(str(args), encoding="utf-8")).hexdigest()
 
         # TODO: check also if ryuk is disabled
-        if self._reuse and not c.tc_properties_testcontainers_reuse_enable:
+        if self._reuse and (not c.tc_properties_testcontainers_reuse_enable or not c.ryuk_disabled):
             logging.warning(
                 "Reuse was requested (`with_reuse`) but the environment does not "
                 + "support the reuse of containers. To enable container reuse, add "
-                + "the property 'testcontainers.reuse.enable=true' to a file at "
-                + "~/.testcontainers.properties (you may need to create it)."
+                + "the 'testcontainers.reuse.enable=true' to "
+                + "'~/.testcontainers.properties' and disable ryuk by setting the "
+                + "environment variable 'TESTCONTAINERS_RYUK_DISABLED=true'"
             )
 
         if self._reuse and c.tc_properties_testcontainers_reuse_enable:
