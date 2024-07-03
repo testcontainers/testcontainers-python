@@ -125,9 +125,9 @@ Containers can be reused across consecutive test runs.
 How to use?
 ^^^^^^^^^^^
 
-1. Add `testcontainers.reuse.enable=true` to `~/.testcontainers.properties`
-2. Disable ryuk by setting the environment variable `TESTCONTAINERS_RYUK_DISABLED=true`
-3. Instantiate a container using `with_reuse`
+1. Add :code:`testcontainers.reuse.enable=true` to :code:`~/.testcontainers.properties`
+2. Disable ryuk by setting the environment variable :code:`TESTCONTAINERS_RYUK_DISABLED=true`
+3. Instantiate a container using :code:`with_reuse`
 
 .. doctest::
 
