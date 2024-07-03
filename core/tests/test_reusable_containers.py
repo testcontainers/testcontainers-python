@@ -62,8 +62,10 @@ def test_docker_container_with_reuse_reuse_enabled_ryuk_disabled(monkeypatch):
     with DockerContainer("hello-world").with_reuse() as container:
         id = container._container.id
         wait_for_logs(container, "Hello from Docker!")
+
     containers = DockerClient().client.containers.list(all=True)
     assert id in [container.id for container in containers]
+
     # Cleanup after keeping container alive (with_reuse)
     container._container.remove(force=True)
 
@@ -80,6 +82,7 @@ def test_docker_container_with_reuse_reuse_enabled_ryuk_disabled_same_id(monkeyp
         id = container._container.id
     with DockerContainer("hello-world").with_reuse() as container:
         assert id == container._container.id
+
     # Cleanup after keeping container alive (with_reuse)
     container._container.remove(force=True)
 
