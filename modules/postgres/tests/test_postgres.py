@@ -41,7 +41,7 @@ def test_docker_run_postgres_with_sqlalchemy():
 def test_docker_run_postgres_seeds_with_sqlalchemy():
     # Avoid pytest CWD path issues
     SEEDS_PATH = (Path(__file__).parent / "seeds").absolute()
-    postgres_container = PostgresContainer("postgres:latest", seed=SEEDS_PATH)
+    postgres_container = PostgresContainer("postgres", seed=SEEDS_PATH)
     with postgres_container as postgres:
         engine = sqlalchemy.create_engine(postgres.get_connection_url())
         with engine.begin() as connection:

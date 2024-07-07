@@ -102,7 +102,7 @@ class DbContainer(DockerContainer):
         do
             sleep 0.1;
         done;
-        {cmd_full}"
+        bash -c '{cmd_full}'"
         """
         self.with_command(command)
 
