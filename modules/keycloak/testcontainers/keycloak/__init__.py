@@ -80,7 +80,6 @@ class KeycloakContainer(DockerContainer):
             wait_for_logs(self, "Added user .* to realm .*")
 
     def start(self) -> "KeycloakContainer":
-        self._configure()
         super().start()
         self._readiness_probe()
         return self

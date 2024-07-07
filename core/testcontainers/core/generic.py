@@ -36,6 +36,8 @@ SENTINEL_FULLPATH = f"{SENTINEL_FOLDER}/{SENTINEL_FILENAME}"
 
 class DbContainer(DockerContainer):
     """
+    **DEPRECATED (for removal)**
+
     Generic database container.
     """
 

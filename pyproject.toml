@@ -1,6 +1,6 @@
 [tool.poetry]
 name = "testcontainers"
-version = "4.4.1"  # auto-incremented by release-please
+version = "4.7.1"  # auto-incremented by release-please
 description = "Python library for throwaway instances of anything that can run in a Docker container"
 authors = ["Sergey Pirogov <automationremarks@gmail.com>"]
 maintainers = [
@@ -33,21 +33,29 @@ packages = [
     { include = "testcontainers", from = "modules/cassandra" },
     { include = "testcontainers", from = "modules/chroma" },
     { include = "testcontainers", from = "modules/clickhouse" },
+    { include = "testcontainers", from = "modules/cockroachdb" },
+    { include = "testcontainers", from = "modules/cosmosdb" },
     { include = "testcontainers", from = "modules/elasticsearch" },
+    { include = "testcontainers", from = "modules/generic" },
+    { include = "testcontainers", from = "modules/test_module_import"},
     { include = "testcontainers", from = "modules/google" },
     { include = "testcontainers", from = "modules/influxdb" },
     { include = "testcontainers", from = "modules/k3s" },
     { include = "testcontainers", from = "modules/kafka" },
     { include = "testcontainers", from = "modules/keycloak" },
     { include = "testcontainers", from = "modules/localstack" },
+    { include = "testcontainers", from = "modules/mailpit" },
     { include = "testcontainers", from = "modules/memcached" },
     { include = "testcontainers", from = "modules/minio" },
+    { include = "testcontainers", from = "modules/milvus" },
     { include = "testcontainers", from = "modules/mongodb" },
+    { include = "testcontainers", from = "modules/mqtt" },
     { include = "testcontainers", from = "modules/mssql" },
     { include = "testcontainers", from = "modules/mysql" },
     { include = "testcontainers", from = "modules/nats" },
     { include = "testcontainers", from = "modules/neo4j" },
     { include = "testcontainers", from = "modules/nginx" },
+    { include = "testcontainers", from = "modules/ollama" },
     { include = "testcontainers", from = "modules/opensearch" },
     { include = "testcontainers", from = "modules/oracle-free" },
     { include = "testcontainers", from = "modules/postgres" },
@@ -55,9 +63,10 @@ packages = [
     { include = "testcontainers", from = "modules/rabbitmq" },
     { include = "testcontainers", from = "modules/redis" },
     { include = "testcontainers", from = "modules/registry" },
+    { include = "testcontainers", from = "modules/sftp" },
     { include = "testcontainers", from = "modules/selenium" },
     { include = "testcontainers", from = "modules/vault" },
-    { include = "testcontainers", from = "modules/weaviate" }
+    { include = "testcontainers", from = "modules/weaviate" },
 ]
 
 [tool.poetry.urls]
@@ -99,28 +108,39 @@ weaviate-client = { version = "^4.5.4", optional = true }
 chromadb-client = { version = "*", optional = true }
 qdrant-client = { version = "*", optional = true }
 bcrypt = { version = "*", optional = true }
+httpx = { version = "*", optional = true }
+azure-cosmos = { version = "*", optional = true }
+cryptography = { version = "*", optional = true }
 
 [tool.poetry.extras]
 arangodb = ["python-arango"]
 azurite = ["azure-storage-blob"]
 cassandra = []
 clickhouse = ["clickhouse-driver"]
+cosmosdb = ["azure-cosmos"]
+cockroachdb = []
 elasticsearch = []
+generic = ["httpx"]
+test_module_import = ["httpx"]
 google = ["google-cloud-pubsub", "google-cloud-datastore"]
 influxdb = ["influxdb", "influxdb-client"]
 k3s = ["kubernetes", "pyyaml"]
 kafka = []
 keycloak = ["python-keycloak"]
 localstack = ["boto3"]
+mailpit = ["cryptography"]
 memcached = []
 minio = ["minio"]
+milvus = []
 mongodb = ["pymongo"]
+mqtt = []
 mssql = ["sqlalchemy", "pymssql"]
 mysql = ["sqlalchemy", "pymysql"]
 nats = ["nats-py"]
 neo4j = ["neo4j"]
 nginx = []
 opensearch = ["opensearch-py"]
+ollama = []
 oracle = ["sqlalchemy", "oracledb"]
 oracle-free = ["sqlalchemy", "oracledb"]
 postgres = []
@@ -129,6 +149,7 @@ rabbitmq = ["pika"]
 redis = ["redis"]
 registry = ["bcrypt"]
 selenium = ["selenium"]
+sftp = ["cryptography"]
 vault = []
 weaviate = ["weaviate-client"]
 chroma = ["chromadb-client"]
@@ -138,18 +159,24 @@ mypy = "1.7.1"
 pre-commit = "^3.6"
 pytest = "7.4.3"
 pytest-cov = "4.1.0"
-sphinx = "^7.2.6"
-twine = "^4.0.2"
-anyio = "^4.3.0"
+sphinx = "7.2.6"
+twine = "4.0.2"
+anyio = "4.3.0"
 # for tests only
-psycopg2-binary = "*"
-pg8000 = "*"
-sqlalchemy = "*"
-psycopg = "*"
-cassandra-driver = "*"
+psycopg2-binary = "2.9.9"
+pg8000 = "1.30.5"
+sqlalchemy = "2.0.28"
+psycopg = "3.1.18"
+cassandra-driver = "3.29.1"
 pytest-asyncio = "0.23.5"
 kafka-python-ng = "^2.2.0"
-hvac = "*"
+hvac = "2.1.0"
+pymilvus = "2.4.3"
+httpx = "0.27.0"
+paho-mqtt = "2.1.0"
+sqlalchemy-cockroachdb = "2.0.2"
+paramiko = "^3.4.0"
+types-paramiko = "^3.4.0.20240423"
 
 [[tool.poetry.source]]
 name = "PyPI"
@@ -159,7 +186,7 @@ priority = "primary"
 line-length = 120
 
 [tool.pytest.ini_options]
-addopts = "--cov-report=term --cov-report=html --tb=short --strict-markers"
+addopts = "--tb=short --strict-markers"
 log_cli = true
 log_cli_level = "INFO"
 
@@ -256,18 +283,21 @@ mypy_path = [
 #    "modules/kafka",
 #    "modules/keycloak",
 #    "modules/localstack",
+    "modules/mailpit",
 #    "modules/minio",
 #    "modules/mongodb",
 #    "modules/mssql",
 #    "modules/mysql",
 #    "modules/neo4j",
 #    "modules/nginx",
+#    "modules/ollama",
 #    "modules/opensearch",
 #    "modules/oracle",
 #    "modules/postgres",
 #    "modules/rabbitmq",
 #    "modules/redis",
 #    "modules/selenium"
+    "modules/sftp",
 #    "modules/vault"
 #    "modules/weaviate"
 ]

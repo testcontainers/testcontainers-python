@@ -16,15 +16,17 @@ import ipaddress
 import os
 import urllib
 import urllib.parse
+from collections.abc import Iterable
 from typing import Callable, Optional, TypeVar, Union
 
 import docker
 from docker.models.containers import Container, ContainerCollection
+from docker.models.images import Image, ImageCollection
 from typing_extensions import ParamSpec
 
 from testcontainers.core.config import testcontainers_config as c
 from testcontainers.core.labels import SESSION_ID, create_labels
-from testcontainers.core.utils import default_gateway_ip, inside_container, setup_logger
+from testcontainers.core.utils import default_gateway_ip, inside_container, parse_docker_auth_config, setup_logger
 
 LOGGER = setup_logger(__name__)
 
@@ -34,6 +36,14 @@ _T = TypeVar("_T")
 
 def _wrapped_container_collection(function: Callable[_P, _T]) -> Callable[_P, _T]:
     @ft.wraps(ContainerCollection.run)
+    def wrapper(*args: _P.args, **kwargs: _P.kwargs) -> _T:
+        return function(*args, **kwargs)
+
+    return wrapper
+
+
+def _wrapped_image_collection(function: Callable[_P, _T]) -> Callable[_P, _T]:
+    @ft.wraps(ImageCollection.build)
     def wrapper(*args: _P.args, **kwargs: _P.kwargs) -> _T:
         return function(*args, **kwargs)
 
@@ -56,6 +66,9 @@ class DockerClient:
             self.client = docker.from_env(**kwargs)
         self.client.api.headers["x-tc-sid"] = SESSION_ID
         self.client.api.headers["User-Agent"] = "tc-python/" + importlib.metadata.version("testcontainers")
+
+        if docker_auth_config := get_docker_auth_config():
+            self.login(docker_auth_config)
 
     @_wrapped_container_collection
     def run(
@@ -90,6 +103,17 @@ class DockerClient:
             **kwargs,
         )
         return container
+
+    @_wrapped_image_collection
+    def build(self, path: str, tag: str, rm: bool = True, **kwargs) -> tuple[Image, Iterable[dict]]:
+        """
+        Build a Docker image from a directory containing the Dockerfile.
+
+        :return: A tuple containing the image object and the build logs.
+        """
+        image_object, image_logs = self.client.images.build(path=path, tag=tag, rm=rm, **kwargs)
+
+        return image_object, image_logs
 
     def find_host_network(self) -> Optional[str]:
         """
@@ -163,18 +187,14 @@ class DockerClient:
         """
         Get the hostname or ip address of the docker host.
         """
-        # https://github.com/testcontainers/testcontainers-go/blob/dd76d1e39c654433a3d80429690d07abcec04424/docker.go#L644
-        # if os env TC_HOST is set, use it
-        host = os.environ.get("TC_HOST")
-        if not host:
-            host = os.environ.get("TESTCONTAINERS_HOST_OVERRIDE")
+        host = c.tc_host_override
         if host:
             return host
         try:
             url = urllib.parse.urlparse(self.client.api.base_url)
 
         except ValueError:
-            return None
+            return "localhost"
         if "http" in url.scheme or "tcp" in url.scheme:
             return url.hostname
         if inside_container() and ("unix" in url.scheme or "npipe" in url.scheme):
@@ -183,6 +203,22 @@ class DockerClient:
                 return ip_address
         return "localhost"
 
+    def login(self, docker_auth_config: str) -> None:
+        """
+        Login to a docker registry using the given auth config.
+        """
+        auth_config = parse_docker_auth_config(docker_auth_config)[0]  # Only using the first auth config
+        login_info = self.client.login(**auth_config._asdict())
+        LOGGER.debug(f"logged in using {login_info}")
+
+    def client_networks_create(self, name: str, param: dict):
+        labels = create_labels("", param.get("labels"))
+        return self.client.networks.create(name, **{**param, "labels": labels})
+
 
 def get_docker_host() -> Optional[str]:
     return c.tc_properties_get_tc_host() or os.getenv("DOCKER_HOST")
+
+
+def get_docker_auth_config() -> Optional[str]:
+    return c.docker_auth_config

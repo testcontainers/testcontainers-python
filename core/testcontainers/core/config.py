@@ -1,8 +1,9 @@
 from dataclasses import dataclass, field
+from logging import warning
 from os import environ
 from os.path import exists
 from pathlib import Path
-from typing import Union
+from typing import Optional, Union
 
 MAX_TRIES = int(environ.get("TC_MAX_TRIES", 120))
 SLEEP_TIME = int(environ.get("TC_POOLING_INTERVAL", 1))
@@ -13,6 +14,7 @@ RYUK_PRIVILEGED: bool = environ.get("TESTCONTAINERS_RYUK_PRIVILEGED", "false") =
 RYUK_DISABLED: bool = environ.get("TESTCONTAINERS_RYUK_DISABLED", "false") == "true"
 RYUK_DOCKER_SOCKET: str = environ.get("TESTCONTAINERS_DOCKER_SOCKET_OVERRIDE", "/var/run/docker.sock")
 RYUK_RECONNECTION_TIMEOUT: str = environ.get("RYUK_RECONNECTION_TIMEOUT", "10s")
+TC_HOST_OVERRIDE: Optional[str] = environ.get("TC_HOST", environ.get("TESTCONTAINERS_HOST_OVERRIDE"))
 
 TC_FILE = ".testcontainers.properties"
 TC_GLOBAL = Path.home() / TC_FILE
@@ -37,6 +39,9 @@ def read_tc_properties() -> dict[str, str]:
     return settings
 
 
+_WARNINGS = {"DOCKER_AUTH_CONFIG": "DOCKER_AUTH_CONFIG is experimental, see testcontainers/testcontainers-python#566"}
+
+
 @dataclass
 class TestcontainersConfiguration:
     max_tries: int = MAX_TRIES
@@ -47,6 +52,25 @@ class TestcontainersConfiguration:
     ryuk_docker_socket: str = RYUK_DOCKER_SOCKET
     ryuk_reconnection_timeout: str = RYUK_RECONNECTION_TIMEOUT
     tc_properties: dict[str, str] = field(default_factory=read_tc_properties)
+    _docker_auth_config: Optional[str] = field(default_factory=lambda: environ.get("DOCKER_AUTH_CONFIG"))
+    tc_host_override: Optional[str] = TC_HOST_OVERRIDE
+    """
+    https://github.com/testcontainers/testcontainers-go/blob/dd76d1e39c654433a3d80429690d07abcec04424/docker.go#L644
+    if os env TC_HOST is set, use it
+    """
+
+    @property
+    def docker_auth_config(self):
+        config = self._docker_auth_config
+        if config and "DOCKER_AUTH_CONFIG" in _WARNINGS:
+            warning(_WARNINGS.pop("DOCKER_AUTH_CONFIG"))
+        return config
+
+    @docker_auth_config.setter
+    def docker_auth_config(self, value: str):
+        if "DOCKER_AUTH_CONFIG" in _WARNINGS:
+            warning(_WARNINGS.pop("DOCKER_AUTH_CONFIG"))
+        self._docker_auth_config = value
 
     def tc_properties_get_tc_host(self) -> Union[str, None]:
         return self.tc_properties.get("tc.host")

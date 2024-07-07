@@ -108,3 +108,27 @@ def test_show_how_to_initialize_db_via_initdb_dir():
             result = result.fetchall()
             assert len(result) == 1
             assert result[0] == (1, "sally", "sells seashells")
+
+
+def test_none_driver_urls():
+    user = "root"
+    password = "pass"
+    kwargs = {
+        "username": user,
+        "password": password,
+    }
+    with PostgresContainer("postgres:16-alpine", driver=None, **kwargs) as container:
+        port = container.get_exposed_port(5432)
+        host = container.get_container_host_ip()
+        expected_url = f"postgresql://{user}:{password}@{host}:{port}/test"
+
+        url = container.get_connection_url()
+        assert url == expected_url
+
+    with PostgresContainer("postgres:16-alpine", **kwargs) as container:
+        port = container.get_exposed_port(5432)
+        host = container.get_container_host_ip()
+        expected_url = f"postgresql://{user}:{password}@{host}:{port}/test"
+
+        url = container.get_connection_url(driver=None)
+        assert url == expected_url
