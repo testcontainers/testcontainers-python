@@ -215,7 +215,7 @@ class DockerClient:
         labels = create_labels("", param.get("labels"))
         return self.client.networks.create(name, **{**param, "labels": labels})
 
-    def find_container_by_hash(self, hash_: str) -> Container | None:
+    def find_container_by_hash(self, hash_: str) -> Union[Container, None]:
         for container in self.client.containers.list(all=True):
             if container.labels.get("hash", None) == hash_:
                 return container
