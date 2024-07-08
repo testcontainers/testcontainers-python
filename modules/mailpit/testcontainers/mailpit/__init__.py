@@ -183,6 +183,12 @@ class MailpitContainer(DockerContainer):
     def get_exposed_smtp_port(self) -> int:
         return int(self.get_exposed_port(self.smtp_port))
 
+    def get_exposed_ui_port(self) -> int:
+        return int(self.get_exposed_port(self.ui_port))
+
+    def get_base_api_url(self) -> str:
+        return f"http://{self.get_container_host_ip()}:{self.get_exposed_ui_port()}"
+
 
 class _TLSCertificates(NamedTuple):
     private_key: bytes
