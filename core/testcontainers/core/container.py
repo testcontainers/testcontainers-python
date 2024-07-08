@@ -107,7 +107,6 @@ class DockerContainer:
         )
         hash_ = hashlib.sha256(bytes(str(args), encoding="utf-8")).hexdigest()
 
-        # TODO: check also if ryuk is disabled
         if self._reuse and (not c.tc_properties_testcontainers_reuse_enable or not c.ryuk_disabled):
             logging.warning(
                 "Reuse was requested (`with_reuse`) but the environment does not "
