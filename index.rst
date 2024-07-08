@@ -120,7 +120,11 @@ Fetching passwords from cloud providers:
 Reusable Containers (Experimental)
 ----------------------------------
 
-Containers can be reused across consecutive test runs.
+Containers can be reused across consecutive test runs. To reuse a container, the container configuration must be the same.
+
+Containers that are set up for reuse will not be automatically removed. Thus, those containers need to be removed manually.
+
+Containers should not be reused in a CI environment.
 
 How to use?
 ^^^^^^^^^^^
