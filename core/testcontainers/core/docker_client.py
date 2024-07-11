@@ -207,9 +207,11 @@ class DockerClient:
         """
         Login to a docker registry using the given auth config.
         """
-        auth_config = parse_docker_auth_config(docker_auth_config)[0]  # Only using the first auth config
-        login_info = self.client.login(**auth_config._asdict())
-        LOGGER.debug(f"logged in using {login_info}")
+        auth_config = parse_docker_auth_config(docker_auth_config)
+        if auth_config:
+            first_auth_config = auth_config[0]  # Only using the first auth config
+            login_info = self.client.login(**first_auth_config._asdict())
+            LOGGER.debug(f"logged in using {login_info}")
 
     def client_networks_create(self, name: str, param: dict):
         labels = create_labels("", param.get("labels"))

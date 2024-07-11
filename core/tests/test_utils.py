@@ -40,3 +40,10 @@ def test_parse_docker_auth_config_multiple():
         username="abc",
         password="123",
     )
+
+
+def test_parse_docker_auth_config_with_no_auths():
+    auth_dict = {"credHelpers": {"<aws_account_id>.dkr.ecr.<region>.amazonaws.com": "ecr-login"}}
+    auth_config_json = json.dumps(auth_dict)
+    auth_info = parse_docker_auth_config(auth_config_json)
+    assert len(auth_info) == 0

@@ -99,7 +99,7 @@ def parse_docker_auth_config(auth_config: str) -> list[DockerAuthInfo]:
     """
     auth_info: list[DockerAuthInfo] = []
     try:
-        auth_config_dict: dict = json.loads(auth_config).get("auths")
+        auth_config_dict: dict = json.loads(auth_config).get("auths", {})
         for registry, auth in auth_config_dict.items():
             auth_str = auth.get("auth")
             auth_str = base64.b64decode(auth_str).decode("utf-8")

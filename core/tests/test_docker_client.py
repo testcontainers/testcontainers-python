@@ -7,7 +7,7 @@ import docker
 
 from testcontainers.core.config import testcontainers_config as c
 from testcontainers.core.container import DockerContainer
-from testcontainers.core.docker_client import DockerClient
+from testcontainers.core.docker_client import DockerClient, get_docker_auth_config
 from testcontainers.core.utils import parse_docker_auth_config
 from testcontainers.core.image import DockerImage
 
@@ -46,6 +46,23 @@ def test_docker_client_login():
         DockerClient()
 
     mock_docker.from_env.return_value.login.assert_called_with(**{"value": "test"})
+
+
+def test_docker_client_no_login_when_no_auths():
+    mock_docker = MagicMock(spec=docker)
+    mock_get_docker_auth_config = MagicMock(spec=get_docker_auth_config)
+    mock_get_docker_auth_config.return_value = (
+        '{"credHelpers":{"<aws_account_id>.dkr.ecr.<region>.amazonaws.com": "ecr-login"}}'
+    )
+
+    with (
+        mock.patch.object(c, "_docker_auth_config", "test"),
+        patch("testcontainers.core.docker_client.docker", mock_docker),
+        patch("testcontainers.core.docker_client.get_docker_auth_config", mock_get_docker_auth_config),
+    ):
+        DockerClient()
+
+    mock_docker.from_env.return_value.login.assert_not_called()
 
 
 def test_container_docker_client_kw():
