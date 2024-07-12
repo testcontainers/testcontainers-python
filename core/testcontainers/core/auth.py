@@ -6,7 +6,7 @@ from typing import Optional
 
 DockerAuthInfo = namedtuple("DockerAuthInfo", ["registry", "username", "password"])
 
-_WARNINGS = {
+_AUTH_WARNINGS = {
     "credHelpers": "DOCKER_AUTH_CONFIG is experimental, credHelpers not supported yet",
     "credsStore": "DOCKER_AUTH_CONFIG is experimental, credsStore not supported yet",
 }
@@ -50,7 +50,8 @@ def parse_docker_auth_config_cred_helpers(auth_config_dict: dict) -> None:
 
     This is not supported yet.
     """
-    warning(_WARNINGS.pop("credHelpers"))
+    if "credHelpers" in _AUTH_WARNINGS:
+        warning(_AUTH_WARNINGS.pop("credHelpers"))
 
 
 def parse_docker_auth_config_store(auth_config_dict: dict) -> None:
@@ -64,7 +65,8 @@ def parse_docker_auth_config_store(auth_config_dict: dict) -> None:
 
     This is not supported yet.
     """
-    warning(_WARNINGS.pop("credsStore"))
+    if "credsStore" in _AUTH_WARNINGS:
+        warning(_AUTH_WARNINGS.pop("credsStore"))
 
 
 def parse_docker_auth_config(auth_config: str) -> Optional[list[DockerAuthInfo]]:
