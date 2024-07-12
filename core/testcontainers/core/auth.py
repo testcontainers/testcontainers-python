@@ -1,7 +1,8 @@
 import base64 as base64
 import json as json
-from collections import namedtuple as namedtuple
+from collections import namedtuple
 from logging import warning
+from typing import Optional
 
 DockerAuthInfo = namedtuple("DockerAuthInfo", ["registry", "username", "password"])
 
@@ -11,7 +12,7 @@ _WARNINGS = {
 }
 
 
-def parse_docker_auth_config_encoded(auth_config: str) -> list[DockerAuthInfo]:
+def parse_docker_auth_config_encoded(auth_config_dict: dict) -> list[DockerAuthInfo]:
     """
     Parse the docker auth config from a string.
 
@@ -25,19 +26,18 @@ def parse_docker_auth_config_encoded(auth_config: str) -> list[DockerAuthInfo]:
     }
     """
     auth_info: list[DockerAuthInfo] = []
-    try:
-        auth_config_dict: dict = json.loads(auth_config).get("auths")
-        for registry, auth in auth_config_dict.items():
-            auth_str = auth.get("auth")
-            auth_str = base64.b64decode(auth_str).decode("utf-8")
-            username, password = auth_str.split(":")
-            auth_info.append(DockerAuthInfo(registry, username, password))
-        return auth_info
-    except (json.JSONDecodeError, KeyError, ValueError) as exp:
-        raise ValueError("Could not parse docker auth config") from exp
+
+    auths = auth_config_dict.get("auths")
+    for registry, auth in auths.items():
+        auth_str = auth.get("auth")
+        auth_str = base64.b64decode(auth_str).decode("utf-8")
+        username, password = auth_str.split(":")
+        auth_info.append(DockerAuthInfo(registry, username, password))
+
+    return auth_info
 
 
-def parse_docker_auth_config_cred_helpers(auth_config: str) -> None:
+def parse_docker_auth_config_cred_helpers(auth_config_dict: dict) -> None:
     """
     Parse the docker auth config from a string.
 
@@ -51,7 +51,7 @@ def parse_docker_auth_config_cred_helpers(auth_config: str) -> None:
     warning(_WARNINGS.pop("credHelpers"))
 
 
-def parse_docker_auth_config_store(auth_config: str) -> None:
+def parse_docker_auth_config_store(auth_config_dict: dict) -> None:
     """
     Parse the docker auth config from a string.
 
@@ -63,12 +63,18 @@ def parse_docker_auth_config_store(auth_config: str) -> None:
     warning(_WARNINGS.pop("credsStore"))
 
 
-def parse_docker_auth_config(auth_config: str) -> list[DockerAuthInfo]:
-    if "auths" in auth_config:
-        return parse_docker_auth_config_encoded(auth_config)
-    elif "credHelpers" in auth_config:
-        parse_docker_auth_config_cred_helpers(auth_config)
-    elif "credsStore" in auth_config:
-        parse_docker_auth_config_store(auth_config)
-    else:
-        raise ValueError("Could not parse docker auth config")
+def parse_docker_auth_config(auth_config: str) -> Optional[list[DockerAuthInfo]]:
+    """Parse the docker auth config from a string and handle the different formats."""
+    try:
+        auth_config_dict: dict = json.loads(auth_config)
+        if "auths" in auth_config:
+            return parse_docker_auth_config_encoded(auth_config_dict)
+        elif "credHelpers" in auth_config:
+            parse_docker_auth_config_cred_helpers(auth_config_dict)
+        elif "credsStore" in auth_config:
+            parse_docker_auth_config_store(auth_config_dict)
+
+    except (json.JSONDecodeError, KeyError, ValueError) as exp:
+        raise ValueError("Could not parse docker auth config") from exp
+
+    return None
