@@ -47,6 +47,8 @@ def parse_docker_auth_config_cred_helpers(auth_config_dict: dict) -> None:
             "<aws_account_id>.dkr.ecr.<region>.amazonaws.com": "ecr-login"
         }
     }
+
+    This is not supported yet.
     """
     warning(_WARNINGS.pop("credHelpers"))
 
@@ -59,6 +61,8 @@ def parse_docker_auth_config_store(auth_config_dict: dict) -> None:
     {
         "credsStore": "ecr-login"
     }
+
+    This is not supported yet.
     """
     warning(_WARNINGS.pop("credsStore"))
 

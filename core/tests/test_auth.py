@@ -3,7 +3,7 @@ import json
 from testcontainers.core.auth import parse_docker_auth_config, DockerAuthInfo
 
 
-def test_parse_docker_auth_config():
+def test_parse_docker_auth_config_encoded():
     auth_config_json = '{"auths":{"https://index.docker.io/v1/":{"auth":"dXNlcm5hbWU6cGFzc3dvcmQ="}}}'
     auth_info = parse_docker_auth_config(auth_config_json)
     assert len(auth_info) == 1
@@ -14,7 +14,19 @@ def test_parse_docker_auth_config():
     )
 
 
-def test_parse_docker_auth_config_multiple():
+def test_parse_docker_auth_config_cred_helpers():
+    auth_dict = {"credHelpers": {"<aws_account_id>.dkr.ecr.<region>.amazonaws.com": "ecr-login"}}
+    auth_config_json = json.dumps(auth_dict)
+    assert parse_docker_auth_config(auth_config_json) is None
+
+
+def test_parse_docker_auth_config_store():
+    auth_dict = {"credsStore": "ecr-login"}
+    auth_config_json = json.dumps(auth_dict)
+    assert parse_docker_auth_config(auth_config_json) is None
+
+
+def test_parse_docker_auth_config_encoded_multiple():
     auth_dict = {
         "auths": {
             "localhost:5000": {"auth": "dXNlcjE6cGFzczE=="},
