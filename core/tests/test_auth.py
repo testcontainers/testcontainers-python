@@ -1,4 +1,5 @@
 import json
+import pytest
 
 from testcontainers.core.auth import parse_docker_auth_config, DockerAuthInfo
 
@@ -52,3 +53,14 @@ def test_parse_docker_auth_config_encoded_multiple():
         username="abc",
         password="123",
     )
+
+
+def test_parse_docker_auth_config_unknown():
+    auth_config_str = '{"key": "value"}'
+    assert parse_docker_auth_config(auth_config_str) is None
+
+
+def test_parse_docker_auth_config_error():
+    auth_config_str = "bad//string"
+    with pytest.raises(ValueError):
+        parse_docker_auth_config(auth_config_str)
