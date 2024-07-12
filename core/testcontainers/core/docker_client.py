@@ -24,7 +24,7 @@ from docker.models.containers import Container, ContainerCollection
 from docker.models.images import Image, ImageCollection
 from typing_extensions import ParamSpec
 
-from testcontainers.core.auth import DockerAuthInfo, parse_docker_auth_config
+from testcontainers.core.auth import parse_docker_auth_config
 from testcontainers.core.config import testcontainers_config as c
 from testcontainers.core.labels import SESSION_ID, create_labels
 from testcontainers.core.utils import default_gateway_ip, inside_container, setup_logger
@@ -68,8 +68,8 @@ class DockerClient:
         self.client.api.headers["x-tc-sid"] = SESSION_ID
         self.client.api.headers["User-Agent"] = "tc-python/" + importlib.metadata.version("testcontainers")
 
-        if auth_config := get_docker_auth_config():
-            self.login(auth_config)
+        if docker_auth_config := get_docker_auth_config():
+            self.login(docker_auth_config)
 
     @_wrapped_container_collection
     def run(
@@ -204,11 +204,11 @@ class DockerClient:
                 return ip_address
         return "localhost"
 
-    def login(self, auth_config: DockerAuthInfo) -> None:
+    def login(self, docker_auth_config: str) -> None:
         """
         Login to a docker registry using the given auth config.
         """
-
+        auth_config = parse_docker_auth_config(docker_auth_config)[0]  # Only using the first auth config
         login_info = self.client.login(**auth_config._asdict())
         LOGGER.debug(f"logged in using {login_info}")
 
@@ -221,10 +221,5 @@ def get_docker_host() -> Optional[str]:
     return c.tc_properties_get_tc_host() or os.getenv("DOCKER_HOST")
 
 
-def get_docker_auth_config() -> Optional[DockerAuthInfo]:
-    if c.docker_auth_config:
-        auth_config = parse_docker_auth_config(c.docker_auth_config)
-        if auth_config:
-            return auth_config[0]  # Only using the first auth config found
-
-    return None
+def get_docker_auth_config() -> Optional[str]:
+    return c.docker_auth_config
