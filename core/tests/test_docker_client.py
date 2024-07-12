@@ -8,7 +8,7 @@ import docker
 from testcontainers.core.config import testcontainers_config as c
 from testcontainers.core.container import DockerContainer
 from testcontainers.core.docker_client import DockerClient
-from testcontainers.core.utils import parse_docker_auth_config
+from testcontainers.core.auth import parse_docker_auth_config
 from testcontainers.core.image import DockerImage
 
 

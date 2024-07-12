@@ -24,9 +24,10 @@ from docker.models.containers import Container, ContainerCollection
 from docker.models.images import Image, ImageCollection
 from typing_extensions import ParamSpec
 
+from testcontainers.core.auth import parse_docker_auth_config
 from testcontainers.core.config import testcontainers_config as c
 from testcontainers.core.labels import SESSION_ID, create_labels
-from testcontainers.core.utils import default_gateway_ip, inside_container, parse_docker_auth_config, setup_logger
+from testcontainers.core.utils import default_gateway_ip, inside_container, setup_logger
 
 LOGGER = setup_logger(__name__)
 

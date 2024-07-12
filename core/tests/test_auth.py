@@ -1,6 +1,6 @@
 import json
 
-from testcontainers.core.utils import parse_docker_auth_config, DockerAuthInfo
+from testcontainers.core.auth import parse_docker_auth_config, DockerAuthInfo
 
 
 def test_parse_docker_auth_config():
