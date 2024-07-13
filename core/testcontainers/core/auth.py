@@ -75,12 +75,12 @@ def parse_docker_auth_config(auth_config: str) -> Optional[list[DockerAuthInfo]]
     """Parse the docker auth config from a string and handle the different formats."""
     try:
         auth_config_dict: dict = json.loads(auth_config)
+        if "credHelpers" in auth_config:
+            process_docker_auth_config_cred_helpers(auth_config_dict)
+        if "credsStore" in auth_config:
+            process_docker_auth_config_store(auth_config_dict)
         if "auths" in auth_config:
             return process_docker_auth_config_encoded(auth_config_dict)
-        elif "credHelpers" in auth_config:
-            process_docker_auth_config_cred_helpers(auth_config_dict)
-        elif "credsStore" in auth_config:
-            process_docker_auth_config_store(auth_config_dict)
 
     except (json.JSONDecodeError, KeyError, ValueError) as exp:
         raise ValueError("Could not parse docker auth config") from exp
