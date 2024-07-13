@@ -64,3 +64,21 @@ def test_parse_docker_auth_config_error():
     auth_config_str = "bad//string"
     with pytest.raises(ValueError):
         parse_docker_auth_config(auth_config_str)
+
+
+def test_parse_docker_auth_all():
+    test_dict = {
+        "auths": {
+            "localhost:5000": {"auth": "dXNlcjE6cGFzczE=="},
+        },
+        "credHelpers": {"<aws_account_id>.dkr.ecr.<region>.amazonaws.com": "ecr-login"},
+        "credsStore": "ecr-login",
+    }
+    auth_config_json = json.dumps(test_dict)
+    assert parse_docker_auth_config(auth_config_json) == [
+        DockerAuthInfo(
+            registry="localhost:5000",
+            username="user1",
+            password="pass1",
+        )
+    ]
