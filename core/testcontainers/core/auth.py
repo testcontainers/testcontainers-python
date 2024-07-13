@@ -12,9 +12,9 @@ _AUTH_WARNINGS = {
 }
 
 
-def parse_docker_auth_config_encoded(auth_config_dict: dict) -> list[DockerAuthInfo]:
+def process_docker_auth_config_encoded(auth_config_dict: dict) -> list[DockerAuthInfo]:
     """
-    Parse the docker auth config from a string.
+    Process the auths config.
 
     Example:
     {
@@ -24,6 +24,8 @@ def parse_docker_auth_config_encoded(auth_config_dict: dict) -> list[DockerAuthI
             }
         }
     }
+
+    Returns a list of DockerAuthInfo objects.
     """
     auth_info: list[DockerAuthInfo] = []
 
@@ -37,9 +39,9 @@ def parse_docker_auth_config_encoded(auth_config_dict: dict) -> list[DockerAuthI
     return auth_info
 
 
-def parse_docker_auth_config_cred_helpers(auth_config_dict: dict) -> None:
+def process_docker_auth_config_cred_helpers(auth_config_dict: dict) -> None:
     """
-    Parse the docker auth config from a string.
+    Process the credHelpers config.
 
     Example:
     {
@@ -54,9 +56,9 @@ def parse_docker_auth_config_cred_helpers(auth_config_dict: dict) -> None:
         warning(_AUTH_WARNINGS.pop("credHelpers"))
 
 
-def parse_docker_auth_config_store(auth_config_dict: dict) -> None:
+def process_docker_auth_config_store(auth_config_dict: dict) -> None:
     """
-    Parse the docker auth config from a string.
+    Process the credsStore config.
 
     Example:
     {
@@ -74,11 +76,11 @@ def parse_docker_auth_config(auth_config: str) -> Optional[list[DockerAuthInfo]]
     try:
         auth_config_dict: dict = json.loads(auth_config)
         if "auths" in auth_config:
-            return parse_docker_auth_config_encoded(auth_config_dict)
+            return process_docker_auth_config_encoded(auth_config_dict)
         elif "credHelpers" in auth_config:
-            parse_docker_auth_config_cred_helpers(auth_config_dict)
+            process_docker_auth_config_cred_helpers(auth_config_dict)
         elif "credsStore" in auth_config:
-            parse_docker_auth_config_store(auth_config_dict)
+            process_docker_auth_config_store(auth_config_dict)
 
     except (json.JSONDecodeError, KeyError, ValueError) as exp:
         raise ValueError("Could not parse docker auth config") from exp
