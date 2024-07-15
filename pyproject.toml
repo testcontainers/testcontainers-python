@@ -65,6 +65,7 @@ packages = [
     { include = "testcontainers", from = "modules/registry" },
     { include = "testcontainers", from = "modules/sftp" },
     { include = "testcontainers", from = "modules/selenium" },
+    { include = "testcontainers", from = "modules/trino" },
     { include = "testcontainers", from = "modules/vault" },
     { include = "testcontainers", from = "modules/weaviate" },
 ]
@@ -111,6 +112,7 @@ bcrypt = { version = "*", optional = true }
 httpx = { version = "*", optional = true }
 azure-cosmos = { version = "*", optional = true }
 cryptography = { version = "*", optional = true }
+trino = { version = "*", optional = true }
 
 [tool.poetry.extras]
 arangodb = ["python-arango"]
@@ -153,6 +155,7 @@ sftp = ["cryptography"]
 vault = []
 weaviate = ["weaviate-client"]
 chroma = ["chromadb-client"]
+trino = ["trino"]
 
 [tool.poetry.group.dev.dependencies]
 mypy = "1.7.1"

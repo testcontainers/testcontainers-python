@@ -1913,7 +1913,6 @@ python-versions = ">=3.7"
 files = [
     {file = "milvus_lite-2.4.7-py3-none-macosx_10_9_x86_64.whl", hash = "sha256:c828190118b104b05b8c8e0b5a4147811c86b54b8fb67bc2e726ad10fc0b544e"},
     {file = "milvus_lite-2.4.7-py3-none-macosx_11_0_arm64.whl", hash = "sha256:e1537633c39879714fb15082be56a4b97f74c905a6e98e302ec01320561081af"},
-    {file = "milvus_lite-2.4.7-py3-none-manylinux2014_aarch64.whl", hash = "sha256:fcb909d38c83f21478ca9cb500c84264f988c69f62715ae9462e966767fb76dd"},
     {file = "milvus_lite-2.4.7-py3-none-manylinux2014_x86_64.whl", hash = "sha256:f016474d663045787dddf1c3aad13b7d8b61fd329220318f858184918143dcbf"},
 ]
 
@@ -4109,6 +4108,31 @@ files = [
 ]
 
 [[package]]
+name = "trino"
+version = "0.329.0"
+description = "Client for the Trino distributed SQL Engine"
+optional = true
+python-versions = ">=3.8"
+files = [
+    {file = "trino-0.329.0-py3-none-any.whl", hash = "sha256:74b82a38f16193ad869e63fb837d651e66c044f19a817232787e27c5d44b671f"},
+    {file = "trino-0.329.0.tar.gz", hash = "sha256:1d976467726ec3d0fa120a64e61fdb8caf13295db207051e2cc267a952af989b"},
+]
+
+[package.dependencies]
+python-dateutil = "*"
+pytz = "*"
+requests = ">=2.31.0"
+tzlocal = "*"
+
+[package.extras]
+all = ["requests-kerberos", "sqlalchemy (>=1.3)"]
+external-authentication-token-cache = ["keyring"]
+gssapi = ["requests-gssapi"]
+kerberos = ["requests-kerberos"]
+sqlalchemy = ["sqlalchemy (>=1.3)"]
+tests = ["black", "httpretty (<1.1)", "isort", "pre-commit", "pytest", "pytest-runner", "requests-gssapi", "requests-kerberos", "sqlalchemy (>=1.3)"]
+
+[[package]]
 name = "trio"
 version = "0.24.0"
 description = "A friendly Python library for async concurrency and I/O"
@@ -4571,10 +4595,11 @@ registry = ["bcrypt"]
 selenium = ["selenium"]
 sftp = ["cryptography"]
 test-module-import = ["httpx"]
+trino = ["trino"]
 vault = []
 weaviate = ["weaviate-client"]
 
 [metadata]
 lock-version = "2.0"
 python-versions = ">=3.9,<4.0"
-content-hash = "4694e6bedeb7263ba9b7de579b81913f285161d5d27d453bd36a616e9ce3eade"
+content-hash = "ef48ca48ddc2bc6ac68487e1674d1e6973c3a14b2b5c41235262af20695fe432"
