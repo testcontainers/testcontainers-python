@@ -1,5 +1,15 @@
 # Changelog
 
+## [4.7.2](https://github.com/testcontainers/testcontainers-python/compare/testcontainers-v4.7.1...testcontainers-v4.7.2) (2024-07-15)
+
+
+### Bug Fixes
+
+* Add container Trino ([#642](https://github.com/testcontainers/testcontainers-python/issues/642)) ([49ce5a5](https://github.com/testcontainers/testcontainers-python/commit/49ce5a5ff2ac46cf51920e16c5e39684886b699a)), closes [#641](https://github.com/testcontainers/testcontainers-python/issues/641)
+* **core:** Improve private registry support (tolerate not implemented fields in DOCKER_AUTH_CONFIG) ([#647](https://github.com/testcontainers/testcontainers-python/issues/647)) ([766c382](https://github.com/testcontainers/testcontainers-python/commit/766c382a3aee4eb512ee0f482d6595d3412097c3))
+* **kafka:** add a flag to limit to first hostname for use with networks ([#638](https://github.com/testcontainers/testcontainers-python/issues/638)) ([0ce4fec](https://github.com/testcontainers/testcontainers-python/commit/0ce4fecb2872620fd4cb96313abcba4353442cfd)), closes [#637](https://github.com/testcontainers/testcontainers-python/issues/637)
+* **modules:** Mailpit container base API URL helper method ([#643](https://github.com/testcontainers/testcontainers-python/issues/643)) ([df07586](https://github.com/testcontainers/testcontainers-python/commit/df07586d8844c757db62ac0f8b7914c67fd96e05))
+
 ## [4.7.1](https://github.com/testcontainers/testcontainers-python/compare/testcontainers-v4.7.0...testcontainers-v4.7.1) (2024-07-02)
 
 
