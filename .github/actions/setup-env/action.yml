@@ -1,0 +1,20 @@
+name: setup-env
+description: set up the python environment
+
+inputs:
+  python-version:
+    description: "The python version to install and use"
+    default: "3.12"  # we default to latest supported
+    required: false
+
+runs:
+  using: composite
+  steps:
+    - name: Setup Poetry
+      run: pipx install poetry
+      shell: bash
+    - name: Setup python ${{ inputs.python-version }}
+      uses: actions/setup-python@v5
+      with:
+        python-version: ${{ inputs.python-version }}
+        cache: poetry

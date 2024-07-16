@@ -1,0 +1,19 @@
+name: lint-pr
+
+on:
+  pull_request:
+    types:
+      - opened
+      - edited
+      - synchronize
+
+permissions:
+  pull-requests: read
+
+jobs:
+  validate:
+    name: validate-pull-request-title
+    runs-on: ubuntu-22.04
+    steps:
+      - name: validate pull request title
+        uses: kontrolplane/pull-request-title-validator@ab2b54babb5337246f4b55cf8e0a1ecb0575e46d  #v1

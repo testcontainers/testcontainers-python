@@ -1,0 +1,35 @@
+name: Release Please
+
+on:
+  push:
+    branches: [ main ]
+
+jobs:
+  release:
+    runs-on: ubuntu-22.04
+    outputs:
+      release_created: ${{ steps.track-release.outputs.release_created }}
+    steps:
+      - uses: google-github-actions/release-please-action@v4
+        id: track-release
+        with:
+          manifest-file: .github/.release-please-manifest.json
+          config-file: .github/release-please-config.json
+  publish:
+    runs-on: ubuntu-22.04
+    environment: release
+    permissions:
+      id-token: write
+    needs:
+      - release
+    if: ${{ needs.release.outputs.release_created }}
+    steps:
+      - uses: actions/checkout@v4
+      - name: Set up Python
+        uses: ./.github/actions/setup-env
+      - name: build package
+        run: poetry build
+      # this action uploads packages from the `dist/` directory, which poetry has built in the previous step
+      # usable once we set up trusted publishing, see https://docs.pypi.org/trusted-publishers/using-a-publisher/
+      - name: push package
+        uses: pypa/gh-action-pypi-publish@release/v1

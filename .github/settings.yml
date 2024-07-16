@@ -1,0 +1,155 @@
+# These settings are synced to GitHub by https://probot.github.io/apps/settings/
+
+repository:
+  # See https://docs.github.com/en/rest/reference/repos#update-a-repository for all available settings.
+
+  # The name of the repository. Changing this will rename the repository
+  name: testcontainers-python
+
+  # A short description of the repository that will show up on GitHub
+  description: "Python library that providing a friendly API to run Docker containers when from tests."
+
+  # A URL with more information about the repository
+  homepage: https://testcontainers-python.readthedocs.io/en/latest
+
+  # A comma-separated list of topics to set on the repository
+  topics: database,python,python3,selenium,testcontainers,testing
+
+  # Either `true` to make the repository private, or `false` to make it public.
+  private: false
+
+  # Either `true` to enable issues for this repository, `false` to disable them.
+  has_issues: true
+
+  # Either `true` to enable projects for this repository, or `false` to disable them.
+  # If projects are disabled for the organization, passing `true` will cause an API error.
+  has_projects: false
+
+  # Either `true` to enable the wiki for this repository, `false` to disable it.
+  has_wiki: false
+
+  # Either `true` to enable downloads for this repository, `false` to disable them.
+  has_downloads: true
+
+  # Updates the default branch for this repository.
+  default_branch: main
+
+  # Either `true` to allow squash-merging pull requests, or `false` to prevent
+  # squash-merging.
+  allow_squash_merge: true
+
+  # Either `true` to allow merging pull requests with a merge commit, or `false`
+  # to prevent merging pull requests with merge commits.
+  allow_merge_commit: false
+
+  # Either `true` to allow rebase-merging pull requests, or `false` to prevent
+  # rebase-merging.
+  allow_rebase_merge: false
+
+  # Either `true` to enable automatic deletion of branches on merge, or `false` to disable
+  delete_branch_on_merge: true
+
+# Labels: define labels for Issues and Pull Requests
+# If including a `#`, make sure to wrap it with quotes!
+labels:
+  - { name: '⛔ invalid',                color: '#e6e6e6', description: '' }
+  - { name: 'dependencies',             color: '#0366d6', description: 'Pull requests that update a dependency file' }
+  - { name: 'good first issue',         color: '#1C49A0', description: '' }
+  - { name: '✅ close on merge',         color: '#0E8A16', description: 'Issue that will be closed by an open pull request' }
+  - { name: '✨ package: new',           color: '#0E8A16', description: '' }
+  - { name: '❓ question',               color: '#cc317c', description: '' }
+  - { name: '🍏 macos',                  color: '#C5BF0',, description: '' }
+  - { name: '🐛 bug',                    color: '#ee001',, description: '' }
+  - { name: '🐧 linux',                  color: '#3ED4D',, description: '' }
+  - { name: '👀 requires attention',     color: '#fef2c0', description: '' }
+  - { name: '📖 documentation',          color: '#d93f0b', description: '' }
+  - { name: '📦 package: cassandra',     color: '#0052CC', description: '' }
+  - { name: '📦 package: clickhouse',    color: '#0052CC', description: '' }
+  - { name: '📦 package: compose',       color: '#0052CC', description: '' }
+  - { name: '📦 package: core',          color: '#0052CC', description: '' }
+  - { name: '📦 package: elasticsearch', color: '#0052CC', description: '' }
+  - { name: '📦 package: google',        color: '#0052CC', description: '' }
+  - { name: '📦 package: kafka',         color: '#0052CC', description: '' }
+  - { name: '📦 package: keycloak',      color: '#0052CC', description: '' }
+  - { name: '📦 package: mailpit',       color: '#0052CC', description: '' }
+  - { name: '📦 package: mongodb',       color: '#0052CC', description: '' }
+  - { name: '📦 package: mssql',         color: '#0052CC', description: '' }
+  - { name: '📦 package: neo4j',         color: '#0052CC', description: '' }
+  - { name: '📦 package: oracle',        color: '#0052CC', description: '' }
+  - { name: '📦 package: postgres',      color: '#0052CC', description: '' }
+  - { name: '📦 package: rabbitmq',      color: '#0052CC', description: '' }
+  - { name: '📦 package: selenium',      color: '#0052CC', description: '' }
+  - { name: '📦 package: sftp',          color: '#0052CC', description: '' }
+  - { name: '🔀 requires triage',        color: '#bfdadc', description: '' }
+  - { name: '🔧 maintenance',            color: '#c2f759', description: '' }
+  - { name: '🚀 enhancement',            color: '#84b6eb', description: '' }
+  - { name: '🚫 wontfix',                color: '#ffffff', description: '' }
+  - { name: '🛟 help wanted',            color: '#128A0C', description: '' }
+
+# Collaborators: give specific users access to this repository.
+# See https://docs.github.com/en/rest/reference/repos#add-a-repository-collaborator for available options
+collaborators:
+  - username: totallyzen
+    permission: maintain
+  - username: alexanderankin
+    permission: maintain
+  - username: kiview
+    permission: admin
+  #- username: testcontainersbot
+  #  permission: write
+
+  # Note: `permission` is only valid on organization-owned repositories.
+  # The permission to grant the collaborator. Can be one of:
+  # * `pull` - can pull, but not push to or administer this repository.
+  # * `push` - can pull and push, but not administer this repository.
+  # * `admin` - can pull, push and administer this repository.
+  # * `maintain` - Recommended for project managers who need to manage the repository without access to sensitive or destructive actions.
+  # * `triage` - Recommended for contributors who need to proactively manage issues and pull requests without write access.
+
+# See https://docs.github.com/en/rest/reference/teams#add-or-update-team-repository-permissions for available options
+teams:
+  # Please make sure the team already exist in the organization, as the repository-settings application is not creating them.
+  # See https://github.com/repository-settings/app/discussions/639 for more information about teams and settings
+  # - name: go-team
+  #   # The permission to grant the team. Can be one of:
+  #   # * `pull` - can pull, but not push to or administer this repository.
+  #   # * `push` - can pull and push, but not administer this repository.
+  #   # * `admin` - can pull, push and administer this repository.
+  #   # * `maintain` - Recommended for project managers who need to manage the repository without access to sensitive or destructive actions.
+  #   # * `triage` - Recommended for contributors who need to proactively manage issues and pull requests without write access.
+  #   permission: admin
+  - name: oss-maintainers
+    permission: admin
+
+branches:
+  - name: main
+    # https://docs.github.com/en/rest/reference/repos#update-branch-protection
+    # Branch Protection settings. Set to null to disable
+    protection:
+      # Required. Require at least one approving review on a pull request, before merging. Set to null to disable.
+      required_pull_request_reviews:
+        # The number of approvals required. (1-6)
+        required_approving_review_count: 1
+        # Dismiss approved reviews automatically when a new commit is pushed.
+        dismiss_stale_reviews: false
+        # Blocks merge until code owners have reviewed.
+        require_code_owner_reviews: false
+        # Specify which users and teams can dismiss pull request reviews. Pass an empty dismissal_restrictions object to disable. User and team dismissal_restrictions are only available for organization-owned repositories. Omit this parameter for personal repositories.
+        dismissal_restrictions:
+          users: []
+          teams: [] # [go-team]
+      # Required. Require status checks to pass before merging. Set to null to disable
+      required_status_checks:
+        # Required. Require branches to be up to date before merging.
+        strict: true
+        # Required. The list of status checks to require in order to merge into this branch
+        contexts: ["core"]
+      # Required. Enforce all configured restrictions for administrators. Set to true to enforce required status checks for repository administrators. Set to null to disable.
+      enforce_admins: false
+      # Prevent merge commits from being pushed to matching branches
+      required_linear_history: true
+      # Required. Restrict who can push to this branch. Team and user restrictions are only available for organization-owned repositories. Set to null to disable.
+      restrictions:
+        apps: []
+        users: [kiview,totallyzen,alexanderankin]
+        teams: [oss-maintainers]

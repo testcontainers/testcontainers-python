@@ -1,0 +1,60 @@
+# Contrinuous Integration for the core package
+
+name: core
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+
+jobs:
+  run-tests-and-coverage:
+    runs-on: ubuntu-22.04
+    strategy:
+      fail-fast: false
+      matrix:
+        python-version: ["3.9", "3.10", "3.11", "3.12"]
+    steps:
+      - uses: actions/checkout@v4
+      - name: Set up Python
+        uses: ./.github/actions/setup-env
+        with:
+          python-version: ${{ matrix.python-version }}
+      - name: Install Python dependencies
+        run: poetry install --all-extras
+      - name: Run twine check
+        run: poetry build && poetry run twine check dist/*.tar.gz
+      - name: Run tests
+        run: make core/tests
+      - name: Rename coverage file
+        run: mv .coverage .coverage.${{ matrix.python-version}}
+      - name: "Save coverage artifact"
+        uses: actions/upload-artifact@v4
+        with:
+          name: "coverage-artifact-${{ matrix.python-version}}"
+          path: ".coverage.*"
+          retention-days: 1
+      - name: Run doctests
+        run: make core/doctests
+
+  coverage-compile:
+    needs: "run-tests-and-coverage"
+    runs-on: ubuntu-22.04
+    steps:
+      - uses: actions/checkout@v4
+      - name: Set up Python
+        uses: ./.github/actions/setup-env
+      - name: Install Python dependencies
+        run: poetry install --all-extras
+      - name: "Download coverage artifacts"
+        uses: actions/download-artifact@v4
+        with:
+          pattern: "coverage-artifact-*"
+          merge-multiple: true
+      - name: Compile coverage
+        run: make coverage
+      - name: Upload coverage to Codecov
+        uses: codecov/codecov-action@v4
+        with:
+          token: ${{ secrets.CODECOV_TOKEN }}

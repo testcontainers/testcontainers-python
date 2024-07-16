@@ -1,12 +1,17 @@
+import base64
+import json
+import logging
 import os
 import platform
-import sys
 import subprocess
-import logging
+import sys
+from collections import namedtuple
 
 LINUX = "linux"
 MAC = "mac"
 WIN = "win"
+
+DockerAuthInfo = namedtuple("DockerAuthInfo", ["registry", "username", "password"])
 
 
 def setup_logger(name: str) -> logging.Logger:
@@ -29,19 +34,19 @@ def os_name() -> str:
 
 
 def is_mac() -> bool:
-    return MAC == os_name()
+    return os_name() == MAC
 
 
 def is_linux() -> bool:
-    return LINUX == os_name()
+    return os_name() == LINUX
 
 
 def is_windows() -> bool:
-    return WIN == os_name()
+    return os_name() == WIN
 
 
 def is_arm() -> bool:
-    return platform.machine() in ('arm64', 'aarch64')
+    return platform.machine() in ("arm64", "aarch64")
 
 
 def inside_container() -> bool:
@@ -50,7 +55,7 @@ def inside_container() -> bool:
 
     https://github.com/docker/docker/blob/a9fa38b1edf30b23cae3eade0be48b3d4b1de14b/daemon/initlayer/setup_unix.go#L25
     """
-    return os.path.exists('/.dockerenv')
+    return os.path.exists("/.dockerenv")
 
 
 def default_gateway_ip() -> str:
@@ -62,11 +67,10 @@ def default_gateway_ip() -> str:
     """
     cmd = ["sh", "-c", "ip route|awk '/default/ { print $3 }'"]
     try:
-        process = subprocess.Popen(cmd, stdout=subprocess.PIPE,
-                                   stderr=subprocess.PIPE)
+        process = subprocess.Popen(cmd, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
         ip_address = process.communicate()[0]
         if ip_address and process.returncode == 0:
-            return ip_address.decode('utf-8').strip().strip('\n')
+            return ip_address.decode("utf-8").strip().strip("\n")
     except subprocess.SubprocessError:
         return None
 
@@ -78,3 +82,29 @@ def raise_for_deprecated_parameter(kwargs: dict, name: str, replacement: str) ->
     if kwargs.pop(name, None):
         raise ValueError(f"Use `{replacement}` instead of `{name}`")
     return kwargs
+
+
+def parse_docker_auth_config(auth_config: str) -> list[DockerAuthInfo]:
+    """
+    Parse the docker auth config from a string.
+
+    Example:
+    {
+        "auths": {
+            "https://index.docker.io/v1/": {
+                "auth": "dXNlcm5hbWU6cGFzc3dvcmQ="
+            }
+        }
+    }
+    """
+    auth_info: list[DockerAuthInfo] = []
+    try:
+        auth_config_dict: dict = json.loads(auth_config).get("auths")
+        for registry, auth in auth_config_dict.items():
+            auth_str = auth.get("auth")
+            auth_str = base64.b64decode(auth_str).decode("utf-8")
+            username, password = auth_str.split(":")
+            auth_info.append(DockerAuthInfo(registry, username, password))
+        return auth_info
+    except (json.JSONDecodeError, KeyError, ValueError) as exp:
+        raise ValueError("Could not parse docker auth config") from exp

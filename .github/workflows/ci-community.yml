@@ -1,0 +1,61 @@
+# Contrinuous Integration for community modules
+
+name: modules
+
+on:
+  push:
+    branches: [ main ]
+    paths:
+      - "modules/**"
+  pull_request:
+    branches: [ main ]
+    paths:
+      - "modules/**"
+
+jobs:
+  track-modules:
+    runs-on: ubuntu-22.04
+    steps:
+      - name: Checkout contents
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0  # recommended by tj-actions/changed-files
+      - name: Get changed files
+        id: changed-files
+        uses: tj-actions/changed-files@v42
+        with:
+          path: "./modules"
+          diff_relative: true
+          dir_names: true
+          dir_names_exclude_current_dir: true
+          json: true
+      - name: Compute modules from files
+        id: compute-changes
+        run: |
+          modules=$(echo "${{ steps.changed-files.outputs.all_changed_files }}" |  jq '.[] | split("/") | first' | jq -s -c '. | unique')
+          echo "computed_modules=$modules"
+          echo "computed_modules=$modules" >> $GITHUB_OUTPUT
+    outputs:
+      changed_modules: ${{ steps.compute-changes.outputs.computed_modules }}
+  test:
+    runs-on: ubuntu-22.04
+    needs: [track-modules]
+    if: ${{ needs.track-modules.outputs.changed_modules != '[]' }}
+    strategy:
+      fail-fast: false
+      matrix:
+        python-version: ["3.9", "3.10", "3.11", "3.12"]
+        module: ${{ fromJSON(needs.track-modules.outputs.changed_modules) }}
+    steps:
+      - name: Checkout contents
+        uses: actions/checkout@v4
+      - name: Set up Python
+        uses: ./.github/actions/setup-env
+        with:
+          python-version: ${{ matrix.python-version }}
+      - name: Install Python dependencies
+        run: poetry install -E ${{ matrix.module }}
+      - name: Run tests
+        run: make modules/${{ matrix.module }}/tests
+      - name: Run doctests
+        run: make modules/${{ matrix.module }}/doctests

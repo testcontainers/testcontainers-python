@@ -15,17 +15,17 @@
 import re
 import time
 import traceback
-from typing import Any, Callable, Iterable, Mapping, Optional, TYPE_CHECKING, Union
+from typing import TYPE_CHECKING, Any, Callable, Union
+
 import wrapt
 
-from . import config
-from .utils import setup_logger
+from testcontainers.core.config import testcontainers_config as config
+from testcontainers.core.utils import setup_logger
 
 if TYPE_CHECKING:
-    from .container import DockerContainer
+    from testcontainers.core.container import DockerContainer
 
 logger = setup_logger(__name__)
-
 
 # Get a tuple of transient exceptions for which we'll retry. Other exceptions will be raised.
 TRANSIENT_EXCEPTIONS = (TimeoutError, ConnectionError)
@@ -45,27 +45,28 @@ def wait_container_is_ready(*transient_exceptions) -> Callable:
     transient_exceptions = TRANSIENT_EXCEPTIONS + tuple(transient_exceptions)
 
     @wrapt.decorator
-    def wrapper(wrapped: Callable, instance: Any, args: Iterable, kwargs: Mapping) -> Any:
-        from .container import DockerContainer
+    def wrapper(wrapped: Callable, instance: Any, args: list, kwargs: dict) -> Any:
+        from testcontainers.core.container import DockerContainer
 
         if isinstance(instance, DockerContainer):
-            logger.info("Waiting for container %s with image %s to be ready ...",
-                        instance._container, instance.image)
+            logger.info("Waiting for container %s with image %s to be ready ...", instance._container, instance.image)
         else:
             logger.info("Waiting for %s to be ready ...", instance)
 
         exception = None
-        for attempt_no in range(config.MAX_TRIES):
+        for attempt_no in range(config.max_tries):
             try:
                 return wrapped(*args, **kwargs)
             except transient_exceptions as e:
-                logger.debug(f"Connection attempt '{attempt_no + 1}' of '{config.MAX_TRIES + 1}' "
-                             f"failed: {traceback.format_exc()}")
-                time.sleep(config.SLEEP_TIME)
+                logger.debug(
+                    f"Connection attempt '{attempt_no + 1}' of '{config.max_tries + 1}' "
+                    f"failed: {traceback.format_exc()}"
+                )
+                time.sleep(config.sleep_time)
                 exception = e
         raise TimeoutError(
-            f'Wait time ({config.TIMEOUT}s) exceeded for {wrapped.__name__}(args: {args}, kwargs: '
-            f'{kwargs}). Exception: {exception}'
+            f"Wait time ({config.timeout}s) exceeded for {wrapped.__name__}(args: {args}, kwargs: "
+            f"{kwargs}). Exception: {exception}"
         )
 
     return wrapper
@@ -76,8 +77,9 @@ def wait_for(condition: Callable[..., bool]) -> bool:
     return condition()
 
 
-def wait_for_logs(container: "DockerContainer", predicate: Union[Callable, str],
-                  timeout: Optional[float] = None, interval: float = 1) -> float:
+def wait_for_logs(
+    container: "DockerContainer", predicate: Union[Callable, str], timeout: float = config.timeout, interval: float = 1
+) -> float:
     """
     Wait for the container to emit logs satisfying the predicate.
 
@@ -101,7 +103,6 @@ def wait_for_logs(container: "DockerContainer", predicate: Union[Callable, str],
         stderr = container.get_logs()[1].decode()
         if predicate(stdout) or predicate(stderr):
             return duration
-        if timeout and duration > timeout:
-            raise TimeoutError(f"Container did not emit logs satisfying predicate in {timeout:.3f} "
-                               "seconds")
+        if duration > timeout:
+            raise TimeoutError(f"Container did not emit logs satisfying predicate in {timeout:.3f} " "seconds")
         time.sleep(interval)

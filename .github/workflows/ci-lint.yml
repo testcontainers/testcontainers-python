@@ -1,0 +1,23 @@
+# Contrinuous Integration for the core package
+
+name: lint
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+
+jobs:
+  python:
+    runs-on: ubuntu-22.04
+    steps:
+      - uses: actions/checkout@v4
+      - name: Setup Env
+        uses: ./.github/actions/setup-env
+        with:
+          python-version: "3.9"  # the pre-commit is hooked in as 3.9
+      - name: Install Python dependencies
+        run: poetry install --no-interaction
+      - name: Execute pre-commit handler
+        run: poetry run pre-commit run -a
