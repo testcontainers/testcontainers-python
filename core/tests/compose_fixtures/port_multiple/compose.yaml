@@ -1,6 +1,6 @@
 services:
   alpine:
-    image: nginx:alpine-slim
+    image: nginx:alpine
     init: true
     ports:
       - '81'
@@ -12,9 +12,15 @@ services:
       - sh
       - -c
       - 'd=/etc/nginx/conf.d; echo "server { listen 81; location / { return 202; } }" > $$d/81.conf && echo "server { listen 82; location / { return 204; } }" > $$d/82.conf && nginx -g "daemon off;"'
+    healthcheck:
+      test: curl --fail http://localhost || exit 1
+      interval: 3s
+      timeout: 3s
+      retries: 3
+
 
   alpine2:
-    image: nginx:alpine-slim
+    image: nginx:alpine
     init: true
     ports:
       - target: 80
@@ -24,3 +30,8 @@ services:
       - sh
       - -c
       - 'd=/etc/nginx/conf.d; echo "server { listen 81; location / { return 202; } }" > $$d/81.conf && echo "server { listen 82; location / { return 204; } }" > $$d/82.conf && nginx -g "daemon off;"'
+    healthcheck:
+      test: curl --fail http://localhost || exit 1
+      interval: 3s
+      timeout: 3s
+      retries: 3
