@@ -50,7 +50,7 @@ class BrowserWebDriverContainer(DockerContainer):
     def __init__(
         self,
         capabilities: dict[str, Any],
-        options: ArgOptions | None = None,
+        options: Optional[ArgOptions] = None,
         image: Optional[str] = None,
         port: int = 4444,
         vnc_port: int = 5900,
