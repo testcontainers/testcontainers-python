@@ -85,7 +85,7 @@ class BrowserWebDriverContainer(DockerContainer):
         port = self.get_exposed_port(self.port)
         return f"http://{ip}:{port}/wd/hub"
 
-    def with_options(self, options: ArgOptions | None):
+    def with_options(self, options: Optional[ArgOptions]):
         self.options = options
 
     def with_video(self, image: Optional[str] = None, video_path: Optional[Path] = None) -> Self:
