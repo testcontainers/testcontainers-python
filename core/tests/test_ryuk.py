@@ -5,7 +5,7 @@ from pytest import MonkeyPatch
 from docker import DockerClient
 from docker.errors import NotFound
 
-from testcontainers.core.config import testcontainers_config
+from testcontainers.core.config import testcontainers_config as conf
 from testcontainers.core.container import Reaper
 from testcontainers.core.container import DockerContainer
 from testcontainers.core.waiting_utils import wait_for_logs
@@ -13,8 +13,8 @@ from testcontainers.core.waiting_utils import wait_for_logs
 
 def test_wait_for_reaper(monkeypatch: MonkeyPatch):
     Reaper.delete_instance()
-    monkeypatch.setattr(testcontainers_config, "ryuk_reconnection_timeout", "0.1s")
-    docker_client = DockerClient()
+    monkeypatch.setattr(conf, "ryuk_reconnection_timeout", "0.1s")
+    docker_client = DockerClient(base_url=conf.docker_host)
     container = DockerContainer("hello-world").start()
 
     container_id = container.get_wrapped_container().short_id
@@ -40,7 +40,7 @@ def test_wait_for_reaper(monkeypatch: MonkeyPatch):
 
 def test_container_without_ryuk(monkeypatch: MonkeyPatch):
     Reaper.delete_instance()
-    monkeypatch.setattr(testcontainers_config, "ryuk_disabled", True)
+    monkeypatch.setattr(conf, "ryuk_disabled", True)
     with DockerContainer("hello-world") as container:
         wait_for_logs(container, "Hello from Docker!")
         assert Reaper._instance is None

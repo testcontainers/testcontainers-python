@@ -39,8 +39,10 @@ def read_tc_properties() -> dict[str, str]:
     return settings
 
 
-_WARNINGS = {"DOCKER_AUTH_CONFIG": "DOCKER_AUTH_CONFIG is experimental, see testcontainers/testcontainers-python#566"}
-
+_WARNINGS = {
+    "DOCKER_AUTH_CONFIG": "DOCKER_AUTH_CONFIG is experimental, see testcontainers/testcontainers-python#566",
+    "tc.host": "tc.host is deprecated, use docker.host in testcontainers.properties instead",
+}
 
 @dataclass
 class TestcontainersConfiguration:
@@ -52,28 +54,28 @@ class TestcontainersConfiguration:
     ryuk_docker_socket: str = RYUK_DOCKER_SOCKET
     ryuk_reconnection_timeout: str = RYUK_RECONNECTION_TIMEOUT
     tc_properties: dict[str, str] = field(default_factory=read_tc_properties)
-    _docker_auth_config: Optional[str] = field(default_factory=lambda: environ.get("DOCKER_AUTH_CONFIG"))
+    docker_host: str = field(init=False)
+    docker_auth_config: Optional[str] = field(init=False)
     tc_host_override: Optional[str] = TC_HOST_OVERRIDE
     """
     https://github.com/testcontainers/testcontainers-go/blob/dd76d1e39c654433a3d80429690d07abcec04424/docker.go#L644
     if os env TC_HOST is set, use it
     """
+    def __post_init__(self):
+        self.docker_host = environ.get("DOCKER_HOST") or self.tc_properties.get("docker.host") or self._tc_properties_get_tc_host() or "/var/run/docker.sock"
+        self.docker_auth_config = self._get_docker_auth_config()
 
-    @property
-    def docker_auth_config(self):
-        config = self._docker_auth_config
+    def _get_docker_auth_config(self):
+        config = environ.get("DOCKER_AUTH_CONFIG")
         if config and "DOCKER_AUTH_CONFIG" in _WARNINGS:
             warning(_WARNINGS.pop("DOCKER_AUTH_CONFIG"))
         return config
 
-    @docker_auth_config.setter
-    def docker_auth_config(self, value: str):
-        if "DOCKER_AUTH_CONFIG" in _WARNINGS:
-            warning(_WARNINGS.pop("DOCKER_AUTH_CONFIG"))
-        self._docker_auth_config = value
-
-    def tc_properties_get_tc_host(self) -> Union[str, None]:
-        return self.tc_properties.get("tc.host")
+    def _tc_properties_get_tc_host(self) -> Union[str, None]:
+        config = self.tc_properties.get("tc.host")
+        if config and "tc.host" in _WARNINGS:
+            warning(_WARNINGS.pop("tc.host"))
+        return config
 
     @property
     def timeout(self):

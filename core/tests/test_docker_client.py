@@ -42,7 +42,7 @@ def test_docker_client_login():
     mock_parse_docker_auth_config.return_value = [TestAuth("test")]
 
     with (
-        mock.patch.object(c, "_docker_auth_config", "test"),
+        mock.patch.object(c, "docker_auth_config", "test"),
         patch("testcontainers.core.docker_client.docker", mock_docker),
         patch("testcontainers.core.docker_client.parse_docker_auth_config", mock_parse_docker_auth_config),
     ):
@@ -51,15 +51,12 @@ def test_docker_client_login():
     mock_docker.from_env.return_value.login.assert_called_with(**{"value": "test"})
 
 
-def test_docker_client_login_empty_get_docker_auth_config():
+def test_docker_client_login_empty_docker_auth_config():
     mock_docker = MagicMock(spec=docker)
-    mock_get_docker_auth_config = MagicMock()
-    mock_get_docker_auth_config.return_value = None
 
     with (
-        mock.patch.object(c, "_docker_auth_config", "test"),
+        mock.patch.object(c, "docker_auth_config", None),
         patch("testcontainers.core.docker_client.docker", mock_docker),
-        patch("testcontainers.core.docker_client.get_docker_auth_config", mock_get_docker_auth_config),
     ):
         DockerClient()
 
@@ -74,7 +71,7 @@ def test_docker_client_login_empty_parse_docker_auth_config():
     mock_parse_docker_auth_config.return_value = None
 
     with (
-        mock.patch.object(c, "_docker_auth_config", "test"),
+        mock.patch.object(c, "docker_auth_config", "test"),
         patch("testcontainers.core.docker_client.docker", mock_docker),
         patch("testcontainers.core.docker_client.parse_docker_auth_config", mock_parse_docker_auth_config),
     ):
@@ -87,13 +84,11 @@ def test_docker_client_login_empty_parse_docker_auth_config():
 @mark.parametrize("auth_config_sample", [{"credHelpers": {"test": "login"}}, {"credsStore": "login"}])
 def test_docker_client_login_unsupported_auth_config(auth_config_sample):
     mock_docker = MagicMock(spec=docker)
-    mock_get_docker_auth_config = MagicMock()
-    mock_get_docker_auth_config.return_value = json.dumps(auth_config_sample)
+
 
     with (
-        mock.patch.object(c, "_docker_auth_config", "test"),
         patch("testcontainers.core.docker_client.docker", mock_docker),
-        patch("testcontainers.core.docker_client.get_docker_auth_config", mock_get_docker_auth_config),
+        mock.patch.object(c, "docker_auth_config", None),
     ):
         DockerClient()
 
