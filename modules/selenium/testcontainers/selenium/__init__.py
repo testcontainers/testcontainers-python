@@ -87,6 +87,7 @@ class BrowserWebDriverContainer(DockerContainer):
 
     def with_options(self, options: Optional[ArgOptions]):
         self.options = options
+        return self
 
     def with_video(self, image: Optional[str] = None, video_path: Optional[Path] = None) -> Self:
         video_path = video_path or Path.cwd()
