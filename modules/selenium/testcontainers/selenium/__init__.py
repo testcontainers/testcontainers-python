@@ -11,7 +11,7 @@
 #    License for the specific language governing permissions and limitations
 #    under the License.
 from pathlib import Path
-from typing import Optional
+from typing import Any, Optional
 
 import urllib3
 from typing_extensions import Self
@@ -26,7 +26,7 @@ from testcontainers.selenium.video import SeleniumVideoContainer
 IMAGES = {"firefox": "selenium/standalone-firefox:latest", "chrome": "selenium/standalone-chrome:latest"}
 
 
-def get_image_name(capabilities: str) -> str:
+def get_image_name(capabilities: dict[str, Any]) -> str:
     return IMAGES[capabilities["browserName"]]
 
 
@@ -48,9 +48,16 @@ class BrowserWebDriverContainer(DockerContainer):
     """
 
     def __init__(
-        self, capabilities: str, image: Optional[str] = None, port: int = 4444, vnc_port: int = 5900, **kwargs
+        self,
+        capabilities: dict[str, Any],
+        options: Optional[ArgOptions] = None,
+        image: Optional[str] = None,
+        port: int = 4444,
+        vnc_port: int = 5900,
+        **kwargs,
     ) -> None:
         self.capabilities = capabilities
+        self.options = options
         self.image = image or get_image_name(capabilities)
         self.port = port
         self.vnc_port = vnc_port
@@ -65,7 +72,7 @@ class BrowserWebDriverContainer(DockerContainer):
 
     @wait_container_is_ready(urllib3.exceptions.HTTPError)
     def _connect(self) -> webdriver.Remote:
-        options = ArgOptions()
+        options = ArgOptions() if self.options is None else self.options
         for key, value in self.capabilities.items():
             options.set_capability(key, value)
         return webdriver.Remote(command_executor=(self.get_connection_url()), options=options)
@@ -77,6 +84,10 @@ class BrowserWebDriverContainer(DockerContainer):
         ip = self.get_container_host_ip()
         port = self.get_exposed_port(self.port)
         return f"http://{ip}:{port}/wd/hub"
+
+    def with_options(self, options: Optional[ArgOptions]):
+        self.options = options
+        return self
 
     def with_video(self, image: Optional[str] = None, video_path: Optional[Path] = None) -> Self:
         video_path = video_path or Path.cwd()
