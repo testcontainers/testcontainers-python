@@ -36,9 +36,9 @@ def test_docker_container_with_reuse_reuse_enabled_ryuk_enabled(monkeypatch):
     monkeypatch.setattr(testcontainers_config, "tc_properties", tc_properties_mock)
     monkeypatch.setattr(testcontainers_config, "ryuk_reconnection_timeout", "0.1s")
 
-    with DockerContainer("hello-world").with_reuse() as container:
-        id = container._container.id
-        wait_for_logs(container, "Hello from Docker!")
+    container = DockerContainer("hello-world").with_reuse().start()
+    id = container._container.id
+    wait_for_logs(container, "Hello from Docker!")
 
     Reaper._socket.close()
     # Sleep until Ryuk reaps all dangling containers
@@ -59,15 +59,15 @@ def test_docker_container_with_reuse_reuse_enabled_ryuk_disabled(monkeypatch):
     monkeypatch.setattr(testcontainers_config, "tc_properties", tc_properties_mock)
     monkeypatch.setattr(testcontainers_config, "ryuk_disabled", True)
 
-    with DockerContainer("hello-world").with_reuse() as container:
-        id = container._container.id
-        wait_for_logs(container, "Hello from Docker!")
+    container = DockerContainer("hello-world").with_reuse().start()
+    id = container._container.id
+    wait_for_logs(container, "Hello from Docker!")
 
     containers = DockerClient().client.containers.list(all=True)
     assert id in [container.id for container in containers]
 
     # Cleanup after keeping container alive (with_reuse)
-    container._container.remove(force=True)
+    container.stop()
 
 
 def test_docker_container_with_reuse_reuse_enabled_ryuk_disabled_same_id(monkeypatch):
@@ -78,13 +78,15 @@ def test_docker_container_with_reuse_reuse_enabled_ryuk_disabled_same_id(monkeyp
     monkeypatch.setattr(testcontainers_config, "tc_properties", tc_properties_mock)
     monkeypatch.setattr(testcontainers_config, "ryuk_disabled", True)
 
-    with DockerContainer("hello-world").with_reuse() as container:
-        id = container._container.id
-    with DockerContainer("hello-world").with_reuse() as container:
-        assert id == container._container.id
+    container_1 = DockerContainer("hello-world").with_reuse().start()
+    id_1 = container_1._container.id
+    container_2 = DockerContainer("hello-world").with_reuse().start()
+    id_2 = container_2._container.id
+    assert id_1 == id_2
 
     # Cleanup after keeping container alive (with_reuse)
-    container._container.remove(force=True)
+    container_1.stop()
+    # container_2.stop() is not needed since it is the same as container_1
 
 
 def test_docker_container_labels_hash():

@@ -120,9 +120,13 @@ Fetching passwords from cloud providers:
 Reusable Containers (Experimental)
 ----------------------------------
 
-Containers can be reused across consecutive test runs. To reuse a container, the container configuration must be the same.
+.. warning::
+    Reusable Containers is still an experimental feature and the behavior can change.
+    Those containers won't stop after all tests are finished.
 
-Containers that are set up for reuse will not be automatically removed. Thus, those containers need to be removed manually.
+Containers can be reused across consecutive test runs. To reuse a container, the container has to be started manually by calling the `start()` method. Do not call the `stop()` method directly or indirectly via a `with` statement (context manager). To reuse a container, the container configuration must be the same.
+
+Containers that are set up for reuse will not be automatically removed. Thus, if they are not needed anymore, those containers must be removed manually.
 
 Containers should not be reused in a CI environment.
 
@@ -131,16 +135,16 @@ How to use?
 
 1. Add :code:`testcontainers.reuse.enable=true` to :code:`~/.testcontainers.properties`
 2. Disable ryuk by setting the environment variable :code:`TESTCONTAINERS_RYUK_DISABLED=true`
-3. Instantiate a container using :code:`with_reuse`
+3. Instantiate a container using :code:`with_reuse()` and :code:`start()`
 
 .. doctest::
 
     >>> from testcontainers.core.container import DockerContainer
 
-    >>> with DockerContainer("hello-world").with_reuse() as container:
-    ...     first_id = container._container.id
-    >>> with DockerContainer("hello-world").with_reuse() as container:
-    ...     second_id == container._container.id
+    >>> container = DockerContainer("hello-world").with_reuse().start()
+    >>> first_id = container._container.id
+    >>> container = DockerContainer("hello-world").with_reuse().start()
+    >>> second_id == container._container.id
     >>> print(first_id == second_id)
     True
 

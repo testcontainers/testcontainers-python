@@ -151,10 +151,7 @@ class DockerContainer:
 
     def stop(self, force=True, delete_volume=True) -> None:
         if self._container:
-            if self._reuse and c.tc_properties_testcontainers_reuse_enable:
-                self._container.stop()
-            else:
-                self._container.remove(force=force, v=delete_volume)
+            self._container.remove(force=force, v=delete_volume)
         self.get_docker_client().client.close()
 
     def __enter__(self) -> Self:
