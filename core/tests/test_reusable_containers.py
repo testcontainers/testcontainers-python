@@ -10,62 +10,75 @@ from testcontainers.core.container import Reaper
 
 
 def test_docker_container_reuse_default():
-    with DockerContainer("hello-world") as container:
-        assert container._reuse == False
-        id = container._container.id
-        wait_for_logs(container, "Hello from Docker!")
+    # Make sure Ryuk cleanup is not active from previous test runs
+    Reaper.delete_instance()
+
+    container = DockerContainer("hello-world").start()
+    wait_for_logs(container, "Hello from Docker!")
+
+    assert container._reuse == False
+    assert testcontainers_config.tc_properties_testcontainers_reuse_enable == False
+    assert Reaper._socket is not None
+
+    container.stop()
     containers = DockerClient().client.containers.list(all=True)
-    assert id not in [container.id for container in containers]
+    assert container._container.id not in [container.id for container in containers]
 
 
-def test_docker_container_with_reuse_reuse_disabled():
-    with DockerContainer("hello-world").with_reuse() as container:
-        assert container._reuse == True
-        assert testcontainers_config.tc_properties_testcontainers_reuse_enable == False
-        id = container._container.id
-        wait_for_logs(container, "Hello from Docker!")
+def test_docker_container_with_reuse_reuse_disabled(caplog):
+    # Make sure Ryuk cleanup is not active from previous test runs
+    Reaper.delete_instance()
+
+    container = DockerContainer("hello-world").with_reuse().start()
+    wait_for_logs(container, "Hello from Docker!")
+
+    assert container._reuse == True
+    assert testcontainers_config.tc_properties_testcontainers_reuse_enable == False
+    assert (
+        "Reuse was requested (`with_reuse`) but the environment does not support the "
+        + "reuse of containers. To enable container reuse, add "
+        + "'testcontainers.reuse.enable=true' to '~/.testcontainers.properties'."
+    ) in caplog.text
+    assert Reaper._socket is not None
+
+    container.stop()
     containers = DockerClient().client.containers.list(all=True)
-    assert id not in [container.id for container in containers]
+    assert container._container.id not in [container.id for container in containers]
 
 
-def test_docker_container_with_reuse_reuse_enabled_ryuk_enabled(monkeypatch):
+def test_docker_container_without_reuse_reuse_enabled(monkeypatch):
     # Make sure Ryuk cleanup is not active from previous test runs
     Reaper.delete_instance()
 
     tc_properties_mock = testcontainers_config.tc_properties | {"testcontainers.reuse.enable": "true"}
     monkeypatch.setattr(testcontainers_config, "tc_properties", tc_properties_mock)
-    monkeypatch.setattr(testcontainers_config, "ryuk_reconnection_timeout", "0.1s")
 
-    container = DockerContainer("hello-world").with_reuse().start()
-    id = container._container.id
+    container = DockerContainer("hello-world").start()
     wait_for_logs(container, "Hello from Docker!")
 
-    Reaper._socket.close()
-    # Sleep until Ryuk reaps all dangling containers
-    sleep(0.6)
+    assert container._reuse == False
+    assert testcontainers_config.tc_properties_testcontainers_reuse_enable == True
+    assert Reaper._socket is not None
 
+    container.stop()
     containers = DockerClient().client.containers.list(all=True)
-    assert id not in [container.id for container in containers]
-
-    # Cleanup Ryuk class fields after manual Ryuk shutdown
-    Reaper.delete_instance()
+    assert container._container.id not in [container.id for container in containers]
 
 
-def test_docker_container_with_reuse_reuse_enabled_ryuk_disabled(monkeypatch):
+def test_docker_container_with_reuse_reuse_enabled(monkeypatch):
     # Make sure Ryuk cleanup is not active from previous test runs
     Reaper.delete_instance()
 
     tc_properties_mock = testcontainers_config.tc_properties | {"testcontainers.reuse.enable": "true"}
     monkeypatch.setattr(testcontainers_config, "tc_properties", tc_properties_mock)
-    monkeypatch.setattr(testcontainers_config, "ryuk_disabled", True)
 
     container = DockerContainer("hello-world").with_reuse().start()
-    id = container._container.id
     wait_for_logs(container, "Hello from Docker!")
 
-    containers = DockerClient().client.containers.list(all=True)
-    assert id in [container.id for container in containers]
+    assert Reaper._socket is None
 
+    containers = DockerClient().client.containers.list(all=True)
+    assert container._container.id in [container.id for container in containers]
     # Cleanup after keeping container alive (with_reuse)
     container.stop()
 
@@ -82,8 +95,8 @@ def test_docker_container_with_reuse_reuse_enabled_ryuk_disabled_same_id(monkeyp
     id_1 = container_1._container.id
     container_2 = DockerContainer("hello-world").with_reuse().start()
     id_2 = container_2._container.id
+    assert Reaper._socket is None
     assert id_1 == id_2
-
     # Cleanup after keeping container alive (with_reuse)
     container_1.stop()
     # container_2.stop() is not needed since it is the same as container_1

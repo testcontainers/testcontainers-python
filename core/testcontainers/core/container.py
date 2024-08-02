@@ -89,7 +89,11 @@ class DockerContainer:
         return self
 
     def start(self) -> Self:
-        if not c.ryuk_disabled and self.image != c.ryuk_image:
+        if (
+            not c.ryuk_disabled
+            and self.image != c.ryuk_image
+            and not (self._reuse and c.tc_properties_testcontainers_reuse_enable)
+        ):
             logger.debug("Creating Ryuk container")
             Reaper.get_instance()
         logger.info("Pulling image %s", self.image)
@@ -107,13 +111,11 @@ class DockerContainer:
         )
         hash_ = hashlib.sha256(bytes(str(args), encoding="utf-8")).hexdigest()
 
-        if self._reuse and (not c.tc_properties_testcontainers_reuse_enable or not c.ryuk_disabled):
+        if self._reuse and not c.tc_properties_testcontainers_reuse_enable:
             logging.warning(
                 "Reuse was requested (`with_reuse`) but the environment does not "
                 + "support the reuse of containers. To enable container reuse, add "
-                + "the 'testcontainers.reuse.enable=true' to "
-                + "'~/.testcontainers.properties' and disable ryuk by setting the "
-                + "environment variable 'TESTCONTAINERS_RYUK_DISABLED=true'"
+                + "'testcontainers.reuse.enable=true' to '~/.testcontainers.properties'."
             )
 
         if self._reuse and c.tc_properties_testcontainers_reuse_enable:
