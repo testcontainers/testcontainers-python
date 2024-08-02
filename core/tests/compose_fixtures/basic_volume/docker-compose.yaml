@@ -1,0 +1,17 @@
+services:
+  alpine:
+    image: alpine:latest
+    init: true
+    command:
+      - sh
+      - -c
+      - 'while true; do sleep 0.1 ; date -Ins; done'
+    read_only: true
+    volumes:
+      - type: volume
+        source: my-data
+        target: /var/lib/example/data
+        read_only: false
+
+volumes:
+  my-data: {}

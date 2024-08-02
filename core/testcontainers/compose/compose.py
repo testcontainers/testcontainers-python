@@ -165,6 +165,7 @@ class DockerCompose:
     pull: bool = False
     build: bool = False
     wait: bool = True
+    keep_volumes: bool = False
     env_file: Optional[str] = None
     services: Optional[list[str]] = None
     docker_command_path: Optional[str] = None
@@ -178,7 +179,7 @@ class DockerCompose:
         return self
 
     def __exit__(self, exc_type, exc_val, exc_tb) -> None:
-        self.stop()
+        self.stop(not self.keep_volumes)
 
     def docker_compose_command(self) -> list[str]:
         """

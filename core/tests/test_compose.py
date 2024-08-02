@@ -1,3 +1,4 @@
+import subprocess
 from pathlib import Path
 from re import split
 from time import sleep
@@ -145,6 +146,31 @@ def test_compose_logs():
         # this is a safe way to split the string
         # docker changes the prefix between versions 24 and 25
         assert not line or container.Service in next(iter(line.split("|")), None)
+
+
+def test_compose_volumes():
+    _file_in_volume = "/var/lib/example/data/hello"
+    volumes = DockerCompose(context=FIXTURES / "basic_volume", keep_volumes=True)
+    with volumes:
+        stdout, stderr, exitcode = volumes.exec_in_container(
+            ["/bin/sh", "-c", f"echo hello > {_file_in_volume}"], "alpine"
+        )
+    assert exitcode == 0
+
+    # execute another time to confirm the file is still there, but we're not keeping the volumes this time
+    volumes.keep_volumes = False
+    with volumes:
+        stdout, stderr, exitcode = volumes.exec_in_container(
+            ["cat", _file_in_volume], "alpine"
+        )
+    assert exitcode == 0
+    assert "hello" in stdout
+
+    # third time we expect the file to be missing
+    with volumes, pytest.raises(subprocess.CalledProcessError):
+        volumes.exec_in_container(
+            ["cat", _file_in_volume], "alpine"
+        )
 
 
 # noinspection HttpUrlsUsage
