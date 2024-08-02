@@ -160,17 +160,13 @@ def test_compose_volumes():
     # execute another time to confirm the file is still there, but we're not keeping the volumes this time
     volumes.keep_volumes = False
     with volumes:
-        stdout, stderr, exitcode = volumes.exec_in_container(
-            ["cat", _file_in_volume], "alpine"
-        )
+        stdout, stderr, exitcode = volumes.exec_in_container(["cat", _file_in_volume], "alpine")
     assert exitcode == 0
     assert "hello" in stdout
 
     # third time we expect the file to be missing
     with volumes, pytest.raises(subprocess.CalledProcessError):
-        volumes.exec_in_container(
-            ["cat", _file_in_volume], "alpine"
-        )
+        volumes.exec_in_container(["cat", _file_in_volume], "alpine")
 
 
 # noinspection HttpUrlsUsage
