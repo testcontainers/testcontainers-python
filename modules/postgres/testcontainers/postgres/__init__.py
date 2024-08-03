@@ -91,7 +91,14 @@ class PostgresContainer(DbContainer):
 
     @wait_container_is_ready()
     def _connect(self) -> None:
-        wait_for_logs(self, ".*database system is ready to accept connections.*", c.max_tries, c.sleep_time)
+        wait_for_logs(
+            self,
+            ".*database system is ready to accept connections.*",
+            c.max_tries,
+            c.sleep_time,
+            predicate_streams_and=True,
+            #
+        )
 
         count = 0
         while count < c.max_tries:
