@@ -83,13 +83,12 @@ def test_docker_container_with_reuse_reuse_enabled(monkeypatch):
     container.stop()
 
 
-def test_docker_container_with_reuse_reuse_enabled_ryuk_disabled_same_id(monkeypatch):
+def test_docker_container_with_reuse_reuse_enabled_same_id(monkeypatch):
     # Make sure Ryuk cleanup is not active from previous test runs
     Reaper.delete_instance()
 
     tc_properties_mock = testcontainers_config.tc_properties | {"testcontainers.reuse.enable": "true"}
     monkeypatch.setattr(testcontainers_config, "tc_properties", tc_properties_mock)
-    monkeypatch.setattr(testcontainers_config, "ryuk_disabled", True)
 
     container_1 = DockerContainer("hello-world").with_reuse().start()
     id_1 = container_1._container.id
@@ -102,8 +101,16 @@ def test_docker_container_with_reuse_reuse_enabled_ryuk_disabled_same_id(monkeyp
     # container_2.stop() is not needed since it is the same as container_1
 
 
-def test_docker_container_labels_hash():
-    expected_hash = "91fde3c09244e1d3ec6f18a225b9261396b9a1cb0f6365b39b9795782817c128"
+def test_docker_container_labels_hash_default():
+    # w/out reuse
+    with DockerContainer("hello-world") as container:
+        assert container._container.labels["hash"] == ""
+
+
+def test_docker_container_labels_hash(monkeypatch):
+    tc_properties_mock = testcontainers_config.tc_properties | {"testcontainers.reuse.enable": "true"}
+    monkeypatch.setattr(testcontainers_config, "tc_properties", tc_properties_mock)
+    expected_hash = "1bade17a9d8236ba71ffbb676f2ece3fb419ea0e6adb5f82b5a026213c431d8e"
     with DockerContainer("hello-world").with_reuse() as container:
         assert container._container.labels["hash"] == expected_hash
 
@@ -113,7 +120,9 @@ def test_docker_client_find_container_by_hash_not_existing():
         assert DockerClient().find_container_by_hash("foo") == None
 
 
-def test_docker_client_find_container_by_hash_existing():
+def test_docker_client_find_container_by_hash_existing(monkeypatch):
+    tc_properties_mock = testcontainers_config.tc_properties | {"testcontainers.reuse.enable": "true"}
+    monkeypatch.setattr(testcontainers_config, "tc_properties", tc_properties_mock)
     with DockerContainer("hello-world").with_reuse() as container:
         hash_ = container._container.labels["hash"]
         found_container = DockerClient().find_container_by_hash(hash_)

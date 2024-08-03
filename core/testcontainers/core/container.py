@@ -99,18 +99,6 @@ class DockerContainer:
         logger.info("Pulling image %s", self.image)
         self._configure()
 
-        # container hash consisting of run arguments
-        args = (
-            self.image,
-            self._command,
-            self.env,
-            self.ports,
-            self._name,
-            self.volumes,
-            str(tuple(sorted(self._kwargs.items()))),
-        )
-        hash_ = hashlib.sha256(bytes(str(args), encoding="utf-8")).hexdigest()
-
         if self._reuse and not c.tc_properties_testcontainers_reuse_enable:
             logging.warning(
                 "Reuse was requested (`with_reuse`) but the environment does not "
@@ -119,24 +107,36 @@ class DockerContainer:
             )
 
         if self._reuse and c.tc_properties_testcontainers_reuse_enable:
+            # NOTE: ideally the docker client would return the full container create
+            # request which could be used to generate the hash.
+            args = [  # Docker run arguments
+                self.image,
+                self._command,
+                self.env,
+                self.ports,
+                self._name,
+                self.volumes,
+                str(tuple(sorted(self._kwargs.values()))),
+            ]
+            hash_ = hashlib.sha256(bytes(str(args), encoding="utf-8")).hexdigest()
             docker_client = self.get_docker_client()
             container = docker_client.find_container_by_hash(hash_)
             if container:
                 if container.status != "running":
                     container.start()
                     logger.info("Existing container started: %s", container.id)
-                logger.info("Container is already running: %s", container.id)
                 self._container = container
+                logger.info("Container is already running: %s", container.id)
             else:
                 self._start(hash_)
         else:
-            self._start(hash_)
+            self._start()
 
         if self._network:
             self._network.connect(self._container.id, self._network_aliases)
         return self
 
-    def _start(self, hash_):
+    def _start(self, hash_=None):
         docker_client = self.get_docker_client()
         self._container = docker_client.run(
             self.image,
@@ -146,7 +146,7 @@ class DockerContainer:
             ports=self.ports,
             name=self._name,
             volumes=self.volumes,
-            labels={"hash": hash_},
+            labels={"hash": hash_} if hash is not None else {},
             **self._kwargs,
         )
         logger.info("Container started: %s", self._container.short_id)
