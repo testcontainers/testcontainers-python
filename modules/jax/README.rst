@@ -20,6 +20,28 @@
 
 4. **Isolation and Security**: Containers provide an isolated environment, which enhances security by limiting the impact of potential vulnerabilities. It also avoids conflicts with other software on the host system.
 
+## Troubleshooting
+
+**Ensure Docker is configured to use the NVIDIA runtime**:
+   - You need to install the NVIDIA Container Toolkit. Follow the instructions for your operating system: [NVIDIA Container Toolkit](https://docs.nvidia.com/datacenter/cloud-native/container-toolkit/install-guide.html).
+   - Update your Docker daemon configuration to include the NVIDIA runtime. Edit the Docker daemon configuration file, typically located at `/etc/docker/daemon.json`, to include the following:
+     
+     ```json
+     {
+       "runtimes": {
+         "nvidia": {
+           "path": "nvidia-container-runtime",
+           "runtimeArgs": []
+         }
+       }
+     }
+     ```
+
+   - Restart the Docker daemon to apply the changes:
+     ```sh
+     sudo systemctl restart docker
+     ```
+
 ## Relevant Reading Material
 
 1. **JAX Documentation**
