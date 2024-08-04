@@ -11,18 +11,23 @@ class JAXContainer(DockerContainer):
 
     Example:
 
-        .. doctest::
+    .. doctest::
 
-            >>> import jax
-            >>> from testcontainers.jax import JAXContainer
+        >>> import jax
+        >>> from testcontainers.jax import JAXContainer
 
-            >>> with JAXContainer("nvcr.io/nvidia/jax:23.08-py3") as jax_container:
-            ...     # Connect to the container
-            ...     jax_container.connect()
-            ...     
-            ...     # Run a simple JAX computation
-            ...     result = jax.numpy.add(1, 1)
-            ...     assert result == 2
+        >>> with JAXContainer("nvcr.io/nvidia/jax:23.08-py3") as jax_container:
+        ...     # Connect to the container
+        ...     jax_container.connect()
+        ...     
+        ...     # Run a simple JAX computation
+        ...     result = jax.numpy.add(1, 1)
+        ...     assert result == 2
+
+    .. auto-class:: JAXContainer
+        :members:
+        :undoc-members:
+        :show-inheritance:
     """
 
     def __init__(self, image="nvcr.io/nvidia/jax:23.08-py3", **kwargs):
