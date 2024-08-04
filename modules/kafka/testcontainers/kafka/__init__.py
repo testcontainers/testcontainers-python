@@ -1,6 +1,8 @@
 import tarfile
 import time
+from dataclasses import dataclass, field
 from io import BytesIO
+from os import environ
 from textwrap import dedent
 
 from typing_extensions import Self
@@ -14,7 +16,21 @@ from testcontainers.kafka._redpanda import RedpandaContainer
 __all__ = [
     "KafkaContainer",
     "RedpandaContainer",
+    "kafka_config",
 ]
+LIMIT_BROKER_ENV_VAR = "TC_KAFKA_LIMIT_BROKER_TO_FIRST_HOST"
+
+
+@dataclass
+class _KafkaConfig:
+    limit_broker_to_first_host: bool = field(default_factory=lambda: environ.get(LIMIT_BROKER_ENV_VAR) == "true")
+    """
+    This option is useful for a setup with a network,
+    see testcontainers/testcontainers-python#637 for more details
+    """
+
+
+kafka_config = _KafkaConfig()
 
 
 class KafkaContainer(DockerContainer):
@@ -136,7 +152,10 @@ class KafkaContainer(DockerContainer):
     def tc_start(self) -> None:
         host = self.get_container_host_ip()
         port = self.get_exposed_port(self.port)
-        listeners = f"PLAINTEXT://{host}:{port},BROKER://$(hostname -i):9092"
+        if kafka_config.limit_broker_to_first_host:
+            listeners = f"PLAINTEXT://{host}:{port},BROKER://$(hostname -i | cut -d' ' -f1):9092"
+        else:
+            listeners = f"PLAINTEXT://{host}:{port},BROKER://$(hostname -i):9092"
         data = (
             dedent(
                 f"""

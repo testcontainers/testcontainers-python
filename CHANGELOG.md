@@ -1,5 +1,49 @@
 # Changelog
 
+## [4.7.2](https://github.com/testcontainers/testcontainers-python/compare/testcontainers-v4.7.1...testcontainers-v4.7.2) (2024-07-15)
+
+
+### Bug Fixes
+
+* Add container Trino ([#642](https://github.com/testcontainers/testcontainers-python/issues/642)) ([49ce5a5](https://github.com/testcontainers/testcontainers-python/commit/49ce5a5ff2ac46cf51920e16c5e39684886b699a)), closes [#641](https://github.com/testcontainers/testcontainers-python/issues/641)
+* **core:** Improve private registry support (tolerate not implemented fields in DOCKER_AUTH_CONFIG) ([#647](https://github.com/testcontainers/testcontainers-python/issues/647)) ([766c382](https://github.com/testcontainers/testcontainers-python/commit/766c382a3aee4eb512ee0f482d6595d3412097c3))
+* **kafka:** add a flag to limit to first hostname for use with networks ([#638](https://github.com/testcontainers/testcontainers-python/issues/638)) ([0ce4fec](https://github.com/testcontainers/testcontainers-python/commit/0ce4fecb2872620fd4cb96313abcba4353442cfd)), closes [#637](https://github.com/testcontainers/testcontainers-python/issues/637)
+* **modules:** Mailpit container base API URL helper method ([#643](https://github.com/testcontainers/testcontainers-python/issues/643)) ([df07586](https://github.com/testcontainers/testcontainers-python/commit/df07586d8844c757db62ac0f8b7914c67fd96e05))
+
+## [4.7.1](https://github.com/testcontainers/testcontainers-python/compare/testcontainers-v4.7.0...testcontainers-v4.7.1) (2024-07-02)
+
+
+### Bug Fixes
+
+* **core:** bad rebase from [#579](https://github.com/testcontainers/testcontainers-python/issues/579) ([#635](https://github.com/testcontainers/testcontainers-python/issues/635)) ([4766e48](https://github.com/testcontainers/testcontainers-python/commit/4766e4829407c19de039effc7ea8fcc8b6dcc214))
+* **modules:** Mailpit Container ([#625](https://github.com/testcontainers/testcontainers-python/issues/625)) ([0b866ff](https://github.com/testcontainers/testcontainers-python/commit/0b866ff3c2d462fa5032945dfa2efd4bd59079da))
+* **modules:** SFTP Server Container ([#629](https://github.com/testcontainers/testcontainers-python/issues/629)) ([2e7dbf1](https://github.com/testcontainers/testcontainers-python/commit/2e7dbf1185c68c7cbfb6bdac7457d1d5f86aba19))
+* **network:** Now able to use Network without context, and has labels to be automatically cleaned up ([#627](https://github.com/testcontainers/testcontainers-python/issues/627)) ([#630](https://github.com/testcontainers/testcontainers-python/issues/630)) ([e93bc29](https://github.com/testcontainers/testcontainers-python/commit/e93bc29c1781c4e73840c4c587160f8e5805feea))
+* **postgres:** get_connection_url(driver=None) should return postgres://... ([#588](https://github.com/testcontainers/testcontainers-python/issues/588)) ([01d6c18](https://github.com/testcontainers/testcontainers-python/commit/01d6c182485555ee83f560739c34f089b0e54e0b)), closes [#587](https://github.com/testcontainers/testcontainers-python/issues/587)
+* update test module import ([#623](https://github.com/testcontainers/testcontainers-python/issues/623)) ([16f6ca4](https://github.com/testcontainers/testcontainers-python/commit/16f6ca42621866d8ff87ca539a84da27dbe9a4c4))
+
+## [4.7.0](https://github.com/testcontainers/testcontainers-python/compare/testcontainers-v4.6.0...testcontainers-v4.7.0) (2024-06-28)
+
+
+### Features
+
+* **core:** Add support for ollama module ([#618](https://github.com/testcontainers/testcontainers-python/issues/618)) ([5442d05](https://github.com/testcontainers/testcontainers-python/commit/5442d054cb8bc11887e09d24e29d9f91dd943307))
+* **core:** Added Generic module ([#612](https://github.com/testcontainers/testcontainers-python/issues/612)) ([e575b28](https://github.com/testcontainers/testcontainers-python/commit/e575b28da912147c5b806abab40a0c92329e2eb7))
+* **core:** allow custom dockerfile path for image build and bypassing build cache ([#615](https://github.com/testcontainers/testcontainers-python/issues/615)) ([ead0f79](https://github.com/testcontainers/testcontainers-python/commit/ead0f797902a94d3b2558e489fe2a0a55c3bb7ad)), closes [#610](https://github.com/testcontainers/testcontainers-python/issues/610)
+* **core:** DockerCompose.stop now stops only services that it starts (does not stop the other services) ([#620](https://github.com/testcontainers/testcontainers-python/issues/620)) ([e711800](https://github.com/testcontainers/testcontainers-python/commit/e71180039441e3c7d49467298ef0f498fe786149))
+
+
+### Bug Fixes
+
+* **cosmosdb:** Add support for the CosmosDB Emulator ([#579](https://github.com/testcontainers/testcontainers-python/issues/579)) ([8045a80](https://github.com/testcontainers/testcontainers-python/commit/8045a806fcb6908567339a14f2f0d7a169461675))
+* improve ollama docs, s/ollama_dir/ollama_home/g ([#619](https://github.com/testcontainers/testcontainers-python/issues/619)) ([27f2a6b](https://github.com/testcontainers/testcontainers-python/commit/27f2a6bdca8b9c860a96920eebc96f53682ea750))
+* **kafka:** Add Kraft to Kafka containers ([#611](https://github.com/testcontainers/testcontainers-python/issues/611)) ([762d2a2](https://github.com/testcontainers/testcontainers-python/commit/762d2a2130f7ce17dacaed5a96a6898a08cf2bc5))
+
+
+### Documentation
+
+* **contributing:** add contribution and new-container guide  ([#460](https://github.com/testcontainers/testcontainers-python/issues/460)) ([3519f4b](https://github.com/testcontainers/testcontainers-python/commit/3519f4bdad6eac6c172977303b51cf52b4fa4c04))
+
 ## [4.6.0](https://github.com/testcontainers/testcontainers-python/compare/testcontainers-v4.5.1...testcontainers-v4.6.0) (2024-06-18)
 
 

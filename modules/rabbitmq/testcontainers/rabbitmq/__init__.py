@@ -31,6 +31,7 @@ class RabbitMqContainer(DockerContainer):
         port: Optional[int] = None,
         username: Optional[str] = None,
         password: Optional[str] = None,
+        vhost: Optional[str] = None,
         **kwargs,
     ) -> None:
         """Initialize the RabbitMQ test container.
@@ -45,11 +46,13 @@ class RabbitMqContainer(DockerContainer):
         self.port = port or int(os.environ.get("RABBITMQ_NODE_PORT", 5672))
         self.username = username or os.environ.get("RABBITMQ_DEFAULT_USER", "guest")
         self.password = password or os.environ.get("RABBITMQ_DEFAULT_PASS", "guest")
+        self.vhost = vhost or os.environ.get("RABBITMQ_DEFAULT_VHOST", "/")
 
         self.with_exposed_ports(self.port)
         self.with_env("RABBITMQ_NODE_PORT", self.port)
         self.with_env("RABBITMQ_DEFAULT_USER", self.username)
         self.with_env("RABBITMQ_DEFAULT_PASS", self.password)
+        self.with_env("RABBITMQ_DEFAULT_VHOST", self.vhost)
 
     @wait_container_is_ready(pika.exceptions.IncompatibleProtocolError, pika.exceptions.AMQPConnectionError)
     def readiness_probe(self) -> bool:
@@ -71,6 +74,7 @@ class RabbitMqContainer(DockerContainer):
         return pika.ConnectionParameters(
             host=self.get_container_host_ip(),
             port=self.get_exposed_port(self.port),
+            virtual_host=self.vhost,
             credentials=credentials,
         )
 

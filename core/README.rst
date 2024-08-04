@@ -5,7 +5,18 @@ Testcontainers Core
 
 .. autoclass:: testcontainers.core.container.DockerContainer
 
-Using `DockerContainer` and `DockerImage` directly:
+.. autoclass:: testcontainers.core.image.DockerImage
+
+.. autoclass:: testcontainers.core.generic.DbContainer
+
+.. raw:: html
+
+    <hr>
+
+Examples
+--------
+
+Using `DockerContainer` and `DockerImage` to create a container:
 
 .. doctest::
 
@@ -17,14 +28,5 @@ Using `DockerContainer` and `DockerImage` directly:
     ...     with DockerContainer(str(image)) as container:
     ...         delay = wait_for_logs(container, "Test Sample Image")
 
----
-
-.. autoclass:: testcontainers.core.image.DockerImage
-
----
-
-.. autoclass:: testcontainers.core.generic.ServerContainer
-
----
-
-.. autoclass:: testcontainers.core.generic.DbContainer
+The `DockerImage` class is used to build the image from the specified path and tag.
+The `DockerContainer` class is then used to create a container from the image.

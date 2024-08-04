@@ -1,0 +1,15 @@
+services:
+  alpine1:
+    image: alpine:latest
+    init: true
+    command:
+      - sh
+      - -c
+      - 'while true; do sleep 0.1 ; date -Ins; done'
+  alpine2:
+    image: alpine:latest
+    init: true
+    command:
+      - sh
+      - -c
+      - 'while true; do sleep 0.1 ; date -Ins; done'

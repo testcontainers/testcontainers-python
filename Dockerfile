@@ -1,5 +1,5 @@
-ARG version=3.8
-FROM python:${version}
+ARG PYTHON_VERSION
+FROM python:${version}-slim-bookworm
 
 WORKDIR /workspace
 RUN pip install --upgrade pip \
@@ -7,7 +7,10 @@ RUN pip install --upgrade pip \
     && apt-get install -y \
         freetds-dev \
     && rm -rf /var/lib/apt/lists/*
+
+# install requirements we exported from poetry
 COPY build/requirements.txt requirements.txt
-COPY setup.py README.rst ./
 RUN pip install -r requirements.txt
+
+# copy project source
 COPY . .

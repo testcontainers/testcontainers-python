@@ -1,3 +1,4 @@
+import subprocess
 from pathlib import Path
 from re import split
 from time import sleep
@@ -35,6 +36,55 @@ def test_compose_start_stop():
     basic = DockerCompose(context=FIXTURES / "basic")
     basic.start()
     basic.stop()
+
+
+def test_start_stop_multiple():
+    """Start and stop multiple containers individually."""
+
+    # Create two DockerCompose instances from the same file, one service each.
+    dc_a = DockerCompose(context=FIXTURES / "basic_multiple", services=["alpine1"])
+    dc_b = DockerCompose(context=FIXTURES / "basic_multiple", services=["alpine2"])
+
+    # After starting the first instance, alpine1 should be running
+    dc_a.start()
+    dc_a.get_container("alpine1")  # Raises if it isn't running
+    dc_b.get_container("alpine1")  # Raises if it isn't running
+
+    # Both instances report the same number of containers
+    assert len(dc_a.get_containers()) == 1
+    assert len(dc_b.get_containers()) == 1
+
+    # Although alpine1 is running, alpine2 has not started yet.
+    with pytest.raises(ContainerIsNotRunning):
+        dc_a.get_container("alpine2")
+    with pytest.raises(ContainerIsNotRunning):
+        dc_b.get_container("alpine2")
+
+    # After starting the second instance, alpine2 should also be running
+    dc_b.start()
+    dc_a.get_container("alpine2")  # No longer raises
+    dc_b.get_container("alpine2")  # No longer raises
+    assert len(dc_a.get_containers()) == 2
+    assert len(dc_b.get_containers()) == 2
+
+    # After stopping the first instance, alpine1 should no longer be running
+    dc_a.stop()
+    dc_a.get_container("alpine2")
+    dc_b.get_container("alpine2")
+    assert len(dc_a.get_containers()) == 1
+    assert len(dc_b.get_containers()) == 1
+
+    # alpine1 no longer running
+    with pytest.raises(ContainerIsNotRunning):
+        dc_a.get_container("alpine1")
+    with pytest.raises(ContainerIsNotRunning):
+        dc_b.get_container("alpine1")
+
+    # Stop the second instance
+    dc_b.stop()
+
+    assert len(dc_a.get_containers()) == 0
+    assert len(dc_b.get_containers()) == 0
 
 
 def test_compose():
@@ -96,6 +146,27 @@ def test_compose_logs():
         # this is a safe way to split the string
         # docker changes the prefix between versions 24 and 25
         assert not line or container.Service in next(iter(line.split("|")), None)
+
+
+def test_compose_volumes():
+    _file_in_volume = "/var/lib/example/data/hello"
+    volumes = DockerCompose(context=FIXTURES / "basic_volume", keep_volumes=True)
+    with volumes:
+        stdout, stderr, exitcode = volumes.exec_in_container(
+            ["/bin/sh", "-c", f"echo hello > {_file_in_volume}"], "alpine"
+        )
+    assert exitcode == 0
+
+    # execute another time to confirm the file is still there, but we're not keeping the volumes this time
+    volumes.keep_volumes = False
+    with volumes:
+        stdout, stderr, exitcode = volumes.exec_in_container(["cat", _file_in_volume], "alpine")
+    assert exitcode == 0
+    assert "hello" in stdout
+
+    # third time we expect the file to be missing
+    with volumes, pytest.raises(subprocess.CalledProcessError):
+        volumes.exec_in_container(["cat", _file_in_volume], "alpine")
 
 
 # noinspection HttpUrlsUsage
