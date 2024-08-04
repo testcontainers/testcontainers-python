@@ -1,5 +1,5 @@
 import pytest
-from testcontainers.jax import JAXContainer
+from modules.jax.testcontainers.jax_cuda import JAXContainer
 
 def test_jax_container():
     with JAXContainer() as jax_container:
