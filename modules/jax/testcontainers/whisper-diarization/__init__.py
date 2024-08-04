@@ -2,8 +2,8 @@ import logging
 import tempfile
 from typing import Optional
 
-from testcontainers.core.container import DockerContainer
-from testcontainers.core.waiting_utils import wait_container_is_ready
+from core.testcontainers.core.container import DockerContainer
+from core.testcontainers.core.waiting_utils import wait_container_is_ready
 from urllib.error import URLError
 
 class JAXWhisperDiarizationContainer(DockerContainer):
