@@ -1,5 +1,5 @@
 import pytest
-from testcontainers.jax_whisper_diarization import JAXWhisperDiarizationContainer
+from modules.jax.testcontainers.whisper_cuda.whisper_diarization import JAXWhisperDiarizationContainer
 
 @pytest.fixture(scope="module")
 def hf_token():

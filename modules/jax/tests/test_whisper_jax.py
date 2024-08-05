@@ -1,5 +1,5 @@
 import pytest
-from testcontainers.whisper_jax import WhisperJAXContainer
+from modules.jax.testcontainers.whisper_cuda.whisper_transcription import WhisperJAXContainer
 
 @pytest.mark.parametrize("model_name", ["openai/whisper-tiny", "openai/whisper-base"])
 def test_whisper_jax_container(model_name):
