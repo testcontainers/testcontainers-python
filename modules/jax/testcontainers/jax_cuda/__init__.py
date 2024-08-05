@@ -1,11 +1,9 @@
 import logging
-import urllib.request
+import time
 from urllib.error import URLError
 
 from core.testcontainers.core.container import DockerContainer
-from core.testcontainers.core.waiting_utils import wait_container_is_ready
-from core.testcontainers.core.config import testcontainers_config
-from core.testcontainers.core.waiting_utils import wait_for_logs
+from core.testcontainers.core.waiting_utils import wait_container_is_ready, wait_for_logs
 
 class JAXContainer(DockerContainer):
     """
@@ -15,7 +13,6 @@ class JAXContainer(DockerContainer):
 
     .. doctest::
 
-        >>> import jax
         >>> from testcontainers.jax import JAXContainer
 
         >>> with JAXContainer("nvcr.io/nvidia/jax:23.08-py3") as jax_container:
@@ -23,8 +20,8 @@ class JAXContainer(DockerContainer):
         ...     jax_container.connect()
         ...     
         ...     # Run a simple JAX computation
-        ...     result = jax.numpy.add(1, 1)
-        ...     assert result == 2
+        ...     result = jax_container.run_jax_command("import jax; print(jax.numpy.add(1, 1))")
+        ...     assert "2" in result.output
 
     .. auto-class:: JAXContainer
         :members:
@@ -34,31 +31,49 @@ class JAXContainer(DockerContainer):
 
     def __init__(self, image="nvcr.io/nvidia/jax:23.08-py3", **kwargs):
         super().__init__(image, **kwargs)
-        self.with_exposed_ports(8888)  # Expose Jupyter notebook port
         self.with_env("NVIDIA_VISIBLE_DEVICES", "all")
         self.with_env("CUDA_VISIBLE_DEVICES", "all")
         self.with_kwargs(runtime="nvidia")  # Use NVIDIA runtime for GPU support
-        self.start_timeout = 600 # 10 minutes
+        self.start_timeout = 600  # 10 minutes
+        self.connection_retries = 5
+        self.connection_retry_delay = 10  # seconds
 
     @wait_container_is_ready(URLError)
     def _connect(self):
-        url = f"http://{self.get_container_host_ip()}:{self.get_exposed_port(8888)}"
-        res = urllib.request.urlopen(url, timeout=self.start_timeout)
-        if res.status != 200:
-            raise Exception(f"Failed to connect to JAX container. Status: {res.status}")
+        for attempt in range(self.connection_retries):
+            try:
+                # Check if JAX is properly installed and functioning
+                result = self.run_jax_command(
+                    "import jax; import jaxlib; "
+                    "print(f'JAX version: {jax.__version__}'); "
+                    "print(f'JAXlib version: {jaxlib.__version__}'); "
+                    "print(f'Available devices: {jax.devices()}'); "
+                    "print(jax.numpy.add(1, 1))"
+                )
+                
+                if "JAX version" in result.output and "Available devices" in result.output:
+                    logging.info(f"JAX environment verified:\n{result.output}")
+                    return True
+                else:
+                    raise Exception("JAX environment check failed")
+            
+            except Exception as e:
+                if attempt < self.connection_retries - 1:
+                    logging.warning(f"Connection attempt {attempt + 1} failed. Retrying in {self.connection_retry_delay} seconds...")
+                    time.sleep(self.connection_retry_delay)
+                else:
+                    raise Exception(f"Failed to connect to JAX container after {self.connection_retries} attempts: {str(e)}")
+        
+        return False
 
     def connect(self):
         """
         Connect to the JAX container and ensure it's ready.
+        This method verifies that JAX is properly installed and functioning.
+        It also checks for available devices, including GPUs if applicable.
         """
         self._connect()
-        logging.info("Successfully connected to JAX container")
-
-    def get_jupyter_url(self):
-        """
-        Get the URL for accessing the Jupyter notebook server.
-        """
-        return f"http://{self.get_container_host_ip()}:{self.get_exposed_port(8888)}"
+        logging.info("Successfully connected to JAX container and verified the environment")
 
     def run_jax_command(self, command):
         """
@@ -68,7 +83,7 @@ class JAXContainer(DockerContainer):
         return exec_result
 
     def _wait_for_container_to_be_ready(self):
-        wait_for_logs(self, "Jupyter Server", timeout=self.start_timeout)
+        wait_for_logs(self, "JAX is ready", timeout=self.start_timeout)
 
     def start(self):
         """
@@ -76,7 +91,7 @@ class JAXContainer(DockerContainer):
         """
         super().start()
         self._wait_for_container_to_be_ready()
-        logging.info(f"JAX container started. Jupyter URL: {self.get_jupyter_url()}")
+        logging.info("JAX container started and ready.")
         return self
     
     def stop(self, force=True):
