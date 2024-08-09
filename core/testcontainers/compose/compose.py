@@ -1,12 +1,13 @@
 from dataclasses import asdict, dataclass, field, fields
 from functools import cached_property
 from json import loads
+from logging import warning
 from os import PathLike
 from platform import system
 from re import split
 from subprocess import CompletedProcess
 from subprocess import run as subprocess_run
-from typing import Callable, Literal, Optional, TypeVar, Union
+from typing import Any, Callable, Literal, Optional, TypeVar, Union, cast
 from urllib.error import HTTPError, URLError
 from urllib.request import urlopen
 
@@ -14,6 +15,7 @@ from testcontainers.core.exceptions import ContainerIsNotRunning, NoSuchPortExpo
 from testcontainers.core.waiting_utils import wait_container_is_ready
 
 _IPT = TypeVar("_IPT")
+_WARNINGS = {"DOCKER_COMPOSE_GET_CONFIG": "get_config is experimental, see testcontainers/testcontainers-python#669"}
 
 
 def _ignore_properties(cls: type[_IPT], dict_: any) -> _IPT:
@@ -257,6 +259,36 @@ class DockerCompose:
 
         result = self._run_command(cmd=logs_cmd)
         return result.stdout.decode("utf-8"), result.stderr.decode("utf-8")
+
+    def get_config(
+        self, *, path_resolution: bool = True, normalize: bool = True, interpolate: bool = True
+    ) -> dict[str, Any]:
+        """
+        Parse, resolve and returns compose file via `docker config --format json`.
+        In case of multiple compose files, the returned value will be a merge of all files.
+
+        See: https://docs.docker.com/reference/cli/docker/compose/config/ for more details
+
+        :param path_resolution: whether to resolve file paths
+        :param normalize: whether to normalize compose model
+        :param interpolate: whether to interpolate environment variables
+
+        Returns:
+            Compose file
+
+        """
+        if "DOCKER_COMPOSE_GET_CONFIG" in _WARNINGS:
+            warning(_WARNINGS.pop("DOCKER_COMPOSE_GET_CONFIG"))
+        config_cmd = [*self.compose_command_property, "config", "--format", "json"]
+        if not path_resolution:
+            config_cmd.append("--no-path-resolution")
+        if not normalize:
+            config_cmd.append("--no-normalize")
+        if not interpolate:
+            config_cmd.append("--no-interpolate")
+
+        cmd_output = self._run_command(cmd=config_cmd).stdout
+        return cast(dict[str, Any], loads(cmd_output))
 
     def get_containers(self, include_all=False) -> list[ComposeContainer]:
         """
