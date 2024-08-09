@@ -1,5 +1,21 @@
 # Changelog
 
+## [4.8.0](https://github.com/testcontainers/testcontainers-python/compare/testcontainers-v4.7.2...testcontainers-v4.8.0) (2024-08-09)
+
+
+### Features
+
+* **compose:** ability to retain volumes when using context manager ([#659](https://github.com/testcontainers/testcontainers-python/issues/659)) ([e1e3d13](https://github.com/testcontainers/testcontainers-python/commit/e1e3d13b47923dd7124196e6b743799bd87b6885))
+* **compose:** add ability to get docker compose config ([#669](https://github.com/testcontainers/testcontainers-python/issues/669)) ([8c28a86](https://github.com/testcontainers/testcontainers-python/commit/8c28a861ce4ade9e8204783e2ef2fd99013c90ea))
+* **core:** add ability to do OR & AND for waitforlogs ([#661](https://github.com/testcontainers/testcontainers-python/issues/661)) ([b1453e8](https://github.com/testcontainers/testcontainers-python/commit/b1453e87e1f5443f0f8d04c9b30a278aa835ca9b))
+* **new:** Added AWS Lambda module ([#655](https://github.com/testcontainers/testcontainers-python/issues/655)) ([9161cb6](https://github.com/testcontainers/testcontainers-python/commit/9161cb64a0a13b54a981b2b846a4d073db8c30a2))
+
+
+### Bug Fixes
+
+* **rabbitmq:** add `vhost` as parameter to RabbitMqContainer ([#656](https://github.com/testcontainers/testcontainers-python/issues/656)) ([fa2081a](https://github.com/testcontainers/testcontainers-python/commit/fa2081a7b325cdd316de28c99b029150022db203))
+* **selenium:** add Arg/Options to api of selenium container ([#654](https://github.com/testcontainers/testcontainers-python/issues/654)) ([e02c1b3](https://github.com/testcontainers/testcontainers-python/commit/e02c1b37a651374f47abe72bc17941849c1fd12e)), closes [#652](https://github.com/testcontainers/testcontainers-python/issues/652)
+
 ## [4.7.2](https://github.com/testcontainers/testcontainers-python/compare/testcontainers-v4.7.1...testcontainers-v4.7.2) (2024-07-15)
 
 
