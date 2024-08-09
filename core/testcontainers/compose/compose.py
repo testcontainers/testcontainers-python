@@ -1,7 +1,7 @@
-import json
 from dataclasses import asdict, dataclass, field, fields
 from functools import cached_property
 from json import loads
+from logging import warning
 from os import PathLike
 from platform import system
 from re import split
@@ -15,6 +15,7 @@ from testcontainers.core.exceptions import ContainerIsNotRunning, NoSuchPortExpo
 from testcontainers.core.waiting_utils import wait_container_is_ready
 
 _IPT = TypeVar("_IPT")
+_WARNINGS = {"DOCKER_COMPOSE_GET_CONFIG": "get_config is experimental, see testcontainers/testcontainers-python#669"}
 
 
 def _ignore_properties(cls: type[_IPT], dict_: any) -> _IPT:
@@ -268,14 +269,16 @@ class DockerCompose:
 
         See: https://docs.docker.com/reference/cli/docker/compose/config/ for more details
 
-        :param path_resolution: whether or not to resolve file paths
-        :param normalize: whether or not to normalize compose model
-        :param interpolate: whether or not to interpolate environment variables
+        :param path_resolution: whether to resolve file paths
+        :param normalize: whether to normalize compose model
+        :param interpolate: whether to interpolate environment variables
 
         Returns:
             Compose file
 
         """
+        if "DOCKER_COMPOSE_GET_CONFIG" in _WARNINGS:
+            warning(_WARNINGS.pop("DOCKER_COMPOSE_GET_CONFIG"))
         config_cmd = [*self.compose_command_property, "config", "--format", "json"]
         if not path_resolution:
             config_cmd.append("--no-path-resolution")
@@ -285,7 +288,7 @@ class DockerCompose:
             config_cmd.append("--no-interpolate")
 
         cmd_output = self._run_command(cmd=config_cmd).stdout
-        return cast(dict[str, Any], json.loads(cmd_output))
+        return cast(dict[str, Any], loads(cmd_output))
 
     def get_containers(self, include_all=False) -> list[ComposeContainer]:
         """

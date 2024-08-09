@@ -318,6 +318,7 @@ def test_compose_config(context: Path, mocker: MockerFixture) -> None:
 
     assert received_config
     assert isinstance(received_config, dict)
+    assert "services" in received_config
     assert run_command.call_args.kwargs["cmd"] == expected_cmd
 
 
@@ -339,6 +340,7 @@ def test_compose_config_raw(context: Path, mocker: MockerFixture) -> None:
 
     assert received_config
     assert isinstance(received_config, dict)
+    assert "services" in received_config
     assert run_command.call_args.kwargs["cmd"] == expected_cmd
 
 
