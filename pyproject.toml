@@ -182,6 +182,7 @@ paho-mqtt = "2.1.0"
 sqlalchemy-cockroachdb = "2.0.2"
 paramiko = "^3.4.0"
 types-paramiko = "^3.4.0.20240423"
+pytest-mock = "^3.14.0"
 
 [[tool.poetry.source]]
 name = "PyPI"
