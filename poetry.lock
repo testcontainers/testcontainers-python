@@ -1514,6 +1514,61 @@ files = [
 ]
 
 [[package]]
+name = "ibm-db"
+version = "3.2.3"
+description = "Python DBI driver for DB2 (LUW, zOS, i5) and IDS"
+optional = true
+python-versions = "*"
+files = [
+    {file = "ibm_db-3.2.3-cp310-cp310-macosx_10_15_x86_64.whl", hash = "sha256:3399466141c29704f4e8ba709a67ba27ab413239c0244c3c4510126e946ff603"},
+    {file = "ibm_db-3.2.3-cp310-cp310-manylinux_2_17_i686.manylinux2014_i686.whl", hash = "sha256:e12ff6426d4f718e1ff6615e64a2880bd570826f19a031c82dbf296714cafd7d"},
+    {file = "ibm_db-3.2.3-cp310-cp310-manylinux_2_17_x86_64.manylinux2014_x86_64.whl", hash = "sha256:442a416a47e0d6ae3de671d227906487a1d731f36da8dc9ba341bd384b97f973"},
+    {file = "ibm_db-3.2.3-cp310-cp310-win32.whl", hash = "sha256:8f508caca6407947f4156cae853942d1079736505231246ee51475d7f5af1792"},
+    {file = "ibm_db-3.2.3-cp310-cp310-win_amd64.whl", hash = "sha256:91154c151784be5234c9f327239f1a98fc4e4a5f112c3c94189e04cfab3d5cb0"},
+    {file = "ibm_db-3.2.3-cp311-cp311-macosx_10_15_x86_64.whl", hash = "sha256:4fbf78b69d61997dad8ee1fdc273d0b287b43f25fe2ee8c945c034bddb527f1d"},
+    {file = "ibm_db-3.2.3-cp311-cp311-manylinux_2_17_i686.manylinux2014_i686.whl", hash = "sha256:a13f20b40ca856ec2a5638f8f4e65287c23ff5e1d808fa58fd8d208678a00323"},
+    {file = "ibm_db-3.2.3-cp311-cp311-manylinux_2_17_x86_64.manylinux2014_x86_64.whl", hash = "sha256:c5a8ab31130beea18dcd3dd447d6e35ec840ccaed1d3add8ed04ac5c4f44f94c"},
+    {file = "ibm_db-3.2.3-cp311-cp311-win32.whl", hash = "sha256:afa8c0a55be2b27ff7f3d50ae0b332562d3048af17557b86854e8e67429fdf0a"},
+    {file = "ibm_db-3.2.3-cp311-cp311-win_amd64.whl", hash = "sha256:d46fb0554631c18fc1f5b615112c68c1b250b7f977dc10cdb53db9258ca69f20"},
+    {file = "ibm_db-3.2.3-cp312-cp312-macosx_10_15_x86_64.whl", hash = "sha256:7c5011f47edf179c04b67e3472c25f40103679936b17a04dc00a9a7282aeb2b6"},
+    {file = "ibm_db-3.2.3-cp312-cp312-manylinux_2_17_i686.manylinux2014_i686.whl", hash = "sha256:b10593eda579395d84254165dc5f5e5eff97d87b9a491181b8632f3db7aa17de"},
+    {file = "ibm_db-3.2.3-cp312-cp312-manylinux_2_17_x86_64.manylinux2014_x86_64.whl", hash = "sha256:a0170e4c09fb5cf146d26cce0700a40e6a3ab767996f8b4c668847ad1ddc3a06"},
+    {file = "ibm_db-3.2.3-cp312-cp312-win32.whl", hash = "sha256:69b2ebf47122eff50497ba48dee7a32087e2698a771c5d86fc683e7baecd5e96"},
+    {file = "ibm_db-3.2.3-cp312-cp312-win_amd64.whl", hash = "sha256:7c18f230f8202a386873c73bfe9b00d1c052c35e9a501e07700cb83e7a59c48f"},
+    {file = "ibm_db-3.2.3-cp37-cp37m-macosx_10_15_x86_64.whl", hash = "sha256:9fdb360b9de86422f8827774680f28ffeba98b702e86f689acaa0f97b62e1693"},
+    {file = "ibm_db-3.2.3-cp37-cp37m-manylinux_2_17_i686.manylinux2014_i686.whl", hash = "sha256:34bc14c9f4d7f56ab8c7650e06ff3982695dafea2aa90a3a3533e3bcd5ea7be8"},
+    {file = "ibm_db-3.2.3-cp37-cp37m-manylinux_2_17_x86_64.manylinux2014_x86_64.whl", hash = "sha256:b067c2a76e230ffe703a89829c4063b9fa951230c91001846c5221bb6ef4a1ef"},
+    {file = "ibm_db-3.2.3-cp37-cp37m-win32.whl", hash = "sha256:4141333b42e10eaf97c5712205e873fc4977bd77c2aef416385620f2a01cc32f"},
+    {file = "ibm_db-3.2.3-cp37-cp37m-win_amd64.whl", hash = "sha256:a1b981485d82d9d23d2c19de2fa1087a6ed5ea134944b1ab10eb0b7758cec512"},
+    {file = "ibm_db-3.2.3-cp38-cp38-macosx_10_15_x86_64.whl", hash = "sha256:60d7db80d645eb41c1ddfa9279550784566bdd701c4c52da206e28f9f91e8030"},
+    {file = "ibm_db-3.2.3-cp38-cp38-manylinux_2_17_i686.manylinux2014_i686.whl", hash = "sha256:def6c72fcd31fc3e4fe91ffac94db2f6c3365ae4fe7bc1c284fca741f7a0861e"},
+    {file = "ibm_db-3.2.3-cp38-cp38-manylinux_2_17_x86_64.manylinux2014_x86_64.whl", hash = "sha256:611c1ea3c32067083072365eae86b939edb4bc730f6016b670f2264220ac2d63"},
+    {file = "ibm_db-3.2.3-cp38-cp38-win32.whl", hash = "sha256:238460936016ec6bbe43dd5612829a6ad19a2f483dde57294869c48809e4c902"},
+    {file = "ibm_db-3.2.3-cp38-cp38-win_amd64.whl", hash = "sha256:6217177a6246ddf86463e090200e7c60459a62af5513b78793ac9f196ef34571"},
+    {file = "ibm_db-3.2.3-cp39-cp39-macosx_10_15_x86_64.whl", hash = "sha256:4611a10dc4b9eca06aadca5ea697c9af71b16ba0f1076fa7dd66d1698a23d2a6"},
+    {file = "ibm_db-3.2.3-cp39-cp39-manylinux_2_17_i686.manylinux2014_i686.whl", hash = "sha256:3f736bbd6fc2bec483f82b8e3243a12737fb46bbd0f50b1378c67a28cf2f9649"},
+    {file = "ibm_db-3.2.3-cp39-cp39-manylinux_2_17_x86_64.manylinux2014_x86_64.whl", hash = "sha256:1b90e5fc0ae75567539cd95d5ded86f7c5507084f6aa52eb16ea0dcc88b25382"},
+    {file = "ibm_db-3.2.3-cp39-cp39-win32.whl", hash = "sha256:60db181462194cc1d5fa22514cb73d84c4edf79c12d98c8d16796e72ad179c8b"},
+    {file = "ibm_db-3.2.3-cp39-cp39-win_amd64.whl", hash = "sha256:48008a611a6ca724261866c81680f638e1a4116efb21da4fbc26188679a124ca"},
+    {file = "ibm_db-3.2.3.tar.gz", hash = "sha256:ec7075246849437ed79c60447b05a4bee78a3f6ca2646f4e60a028333c72957a"},
+]
+
+[[package]]
+name = "ibm-db-sa"
+version = "0.4.1"
+description = "SQLAlchemy support for IBM Data Servers"
+optional = true
+python-versions = "*"
+files = [
+    {file = "ibm_db_sa-0.4.1-py3-none-any.whl", hash = "sha256:49926ba9799e6ebd9ddd847141537c83d179ecf32fe24b7e997ac4614d3f616a"},
+    {file = "ibm_db_sa-0.4.1.tar.gz", hash = "sha256:a46df130a3681646490925cf4e1bca12b46283f71eea39b70b4f9a56e95341ac"},
+]
+
+[package.dependencies]
+ibm-db = ">=2.0.0"
+sqlalchemy = ">=0.7.3"
+
+[[package]]
 name = "identify"
 version = "2.5.35"
 description = "File identification library for Python"
@@ -4583,6 +4638,7 @@ chroma = ["chromadb-client"]
 clickhouse = ["clickhouse-driver"]
 cockroachdb = []
 cosmosdb = ["azure-cosmos"]
+db2 = ["ibm_db_sa", "sqlalchemy"]
 elasticsearch = []
 generic = ["httpx"]
 google = ["google-cloud-datastore", "google-cloud-pubsub"]
@@ -4621,4 +4677,4 @@ weaviate = ["weaviate-client"]
 [metadata]
 lock-version = "2.0"
 python-versions = ">=3.9,<4.0"
-content-hash = "88b63308cfdc3de3002a4cb4f60aeff9d049bb057fd78f5a2711aff5aba59b03"
+content-hash = "18a5763385d12114513ef5d65268de3ea6567e79b21049b6d58d1803f4257306"

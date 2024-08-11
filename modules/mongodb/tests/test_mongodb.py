@@ -35,6 +35,7 @@ def test_docker_run_mongodb(version: str):
 # - postgresql
 # - sqlserver
 # - mongodb
+# - db2
 def test_quoted_password():
     user = "root"
     password = "p@$%25+0&%rd :/!=?"

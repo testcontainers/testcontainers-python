@@ -53,6 +53,7 @@ def test_docker_run_postgres_with_driver_pg8000():
 # - postgresql
 # - sqlserver
 # - mongodb
+# - db2
 def test_quoted_password():
     user = "root"
     password = "p@$%25+0&%rd :/!=?"

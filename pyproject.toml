@@ -36,6 +36,7 @@ packages = [
     { include = "testcontainers", from = "modules/clickhouse" },
     { include = "testcontainers", from = "modules/cockroachdb" },
     { include = "testcontainers", from = "modules/cosmosdb" },
+    { include = "testcontainers", from = "modules/db2" },
     { include = "testcontainers", from = "modules/elasticsearch" },
     { include = "testcontainers", from = "modules/generic" },
     { include = "testcontainers", from = "modules/test_module_import"},
@@ -114,6 +115,7 @@ httpx = { version = "*", optional = true }
 azure-cosmos = { version = "*", optional = true }
 cryptography = { version = "*", optional = true }
 trino = { version = "*", optional = true }
+ibm_db_sa = { version = "*", optional = true }
 
 [tool.poetry.extras]
 arangodb = ["python-arango"]
@@ -123,6 +125,7 @@ cassandra = []
 clickhouse = ["clickhouse-driver"]
 cosmosdb = ["azure-cosmos"]
 cockroachdb = []
+db2 = ["sqlalchemy", "ibm_db_sa"]
 elasticsearch = []
 generic = ["httpx"]
 test_module_import = ["httpx"]
