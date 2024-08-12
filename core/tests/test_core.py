@@ -6,7 +6,7 @@ import os
 from pathlib import Path
 from typing import Optional
 
-from testcontainers.core.container import DockerContainer
+from testcontainers.core.container import DockerContainer, docker
 from testcontainers.core.image import DockerImage
 from testcontainers.core.waiting_utils import wait_for_logs
 
@@ -92,3 +92,130 @@ def test_docker_image_with_custom_dockerfile_path(dockerfile_path: Optional[Path
             with DockerContainer(str(image)) as container:
                 assert container._container.image.short_id.endswith(image_short_id), "Image ID mismatch"
                 assert container.get_logs() == (("Hello world!\n").encode(), b""), "Container logs mismatch"
+
+
+def test_docker_start_with_copy_file_to_container(tmp_path: Path) -> None:
+    dockerfile_path = tmp_path / "Dockerfile"
+    dockerfile_path.write_text('FROM alpine:latest\nCMD ["cat", "/hello_world.txt"]\n')
+    helloworld_filepath = tmp_path / "hello_world.txt"
+    helloworld_filepath.write_text("Hello, World!\n")
+    with DockerImage(path=tmp_path) as image:
+        with DockerContainer(image=str(image)).with_copy_file_to_container(
+            helloworld_filepath.absolute(), "/hello_world.txt"
+        ) as container:
+            stdout, stderr = container.get_logs()
+            assert stdout.decode() == "Hello, World!\n"
+
+
+def test_docker_start_with_copy_file_to_container_several_times(tmp_path: Path) -> None:
+    dockerfile_path = tmp_path / "Dockerfile"
+    dockerfile_path.write_text('FROM alpine:latest\nCMD ["cat", "/one.txt", "/two.txt", "/three.txt"]\n')
+    one_filepath = tmp_path / "one.txt"
+    one_filepath.write_text("1")
+    two_filepath = tmp_path / "two.txt"
+    two_filepath.write_text("2")
+    three_filepath = tmp_path / "three.txt"
+    three_filepath.write_text("3")
+    with DockerImage(path=tmp_path) as image:
+        with (
+            DockerContainer(image=str(image))
+            .with_copy_file_to_container(one_filepath.absolute(), "/one.txt")
+            .with_copy_file_to_container(two_filepath.absolute(), "/two.txt")
+            .with_copy_file_to_container(three_filepath.absolute(), "/three.txt") as container
+        ):
+            stdout, stderr = container.get_logs()
+            assert stdout.decode() == "123"
+
+
+def test_docker_start_with_copy_file_to_container_from_directory(tmp_path: Path) -> None:
+    dockerfile_path = tmp_path / "Dockerfile"
+    dockerfile_path.write_text(
+        'FROM alpine:latest\nCMD ["cat", "/numbers/one.txt", "/numbers/two.txt", "/numbers/three.txt"]\n'
+    )
+    numbers_dirpath = tmp_path / "numbers"
+    numbers_dirpath.mkdir()
+    one_filepath = numbers_dirpath / "one.txt"
+    one_filepath.write_text("1")
+    two_filepath = numbers_dirpath / "two.txt"
+    two_filepath.write_text("2")
+    three_filepath = numbers_dirpath / "three.txt"
+    three_filepath.write_text("3")
+    with DockerImage(path=tmp_path) as image:
+        with DockerContainer(image=str(image)).with_copy_file_to_container(
+            numbers_dirpath.absolute(), "/numbers"
+        ) as container:
+            stdout, stderr = container.get_logs()
+            assert stdout.decode() == "123"
+
+
+def test_docker_start_with_copy_file_to_container_not_readonly(tmp_path: Path) -> None:
+    dockerfile_path = tmp_path / "Dockerfile"
+    dockerfile_path.write_text(
+        'FROM alpine:latest\nCMD ["/bin/sh", "-c", "echo \'Hello, World!\' > /hello_world.txt"]\n'
+    )
+    helloworld_filepath = tmp_path / "hello_world.txt"
+    helloworld_filepath.write_text("sentinel")
+    with DockerImage(path=tmp_path) as image:
+        with DockerContainer(image=str(image)).with_copy_file_to_container(
+            helloworld_filepath.absolute(),
+            "/hello_world.txt",
+            read_only=False,
+        ) as container:
+            stdout, stderr = container.get_logs()
+            assert stdout.decode() == ""
+    assert helloworld_filepath.read_text() == "Hello, World!\n"
+
+
+def test_docker_start_with_copy_file_to_container_src_does_not_exists(tmp_path: Path) -> None:
+    dockerfile_path = tmp_path / "Dockerfile"
+    dockerfile_path.write_text("FROM alpine:latest\n")
+    not_exisiting_path = tmp_path / "not_existing"
+    assert not_exisiting_path.exists() is False
+    with DockerImage(path=tmp_path) as image:
+        with pytest.raises(
+            docker.errors.APIError, match='invalid mount config for type "bind": bind source path does not exist'
+        ):
+            with DockerContainer(image=str(image)).with_copy_file_to_container(
+                not_exisiting_path,
+                "/hello_world.txt",
+            ) as container:
+                pass
+
+
+def test_docker_start_with_copy_file_to_container_replace_existing_container_file(tmp_path: Path) -> None:
+    dockerfile_path = tmp_path / "Dockerfile"
+    dockerfile_path.write_text(
+        'FROM alpine:latest\nRUN echo \'Hello, World!\' > /hello_world.txt\nCMD ["cat", "/hello_world.txt"]\n'
+    )
+    helloworld_filepath = tmp_path / "hello_world.txt"
+    helloworld_filepath.write_text("Hej Verden!\n")
+    with DockerImage(path=tmp_path) as image:
+        with DockerContainer(image=str(image)).with_copy_file_to_container(
+            helloworld_filepath.absolute(), "/hello_world.txt"
+        ) as container:
+            stdout, stderr = container.get_logs()
+            assert stdout.decode() == "Hej Verden!\n"
+
+
+def test_docker_start_with_copy_file_to_container_with_volume(tmp_path: Path) -> None:
+    dockerfile_path = tmp_path / "Dockerfile"
+    dockerfile_path.write_text('FROM alpine:latest\nCMD ["cat", "/first/one.txt", "/second/two.txt"]\n')
+    first_dirpath = tmp_path / "first"
+    first_dirpath.mkdir()
+    one_filepath = first_dirpath / "one.txt"
+    one_filepath.write_text("1")
+    second_dirpath = tmp_path / "second"
+    second_dirpath.mkdir()
+    two_filepath = second_dirpath / "two.txt"
+    two_filepath.write_text("2")
+    with DockerImage(path=tmp_path) as image:
+        with (
+            DockerContainer(image=str(image))
+            .with_copy_file_to_container(first_dirpath.absolute(), "/first")
+            .with_volume_mapping(
+                host=str(second_dirpath),
+                container="/second",
+            ) as container
+        ):
+            stdout, stderr = container.get_logs()
+            assert stdout.decode() == "12"
