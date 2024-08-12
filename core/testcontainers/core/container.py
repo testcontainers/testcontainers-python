@@ -119,7 +119,7 @@ class DockerContainer:
         logger.info("Pulling image %s", self.image)
         docker_client = self.get_docker_client()
         self._configure()
-        self._container: Container = docker_client.run(
+        self._container = docker_client.run(
             self.image,
             command=self._command,
             detach=True,
