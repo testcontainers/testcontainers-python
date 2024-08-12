@@ -149,8 +149,8 @@ class DockerContainer:
         if self._network:
             self._network.connect(self._container.id, self._network_aliases)
 
-        for file in self._files:
-            source, destination = file[0], file[1]
+        for copy_spec in self._files:
+            source, destination = copy_spec[0], copy_spec[1]
 
             DockerContainer._put_file_in_container(self._container, source, destination)
 
