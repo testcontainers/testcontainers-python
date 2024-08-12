@@ -85,7 +85,7 @@ class DockerContainer:
 
         return self
 
-    def copy_file_from_container(self, container_file: str, destination_file: str) -> str:
+    def copy_file_from_container(self, container_file: Path, destination_file: Path) -> Path:
         tar_stream, _ = self._container.get_archive(container_file)
 
         for chunk in tar_stream:
