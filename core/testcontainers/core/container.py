@@ -5,7 +5,7 @@ import tarfile
 from pathlib import Path
 from platform import system
 from socket import socket
-from typing import TYPE_CHECKING, Optional, Tuple
+from typing import TYPE_CHECKING, Optional
 
 import docker.errors
 from docker import version
@@ -57,7 +57,7 @@ class DockerContainer:
         self._network: Optional[Network] = None
         self._network_aliases: Optional[list[str]] = None
         self._kwargs = kwargs
-        self._files: list[Tuple[Path, Path]] = []
+        self._files: list[tuple[Path, Path]] = []
 
     def with_env(self, key: str, value: str) -> Self:
         self.env[key] = value
@@ -104,7 +104,7 @@ class DockerContainer:
     def _put_file_in_container(container, source_file: Path, destination_file: str):
         data = io.BytesIO()
 
-        with tarfile.open(fileobj=data, mode='w') as tar:
+        with tarfile.open(fileobj=data, mode="w") as tar:
             tar.add(source_file, arcname=destination_file)
 
         data.seek(0)
