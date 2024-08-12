@@ -99,7 +99,7 @@ class DockerContainer:
         return destination_file
 
     @staticmethod
-    def _put_file_in_container(container, source_file: Path, destination_file: str):
+    def _put_file_in_container(container, source_file: Path, destination_file: Path):
         data = io.BytesIO()
 
         with tarfile.open(fileobj=data, mode='w') as tar:
