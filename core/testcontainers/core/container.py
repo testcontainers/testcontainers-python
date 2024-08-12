@@ -1,9 +1,11 @@
 import contextlib
+from pathlib import Path
 from platform import system
 from socket import socket
-from typing import TYPE_CHECKING, Optional
+from typing import TYPE_CHECKING, Optional, Union
 
 import docker.errors
+from docker.types.services import Mount
 from typing_extensions import Self
 
 from testcontainers.core.config import testcontainers_config as c
@@ -159,6 +161,27 @@ class DockerContainer:
     def with_volume_mapping(self, host: str, container: str, mode: str = "ro") -> Self:
         mapping = {"bind": container, "mode": mode}
         self.volumes[host] = mapping
+        return self
+
+    def with_copy_file_to_container(
+        self,
+        from_host_file_or_dir: Union[Path, str],
+        to_container_file_or_dir: Union[Path, str],
+        read_only=True,
+    ) -> Self:
+        mounts = self._kwargs.get("mounts")
+        if mounts is None:
+            mounts = []
+            self._kwargs["mounts"] = mounts
+        mounts.append(
+            Mount(
+                target=str(to_container_file_or_dir),
+                source=str(from_host_file_or_dir),
+                type="bind",
+                read_only=read_only,
+                # `propagation` and `consistency` are left to defaults
+            )
+        )
         return self
 
     def get_wrapped_container(self) -> "Container":
