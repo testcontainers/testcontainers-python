@@ -1,7 +1,7 @@
 import contextlib
 import io
+import os
 import tarfile
-from pathlib import Path
 from platform import system
 from socket import socket
 from typing import TYPE_CHECKING, Optional
@@ -14,6 +14,7 @@ from testcontainers.core.docker_client import DockerClient
 from testcontainers.core.exceptions import ContainerStartException
 from testcontainers.core.labels import LABEL_SESSION_ID, SESSION_ID
 from testcontainers.core.network import Network
+from testcontainers.core.transferable import Transferable
 from testcontainers.core.utils import inside_container, is_arm, setup_logger
 from testcontainers.core.waiting_utils import wait_container_is_ready, wait_for_logs
 
@@ -53,7 +54,7 @@ class DockerContainer:
         self._network: Optional[Network] = None
         self._network_aliases: Optional[list[str]] = None
         self._kwargs = kwargs
-        self._files: list[tuple[Path, Path]] = []
+        self._files: list[Transferable] = []
 
     def with_env(self, key: str, value: str) -> Self:
         self.env[key] = value
@@ -80,12 +81,12 @@ class DockerContainer:
         self._kwargs = kwargs
         return self
 
-    def with_copy_file_to_container(self, source_file: Path, destination_file: Path) -> Self:
-        self._files.append((source_file, destination_file))
+    def with_copy_file_to_container(self, transferable: Transferable) -> Self:
+        self._files.append(transferable)
 
         return self
 
-    def copy_file_from_container(self, container_file: Path, destination_file: Path) -> Path:
+    def copy_file_from_container(self, container_file: os.PathLike, destination_file: os.PathLike) -> os.PathLike:
         tar_stream, _ = self._container.get_archive(container_file)
 
         for chunk in tar_stream:
@@ -97,11 +98,11 @@ class DockerContainer:
         return destination_file
 
     @staticmethod
-    def _put_file_in_container(container, source_file: Path, destination_file: Path):
+    def _put_data_in_container(container, transferable: Transferable):
         data = io.BytesIO()
 
-        with tarfile.open(fileobj=data, mode="w") as tar:
-            tar.add(source_file, arcname=destination_file)
+        with transferable as f, tarfile.open(fileobj=data, mode="w") as tar:
+            tar.add(f.input_path, arcname=f.output_path)
 
         data.seek(0)
 
@@ -133,10 +134,8 @@ class DockerContainer:
         if self._network:
             self._network.connect(self._container.id, self._network_aliases)
 
-        for copy_spec in self._files:
-            source, destination = copy_spec[0], copy_spec[1]
-
-            DockerContainer._put_file_in_container(self._container, source, destination)
+        for transferable in self._files:
+            DockerContainer._put_data_in_container(self._container, transferable)
 
         return self
 
