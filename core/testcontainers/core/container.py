@@ -1,7 +1,10 @@
 import contextlib
+import io
+import tarfile
+from pathlib import Path
 from platform import system
 from socket import socket
-from typing import TYPE_CHECKING, Optional
+from typing import TYPE_CHECKING, Optional, Tuple
 
 import docker.errors
 from typing_extensions import Self
@@ -50,6 +53,7 @@ class DockerContainer:
         self._network: Optional[Network] = None
         self._network_aliases: Optional[list[str]] = None
         self._kwargs = kwargs
+        self._files: list[Tuple[Path, Path]] = []
 
     def with_env(self, key: str, value: str) -> Self:
         self.env[key] = value
@@ -76,6 +80,33 @@ class DockerContainer:
         self._kwargs = kwargs
         return self
 
+    def with_copy_file_to_container(self, source_file: Path, destination_file: Path) -> Self:
+        self._files.append((source_file, destination_file))
+
+        return self
+
+    def copy_file_from_container(self, container_file: str, destination_file: str) -> str:
+        tar_stream, _ = self._container.get_archive(container_file)
+
+        for chunk in tar_stream:
+            with tarfile.open(fileobj=io.BytesIO(chunk)) as tar:
+                for member in tar.getmembers():
+                    with open(destination_file, 'wb') as f:
+                        f.write(tar.extractfile(member).read())
+
+        return destination_file
+
+    @staticmethod
+    def _put_file_in_container(container, source_file: Path, destination_file: str):
+        data = io.BytesIO()
+
+        with tarfile.open(fileobj=data, mode='w') as tar:
+            tar.add(source_file, arcname=destination_file)
+
+        data.seek(0)
+
+        container.put_archive("/", data)
+
     def maybe_emulate_amd64(self) -> Self:
         if is_arm():
             return self.with_kwargs(platform="linux/amd64")
@@ -88,7 +119,7 @@ class DockerContainer:
         logger.info("Pulling image %s", self.image)
         docker_client = self.get_docker_client()
         self._configure()
-        self._container = docker_client.run(
+        self._container: Container = docker_client.run(
             self.image,
             command=self._command,
             detach=True,
@@ -101,6 +132,12 @@ class DockerContainer:
         logger.info("Container started: %s", self._container.short_id)
         if self._network:
             self._network.connect(self._container.id, self._network_aliases)
+
+        for file in self._files:
+            source, destination = file[0], file[1]
+
+            DockerContainer._put_file_in_container(self._container, source, destination)
+
         return self
 
     def stop(self, force=True, delete_volume=True) -> None:
