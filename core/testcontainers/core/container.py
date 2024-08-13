@@ -4,6 +4,8 @@ from socket import socket
 from typing import TYPE_CHECKING, Optional
 
 import docker.errors
+from docker import version
+from docker.types import EndpointConfig
 from typing_extensions import Self
 
 from testcontainers.core.config import testcontainers_config as c
@@ -88,6 +90,13 @@ class DockerContainer:
         logger.info("Pulling image %s", self.image)
         docker_client = self.get_docker_client()
         self._configure()
+
+        network_kwargs = {
+            'network': self._network.name,
+            'networking_config': {self._network.name: EndpointConfig(version.__version__, aliases=self._network_aliases)}} \
+            if self._network \
+            else {}
+
         self._container = docker_client.run(
             self.image,
             command=self._command,
@@ -96,11 +105,10 @@ class DockerContainer:
             ports=self.ports,
             name=self._name,
             volumes=self.volumes,
-            **self._kwargs,
-        )
+            **network_kwargs,
+            **self._kwargs)
+
         logger.info("Container started: %s", self._container.short_id)
-        if self._network:
-            self._network.connect(self._container.id, self._network_aliases)
         return self
 
     def stop(self, force=True, delete_volume=True) -> None:
