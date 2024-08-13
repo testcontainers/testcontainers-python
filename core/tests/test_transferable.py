@@ -4,7 +4,7 @@ from pathlib import Path
 from tarfile import TarFile
 from tarfile import open as tarfile_open
 
-from .transferable1 import (
+from testcontainers.core.transferable import (
     BytesTransferable,
     FileTransferable,
     # IoObject,

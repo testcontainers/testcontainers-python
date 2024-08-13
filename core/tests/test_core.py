@@ -8,7 +8,7 @@ from typing import Optional
 
 from testcontainers.core.container import DockerContainer
 from testcontainers.core.image import DockerImage
-from testcontainers.core.transferable1 import Transferable
+from testcontainers.core.transferable import Transferable
 from testcontainers.core.waiting_utils import wait_for_logs
 
 
