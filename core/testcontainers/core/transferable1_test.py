@@ -1,14 +1,15 @@
 import tempfile
 from io import BytesIO
 from pathlib import Path
-from tarfile import TarFile, TarInfo, open as tarfile_open
+from tarfile import TarFile
+from tarfile import open as tarfile_open
 
 from .transferable1 import (
-    IoObject,
-    Transferable,
-    StringTransferable,
     BytesTransferable,
     FileTransferable,
+    # IoObject,
+    StringTransferable,
+    Transferable,
 )
 
 
@@ -30,7 +31,7 @@ def handle_transferable(transferable: Transferable) -> bytes:
 
 def test_file_transferable_size():
     with tempfile.NamedTemporaryFile(prefix="tc-python-core-file-trx-test-size") as f:
-        some_bytes = "hello, world!".encode("utf-8")
+        some_bytes = b"hello, world!"
         Path(f.file.name).write_bytes(some_bytes)
         f = FileTransferable(f.name)
         assert len(some_bytes) == f.get_size()
@@ -38,7 +39,7 @@ def test_file_transferable_size():
 
 def test_file_transferable_content():
     with tempfile.NamedTemporaryFile(prefix="tc-python-core-file-trx-test-content") as f:
-        some_bytes = "hello, world!".encode("utf-8")
+        some_bytes = b"hello, world!"
         Path(f.file.name).write_bytes(some_bytes)
         f = FileTransferable(f.name)
 
@@ -54,5 +55,5 @@ def test_string_transferable_size():
 
 
 def test_bytes_transferable_size():
-    assert BytesTransferable("".encode("utf-8")).get_size() == 0
-    assert BytesTransferable("abc".encode("utf-8")).get_size() == 3
+    assert BytesTransferable(b"").get_size() == 0
+    assert BytesTransferable(b"abc").get_size() == 3
