@@ -95,7 +95,7 @@ def test_docker_image_with_custom_dockerfile_path(dockerfile_path: Optional[Path
                 assert container.get_logs() == (("Hello world!\n").encode(), b""), "Container logs mismatch"
 
 
-def test_docker_start_with_copy_file_to_container_from_binary_transferable(tmp_path: Path) -> None:
+def test_docker_start_with_copy_file_to_container_from_binary_transferable() -> None:
     container = DockerContainer("nginx")
     data = "test_docker_start_with_copy_file_to_container_from_binary_transferable"
 
@@ -108,7 +108,7 @@ def test_docker_start_with_copy_file_to_container_from_binary_transferable(tmp_p
     assert stdout.decode() == data
 
 
-def test_docker_start_with_copy_file_to_container_from_file_transferable(tmp_path: Path) -> None:
+def test_docker_start_with_copy_file_to_container_from_file_transferable() -> None:
     container = DockerContainer("nginx")
     data = "test_docker_start_with_copy_file_to_container_from_file_transferable"
 
