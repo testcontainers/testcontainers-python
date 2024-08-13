@@ -42,6 +42,7 @@ packages = [
     { include = "testcontainers", from = "modules/test_module_import"},
     { include = "testcontainers", from = "modules/google" },
     { include = "testcontainers", from = "modules/influxdb" },
+    { include = "testcontainers", from = "modules/jax" },
     { include = "testcontainers", from = "modules/k3s" },
     { include = "testcontainers", from = "modules/kafka" },
     { include = "testcontainers", from = "modules/keycloak" },
@@ -148,6 +149,7 @@ neo4j = ["neo4j"]
 nginx = []
 opensearch = ["opensearch-py"]
 ollama = []
+jax = ["jax"]
 oracle = ["sqlalchemy", "oracledb"]
 oracle-free = ["sqlalchemy", "oracledb"]
 postgres = []
