@@ -116,7 +116,6 @@ class DockerContainer:
             archive.seek(0)
             self.get_wrapped_container().put_archive("/", archive)
 
-
     def maybe_emulate_amd64(self) -> Self:
         if is_arm():
             return self.with_kwargs(platform="linux/amd64")

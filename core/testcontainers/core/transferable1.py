@@ -42,16 +42,14 @@ class Transferable(ABC):
             tar_archive.addfile(tar_entry, content)
 
     @abstractmethod
-    def get_content(self) -> IoObject:
-        ...
+    def get_content(self) -> IoObject: ...
 
     # noinspection PyMethodMayBeStatic
     def get_mode(self):
         return Transferable.DEFAULT_FILE_MODE
 
     @abstractmethod
-    def get_size(self) -> int:
-        ...
+    def get_size(self) -> int: ...
 
 
 @dataclass
@@ -95,7 +93,7 @@ class FileTransferable(Transferable):
     file_mode: int = Transferable.DEFAULT_FILE_MODE
 
     def get_content(self) -> IoObject:
-        return open(self.file, 'rb')
+        return open(self.file, "rb")  # noqa: SIM115
 
     def get_mode(self):
         return self.file_mode
