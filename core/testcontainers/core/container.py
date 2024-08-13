@@ -147,8 +147,6 @@ class DockerContainer:
         )
 
         logger.info("Container started: %s", self._container.short_id)
-        if self._network:
-            self._network.connect(self._container.id, self._network_aliases)
 
         for transferable in self._files:
             DockerContainer._put_data_in_container(self._container, transferable)
