@@ -91,11 +91,16 @@ class DockerContainer:
         docker_client = self.get_docker_client()
         self._configure()
 
-        network_kwargs = {
-            'network': self._network.name,
-            'networking_config': {self._network.name: EndpointConfig(version.__version__, aliases=self._network_aliases)}} \
-            if self._network \
+        network_kwargs = (
+            {
+                "network": self._network.name,
+                "networking_config": {
+                    self._network.name: EndpointConfig(version.__version__, aliases=self._network_aliases)
+                },
+            }
+            if self._network
             else {}
+        )
 
         self._container = docker_client.run(
             self.image,
@@ -106,7 +111,8 @@ class DockerContainer:
             name=self._name,
             volumes=self.volumes,
             **network_kwargs,
-            **self._kwargs)
+            **self._kwargs,
+        )
 
         logger.info("Container started: %s", self._container.short_id)
         return self
