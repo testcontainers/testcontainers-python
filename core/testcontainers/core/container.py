@@ -2,24 +2,26 @@ import contextlib
 import io
 import os
 import tarfile
-from pathlib import Path
+from collections import OrderedDict
+from io import BytesIO
+from os import PathLike
 from platform import system
 from socket import socket
-from typing import TYPE_CHECKING, Optional
+from tarfile import TarFile
+from typing import Optional, TYPE_CHECKING, Union
 
 import docker.errors
 from docker import version
 from docker.types import EndpointConfig
-from typing_extensions import Self
-
 from testcontainers.core.config import testcontainers_config as c
 from testcontainers.core.docker_client import DockerClient
 from testcontainers.core.exceptions import ContainerStartException
 from testcontainers.core.labels import LABEL_SESSION_ID, SESSION_ID
 from testcontainers.core.network import Network
-from testcontainers.core.transferable import Transferable
+from testcontainers.core.transferable1 import Transferable
 from testcontainers.core.utils import inside_container, is_arm, setup_logger
 from testcontainers.core.waiting_utils import wait_container_is_ready, wait_for_logs
+from typing_extensions import Self
 
 if TYPE_CHECKING:
     from docker.models.containers import Container
@@ -57,7 +59,8 @@ class DockerContainer:
         self._network: Optional[Network] = None
         self._network_aliases: Optional[list[str]] = None
         self._kwargs = kwargs
-        self._files: list[tuple[Path, Path]] = []
+        # map of destination to source of content
+        self._files: dict[str, Transferable] = OrderedDict()
 
     def with_env(self, key: str, value: str) -> Self:
         self.env[key] = value
@@ -84,12 +87,7 @@ class DockerContainer:
         self._kwargs = kwargs
         return self
 
-    def with_copy_file_to_container(self, source_file: Path, destination_file: Path) -> Self:
-        self._files.append((source_file, destination_file))
-
-        return self
-
-    def copy_file_from_container(self, container_file: str, destination_file: str) -> str:
+    def copy_file_from_container(self, container_file: os.PathLike, destination_file: os.PathLike) -> os.PathLike:
         tar_stream, _ = self._container.get_archive(container_file)
 
         for chunk in tar_stream:
@@ -100,16 +98,24 @@ class DockerContainer:
 
         return destination_file
 
-    @staticmethod
-    def _put_file_in_container(container, source_file: Path, destination_file: str):
-        data = io.BytesIO()
+    def with_copy_file_to_container(
+        self,
+        transferable: Transferable,
+        destination: Union[str, PathLike],
+        #
+    ) -> Self:
+        self._files[str(destination)] = transferable
 
-        with tarfile.open(fileobj=data, mode="w") as tar:
-            tar.add(source_file, arcname=destination_file)
+        return self
 
-        data.seek(0)
-
-        container.put_archive("/", data)
+    def copy_file_to_container(self, transferable: Transferable, destination: str):
+        # consider using files for large source files?
+        # if transferable.get_size() > ...
+        # lifted from kafka module
+        with BytesIO() as archive, TarFile(fileobj=archive, mode="w") as tar:
+            transferable.transfer_to(tar, destination)
+            archive.seek(0)
+            self.get_wrapped_container().put_archive("/", archive)
 
     def maybe_emulate_amd64(self) -> Self:
         if is_arm():
@@ -151,10 +157,10 @@ class DockerContainer:
         if self._network:
             self._network.connect(self._container.id, self._network_aliases)
 
-        for file in self._files:
-            source, destination = file[0], file[1]
-
-            DockerContainer._put_file_in_container(self._container, source, destination)
+        if self._files:
+            # todo wait for ready status
+            for destination, transferable in self._files.items():
+                self.copy_file_to_container(transferable, destination)
 
         return self
 
