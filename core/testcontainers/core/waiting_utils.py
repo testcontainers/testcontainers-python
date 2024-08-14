@@ -83,6 +83,7 @@ def wait_for_logs(
     timeout: float = config.timeout,
     interval: float = 1,
     predicate_streams_and: bool = False,
+    raise_on_exit: bool = False
     #
 ) -> float:
     """
@@ -117,4 +118,6 @@ def wait_for_logs(
             return duration
         if duration > timeout:
             raise TimeoutError(f"Container did not emit logs satisfying predicate in {timeout:.3f} " "seconds")
+        if raise_on_exit and container.get_wrapped_container().status != 'running':
+            raise RuntimeError(f"Container exited before emitting logs satisfying predicate")
         time.sleep(interval)
