@@ -4,11 +4,11 @@ name: modules
 
 on:
   push:
-    branches: [ main ]
+    branches: [ main, master ]
     paths:
       - "modules/**"
   pull_request:
-    branches: [ main ]
+    branches: [ main, master ]
     paths:
       - "modules/**"
 
@@ -35,6 +35,7 @@ jobs:
           modules=$(echo "${{ steps.changed-files.outputs.all_changed_files }}" |  jq '.[] | split("/") | first' | jq -s -c '. | unique')
           echo "computed_modules=$modules"
           echo "computed_modules=$modules" >> $GITHUB_OUTPUT
+          echo 'computed_modules=["arangodb","aws","azurite","cassandra","chroma","clickhouse","cockroachdb","cosmosdb","db2","elasticsearch","generic","google","influxdb","k3s","kafka","keycloak","localstack","mailpit","memcached","milvus","minio","mongodb","mqtt","mssql","mysql","nats","neo4j","nginx","ollama","opensearch","oracle"-free,"postgres","qdrant","rabbitmq","redis","registry","scylla","selenium","sftp","test_module_import","trino","vault","weaviate"]' >> $GITHUB_OUTPUT
     outputs:
       changed_modules: ${{ steps.compute-changes.outputs.computed_modules }}
   test:
@@ -44,7 +45,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        python-version: ["3.9", "3.10", "3.11", "3.12"]
+        python-version: ${{ github.ref_name == 'master' && format('["3.11"]') || format('["3.9", "3.10", "3.11", "3.12"]') }}
         module: ${{ fromJSON(needs.track-modules.outputs.changed_modules) }}
     steps:
       - name: Checkout contents
