@@ -331,7 +331,7 @@ files = [
 name = "cassandra-driver"
 version = "3.29.1"
 description = "DataStax Driver for Apache Cassandra"
-optional = true
+optional = false
 python-versions = "*"
 files = [
     {file = "cassandra-driver-3.29.1.tar.gz", hash = "sha256:38e9c2a2f2a9664bb03f1f852d5fccaeff2163942b5db35dffcf8bf32a51cfe5"},
@@ -588,7 +588,7 @@ typing-extensions = ">=4.5.0"
 name = "click"
 version = "8.1.7"
 description = "Composable command line interface toolkit"
-optional = true
+optional = false
 python-versions = ">=3.7"
 files = [
     {file = "click-8.1.7-py3-none-any.whl", hash = "sha256:ae74fb96c20a0277a1d615f1e4d73c8414f5a98db8b799a7931d1582f3390c28"},
@@ -1001,7 +1001,7 @@ typing = ["typing-extensions (>=4.8)"]
 name = "geomet"
 version = "0.2.1.post1"
 description = "GeoJSON <-> WKT/WKB conversion utilities"
-optional = true
+optional = false
 python-versions = ">2.6, !=3.3.*, <4"
 files = [
     {file = "geomet-0.2.1.post1-py3-none-any.whl", hash = "sha256:a41a1e336b381416d6cbed7f1745c848e91defaa4d4c1bdc1312732e46ffad2b"},
@@ -4677,4 +4677,4 @@ weaviate = ["weaviate-client"]
 [metadata]
 lock-version = "2.0"
 python-versions = ">=3.9,<4.0"
-content-hash = "de6e3fcb9a3c1a402682f9681ba2c8270a9a0e8882f82b9835a2f50acb1e37d5"
+content-hash = "69d30cc8cd59a8aa0d019c42b1f171e449dabf6959828160d11f3084c5a03f7f"
