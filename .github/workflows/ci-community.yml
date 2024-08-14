@@ -32,10 +32,14 @@ jobs:
       - name: Compute modules from files
         id: compute-changes
         run: |
+          if [[ "${{ github.ref_name }}" == "master" ]]; then
+            echo computed_modules=$(find modules/ -mindepth 1 -maxdepth 1 -type d | sed 's#modules/##')
+            echo computed_modules=$(find modules/ -mindepth 1 -maxdepth 1 -type d | sed 's#modules/##') >> $GITHUB_OUTPUT
+          else
           modules=$(echo "${{ steps.changed-files.outputs.all_changed_files }}" |  jq '.[] | split("/") | first' | jq -s -c '. | unique')
           echo "computed_modules=$modules"
           #echo "computed_modules=$modules" >> $GITHUB_OUTPUT
-          echo 'computed_modules=["arangodb","aws","azurite","cassandra","chroma","clickhouse","cockroachdb","cosmosdb","db2","elasticsearch","generic","google","influxdb","k3s","kafka","keycloak","localstack","mailpit","memcached","milvus","minio","mongodb","mqtt","mssql","mysql","nats","neo4j","nginx","ollama","opensearch","oracle"-free,"postgres","qdrant","rabbitmq","redis","registry","scylla","selenium","sftp","test_module_import","trino","vault","weaviate"]' >> $GITHUB_OUTPUT
+          fi
     outputs:
       changed_modules: ${{ steps.compute-changes.outputs.computed_modules }}
   test:
