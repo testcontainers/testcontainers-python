@@ -67,6 +67,7 @@ packages = [
     { include = "testcontainers", from = "modules/registry" },
     { include = "testcontainers", from = "modules/sftp" },
     { include = "testcontainers", from = "modules/selenium" },
+    { include = "testcontainers", from = "modules/scylla" },
     { include = "testcontainers", from = "modules/trino" },
     { include = "testcontainers", from = "modules/vault" },
     { include = "testcontainers", from = "modules/weaviate" },
@@ -86,6 +87,7 @@ typing-extensions = "*"
 # community modules
 python-arango = { version = "^7.8", optional = true }
 azure-storage-blob = { version = "^12.19", optional = true }
+cassandra-driver = { version = "3.29.1", optional = true }
 clickhouse-driver = { version = "*", optional = true }
 google-cloud-pubsub = { version = ">=2", optional = true }
 google-cloud-datastore = { version = ">=2", optional = true }
@@ -156,6 +158,7 @@ rabbitmq = ["pika"]
 redis = ["redis"]
 registry = ["bcrypt"]
 selenium = ["selenium"]
+scylla = ["cassandra-driver"]
 sftp = ["cryptography"]
 vault = []
 weaviate = ["weaviate-client"]
@@ -175,7 +178,6 @@ psycopg2-binary = "2.9.9"
 pg8000 = "1.30.5"
 sqlalchemy = "2.0.28"
 psycopg = "3.1.18"
-cassandra-driver = "3.29.1"
 pytest-asyncio = "0.23.5"
 kafka-python-ng = "^2.2.0"
 hvac = "2.1.0"
