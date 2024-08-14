@@ -22,7 +22,7 @@ jobs:
         with:
           python-version: ${{ matrix.python-version }}
       - name: Install Python dependencies
-        run: poetry install --with dev
+        run: poetry install --all-extras # this is cached, so anything less messes it up
       - name: Run twine check
         run: poetry build && poetry run twine check dist/*.tar.gz
       - name: Run tests
