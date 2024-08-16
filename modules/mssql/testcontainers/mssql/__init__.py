@@ -52,7 +52,7 @@ class SqlServerContainer(DbContainer):
 
     @wait_container_is_ready(AssertionError)
     def _connect(self) -> None:
-        status, _ = self.exec(f"/opt/mssql-tools/bin/sqlcmd -U {self.username} -P {self.password} -Q 'SELECT 1'")
+        status, _ = self.exec(["bash", "-c", f"/opt/mssql-tools*/bin/sqlcmd -U {self.username} -P {self.password} -Q 'SELECT 1' -C"])
         assert status == 0, "Cannot run 'SELECT 1': container is not ready"
 
     def get_connection_url(self) -> str:
