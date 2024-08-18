@@ -23,10 +23,8 @@ A more advance use-case, where we are using a FastAPI container that is using Re
 
 .. doctest::
 
-    >>> import httpx
-    >>> from testcontainers.generic import ServerContainer
     >>> from testcontainers.redis import RedisContainer
-    >>> from testcontainers.core.waiting_utils import wait_for_logs
+    >>> from testcontainers.generic import ServerContainer
 
     >>> with RedisContainer() as redis:
     ...     redis_port = redis.get_exposed_port(redis.port)
