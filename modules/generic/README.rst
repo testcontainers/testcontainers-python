@@ -27,16 +27,16 @@ A more advance use-case, where we are using a FastAPI container that is using Re
     >>> from testcontainers.generic import ServerContainer
 
     >>> with RedisContainer() as redis:
-    ...     redis_port = redis.get_exposed_port(redis.port)
-    ...     redis_host = redis.get_container_host_ip()
+    ...     redis_container_port = redis.port
+    ...     redis_container_ip_address = redis.get_docker_client().bridge_ip(redis._container.id)
 
     ...     with DockerImage(path="./modules/generic/tests/samples/advance_1", tag="advance-1:latest") as image:
     ...         web_server = ServerContainer(port=80, image=image)
-    ...         web_server.with_env(key="REDIS_HOST", value=redis_host)
-    ...         web_server.with_env(key="REDIS_PORT", value=redis_port)
+    ...         web_server.with_env(key="REDIS_HOST", value=redis_container_ip_address)
+    ...         web_server.with_env(key="REDIS_PORT", value=redis_container_port)
 
     ...         with web_server:
-    ...             web_server.get_api_url = lambda: web_server._create_connection_url() + "/api/v1/"
+    ...             web_server.get_api_url = lambda: web_server._create_connection_url()
     ...             client = web_server.get_client()
 
     ...             response = client.get("/")
@@ -44,9 +44,9 @@ A more advance use-case, where we are using a FastAPI container that is using Re
     ...             assert response.json() == {"Status": "ok"}
 
     ...             test_data = {"key": "test_key", "value": "test_value"}
-    ...             response = client.post("/set", json=test_data)
+    ...             response = client.post("/set", params=test_data)
     ...             assert response.status_code == 200, "Failed to set data"
 
     ...             response = client.get(f"/get/{test_data['key']}")
-    ...             assert response.status_code == 200. "Failed to get data"
+    ...             assert response.status_code == 200, "Failed to get data"
     ...             assert response.json() == {"key": test_data["key"], "value": test_data["value"]}

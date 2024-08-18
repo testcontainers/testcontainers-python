@@ -8,10 +8,10 @@ from fastapi import FastAPI
 
 app = FastAPI()
 
-# connect to redis
 redis_host = os.getenv("REDIS_HOST")
 redis_port = os.getenv("REDIS_PORT")
 redis_client = redis.Redis(host=redis_host, port=redis_port)
+redis_client.ping()
 
 
 @app.get("/")
