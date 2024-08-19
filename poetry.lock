@@ -4639,7 +4639,7 @@ cockroachdb = []
 cosmosdb = ["azure-cosmos"]
 db2 = ["ibm_db_sa", "sqlalchemy"]
 elasticsearch = []
-generic = ["httpx"]
+generic = ["httpx", "redis"]
 google = ["google-cloud-datastore", "google-cloud-pubsub"]
 influxdb = ["influxdb", "influxdb-client"]
 k3s = ["kubernetes", "pyyaml"]
@@ -4677,4 +4677,4 @@ weaviate = ["weaviate-client"]
 [metadata]
 lock-version = "2.0"
 python-versions = ">=3.9,<4.0"
-content-hash = "01fcde96503baf86c6f971042bafb7ccf001ada3800022e1989a70ddaa782070"
+content-hash = "7ffcf39257e1ac79d951b7ccb2cdb972beaaef35d0cd1f722d2964c5bdced674"
