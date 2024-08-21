@@ -1,7 +1,7 @@
 import contextlib
 from platform import system
 from socket import socket
-from typing import TYPE_CHECKING, Optional
+from typing import TYPE_CHECKING, Optional, Union
 
 import docker.errors
 from docker import version
@@ -57,11 +57,38 @@ class DockerContainer:
         self.env[key] = value
         return self
 
-    def with_bind_ports(self, container: int, host: Optional[int] = None) -> Self:
+    def with_bind_ports(self, container: Union[str, int], host: Optional[Union[str, int]] = None) -> Self:
+        """
+        Bind container port to host port
+
+        :param container: container port
+        :param host: host port
+
+        :doctest:
+
+        >>> from testcontainers.core.container import DockerContainer
+        >>> container = DockerContainer("alpine:latest")
+        >>> container.with_bind_ports("8080/tcp", 8080)
+
+        """
+
         self.ports[container] = host
         return self
 
-    def with_exposed_ports(self, *ports: int) -> Self:
+    def with_exposed_ports(self, *ports: tuple[Union[str, int], ...]) -> Self:
+        """
+        Expose ports from the container without binding them to the host.
+
+        :param ports: ports to expose
+
+        :doctest:
+
+        >>> from testcontainers.core.container import DockerContainer
+        >>> container = DockerContainer("alpine:latest")
+        >>> container.with_exposed_ports(8080/tcp, 8081)
+
+        """
+
         for port in ports:
             self.ports[port] = None
         return self
