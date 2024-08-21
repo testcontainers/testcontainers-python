@@ -25,13 +25,17 @@ def test_docker_run_azure_sql_edge():
                 assert row[0] == "MSSQLSERVER"
 
 
-# This is a feature in the generic DbContainer class
+def test_microsoft_changes_the_mssql_tools_folder_name():
+    with SqlServerContainer("mcr.microsoft.com/mssql/server:2019-latest") as mssql:
+        engine = sqlalchemy.create_engine(mssql.get_connection_url())
+        with engine.begin() as connection:
+            result = connection.execute(sqlalchemy.text("select @@servicename"))
+            for row in result:
+                assert row[0] == "MSSQLSERVER"
+
+
+# This is a feature in the generic DbContainer class,
 # but it can't be tested on its own
-# so is tested in various database modules:
-# - mysql / mariadb
-# - postgresql
-# - sqlserver
-# - mongodb
 def test_quoted_password():
     user = "SA"
     # spaces seem to cause issues?
