@@ -67,9 +67,9 @@ class DockerContainer:
         :doctest:
 
         >>> from testcontainers.core.container import DockerContainer
-        >>> container = DockerContainer("alpine:latest")
-        >>> container.with_bind_ports("8080/tcp", 8080)
-        >>> container.with_bind_ports("8081/tcp", 8081)
+        >>> container = DockerContainer("nginx")
+        >>> container = container.with_bind_ports("8080/tcp", 8080)
+        >>> container = container.with_bind_ports("8081/tcp", 8081)
 
         """
 
@@ -85,8 +85,8 @@ class DockerContainer:
         :doctest:
 
         >>> from testcontainers.core.container import DockerContainer
-        >>> container = DockerContainer("alpine:latest")
-        >>> container.with_exposed_ports("8080/tcp", "8081/tcp")
+        >>> container = DockerContainer("nginx")
+        >>> container = container.with_exposed_ports("8080/tcp", "8081/tcp")
 
         """
 
