@@ -25,22 +25,22 @@ def test_docker_container_with_bind_ports(container_port: Union[str, int], host_
     container.with_bind_ports(container_port, host_port)
     container.start()
 
+    # prepare to inspect container
     container_id = container._container.id
     client = container._container.client
 
-    if isinstance(container_port, int):
-        container_port = str(container_port)
-    if isinstance(host_port, int):
-        host_port = str(host_port)
-    if not host_port:
-        host_port = ""
+    # assemble expected output to compare to container API
+    container_port = str(container_port)
+    host_port = str(host_port or "")
 
     # if the port protocol is not specified, it will default to tcp
     if "/" not in container_port:
         container_port += "/tcp"
 
-    excepted = {container_port: [{"HostIp": "", "HostPort": host_port}]}
-    assert client.containers.get(container_id).attrs["HostConfig"]["PortBindings"] == excepted
+    expected = {container_port: [{"HostIp": "", "HostPort": host_port}]}
+
+    # compare PortBindings to expected output
+    assert client.containers.get(container_id).attrs["HostConfig"]["PortBindings"] == expected
     container.stop()
 
 
