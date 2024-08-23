@@ -12,7 +12,7 @@ from testcontainers.core.image import DockerImage
 
 @pytest.mark.parametrize("test_cleanup", [True, False])
 @pytest.mark.parametrize("test_image_tag", [None, "test-image:latest"])
-def test_docker_image(test_image_tag: Optional[str], test_cleanup: bool, check_for_image):
+def test_docker_image(test_image_tag: Optional[str], test_cleanup: bool, check_for_image) -> None:
     with tempfile.TemporaryDirectory() as temp_directory:
         # It's important to use a random string to avoid image caching
         random_string = "Hello from Docker Image! " + str(random.randint(0, 1000))
@@ -40,7 +40,7 @@ def test_docker_image(test_image_tag: Optional[str], test_cleanup: bool, check_f
 
 
 @pytest.mark.parametrize("dockerfile_path", [None, Path("subdir/my.Dockerfile")])
-def test_docker_image_with_custom_dockerfile_path(dockerfile_path: Optional[Path]):
+def test_docker_image_with_custom_dockerfile_path(dockerfile_path: Optional[Path]) -> None:
     with tempfile.TemporaryDirectory() as temp_directory:
         temp_dir_path = Path(temp_directory)
         if dockerfile_path:
