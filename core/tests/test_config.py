@@ -1,8 +1,21 @@
-from testcontainers.core.config import TestcontainersConfiguration as TCC, _WARNINGS
+from testcontainers.core.config import TestcontainersConfiguration as TCC, TC_FILE
 
 from pytest import MonkeyPatch, mark, LogCaptureFixture
 
 import logging
+import tempfile
+
+
+def test_read_tc_properties(monkeypatch: MonkeyPatch) -> None:
+    with tempfile.TemporaryDirectory() as tmpdirname:
+        file = f"{tmpdirname}/{TC_FILE}"
+        with open(file, "w") as f:
+            f.write("tc.host=some_value\n")
+
+        monkeypatch.setattr("testcontainers.core.config.TC_GLOBAL", file)
+
+        config = TCC()
+        assert config.tc_properties == {"tc.host": "some_value"}
 
 
 @mark.parametrize("docker_auth_config_env", ["key=value", ""])
