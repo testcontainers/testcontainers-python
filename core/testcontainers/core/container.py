@@ -1,4 +1,7 @@
 import contextlib
+import io
+import os
+import tarfile
 from platform import system
 from socket import socket
 from typing import TYPE_CHECKING, Optional, Union
@@ -13,6 +16,7 @@ from testcontainers.core.docker_client import DockerClient
 from testcontainers.core.exceptions import ContainerStartException
 from testcontainers.core.labels import LABEL_SESSION_ID, SESSION_ID
 from testcontainers.core.network import Network
+from testcontainers.core.transferable import Transferable
 from testcontainers.core.utils import inside_container, is_arm, setup_logger
 from testcontainers.core.waiting_utils import wait_container_is_ready, wait_for_logs
 
@@ -52,6 +56,7 @@ class DockerContainer:
         self._network: Optional[Network] = None
         self._network_aliases: Optional[list[str]] = None
         self._kwargs = kwargs
+        self._files: list[Transferable] = []
 
     def with_env(self, key: str, value: str) -> Self:
         self.env[key] = value
@@ -77,6 +82,33 @@ class DockerContainer:
     def with_kwargs(self, **kwargs) -> Self:
         self._kwargs = kwargs
         return self
+
+    def with_copy_file_to_container(self, transferable: Transferable) -> Self:
+        self._files.append(transferable)
+
+        return self
+
+    def copy_file_from_container(self, container_file: os.PathLike, destination_file: os.PathLike) -> os.PathLike:
+        tar_stream, _ = self._container.get_archive(container_file)
+
+        for chunk in tar_stream:
+            with tarfile.open(fileobj=io.BytesIO(chunk)) as tar:
+                for member in tar.getmembers():
+                    with open(destination_file, "wb") as f:
+                        f.write(tar.extractfile(member).read())
+
+        return destination_file
+
+    @staticmethod
+    def _put_data_in_container(container, transferable: Transferable):
+        data = io.BytesIO()
+
+        with transferable as f, tarfile.open(fileobj=data, mode="w") as tar:
+            tar.add(f.input_path, arcname=f.output_path)
+
+        data.seek(0)
+
+        container.put_archive("/", data)
 
     def maybe_emulate_amd64(self) -> Self:
         if is_arm():
@@ -115,6 +147,10 @@ class DockerContainer:
         )
 
         logger.info("Container started: %s", self._container.short_id)
+
+        for transferable in self._files:
+            DockerContainer._put_data_in_container(self._container, transferable)
+
         return self
 
     def stop(self, force=True, delete_volume=True) -> None:

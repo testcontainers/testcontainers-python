@@ -8,6 +8,7 @@ from typing import Optional
 
 from testcontainers.core.container import DockerContainer
 from testcontainers.core.image import DockerImage
+from testcontainers.core.transferable import Transferable
 from testcontainers.core.waiting_utils import wait_for_logs
 
 
@@ -92,3 +93,33 @@ def test_docker_image_with_custom_dockerfile_path(dockerfile_path: Optional[Path
             with DockerContainer(str(image)) as container:
                 assert container._container.image.short_id.endswith(image_short_id), "Image ID mismatch"
                 assert container.get_logs() == (("Hello world!\n").encode(), b""), "Container logs mismatch"
+
+
+def test_docker_start_with_copy_file_to_container_from_binary_transferable() -> None:
+    container = DockerContainer("nginx")
+    data = "test_docker_start_with_copy_file_to_container_from_binary_transferable"
+
+    input_data = data.encode("utf-8")
+    output_file = Path("/tmp/test_docker_start_with_copy_file_to_container_from_binary_transferable.txt")
+
+    container.with_copy_file_to_container(Transferable(input_data, output_file)).start()
+
+    _, stdout = container.exec(f"cat {output_file}")
+    assert stdout.decode() == data
+
+
+def test_docker_start_with_copy_file_to_container_from_file_transferable() -> None:
+    container = DockerContainer("nginx")
+    data = "test_docker_start_with_copy_file_to_container_from_file_transferable"
+
+    with tempfile.NamedTemporaryFile(delete=True) as f:
+        f.write(data.encode("utf-8"))
+        f.seek(0)
+
+        input_file = Path(f.name)
+        output_file = Path("/tmp/test_docker_start_with_copy_file_to_container_from_file_transferable.txt")
+
+        container.with_copy_file_to_container(Transferable(input_file, output_file)).start()
+
+        _, stdout = container.exec(f"cat {output_file}")
+        assert stdout.decode() == data
