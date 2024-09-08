@@ -7,6 +7,7 @@ from testcontainers.core.auth import parse_docker_auth_config, DockerAuthInfo
 def test_parse_docker_auth_config_encoded():
     auth_config_json = '{"auths":{"https://index.docker.io/v1/":{"auth":"dXNlcm5hbWU6cGFzc3dvcmQ="}}}'
     auth_info = parse_docker_auth_config(auth_config_json)
+    assert auth_info
     assert len(auth_info) == 1
     assert auth_info[0] == DockerAuthInfo(
         registry="https://index.docker.io/v1/",
@@ -37,6 +38,7 @@ def test_parse_docker_auth_config_encoded_multiple():
     }
     auth_config_json = json.dumps(auth_dict)
     auth_info = parse_docker_auth_config(auth_config_json)
+    assert auth_info
     assert len(auth_info) == 3
     assert auth_info[0] == DockerAuthInfo(
         registry="localhost:5000",
