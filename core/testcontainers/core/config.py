@@ -30,7 +30,7 @@ def read_tc_properties() -> dict[str, str]:
     tc_files = [item for item in [TC_GLOBAL] if exists(item)]
     if not tc_files:
         return {}
-    settings = {}
+    settings: dict[str, str] = {}
 
     for file in tc_files:
         with open(file) as contents:
@@ -60,14 +60,14 @@ class TestcontainersConfiguration:
     """
 
     @property
-    def docker_auth_config(self):
+    def docker_auth_config(self) -> Optional[str]:
         config = self._docker_auth_config
         if config and "DOCKER_AUTH_CONFIG" in _WARNINGS:
             warning(_WARNINGS.pop("DOCKER_AUTH_CONFIG"))
         return config
 
     @docker_auth_config.setter
-    def docker_auth_config(self, value: str):
+    def docker_auth_config(self, value: str) -> None:
         if "DOCKER_AUTH_CONFIG" in _WARNINGS:
             warning(_WARNINGS.pop("DOCKER_AUTH_CONFIG"))
         self._docker_auth_config = value
@@ -76,7 +76,7 @@ class TestcontainersConfiguration:
         return self.tc_properties.get("tc.host")
 
     @property
-    def timeout(self):
+    def timeout(self) -> int:
         return self.max_tries * self.sleep_time
 
 
