@@ -1,5 +1,20 @@
 from testcontainers.opensearch import OpenSearchContainer
 
+import pytest
+
+
+@pytest.fixture(autouse=True)
+def disable_logging():
+    import logging
+    import warnings
+
+    warnings.filterwarnings("ignore")
+    logging.getLogger("opensearch").setLevel(logging.CRITICAL)
+
+    yield
+    warnings.resetwarnings()
+    logging.getLogger("opensearch").setLevel(logging.NOTSET)
+
 
 def test_docker_run_opensearch():
     with OpenSearchContainer() as opensearch:

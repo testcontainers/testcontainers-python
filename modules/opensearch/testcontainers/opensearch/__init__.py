@@ -1,3 +1,5 @@
+from contextlib import suppress
+
 from opensearchpy import OpenSearch
 from opensearchpy.exceptions import ConnectionError, TransportError
 from urllib3.exceptions import ProtocolError
@@ -56,10 +58,15 @@ class OpenSearchContainer(DockerContainer):
         self.with_exposed_ports(self.port)
         self.with_env("discovery.type", "single-node")
         self.with_env("plugins.security.disabled", "false" if security_enabled else "true")
-        if [int(n) for n in image.split(":")[-1].split(".")] >= [int(n) for n in "2.12.0".split(".")]:
+        if self._supports_initial_admin_password(str(image)):
             self.with_env("OPENSEARCH_INITIAL_ADMIN_PASSWORD", self.initial_admin_password)
         if security_enabled:
             self.with_env("plugins.security.allow_default_init_securityindex", "true")
+
+    def _supports_initial_admin_password(self, image: str) -> bool:
+        with suppress(Exception):
+            return [int(n) for n in image.split(":")[-1].split(".")] >= [int(n) for n in "2.12.0".split(".")]
+        return False
 
     def get_config(self) -> dict:
         """This method returns the configuration of the OpenSearch container,
