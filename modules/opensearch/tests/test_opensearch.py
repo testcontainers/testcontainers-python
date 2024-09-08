@@ -25,6 +25,14 @@ def test_docker_run_opensearch_v1_with_security():
         assert client.cluster.health()["status"] == "green"
 
 
+def test_docker_run_opensearch_v2_12():
+    with OpenSearchContainer(
+        image="opensearchproject/opensearch:2.12.0", initial_admin_password="Testing!#345"
+    ) as opensearch:
+        client = opensearch.get_client()
+        assert client.cluster.health()["status"] == "green"
+
+
 def test_search():
     with OpenSearchContainer() as opensearch:
         client = opensearch.get_client()

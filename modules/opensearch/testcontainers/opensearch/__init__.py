@@ -35,6 +35,7 @@ class OpenSearchContainer(DockerContainer):
         image: str = "opensearchproject/opensearch:2.4.0",
         port: int = 9200,
         security_enabled: bool = False,
+        initial_admin_password: str = "admin",
         **kwargs,
     ) -> None:
         """
@@ -42,15 +43,21 @@ class OpenSearchContainer(DockerContainer):
             image: Docker image to use for the container.
             port: Port to expose on the container.
             security_enabled: :code:`False` disables the security plugin in OpenSearch.
+            initial_admin_password: set the password for opensearch, For OpenSearch versions 2.12 and
+                later, you must set the initial admin password as seen in the documentation,
+                https://opensearch.org/docs/latest/security/configuration/demo-configuration/#setting-up-a-custom-admin-password
         """
         raise_for_deprecated_parameter(kwargs, "port_to_expose", "port")
         super().__init__(image, **kwargs)
         self.port = port
         self.security_enabled = security_enabled
+        self.initial_admin_password = initial_admin_password
 
         self.with_exposed_ports(self.port)
         self.with_env("discovery.type", "single-node")
         self.with_env("plugins.security.disabled", "false" if security_enabled else "true")
+        if [int(n) for n in image.split(":")[-1].split(".")] >= [int(n) for n in "2.12.0".split(".")]:
+            self.with_env("OPENSEARCH_INITIAL_ADMIN_PASSWORD", self.initial_admin_password)
         if security_enabled:
             self.with_env("plugins.security.allow_default_init_securityindex", "true")
 
@@ -66,7 +73,7 @@ class OpenSearchContainer(DockerContainer):
             "host": self.get_container_host_ip(),
             "port": self.get_exposed_port(self.port),
             "username": "admin",
-            "password": "admin",
+            "password": self.initial_admin_password,
         }
 
     def get_client(self, verify_certs: bool = False, **kwargs) -> OpenSearch:
