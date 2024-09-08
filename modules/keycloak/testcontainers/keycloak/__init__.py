@@ -34,7 +34,7 @@ class KeycloakContainer(DockerContainer):
 
             >>> from testcontainers.keycloak import KeycloakContainer
 
-            >>> with KeycloakContainer(f"quay.io/keycloak/keycloak:24.0.1") as keycloak:
+            >>> with KeycloakContainer(f"quay.io/keycloak/keycloak:25.0.4") as keycloak:
             ...     keycloak.get_client().users_count()
             1
     """
@@ -45,13 +45,15 @@ class KeycloakContainer(DockerContainer):
         username: Optional[str] = None,
         password: Optional[str] = None,
         port: int = 8080,
+        management_port: int = 9000,
         cmd: Optional[str] = _DEFAULT_DEV_COMMAND,
     ) -> None:
         super().__init__(image=image)
         self.username = username or os.environ.get("KEYCLOAK_ADMIN", "test")
         self.password = password or os.environ.get("KEYCLOAK_ADMIN_PASSWORD", "test")
         self.port = port
-        self.with_exposed_ports(self.port)
+        self.management_port = management_port
+        self.with_exposed_ports(self.port, self.management_port)
         self.cmd = cmd
 
     def _configure(self) -> None:
@@ -71,10 +73,20 @@ class KeycloakContainer(DockerContainer):
         port = self.get_exposed_port(self.port)
         return f"http://{host}:{port}"
 
+    def get_management_url(self) -> str:
+        host = self.get_container_host_ip()
+        port = self.get_exposed_port(self.management_port)
+        return f"http://{host}:{port}"
+
     @wait_container_is_ready(requests.exceptions.ConnectionError, requests.exceptions.ReadTimeout)
     def _readiness_probe(self) -> None:
         # Keycloak provides REST API endpoints for health checks: https://www.keycloak.org/server/health
-        response = requests.get(f"{self.get_url()}/health/ready", timeout=1)
+        try:
+            # Try the new health endpoint for keycloak 25.0.0 and above
+            # See https://www.keycloak.org/docs/25.0.0/release_notes/#management-port-for-metrics-and-health-endpoints
+            response = requests.get(f"{self.get_management_url()}/health/ready", timeout=1)
+        except requests.exceptions.ConnectionError:
+            response = requests.get(f"{self.get_url()}/health/ready", timeout=1)
         response.raise_for_status()
         if _DEFAULT_DEV_COMMAND in self._command:
             wait_for_logs(self, "Added user .* to realm .*")

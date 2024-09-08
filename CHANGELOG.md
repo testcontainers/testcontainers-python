@@ -1,5 +1,19 @@
 # Changelog
 
+## [4.8.1](https://github.com/testcontainers/testcontainers-python/compare/testcontainers-v4.8.0...testcontainers-v4.8.1) (2024-08-18)
+
+
+### Bug Fixes
+
+* **generic:** Update the FastAPI install on genric module doctest samples ([#686](https://github.com/testcontainers/testcontainers-python/issues/686)) ([5216b02](https://github.com/testcontainers/testcontainers-python/commit/5216b0241a27afe3419f5c4a6d500dc27154ddd4))
+* **mssql:** use glob to find mssql-tools folder since it moves ([#685](https://github.com/testcontainers/testcontainers-python/issues/685)) ([4912725](https://github.com/testcontainers/testcontainers-python/commit/4912725c2a54a9edce046416fbf11e089cc03cb0)), closes [#666](https://github.com/testcontainers/testcontainers-python/issues/666)
+* wait_for_logs can now fail early when the container stops ([#682](https://github.com/testcontainers/testcontainers-python/issues/682)) ([925329d](https://github.com/testcontainers/testcontainers-python/commit/925329d8d2df78437a491a29b707d5ac97e7b734))
+
+
+### Documentation
+
+* Add a more advance usecase documentation for ServerContainer ([#688](https://github.com/testcontainers/testcontainers-python/issues/688)) ([2cf5a9f](https://github.com/testcontainers/testcontainers-python/commit/2cf5a9fbe6db3fa4254a5bb54e67412ec2d08488))
+
 ## [4.8.0](https://github.com/testcontainers/testcontainers-python/compare/testcontainers-v4.7.2...testcontainers-v4.8.0) (2024-08-14)
 
 

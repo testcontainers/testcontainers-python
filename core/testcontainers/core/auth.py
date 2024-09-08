@@ -2,7 +2,7 @@ import base64 as base64
 import json as json
 from collections import namedtuple
 from logging import warning
-from typing import Optional
+from typing import Any, Optional
 
 DockerAuthInfo = namedtuple("DockerAuthInfo", ["registry", "username", "password"])
 
@@ -12,7 +12,7 @@ _AUTH_WARNINGS = {
 }
 
 
-def process_docker_auth_config_encoded(auth_config_dict: dict) -> list[DockerAuthInfo]:
+def process_docker_auth_config_encoded(auth_config_dict: dict[str, dict[str, dict[str, Any]]]) -> list[DockerAuthInfo]:
     """
     Process the auths config.
 
@@ -30,8 +30,11 @@ def process_docker_auth_config_encoded(auth_config_dict: dict) -> list[DockerAut
     auth_info: list[DockerAuthInfo] = []
 
     auths = auth_config_dict.get("auths")
+    if not auths:
+        raise KeyError("No auths found in the docker auth config")
+
     for registry, auth in auths.items():
-        auth_str = auth.get("auth")
+        auth_str = str(auth.get("auth"))
         auth_str = base64.b64decode(auth_str).decode("utf-8")
         username, password = auth_str.split(":")
         auth_info.append(DockerAuthInfo(registry, username, password))
@@ -39,7 +42,7 @@ def process_docker_auth_config_encoded(auth_config_dict: dict) -> list[DockerAut
     return auth_info
 
 
-def process_docker_auth_config_cred_helpers(auth_config_dict: dict) -> None:
+def process_docker_auth_config_cred_helpers(auth_config_dict: dict[str, Any]) -> None:
     """
     Process the credHelpers config.
 
@@ -56,7 +59,7 @@ def process_docker_auth_config_cred_helpers(auth_config_dict: dict) -> None:
         warning(_AUTH_WARNINGS.pop("credHelpers"))
 
 
-def process_docker_auth_config_store(auth_config_dict: dict) -> None:
+def process_docker_auth_config_store(auth_config_dict: dict[str, Any]) -> None:
     """
     Process the credsStore config.
 
@@ -74,7 +77,7 @@ def process_docker_auth_config_store(auth_config_dict: dict) -> None:
 def parse_docker_auth_config(auth_config: str) -> Optional[list[DockerAuthInfo]]:
     """Parse the docker auth config from a string and handle the different formats."""
     try:
-        auth_config_dict: dict = json.loads(auth_config)
+        auth_config_dict: dict[str, Any] = json.loads(auth_config)
         if "credHelpers" in auth_config:
             process_docker_auth_config_cred_helpers(auth_config_dict)
         if "credsStore" in auth_config:
