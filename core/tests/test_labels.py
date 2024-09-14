@@ -10,7 +10,7 @@ import pytest
 from testcontainers.core.config import RYUK_IMAGE
 
 
-def assert_in_with_value(labels: dict, label: str, value: str, known_before_test_time: bool) -> None:
+def assert_in_with_value(labels: dict[str, str], label: str, value: str, known_before_test_time: bool):
     assert label in labels
     if known_before_test_time:
         assert labels[label] == value

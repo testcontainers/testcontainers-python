@@ -1,6 +1,6 @@
 import pytest
 from typing import Callable
-from testcontainers.core.container import DockerClient
+from testcontainers.core.docker_client import DockerClient
 
 
 @pytest.fixture

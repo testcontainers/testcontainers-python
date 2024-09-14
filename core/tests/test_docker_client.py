@@ -38,8 +38,8 @@ def test_docker_client_login():
     mock_parse_docker_auth_config = MagicMock(spec=parse_docker_auth_config)
     mock_utils = MagicMock()
     mock_utils.parse_docker_auth_config = mock_parse_docker_auth_config
-    TestAuth = namedtuple("Auth", "value")
-    mock_parse_docker_auth_config.return_value = [TestAuth("test")]
+    Auth = namedtuple("Auth", "value")
+    mock_parse_docker_auth_config.return_value = [Auth("test")]
 
     with (
         mock.patch.object(c, "_docker_auth_config", "test"),
