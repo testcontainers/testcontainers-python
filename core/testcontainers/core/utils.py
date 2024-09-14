@@ -3,6 +3,7 @@ import os
 import platform
 import subprocess
 import sys
+from typing import Any, Optional
 
 LINUX = "linux"
 MAC = "mac"
@@ -18,7 +19,7 @@ def setup_logger(name: str) -> logging.Logger:
     return logger
 
 
-def os_name() -> str:
+def os_name() -> Optional[str]:
     pl = sys.platform
     if pl == "linux" or pl == "linux2":
         return LINUX
@@ -26,6 +27,7 @@ def os_name() -> str:
         return MAC
     elif pl == "win32":
         return WIN
+    return None
 
 
 def is_mac() -> bool:
@@ -53,7 +55,7 @@ def inside_container() -> bool:
     return os.path.exists("/.dockerenv")
 
 
-def default_gateway_ip() -> str:
+def default_gateway_ip() -> Optional[str]:
     """
     Returns gateway IP address of the host that testcontainer process is
     running on
@@ -66,11 +68,12 @@ def default_gateway_ip() -> str:
         ip_address = process.communicate()[0]
         if ip_address and process.returncode == 0:
             return ip_address.decode("utf-8").strip().strip("\n")
+        return None
     except subprocess.SubprocessError:
         return None
 
 
-def raise_for_deprecated_parameter(kwargs: dict, name: str, replacement: str) -> dict:
+def raise_for_deprecated_parameter(kwargs: dict[Any, Any], name: str, replacement: str) -> dict[Any, Any]:
     """
     Raise an error if a dictionary of keyword arguments contains a key and suggest the replacement.
     """
