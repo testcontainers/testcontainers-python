@@ -91,45 +91,7 @@ class PostgresContainer(DbContainer):
 
     @wait_container_is_ready()
     def _connect(self) -> None:
-        # postgres itself logs these messages to the standard error stream:
-        #
-        # $ /opt/homebrew/opt/postgresql@14/bin/postgres -D /opt/homebrew/var/postgresql@14 \
-        # > | grep -o -a -m 1 -h 'database system is ready to accept connections'
-        # 2024-08-03 00:13:02.799 EDT [70226] LOG:  starting PostgreSQL 14.11 (Homebrew) ....
-        # 2024-08-03 00:13:02.804 EDT [70226] LOG:  listening on IPv4 address "127.0.0.1", port 5432
-        # ...
-        # ^C2024-08-03 00:13:04.226 EDT [70226] LOG:  received fast shutdown request
-        # ...
-        #
-        # $ /opt/homebrew/opt/postgresql@14/bin/postgres -D /opt/homebrew/var/postgresql@14 2>&1 \
-        # > | grep -o -a -m 1 -h 'database system is ready to accept connections'
-        # database system is ready to accept connections
-        #
-        # and the setup script inside docker library postgres
-        # uses pg_ctl:
-        # https://github.com/docker-library/postgres/blob/66da3846b40396249936938ee17e9684e6968a57/16/alpine3.20/docker-entrypoint.sh#L261-L282
-        # which prints logs to stdout:
-        # https://www.postgresql.org/docs/current/app-pg-ctl.html#:~:text=the%20server%27s%20standard%20output%20and%20standard%20error%20are%20sent%20to%20pg_ctl%27s%20standard%20output
-        #
-        # so we must wait for both the setup and real startup:
-        predicate_streams_and = True
-
-        wait_for_logs(
-            self,
-            ".*database system is ready to accept connections.*",
-            c.max_tries,
-            c.sleep_time,
-            predicate_streams_and=predicate_streams_and,
-            #
-        )
-
-        count = 0
-        while count < c.max_tries:
-            status, _ = self.exec(f"pg_isready -hlocalhost -p{self.port} -U{self.username}")
-            if status == 0:
-                return
-
-            sleep(c.sleep_time)
-            count += 1
-
-        raise RuntimeError("Postgres could not get into a ready state")
+        escaped_single_password = self.password.replace("'", "'\"'\"'")
+        result = self.exec(["sh", "-c", f"PGPASSWORD='{escaped_single_password}' psql --username {self.username} --dbname {self.dbname} --host 127.0.0.1 -c 'select version();'"])
+        if result.exit_code:
+            raise ConnectionError("pg_isready is not ready yet")

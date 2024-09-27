@@ -46,6 +46,16 @@ def test_docker_run_postgres_with_driver_pg8000():
             connection.execute(sqlalchemy.text("select 1=1"))
 
 
+def test_password_with_quotes():
+    postgres_container = PostgresContainer("postgres:9.5", password="'''''")
+    with postgres_container as postgres:
+        engine = sqlalchemy.create_engine(postgres.get_connection_url())
+        with engine.begin() as connection:
+            result = connection.execute(sqlalchemy.text("select version()"))
+            for row in result:
+                assert row[0].lower().startswith("postgresql 9.5")
+
+
 # This is a feature in the generic DbContainer class
 # but it can't be tested on its own
 # so is tested in various database modules:
