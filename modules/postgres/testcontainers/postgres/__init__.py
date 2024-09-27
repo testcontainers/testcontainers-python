@@ -11,13 +11,11 @@
 #    License for the specific language governing permissions and limitations
 #    under the License.
 import os
-from time import sleep
 from typing import Optional
 
-from testcontainers.core.config import testcontainers_config as c
 from testcontainers.core.generic import DbContainer
 from testcontainers.core.utils import raise_for_deprecated_parameter
-from testcontainers.core.waiting_utils import wait_container_is_ready, wait_for_logs
+from testcontainers.core.waiting_utils import wait_container_is_ready
 
 _UNSET = object()
 
@@ -92,6 +90,12 @@ class PostgresContainer(DbContainer):
     @wait_container_is_ready()
     def _connect(self) -> None:
         escaped_single_password = self.password.replace("'", "'\"'\"'")
-        result = self.exec(["sh", "-c", f"PGPASSWORD='{escaped_single_password}' psql --username {self.username} --dbname {self.dbname} --host 127.0.0.1 -c 'select version();'"])
+        result = self.exec(
+            [
+                "sh",
+                "-c",
+                f"PGPASSWORD='{escaped_single_password}' psql --username {self.username} --dbname {self.dbname} --host 127.0.0.1 -c 'select version();'",
+            ]
+        )
         if result.exit_code:
             raise ConnectionError("pg_isready is not ready yet")

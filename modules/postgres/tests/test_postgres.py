@@ -1,9 +1,9 @@
 from pathlib import Path
 
 import pytest
+import sqlalchemy
 
 from testcontainers.postgres import PostgresContainer
-import sqlalchemy
 
 
 # https://www.postgresql.org/support/versioning/
