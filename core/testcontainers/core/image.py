@@ -49,9 +49,10 @@ class DockerImage:
         self._dockerfile_path = dockerfile_path
         self._no_cache = no_cache
 
-    def build(self, **kwargs) -> Self:
+    def build(self) -> Self:
         logger.info(f"Building image from {self.path}")
         docker_client = self.get_docker_client()
+        kwargs = self._kwargs
         self._image, self._logs = docker_client.build(
             path=str(self.path), tag=self.tag, dockerfile=self._dockerfile_path, nocache=self._no_cache, **kwargs
         )
