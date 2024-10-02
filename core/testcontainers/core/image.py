@@ -23,10 +23,13 @@ class DockerImage:
             >>> with DockerImage(path="./core/tests/image_fixtures/sample/", tag="test-image") as image:
             ...    logs = image.get_logs()
 
-    :param tag: Tag for the image to be built (default: None)
     :param path: Path to the build context
+    :param docker_client_kw: Keyword arguments to pass to the DockerClient
+    :param tag: Tag for the image to be built (default: None)
+    :param clean_up: Remove the image after exiting the context (default: True)
     :param dockerfile_path: Path to the Dockerfile within the build context path (default: Dockerfile)
     :param no_cache: Bypass build cache; CLI's --no-cache
+    :param kwargs: Additional keyword arguments to pass to the underlying docker-py
     """
 
     def __init__(
@@ -52,9 +55,8 @@ class DockerImage:
     def build(self) -> Self:
         logger.info(f"Building image from {self.path}")
         docker_client = self.get_docker_client()
-        kwargs = self._kwargs
         self._image, self._logs = docker_client.build(
-            path=str(self.path), tag=self.tag, dockerfile=self._dockerfile_path, nocache=self._no_cache, **kwargs
+            path=str(self.path), tag=self.tag, dockerfile=self._dockerfile_path, nocache=self._no_cache, **self._kwargs
         )
         logger.info(f"Built image {self.short_id} with tag {self.tag}")
         return self
