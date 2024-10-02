@@ -4,6 +4,7 @@ from os import environ
 from os.path import exists
 from pathlib import Path
 from typing import Optional, Union
+from urllib.parse import urlparse
 
 MAX_TRIES = int(environ.get("TC_MAX_TRIES", 120))
 SLEEP_TIME = int(environ.get("TC_POOLING_INTERVAL", 1))
@@ -12,7 +13,7 @@ TIMEOUT = MAX_TRIES * SLEEP_TIME
 RYUK_IMAGE: str = environ.get("RYUK_CONTAINER_IMAGE", "testcontainers/ryuk:0.8.1")
 RYUK_PRIVILEGED: bool = environ.get("TESTCONTAINERS_RYUK_PRIVILEGED", "false") == "true"
 RYUK_DISABLED: bool = environ.get("TESTCONTAINERS_RYUK_DISABLED", "false") == "true"
-RYUK_DOCKER_SOCKET: str = environ.get("TESTCONTAINERS_DOCKER_SOCKET_OVERRIDE", "/var/run/docker.sock")
+RYUK_DOCKER_SOCKET: Optional[str] = environ.get("TESTCONTAINERS_DOCKER_SOCKET_OVERRIDE", None)
 RYUK_RECONNECTION_TIMEOUT: str = environ.get("RYUK_RECONNECTION_TIMEOUT", "10s")
 TC_HOST_OVERRIDE: Optional[str] = environ.get("TC_HOST", environ.get("TESTCONTAINERS_HOST_OVERRIDE"))
 
@@ -49,7 +50,6 @@ class TestcontainersConfiguration:
     ryuk_image: str = RYUK_IMAGE
     ryuk_privileged: bool = RYUK_PRIVILEGED
     ryuk_disabled: bool = RYUK_DISABLED
-    ryuk_docker_socket: str = RYUK_DOCKER_SOCKET
     ryuk_reconnection_timeout: str = RYUK_RECONNECTION_TIMEOUT
     tc_properties: dict[str, str] = field(default_factory=read_tc_properties)
     _docker_auth_config: Optional[str] = field(default_factory=lambda: environ.get("DOCKER_AUTH_CONFIG"))
@@ -79,6 +79,17 @@ class TestcontainersConfiguration:
     def timeout(self) -> int:
         return self.max_tries * self.sleep_time
 
+    @property
+    def docker_host(self) -> Optional[str]:
+        return self.tc_properties_get_tc_host() or environ.get("DOCKER_HOST")
+
+    @property
+    def ryuk_docker_socket(self) -> str:
+        if RYUK_DOCKER_SOCKET:
+            return RYUK_DOCKER_SOCKET
+        if self.docker_host:
+            return urlparse(self.docker_host).path
+        return "/var/run/docker.sock"
 
 testcontainers_config = TestcontainersConfiguration()
 
