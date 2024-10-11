@@ -14,6 +14,7 @@ import functools as ft
 import importlib.metadata
 import ipaddress
 import os
+import socket
 import urllib
 import urllib.parse
 from collections.abc import Iterable
@@ -25,6 +26,7 @@ from docker.models.images import Image, ImageCollection
 from typing_extensions import ParamSpec
 
 from testcontainers.core.auth import DockerAuthInfo, parse_docker_auth_config
+from testcontainers.core.config import ConnectionMode
 from testcontainers.core.config import testcontainers_config as c
 from testcontainers.core.labels import SESSION_ID, create_labels
 from testcontainers.core.utils import default_gateway_ip, inside_container, is_windows, setup_logger
@@ -128,7 +130,8 @@ class DockerClient:
         # If we're docker in docker running on a custom network, we need to inherit the
         # network settings, so we can access the resulting container.
         try:
-            docker_host = ipaddress.IPv4Address(self.host())
+            host_ip = socket.gethostbyname(self.host())
+            docker_host = ipaddress.IPv4Address(host_ip)
             # See if we can find the host on our networks
             for network in self.client.networks.list(filters={"type": "custom"}):
                 if "IPAM" in network.attrs:
@@ -139,7 +142,7 @@ class DockerClient:
                             continue
                         if docker_host in subnet:
                             return network.name
-        except ipaddress.AddressValueError:
+        except (ipaddress.AddressValueError, OSError):
             pass
         return None
 
@@ -186,6 +189,28 @@ class DockerClient:
         container = self.get_container(container_id)
         network_name = self.network_name(container_id)
         return container["NetworkSettings"]["Networks"][network_name]["Gateway"]
+
+    def get_connection_mode(self) -> ConnectionMode:
+        """
+        Determine the connection mode.
+
+        See https://github.com/testcontainers/testcontainers-python/issues/475#issuecomment-2407250970
+        """
+        if c.connection_mode_override:
+            return c.connection_mode_override
+        localhosts = {"localhost", "127.0.0.1", "::1"}
+        if not inside_container() or self.host() not in localhosts:
+            # if running not inside a container or with a non-local docker client,
+            # connect ot the docker host per default
+            return ConnectionMode.docker_host
+        elif self.find_host_network():
+            # a host network could be determined, indicator for DooD,
+            # so we should connect to the bridge_ip as the container we run in
+            # and the one we started are connected to the same network
+            # that might have no access to either docker_host or the gateway
+            return ConnectionMode.bridge_ip
+        # default for DinD
+        return ConnectionMode.gateway_ip
 
     def host(self) -> str:
         """
