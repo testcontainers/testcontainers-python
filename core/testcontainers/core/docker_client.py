@@ -25,13 +25,13 @@ from docker.models.containers import Container, ContainerCollection
 from docker.models.images import Image, ImageCollection
 from typing_extensions import ParamSpec
 
+from testcontainers.core import utils
 from testcontainers.core.auth import DockerAuthInfo, parse_docker_auth_config
 from testcontainers.core.config import ConnectionMode
 from testcontainers.core.config import testcontainers_config as c
 from testcontainers.core.labels import SESSION_ID, create_labels
-from testcontainers.core.utils import default_gateway_ip, inside_container, is_windows, setup_logger
 
-LOGGER = setup_logger(__name__)
+LOGGER = utils.setup_logger(__name__)
 
 _P = ParamSpec("_P")
 _T = TypeVar("_T")
@@ -199,7 +199,7 @@ class DockerClient:
         if c.connection_mode_override:
             return c.connection_mode_override
         localhosts = {"localhost", "127.0.0.1", "::1"}
-        if not inside_container() or self.host() not in localhosts:
+        if not utils.inside_container() or self.host() not in localhosts:
             # if running not inside a container or with a non-local docker client,
             # connect ot the docker host per default
             return ConnectionMode.docker_host
@@ -225,11 +225,11 @@ class DockerClient:
             return "localhost"
         if "http" in url.scheme or "tcp" in url.scheme and url.hostname:
             # see https://github.com/testcontainers/testcontainers-python/issues/415
-            if host == "localnpipe" and is_windows():
+            if url.hostname == "localnpipe" and utils.is_windows():
                 return "localhost"
             return url.hostname
-        if inside_container() and ("unix" in url.scheme or "npipe" in url.scheme):
-            ip_address = default_gateway_ip()
+        if utils.inside_container() and ("unix" in url.scheme or "npipe" in url.scheme):
+            ip_address = utils.default_gateway_ip()
             if ip_address:
                 return ip_address
         return "localhost"
