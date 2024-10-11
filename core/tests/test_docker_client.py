@@ -16,6 +16,8 @@ from testcontainers.core import utils
 
 from pytest import mark
 
+from docker.models.networks import Network
+
 
 def test_docker_client_from_env():
     test_kwargs = {"test_kw": "test_value"}
@@ -194,3 +196,56 @@ def test_get_connection_mode_dood(monkeypatch: pytest.MonkeyPatch) -> None:
     monkeypatch.setattr(client, "find_host_network", lambda: "new_bridge_network")
     monkeypatch.setattr(utils, "inside_container", lambda: True)
     assert client.get_connection_mode() == ConnectionMode.bridge_ip
+
+
+def test_find_host_network_invalid_url(monkeypatch: pytest.MonkeyPatch) -> None:
+    """
+    If the hostname can't be resolved just return None
+    """
+    client = DockerClient()
+    monkeypatch.setattr(client, "host", lambda: "this does not exists")
+    assert client.find_host_network() is None
+
+
+def test_find_host_network_found_by_docker_host(monkeypatch: pytest.MonkeyPatch) -> None:
+    client = DockerClient()
+    monkeypatch.setattr(client, "host", lambda: "172.22.0.1")
+
+    networks = [
+        # a network without IPAM
+        {"Name": "host"},
+        # network with invalid subnet
+        {
+            "Name": "invalid",
+            "IPAM": {"Config": [{"Gateway": "172.22.0.1", "Subnet": "invalid subnet"}]},
+        },
+        {
+            "Attachable": False,
+            "ConfigFrom": {"Network": ""},
+            "ConfigOnly": False,
+            "Containers": {},
+            "Created": "2024-10-11T16:08:36.005642863Z",
+            "Driver": "bridge",
+            "EnableIPv6": False,
+            "Name": "runner-346da30e-2641-1-8365005",
+            "IPAM": {
+                "Config": [{"Gateway": "172.22.0.1", "Subnet": "172.22.0.0/16"}],
+                "Driver": "default",
+                "Options": None,
+            },
+        },
+    ]
+
+    class FakeNetworks:
+        def list(self, filters: dict[str, str]) -> list[Network]:
+            assert filters == {"type": "custom"}
+            return [Network(network) for network in networks]
+
+    class FakeClient:
+        @property
+        def networks(self):
+            return FakeNetworks()
+
+    monkeypatch.setattr(client, "client", FakeClient())
+
+    assert client.find_host_network() == "runner-346da30e-2641-1-8365005"
