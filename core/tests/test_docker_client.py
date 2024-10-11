@@ -1,6 +1,7 @@
 import os
 import json
 from collections import namedtuple
+from typing import Any
 from unittest import mock
 from unittest.mock import MagicMock, patch
 
@@ -249,3 +250,46 @@ def test_find_host_network_found_by_docker_host(monkeypatch: pytest.MonkeyPatch)
     monkeypatch.setattr(client, "client", FakeClient())
 
     assert client.find_host_network() == "runner-346da30e-2641-1-8365005"
+
+
+def test_find_host_network_found_by_running_id(monkeypatch: pytest.MonkeyPatch) -> None:
+    client = DockerClient()
+    fake_id = "abcde1234"
+
+    def network_name(container_id: str) -> str:
+        assert container_id == fake_id
+        return "FAKE_NETWORK"
+
+    monkeypatch.setattr(utils, "get_running_in_container_id", lambda: fake_id)
+    monkeypatch.setattr(client, "network_name", network_name)
+
+    assert client.find_host_network() == "FAKE_NETWORK"
+
+
+def test_run_uses_found_network(monkeypatch: pytest.MonkeyPatch) -> None:
+    """
+    If a host network is found, use it
+    """
+
+    client = DockerClient()
+
+    class ContainerRunFake:
+        def __init__(self) -> None:
+            self.calls: list[dict[str, Any]] = []
+
+        def run(self, image: str, **kwargs: Any) -> str:
+            self.calls.append(kwargs)
+            return "CONTAINER"
+
+    class FakeClient:
+        def __init__(self) -> None:
+            self.containers = ContainerRunFake()
+
+    fake_client = FakeClient()
+
+    monkeypatch.setattr(client, "find_host_network", lambda: "new_bridge_network")
+    monkeypatch.setattr(client, "client", fake_client)
+
+    assert client.run("test") == "CONTAINER"
+
+    assert fake_client.containers.calls[0]["network"] == "new_bridge_network"

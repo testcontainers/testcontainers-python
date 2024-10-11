@@ -10,6 +10,7 @@
 #    WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the
 #    License for the specific language governing permissions and limitations
 #    under the License.
+import contextlib
 import functools as ft
 import importlib.metadata
 import ipaddress
@@ -129,6 +130,15 @@ class DockerClient:
         """
         # If we're docker in docker running on a custom network, we need to inherit the
         # network settings, so we can access the resulting container.
+
+        # first to try to find the network the container runs in, if we can determine
+        container_id = utils.get_running_in_container_id()
+        if container_id:
+            with contextlib.suppress(Exception):
+                return self.network_name(container_id)
+
+        # if this results nothing, try to determine the network based on the
+        # docker_host
         try:
             host_ip = socket.gethostbyname(self.host())
             docker_host = ipaddress.IPv4Address(host_ip)
