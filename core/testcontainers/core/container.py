@@ -1,5 +1,4 @@
 import contextlib
-from platform import system
 from socket import socket
 from typing import TYPE_CHECKING, Optional, Union
 
@@ -131,11 +130,6 @@ class DockerContainer:
     def get_container_host_ip(self) -> str:
         # infer from docker host
         host = self.get_docker_client().host()
-        if not host:
-            return "localhost"
-        # see https://github.com/testcontainers/testcontainers-python/issues/415
-        if host == "localnpipe" and system() == "Windows":
-            return "localhost"
 
         # # check testcontainers itself runs inside docker container
         # if inside_container() and not os.getenv("DOCKER_HOST") and not host.startswith("http://"):

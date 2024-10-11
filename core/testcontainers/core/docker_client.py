@@ -27,7 +27,7 @@ from typing_extensions import ParamSpec
 from testcontainers.core.auth import DockerAuthInfo, parse_docker_auth_config
 from testcontainers.core.config import testcontainers_config as c
 from testcontainers.core.labels import SESSION_ID, create_labels
-from testcontainers.core.utils import default_gateway_ip, inside_container, setup_logger
+from testcontainers.core.utils import default_gateway_ip, inside_container, is_windows, setup_logger
 
 LOGGER = setup_logger(__name__)
 
@@ -196,10 +196,12 @@ class DockerClient:
             return host
         try:
             url = urllib.parse.urlparse(self.client.api.base_url)
-
         except ValueError:
             return "localhost"
-        if "http" in url.scheme or "tcp" in url.scheme:
+        if "http" in url.scheme or "tcp" in url.scheme and url.hostname:
+            # see https://github.com/testcontainers/testcontainers-python/issues/415
+            if host == "localnpipe" and is_windows():
+                return "localhost"
             return url.hostname
         if inside_container() and ("unix" in url.scheme or "npipe" in url.scheme):
             ip_address = default_gateway_ip()
