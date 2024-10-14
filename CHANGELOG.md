@@ -1,5 +1,19 @@
 # Changelog
 
+## [4.8.2](https://github.com/testcontainers/testcontainers-python/compare/testcontainers-v4.8.1...testcontainers-v4.8.2) (2024-09-27)
+
+
+### Bug Fixes
+
+* **core:** Reorganize core tests and improve ([#693](https://github.com/testcontainers/testcontainers-python/issues/693)) ([f1665f3](https://github.com/testcontainers/testcontainers-python/commit/f1665f3aa66eff443923d897ec553e09e47f6a78))
+* **core:** Typing in auth ([#691](https://github.com/testcontainers/testcontainers-python/issues/691)) ([66726b6](https://github.com/testcontainers/testcontainers-python/commit/66726b656ab8fd18a69771ff2ee2a3fd8ca959b0))
+* **core:** Typing in config + utils ([#692](https://github.com/testcontainers/testcontainers-python/issues/692)) ([794a22e](https://github.com/testcontainers/testcontainers-python/commit/794a22e22362227ccfc0b2acd18130196e25775d))
+* **keycloak:** Add support for Keycloak version &gt;=25 ([#694](https://github.com/testcontainers/testcontainers-python/issues/694)) ([62bd0de](https://github.com/testcontainers/testcontainers-python/commit/62bd0debffdb762714de853a069e3b63414fa789))
+* mysql typo ([#705](https://github.com/testcontainers/testcontainers-python/issues/705)) ([85d6078](https://github.com/testcontainers/testcontainers-python/commit/85d6078f9bcc99050c0173e459208402aa4f5026)), closes [#689](https://github.com/testcontainers/testcontainers-python/issues/689)
+* **opensearch:** add support for admin_password in &gt;= 2.12 ([#697](https://github.com/testcontainers/testcontainers-python/issues/697)) ([935693e](https://github.com/testcontainers/testcontainers-python/commit/935693e01686fea9bf3201cd8c70b3e617bda2ee))
+* postgres use psql instead of logs ([#704](https://github.com/testcontainers/testcontainers-python/issues/704)) ([4365754](https://github.com/testcontainers/testcontainers-python/commit/436575410a2906a695b96af66ff55c9ccb8e09a7))
+* **tests:** Missing artifacts (include-hidden-files) ([#699](https://github.com/testcontainers/testcontainers-python/issues/699)) ([8f1165d](https://github.com/testcontainers/testcontainers-python/commit/8f1165dd79ee0dcf16f37f2d186cbc3d47bc11bc))
+
 ## [4.8.1](https://github.com/testcontainers/testcontainers-python/compare/testcontainers-v4.8.0...testcontainers-v4.8.1) (2024-08-18)
 
 
