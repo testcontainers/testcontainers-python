@@ -46,7 +46,7 @@ class MySqlContainer(DbContainer):
 
         The optional :code:`seed` parameter enables arbitrary SQL files to be loaded.
         This is perfect for schema and sample data. This works by mounting the seed to
-        `/docker-entrypoint-initdb./d`, which containerized MySQL are set up to load
+        `/docker-entrypoint-initdb.d/`, which containerized MySQL are set up to load
         automatically.
 
         .. doctest::
