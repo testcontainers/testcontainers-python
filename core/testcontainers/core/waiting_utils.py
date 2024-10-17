@@ -106,6 +106,7 @@ def wait_for_logs(
     """
     if isinstance(predicate, str):
         predicate = re.compile(predicate, re.MULTILINE).search
+    wrapped = container.get_wrapped_container()
     start = time.time()
     while True:
         duration = time.time() - start
@@ -121,6 +122,8 @@ def wait_for_logs(
             return duration
         if duration > timeout:
             raise TimeoutError(f"Container did not emit logs satisfying predicate in {timeout:.3f} " "seconds")
-        if raise_on_exit and container.get_wrapped_container().status not in _NOT_EXITED_STATUSES:
-            raise RuntimeError("Container exited before emitting logs satisfying predicate")
+        if raise_on_exit:
+            wrapped.reload()
+            if wrapped.status not in _NOT_EXITED_STATUSES:
+                raise RuntimeError("Container exited before emitting logs satisfying predicate")
         time.sleep(interval)
