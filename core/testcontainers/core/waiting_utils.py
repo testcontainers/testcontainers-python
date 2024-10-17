@@ -110,8 +110,9 @@ def wait_for_logs(
     start = time.time()
     while True:
         duration = time.time() - start
-        stdout = container.get_logs()[0].decode()
-        stderr = container.get_logs()[1].decode()
+        stdout, stderr = container.get_logs()
+        stdout = stdout.decode()
+        stderr = stderr.decode()
         predicate_result = (
             predicate(stdout) or predicate(stderr)
             if predicate_streams_and is False
