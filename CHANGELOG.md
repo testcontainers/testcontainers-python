@@ -1,5 +1,12 @@
 # Changelog
 
+## [4.8.3](https://github.com/testcontainers/testcontainers-python/compare/testcontainers-v4.8.2...testcontainers-v4.8.3) (2024-10-18)
+
+
+### Bug Fixes
+
+* allow running all tests ([#721](https://github.com/testcontainers/testcontainers-python/issues/721)) ([f958cf9](https://github.com/testcontainers/testcontainers-python/commit/f958cf9fe62a5f3ee2dc255713ec8b16de6a767d))
+
 ## [4.8.2](https://github.com/testcontainers/testcontainers-python/compare/testcontainers-v4.8.1...testcontainers-v4.8.2) (2024-09-27)
 
 
