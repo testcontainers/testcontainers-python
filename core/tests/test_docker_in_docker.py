@@ -1,9 +1,10 @@
 import contextlib
+import json
 import os
 import time
 import socket
 from pathlib import Path
-from typing import Final
+from typing import Final, Any
 
 import pytest
 
@@ -125,6 +126,23 @@ def print_surround_header(what: str, header_len: int = 80) -> None:
 EXPECTED_NETWORK_VAR: Final[str] = "TCC_EXPECTED_NETWORK"
 
 
+def get_docker_info() -> dict[str, Any]:
+    client = DockerClient().client
+
+    # Get Docker version info
+    version_info = client.version()
+
+    # Get Docker system info
+    system_info = client.info()
+
+    # Get container inspections
+    containers = client.containers.list(all=True)  # List all containers (running or not)
+    container_inspections = {container.name: container.attrs for container in containers}
+
+    # Return as a dictionary
+    return {"version_info": version_info, "system_info": system_info, "container_inspections": container_inspections}
+
+
 # see https://forums.docker.com/t/get-a-containers-full-id-from-inside-of-itself
 @pytest.mark.xfail(reason="Does not work in rootles docker i.e. github actions")
 @pytest.mark.inside_docker_check
@@ -134,7 +152,9 @@ def test_find_host_network_in_dood() -> None:
     Check that the correct host network is found for DooD
     """
     LOGGER.info(f"Running container id={utils.get_running_in_container_id()}")
-    LOGGER.info("Networks: ")
+    # Get some debug information in the hope this helps to find
+    LOGGER.info(f"hostname: {socket.gethostname()}")
+    LOGGER.info(f"docker info: {json.dumps(get_docker_info(), indent=2)}")
     assert DockerClient().find_host_network() == os.environ[EXPECTED_NETWORK_VAR]
 
 
