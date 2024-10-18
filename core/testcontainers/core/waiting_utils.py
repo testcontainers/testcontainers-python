@@ -77,6 +77,9 @@ def wait_for(condition: Callable[..., bool]) -> bool:
     return condition()
 
 
+_NOT_EXITED_STATUSES = {"running", "created"}
+
+
 def wait_for_logs(
     container: "DockerContainer",
     predicate: Union[Callable, str],
@@ -118,6 +121,6 @@ def wait_for_logs(
             return duration
         if duration > timeout:
             raise TimeoutError(f"Container did not emit logs satisfying predicate in {timeout:.3f} " "seconds")
-        if raise_on_exit and container.get_wrapped_container().status != "running":
+        if raise_on_exit and container.get_wrapped_container().status not in _NOT_EXITED_STATUSES:
             raise RuntimeError("Container exited before emitting logs satisfying predicate")
         time.sleep(interval)
