@@ -32,7 +32,6 @@ lint:  ## Lint all files in the project, which we also run in pre-commit
 	poetry run pre-commit run -a
 
 image: ## Make the docker image for dind tests
-	poetry export -f requirements.txt -o build/requirements.txt
 	docker build --build-arg PYTHON_VERSION=${PYTHON_VERSION} -t ${IMAGE} .
 
 DOCKER_RUN = docker run --rm -v /var/run/docker.sock:/var/run/docker.sock
