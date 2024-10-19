@@ -11,7 +11,7 @@
 #    License for the specific language governing permissions and limitations
 #    under the License.
 import uuid
-from typing import Optional
+from typing import Any, Optional
 
 from testcontainers.core.docker_client import DockerClient
 
@@ -21,12 +21,14 @@ class Network:
     Network context manager for programmatically connecting containers.
     """
 
-    def __init__(self, docker_client_kw: Optional[dict] = None, docker_network_kw: Optional[dict] = None) -> None:
+    def __init__(
+        self, docker_client_kw: Optional[dict[str, Any]] = None, docker_network_kw: Optional[dict[str, Any]] = None
+    ):
         self.name = str(uuid.uuid4())
         self._docker = DockerClient(**(docker_client_kw or {}))
         self._docker_network_kw = docker_network_kw or {}
 
-    def connect(self, container_id: str, network_aliases: Optional[list] = None):
+    def connect(self, container_id: str, network_aliases: Optional[list[str]] = None) -> None:
         self._network.connect(container_id, aliases=network_aliases)
 
     def remove(self) -> None:
@@ -40,5 +42,5 @@ class Network:
     def __enter__(self) -> "Network":
         return self.create()
 
-    def __exit__(self, exc_type, exc_val, exc_tb) -> None:
+    def __exit__(self, exc_type, exc_val, exc_tb) -> None:  # type: ignore[no-untyped-def]
         self.remove()

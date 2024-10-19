@@ -10,7 +10,7 @@
 #    WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the
 #    License for the specific language governing permissions and limitations
 #    under the License.
-from typing import Optional
+from typing import Any, Optional
 from urllib.parse import quote
 
 from testcontainers.core.container import DockerContainer
@@ -55,7 +55,7 @@ class DbContainer(DockerContainer):
         host: Optional[str] = None,
         port: Optional[int] = None,
         dbname: Optional[str] = None,
-        **kwargs,
+        **kwargs: Any,
     ) -> str:
         if raise_for_deprecated_parameter(kwargs, "db_name", "dbname"):
             raise ValueError(f"Unexpected arguments: {','.join(kwargs)}")

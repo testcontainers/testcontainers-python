@@ -31,6 +31,9 @@ coverage:  ## Target to combine and report coverage.
 lint:  ## Lint all files in the project, which we also run in pre-commit
 	poetry run pre-commit run -a
 
+mypy-core-report:
+	poetry run mypy --config-file pyproject.toml core | poetry run python scripts/mypy_report.py
+
 image: ## Make the docker image for dind tests
 	poetry export -f requirements.txt -o build/requirements.txt
 	docker build --build-arg PYTHON_VERSION=${PYTHON_VERSION} -t ${IMAGE} .
