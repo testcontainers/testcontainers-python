@@ -17,7 +17,7 @@ import os
 import urllib
 import urllib.parse
 from collections.abc import Iterable
-from typing import Callable, Optional, TypeVar, Union
+from typing import Any, Callable, Optional, TypeVar, Union, cast
 
 import docker
 from docker.models.containers import Container, ContainerCollection
@@ -56,7 +56,7 @@ class DockerClient:
     Thin wrapper around :class:`docker.DockerClient` for a more functional interface.
     """
 
-    def __init__(self, **kwargs) -> None:
+    def __init__(self, **kwargs: Any) -> None:
         docker_host = get_docker_host()
 
         if docker_host:
@@ -79,14 +79,14 @@ class DockerClient:
         self,
         image: str,
         command: Optional[Union[str, list[str]]] = None,
-        environment: Optional[dict] = None,
-        ports: Optional[dict] = None,
+        environment: Optional[dict[str, str]] = None,
+        ports: Optional[dict[int, Optional[int]]] = None,
         labels: Optional[dict[str, str]] = None,
         detach: bool = False,
         stdout: bool = True,
         stderr: bool = False,
         remove: bool = False,
-        **kwargs,
+        **kwargs: Any,
     ) -> Container:
         # If the user has specified a network, we'll assume the user knows best
         if "network" not in kwargs and not get_docker_host():
@@ -109,7 +109,7 @@ class DockerClient:
         return container
 
     @_wrapped_image_collection
-    def build(self, path: str, tag: str, rm: bool = True, **kwargs) -> tuple[Image, Iterable[dict]]:
+    def build(self, path: str, tag: str, rm: bool = True, **kwargs: Any) -> tuple[Image, Iterable[dict[str, Any]]]:
         """
         Build a Docker image from a directory containing the Dockerfile.
 
@@ -138,28 +138,28 @@ class DockerClient:
                         except ipaddress.AddressValueError:
                             continue
                         if docker_host in subnet:
-                            return network.name
+                            return cast(str, network.name)
         except ipaddress.AddressValueError:
             pass
         return None
 
-    def port(self, container_id: str, port: int) -> int:
+    def port(self, container_id: str, port: int) -> str:
         """
         Lookup the public-facing port that is NAT-ed to :code:`port`.
         """
         port_mappings = self.client.api.port(container_id, port)
         if not port_mappings:
             raise ConnectionError(f"Port mapping for container {container_id} and port {port} is " "not available")
-        return port_mappings[0]["HostPort"]
+        return cast(str, port_mappings[0]["HostPort"])
 
-    def get_container(self, container_id: str) -> Container:
+    def get_container(self, container_id: str) -> dict[str, Any]:
         """
         Get the container with a given identifier.
         """
         containers = self.client.api.containers(filters={"id": container_id})
         if not containers:
             raise RuntimeError(f"Could not get container with id {container_id}")
-        return containers[0]
+        return cast(dict[str, Any], containers[0])
 
     def bridge_ip(self, container_id: str) -> str:
         """
@@ -167,7 +167,7 @@ class DockerClient:
         """
         container = self.get_container(container_id)
         network_name = self.network_name(container_id)
-        return container["NetworkSettings"]["Networks"][network_name]["IPAddress"]
+        return cast(str, container["NetworkSettings"]["Networks"][network_name]["IPAddress"])
 
     def network_name(self, container_id: str) -> str:
         """
@@ -177,7 +177,7 @@ class DockerClient:
         name = container["HostConfig"]["NetworkMode"]
         if name == "default":
             return "bridge"
-        return name
+        return cast(str, name)
 
     def gateway_ip(self, container_id: str) -> str:
         """
@@ -185,9 +185,9 @@ class DockerClient:
         """
         container = self.get_container(container_id)
         network_name = self.network_name(container_id)
-        return container["NetworkSettings"]["Networks"][network_name]["Gateway"]
+        return cast(str, container["NetworkSettings"]["Networks"][network_name]["Gateway"])
 
-    def host(self) -> str:
+    def host(self) -> Optional[str]:
         """
         Get the hostname or ip address of the docker host.
         """
@@ -200,7 +200,7 @@ class DockerClient:
         except ValueError:
             return "localhost"
         if "http" in url.scheme or "tcp" in url.scheme:
-            return url.hostname
+            return cast(str, url.hostname)
         if inside_container() and ("unix" in url.scheme or "npipe" in url.scheme):
             ip_address = default_gateway_ip()
             if ip_address:
@@ -214,9 +214,9 @@ class DockerClient:
         login_info = self.client.login(**auth_config._asdict())
         LOGGER.debug(f"logged in using {login_info}")
 
-    def client_networks_create(self, name: str, param: dict):
+    def client_networks_create(self, name: str, param: dict[str, Any]) -> dict[str, Any]:
         labels = create_labels("", param.get("labels"))
-        return self.client.networks.create(name, **{**param, "labels": labels})
+        return cast(dict[str, Any], self.client.networks.create(name, **{**param, "labels": labels}))
 
 
 def get_docker_host() -> Optional[str]:
