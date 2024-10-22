@@ -57,7 +57,7 @@ class DockerClient:
     """
 
     def __init__(self, **kwargs) -> None:
-        docker_host = get_docker_host()
+        docker_host = c.docker_host
 
         if docker_host:
             LOGGER.info(f"using host {docker_host}")
@@ -89,7 +89,7 @@ class DockerClient:
         **kwargs,
     ) -> Container:
         # If the user has specified a network, we'll assume the user knows best
-        if "network" not in kwargs and not get_docker_host():
+        if "network" not in kwargs and not c.docker_host:
             # Otherwise we'll try to find the docker host for dind usage.
             host_network = self.find_host_network()
             if host_network:
@@ -217,11 +217,6 @@ class DockerClient:
     def client_networks_create(self, name: str, param: dict):
         labels = create_labels("", param.get("labels"))
         return self.client.networks.create(name, **{**param, "labels": labels})
-
-
-def get_docker_host() -> Optional[str]:
-    return c.tc_properties_get_tc_host() or os.getenv("DOCKER_HOST")
-
 
 def get_docker_auth_config() -> Optional[str]:
     return c.docker_auth_config
