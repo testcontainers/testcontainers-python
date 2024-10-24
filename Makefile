@@ -31,16 +31,6 @@ coverage:  ## Target to combine and report coverage.
 lint:  ## Lint all files in the project, which we also run in pre-commit
 	poetry run pre-commit run -a
 
-image: ## Make the docker image for dind tests
-	docker build --build-arg PYTHON_VERSION=${PYTHON_VERSION} -t ${IMAGE} .
-
-DOCKER_RUN = docker run --rm -v /var/run/docker.sock:/var/run/docker.sock
-
-tests-dind: ${TESTS_DIND}  ## Run the tests in docker containers to test `dind`
-${TESTS_DIND}: %/tests-dind: image
-	${DOCKER_RUN} ${IMAGE} \
-		bash -c "make $*/tests"
-
 docs: ## Build the docs for the project
 	poetry run sphinx-build -nW . docs/_build
 
