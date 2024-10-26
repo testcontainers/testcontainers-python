@@ -1,9 +1,11 @@
 import contextlib
+import time
 from socket import socket
 from typing import TYPE_CHECKING, Optional, Union
 
 import docker.errors
 from docker import version
+from docker.errors import NotFound
 from docker.types import EndpointConfig
 from typing_extensions import Self, assert_never
 
@@ -44,6 +46,7 @@ class DockerContainer:
         self.env = {}
         self.ports = {}
         self.volumes = {}
+        self._dependencies = []
         self.image = image
         self._docker = DockerClient(**(docker_client_kw or {}))
         self._container = None
@@ -83,13 +86,62 @@ class DockerContainer:
             return self.with_kwargs(platform="linux/amd64")
         return self
 
+    def depends_on(self, dependencies: Union["DockerContainer", list["DockerContainer"]]) -> "DockerContainer":
+        """
+        Specify dependencies for this container.
+
+        Args:
+            dependencies (Union[DockerContainer, list[DockerContainer]]): One or multiple Docker container instances
+            this container depends on.
+
+        Returns:
+            DockerContainer: The current instance, for chaining.
+        """
+        if isinstance(dependencies, DockerContainer):
+            self._dependencies.append(dependencies)
+        elif isinstance(dependencies, list):
+            self._dependencies.extend(dependencies)
+        else:
+            raise TypeError("dependencies must be a DockerContainer or list of DockerContainer instances")
+        return self
+
+    def _start_dependencies(self) -> bool:
+        """
+        Start all dependencies recursively, ensuring each dependency's dependencies are also resolved.
+        If a dependency fails to start, stop all previously started dependencies and raise the exception.
+        """
+        started_dependencies = []
+        for dependency in self._dependencies:
+            if not dependency._container:
+                try:
+                    dependency._start_dependencies()
+                    dependency.start()
+                    started_dependencies.append(dependency)
+
+                    if not dependency.wait_until_running():
+                        raise ContainerStartException(f"Dependency {dependency.image} did not reach 'running' state.")
+
+                except Exception as e:
+                    # Clean up all dependencies started before the failure
+                    for dep in started_dependencies:
+                        try:
+                            logger.debug("Stopping previously started dependency container: %s", dep.image)
+                            dep.stop()
+                            logger.debug("Dependency container %s stopped successfully", dep.image)
+                        except Exception as stop_error:
+                            logger.error("Failed to stop dependency container %s: %s", dep.image, str(stop_error))
+                    # Raise the exception after cleaning up
+                    raise e
+        return True
+
     def start(self) -> Self:
         if not c.ryuk_disabled and self.image != c.ryuk_image:
             logger.debug("Creating Ryuk container")
             Reaper.get_instance()
-        logger.info("Pulling image %s", self.image)
         docker_client = self.get_docker_client()
         self._configure()
+
+        self._start_dependencies()
 
         network_kwargs = (
             {
@@ -102,6 +154,7 @@ class DockerContainer:
             else {}
         )
 
+        logger.info("Pulling image %s", self.image)
         self._container = docker_client.run(
             self.image,
             command=self._command,
@@ -119,7 +172,11 @@ class DockerContainer:
 
     def stop(self, force=True, delete_volume=True) -> None:
         if self._container:
-            self._container.remove(force=force, v=delete_volume)
+            try:
+                self._container.remove(force=force, v=delete_volume)
+            except NotFound:
+                logger.warning("Container not found when attempting to stop.")
+        self._container = None
         self.get_docker_client().client.close()
 
     def __enter__(self) -> Self:
@@ -127,6 +184,30 @@ class DockerContainer:
 
     def __exit__(self, exc_type, exc_val, exc_tb) -> None:
         self.stop()
+
+    def wait_until_running(self, timeout: int = 30) -> bool:
+        """
+        Wait until the container is in the 'running' state, up to a specified timeout.
+
+        Args:
+            timeout (int): Maximum time to wait in seconds.
+
+        Returns:
+            bool: True if the container is running, False if the timeout is reached.
+        """
+        start_time = time.time()
+        while time.time() - start_time < timeout:
+            self.get_wrapped_container().reload()
+            if self._container and self._container.status == "running":
+                logger.info(f"Container {self.image} reached 'running' state.")
+                return True
+            elif self._container:
+                logger.debug(f"Container {self.image} state: {self._container.status}")
+            else:
+                logger.debug(f"Container {self.image} is not initialized yet.")
+            time.sleep(0.5)
+        logger.error(f"Container {self.image} did not reach 'running' state within {timeout} seconds.")
+        return False
 
     def get_container_host_ip(self) -> str:
         connection_mode: ConnectionMode
