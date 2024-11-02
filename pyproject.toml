@@ -71,6 +71,7 @@ packages = [
     { include = "testcontainers", from = "modules/trino" },
     { include = "testcontainers", from = "modules/vault" },
     { include = "testcontainers", from = "modules/weaviate" },
+    { include = "testcontainers", from = "modules/risingwave" },
 ]
 
 [tool.poetry.urls]
@@ -118,6 +119,7 @@ azure-cosmos = { version = "*", optional = true }
 cryptography = { version = "*", optional = true }
 trino = { version = "*", optional = true }
 ibm_db_sa = { version = "*", optional = true }
+risingwave-py = { version = "*", optional = true }
 
 [tool.poetry.extras]
 arangodb = ["python-arango"]
@@ -153,6 +155,7 @@ ollama = []
 oracle = ["sqlalchemy", "oracledb"]
 oracle-free = ["sqlalchemy", "oracledb"]
 postgres = []
+risingwave = ["risingwave-py"]
 qdrant = ["qdrant-client"]
 rabbitmq = ["pika"]
 redis = ["redis"]
