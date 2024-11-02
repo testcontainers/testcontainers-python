@@ -43,7 +43,7 @@ We have an [issue template](.github/ISSUE_TEMPLATE/new-container.md) for adding 
 Once you've talked to the maintainers (we do our best to reply!) then you can proceed with contributing the new container.
 
 > [!WARNING]
-> PLease raise an issue before you try to contribute a new container! It helps maintainers understand your use-case and motivation.
+> Please raise an issue before you try to contribute a new container! It helps maintainers understand your use-case and motivation.
 > This way we can keep pull requests foruced on the "how", not the "why"! :pray:
 > It also gives maintainers a chance to give you last-minute guidance on caveats or expectations, particularly with
 > new extra dependencies and how to manage them.
