@@ -202,6 +202,9 @@ line-length = 120
 addopts = "--tb=short --strict-markers"
 log_cli = true
 log_cli_level = "INFO"
+markers = [
+    "inside_docker_check: mark test to be used to validate DinD/DooD is working as expected"
+]
 
 [tool.coverage.run]
 branch = true

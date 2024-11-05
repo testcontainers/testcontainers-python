@@ -9,6 +9,7 @@ from testcontainers.core.utils import is_arm
 from testcontainers.mysql import MySqlContainer
 
 
+@pytest.mark.inside_docker_check
 def test_docker_run_mysql():
     config = MySqlContainer("mysql:8.3.0")
     with config as mysql:

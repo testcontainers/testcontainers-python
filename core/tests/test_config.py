@@ -1,4 +1,11 @@
-from testcontainers.core.config import TestcontainersConfiguration as TCC, TC_FILE
+import pytest
+
+from testcontainers.core.config import (
+    TestcontainersConfiguration as TCC,
+    TC_FILE,
+    get_user_overwritten_connection_mode,
+    ConnectionMode,
+)
 
 from pytest import MonkeyPatch, mark, LogCaptureFixture
 
@@ -60,3 +67,20 @@ def test_timeout() -> None:
     config.max_tries = 2
     config.sleep_time = 3
     assert config.timeout == 6
+
+
+def test_invalid_connection_mode(monkeypatch: pytest.MonkeyPatch) -> None:
+    monkeypatch.setenv("TESTCONTAINERS_CONNECTION_MODE", "FOOBAR")
+    with pytest.raises(ValueError, match="Error parsing TESTCONTAINERS_CONNECTION_MODE.*FOOBAR.*"):
+        get_user_overwritten_connection_mode()
+
+
+@pytest.mark.parametrize("mode, use_mapped", (("bridge_ip", False), ("gateway_ip", True), ("docker_host", True)))
+def test_valid_connection_mode(monkeypatch: pytest.MonkeyPatch, mode: str, use_mapped: bool) -> None:
+    monkeypatch.setenv("TESTCONTAINERS_CONNECTION_MODE", mode)
+    assert get_user_overwritten_connection_mode().use_mapped_port is use_mapped
+
+
+def test_no_connection_mode_given(monkeypatch: pytest.MonkeyPatch) -> None:
+    monkeypatch.delenv("TESTCONTAINERS_CONNECTION_MODE", raising=False)
+    assert get_user_overwritten_connection_mode() is None

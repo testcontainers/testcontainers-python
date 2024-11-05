@@ -8,14 +8,15 @@ import docker.errors
 from docker import version
 from docker.types import EndpointConfig
 from dotenv import dotenv_values
-from typing_extensions import Self
+from typing_extensions import Self, assert_never
 
+from testcontainers.core.config import ConnectionMode
 from testcontainers.core.config import testcontainers_config as c
 from testcontainers.core.docker_client import DockerClient
 from testcontainers.core.exceptions import ContainerStartException
 from testcontainers.core.labels import LABEL_SESSION_ID, SESSION_ID
 from testcontainers.core.network import Network
-from testcontainers.core.utils import inside_container, is_arm, setup_logger
+from testcontainers.core.utils import is_arm, setup_logger
 from testcontainers.core.waiting_utils import wait_container_is_ready, wait_for_logs
 
 if TYPE_CHECKING:
@@ -137,38 +138,23 @@ class DockerContainer:
         self.stop()
 
     def get_container_host_ip(self) -> str:
-        # infer from docker host
-        host = self.get_docker_client().host()
-        if not host:
-            return "localhost"
-        # see https://github.com/testcontainers/testcontainers-python/issues/415
-        if host == "localnpipe" and system() == "Windows":
-            return "localhost"
-
-        # # check testcontainers itself runs inside docker container
-        # if inside_container() and not os.getenv("DOCKER_HOST") and not host.startswith("http://"):
-        #     # If newly spawned container's gateway IP address from the docker
-        #     # "bridge" network is equal to detected host address, we should use
-        #     # container IP address, otherwise fall back to detected host
-        #     # address. Even it's inside container, we need to double check,
-        #     # because docker host might be set to docker:dind, usually in CI/CD environment
-        #     gateway_ip = self.get_docker_client().gateway_ip(self._container.id)
-
-        #     if gateway_ip == host:
-        #         return self.get_docker_client().bridge_ip(self._container.id)
-        #     return gateway_ip
-        return host
+        connection_mode: ConnectionMode
+        connection_mode = self.get_docker_client().get_connection_mode()
+        if connection_mode == ConnectionMode.docker_host:
+            return self.get_docker_client().host()
+        elif connection_mode == ConnectionMode.gateway_ip:
+            return self.get_docker_client().gateway_ip(self._container.id)
+        elif connection_mode == ConnectionMode.bridge_ip:
+            return self.get_docker_client().bridge_ip(self._container.id)
+        else:
+            # ensure that we covered all possible connection_modes
+            assert_never(connection_mode)
 
     @wait_container_is_ready()
-    def get_exposed_port(self, port: int) -> str:
-        mapped_port = self.get_docker_client().port(self._container.id, port)
-        if inside_container():
-            gateway_ip = self.get_docker_client().gateway_ip(self._container.id)
-            host = self.get_docker_client().host()
-
-            if gateway_ip == host:
-                return port
-        return mapped_port
+    def get_exposed_port(self, port: int) -> int:
+        if self.get_docker_client().get_connection_mode().use_mapped_port:
+            return self.get_docker_client().port(self._container.id, port)
+        return port
 
     def with_command(self, command: str) -> Self:
         self._command = command

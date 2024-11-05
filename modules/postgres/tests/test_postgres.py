@@ -28,6 +28,7 @@ def test_docker_run_postgres(version: str, monkeypatch):
         assert status == 0
 
 
+@pytest.mark.inside_docker_check
 def test_docker_run_postgres_with_sqlalchemy():
     postgres_container = PostgresContainer("postgres:9.5")
     with postgres_container as postgres:
