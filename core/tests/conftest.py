@@ -1,6 +1,35 @@
+from pathlib import Path
+
 import pytest
 from typing import Callable
-from testcontainers.core.docker_client import DockerClient
+import subprocess
+from testcontainers.core.container import DockerClient
+import sys
+
+PROJECT_DIR = Path(__file__).parent.parent.parent.resolve()
+
+
+def pytest_configure(config: pytest.Config) -> None:
+    """
+    Add configuration for custom pytest markers.
+    """
+    config.addinivalue_line(
+        "markers",
+        "inside_docker_check: test used to validate DinD/DooD are working as expected",
+    )
+
+
+@pytest.fixture(scope="session")
+def python_testcontainer_image() -> str:
+    """Build an image with test containers python for DinD and DooD tests"""
+    py_version = ".".join(map(str, sys.version_info[:2]))
+    image_name = f"testcontainers-python:{py_version}"
+    subprocess.run(
+        [*("docker", "build"), *("--build-arg", f"PYTHON_VERSION={py_version}"), *("-t", image_name), "."],
+        cwd=PROJECT_DIR,
+        check=True,
+    )
+    return image_name
 
 
 @pytest.fixture
