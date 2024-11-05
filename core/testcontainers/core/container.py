@@ -1,6 +1,5 @@
 import contextlib
 from os import PathLike
-from platform import system
 from socket import socket
 from typing import TYPE_CHECKING, Optional, Union
 
