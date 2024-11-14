@@ -11,6 +11,7 @@
 #    License for the specific language governing permissions and limitations
 #    under the License.
 import re
+import time
 
 from testcontainers.core.config import testcontainers_config as c
 from testcontainers.core.generic import DbContainer
@@ -24,12 +25,14 @@ class TrinoContainer(DbContainer):
         image="trinodb/trino:latest",
         user: str = "test",
         port: int = 8080,
+        delay: int = 5,
         **kwargs,
     ):
         super().__init__(image=image, **kwargs)
         self.user = user
         self.port = port
         self.with_exposed_ports(self.port)
+        self.delay = delay
 
     @wait_container_is_ready()
     def _connect(self) -> None:
@@ -39,6 +42,8 @@ class TrinoContainer(DbContainer):
             c.max_tries,
             c.sleep_time,
         )
+        # To avoid `TrinoQueryError(type=INTERNAL_ERROR, name=GENERIC_INTERNAL_ERROR, message="nodes is empty")`
+        time.sleep(self.delay)
         conn = connect(
             host=self.get_container_host_ip(),
             port=self.get_exposed_port(self.port),
