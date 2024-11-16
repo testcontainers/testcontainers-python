@@ -12,6 +12,7 @@
 #    under the License.
 
 from http.client import HTTPException
+from urllib.error import URLError
 from urllib.request import urlopen
 
 from testcontainers.core.container import DockerContainer
@@ -61,7 +62,7 @@ class VaultContainer(DockerContainer):
         exposed_port = self.get_exposed_port(self.port)
         return f"http://{host_ip}:{exposed_port}"
 
-    @wait_container_is_ready(HTTPException)
+    @wait_container_is_ready(HTTPException, URLError)
     def _healthcheck(self) -> None:
         url = f"{self.get_connection_url()}/v1/sys/health"
         with urlopen(url) as res:
