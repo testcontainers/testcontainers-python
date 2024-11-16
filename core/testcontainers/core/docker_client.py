@@ -222,7 +222,7 @@ class DockerClient:
         # default for DinD
         return ConnectionMode.gateway_ip
 
-    def host(self) -> Optional[str]:
+    def host(self) -> str:
         """
         Get the hostname or ip address of the docker host.
         """
