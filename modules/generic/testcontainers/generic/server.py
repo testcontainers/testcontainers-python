@@ -31,8 +31,8 @@ class ServerContainer(DockerContainer):
         ...         delay = wait_for_logs(srv, "GET / HTTP/1.1")
 
 
-    :param path: Path to the Dockerfile to build the image
-    :param tag: Tag for the image to be built (default: None)
+    :param port: Port to be exposed on the container.
+    :param image: Docker image to be used for the container.
     """
 
     def __init__(self, port: int, image: Union[str, DockerImage]) -> None:

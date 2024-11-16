@@ -1,3 +1,6 @@
+from pathlib import Path
+
+import pytest
 from pytest import MonkeyPatch, raises, mark
 
 from testcontainers.core import utils
@@ -51,3 +54,24 @@ def test_raise_for_deprecated_parameters() -> None:
         result = utils.raise_for_deprecated_parameter(kwargs, current, replacement)
         assert str(e.value) == "Parameter 'deprecated' is deprecated and should be replaced by 'replacement'."
         assert result == {}
+
+
+@pytest.fixture
+def fake_cgroup(monkeypatch: pytest.MonkeyPatch, tmp_path: Path) -> Path:
+    target = tmp_path / "cgroup"
+    monkeypatch.setattr(utils, "CGROUP_FILE", target)
+    return target
+
+
+def test_get_running_container_id_empty_or_missing(fake_cgroup: Path) -> None:
+    # non existing does not fail but is only none
+    assert utils.get_running_in_container_id() is None
+    fake_cgroup.write_text("12:devices:/system.slice/sshd.service\n" "13:cpuset:\n")
+    # missing docker does also not fail
+    assert utils.get_running_in_container_id() is None
+
+
+def test_get_running_container_id(fake_cgroup: Path) -> None:
+    container_id = "b78eebb08f89158ed6e2ed2fe"
+    fake_cgroup.write_text(f"13:cpuset:/docker/{container_id}")
+    assert utils.get_running_in_container_id() == container_id

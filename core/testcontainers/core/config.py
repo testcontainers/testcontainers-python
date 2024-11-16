@@ -1,9 +1,28 @@
 from dataclasses import dataclass, field
+from enum import Enum
 from logging import warning
 from os import environ
 from os.path import exists
 from pathlib import Path
 from typing import Optional, Union
+
+
+class ConnectionMode(Enum):
+    bridge_ip = "bridge_ip"
+    gateway_ip = "gateway_ip"
+    docker_host = "docker_host"
+
+    @property
+    def use_mapped_port(self) -> bool:
+        """
+        Return true if we need to use mapped port for this connection
+
+        This is true for everything but bridge mode.
+        """
+        if self == self.bridge_ip:
+            return False
+        return True
+
 
 MAX_TRIES = int(environ.get("TC_MAX_TRIES", 120))
 SLEEP_TIME = int(environ.get("TC_POOLING_INTERVAL", 1))
@@ -18,6 +37,19 @@ TC_HOST_OVERRIDE: Optional[str] = environ.get("TC_HOST", environ.get("TESTCONTAI
 
 TC_FILE = ".testcontainers.properties"
 TC_GLOBAL = Path.home() / TC_FILE
+
+
+def get_user_overwritten_connection_mode() -> Optional[ConnectionMode]:
+    """
+    Return the user overwritten connection mode.
+    """
+    connection_mode: str | None = environ.get("TESTCONTAINERS_CONNECTION_MODE")
+    if connection_mode:
+        try:
+            return ConnectionMode(connection_mode)
+        except ValueError as e:
+            raise ValueError(f"Error parsing TESTCONTAINERS_CONNECTION_MODE: {e}") from e
+    return None
 
 
 def read_tc_properties() -> dict[str, str]:
@@ -54,6 +86,8 @@ class TestcontainersConfiguration:
     tc_properties: dict[str, str] = field(default_factory=read_tc_properties)
     _docker_auth_config: Optional[str] = field(default_factory=lambda: environ.get("DOCKER_AUTH_CONFIG"))
     tc_host_override: Optional[str] = TC_HOST_OVERRIDE
+    connection_mode_override: Optional[ConnectionMode] = None
+
     """
     https://github.com/testcontainers/testcontainers-go/blob/dd76d1e39c654433a3d80429690d07abcec04424/docker.go#L644
     if os env TC_HOST is set, use it
