@@ -31,7 +31,7 @@ class MySqlContainer(DbContainer):
         The example will spin up a MySql database to which you can connect with the credentials
         passed in the constructor. Alternatively, you may use the :code:`get_connection_url()`
         method which returns a sqlalchemy-compatible url in format
-        :code:`dialect+driver://username:password@host:port/database`.
+        :code:`mysql+dialect://username:password@host:port/database`.
 
         .. doctest::
 
@@ -64,6 +64,7 @@ class MySqlContainer(DbContainer):
     def __init__(
         self,
         image: str = "mysql:latest",
+        dialect: Optional[str] = None,
         username: Optional[str] = None,
         root_password: Optional[str] = None,
         password: Optional[str] = None,
@@ -84,6 +85,7 @@ class MySqlContainer(DbContainer):
         self.root_password = root_password or environ.get("MYSQL_ROOT_PASSWORD", "test")
         self.password = password or environ.get("MYSQL_PASSWORD", "test")
         self.dbname = dbname or environ.get("MYSQL_DATABASE", "test")
+        self.dialect = dialect or environ.get("MYSQL_DIALECT", None)
 
         if self.username == "root":
             self.root_password = self.password
@@ -104,8 +106,13 @@ class MySqlContainer(DbContainer):
         )
 
     def get_connection_url(self) -> str:
+        dialect = "mysql"
+
+        if self.dialect is None:
+            dialect = f"mysql+{self.dialect}"
+
         return super()._create_connection_url(
-            dialect="mysql+pymysql", username=self.username, password=self.password, dbname=self.dbname, port=self.port
+            dialect=dialect, username=self.username, password=self.password, dbname=self.dbname, port=self.port
         )
 
     def _transfer_seed(self) -> None:
