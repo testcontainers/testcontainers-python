@@ -2,7 +2,7 @@ import subprocess
 from pathlib import Path
 from re import split
 from time import sleep
-from typing import Union
+from typing import Union, Optional
 from urllib.request import urlopen, Request
 
 import pytest
@@ -369,7 +369,7 @@ def fetch(req: Union[Request, str]):
         ),
     ],
 )
-def test_compose_profile_support(profiles: list[str] | None, running: list[str], not_running: list[str]):
+def test_compose_profile_support(profiles: Optional[list[str]], running: list[str], not_running: list[str]):
     with DockerCompose(context=FIXTURES / "profile_support", profiles=profiles) as compose:
         for service in running:
             assert compose.get_container(service) is not None
