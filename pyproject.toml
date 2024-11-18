@@ -83,6 +83,7 @@ docker = "*" # ">=4.0"
 urllib3 = "*" # "<2.0"
 wrapt = "*" # "^1.16.0"
 typing-extensions = "*"
+python-dotenv = "*"
 
 # community modules
 python-arango = { version = "^7.8", optional = true }

@@ -1,10 +1,12 @@
 import contextlib
+from os import PathLike
 from socket import socket
 from typing import TYPE_CHECKING, Optional, Union
 
 import docker.errors
 from docker import version
 from docker.types import EndpointConfig
+from dotenv import dotenv_values
 from typing_extensions import Self, assert_never
 
 from testcontainers.core.config import ConnectionMode
@@ -55,6 +57,12 @@ class DockerContainer:
 
     def with_env(self, key: str, value: str) -> Self:
         self.env[key] = value
+        return self
+
+    def with_env_file(self, env_file: Union[str, PathLike]) -> Self:
+        env_values = dotenv_values(env_file)
+        for key, value in env_values.items():
+            self.with_env(key, value)
         return self
 
     def with_bind_ports(self, container: int, host: Optional[int] = None) -> Self:
