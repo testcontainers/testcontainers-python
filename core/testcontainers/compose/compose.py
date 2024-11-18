@@ -199,6 +199,8 @@ class DockerCompose:
         if self.compose_file_name:
             for file in self.compose_file_name:
                 docker_compose_cmd += ["-f", file]
+        if self.profiles:
+            docker_compose_cmd += [item for profile in self.profiles for item in ["--profile", profile]]
         if self.env_file:
             docker_compose_cmd += ["--env-file", self.env_file]
         return docker_compose_cmd
@@ -225,9 +227,6 @@ class DockerCompose:
         else:
             # we run in detached mode instead of blocking
             up_cmd.append("--detach")
-
-        if self.profiles:
-            up_cmd.extend([item for profile in self.profiles for item in ["--profile", profile]])
 
         if self.services:
             up_cmd.extend(self.services)
