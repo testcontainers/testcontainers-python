@@ -103,35 +103,60 @@ class DockerContainer:
             self._dependencies.extend(dependencies)
         else:
             raise TypeError("dependencies must be a DockerContainer or list of DockerContainer instances")
+
+        # Check for any circular dependencies before starting
+        self.check_for_circular_dependencies()
+
         return self
 
-    def _start_dependencies(self) -> bool:
+    def _start_dependencies(self, started_dependencies=None) -> bool:
         """
         Start all dependencies recursively, ensuring each dependency's dependencies are also resolved.
         If a dependency fails to start, stop all previously started dependencies and raise the exception.
         """
-        started_dependencies = []
+        if started_dependencies is None:
+            started_dependencies = []
+
         for dependency in self._dependencies:
             if not dependency._container:
                 try:
-                    dependency._start_dependencies()
+                    container_name = dependency._name if dependency._name else dependency.image
+                    logger.info(f"Starting dependency container: {container_name}")
+
+                    # Start sub-dependencies recursively
+                    dependency._start_dependencies(started_dependencies)
+
+                    # Start the actual dependency
                     dependency.start()
                     started_dependencies.append(dependency)
 
-                    if not dependency.wait_until_running():
-                        raise ContainerStartException(f"Dependency {dependency.image} did not reach 'running' state.")
+                    logger.info(
+                        f"Dependency container started: {container_name}, "
+                        f"ID: {dependency._container.short_id}, Name: {dependency._container.name}"
+                    )
+
+                    if not dependency.wait_until_running(timeout=15):
+                        raise ContainerStartException(f"Dependency {container_name} did not reach 'running' state.")
 
                 except Exception as e:
-                    # Clean up all dependencies started before the failure
+                    logger.error(f"Failed to start dependency {container_name}: {e}")
+                    logger.info("Cleaning up previously started dependencies...")
+
+                    # Clean up all previously started dependencies
                     for dep in started_dependencies:
+                        dep_name = dep._name if dep._name else dep.image
                         try:
-                            logger.debug("Stopping previously started dependency container: %s", dep.image)
                             dep.stop()
-                            logger.debug("Dependency container %s stopped successfully", dep.image)
+                            logger.info(
+                                f"Successfully stopped dependency container: {dep_name}, "
+                                f"ID: {dep._container.short_id}"
+                            )
                         except Exception as stop_error:
-                            logger.error("Failed to stop dependency container %s: %s", dep.image, str(stop_error))
-                    # Raise the exception after cleaning up
+                            logger.error(f"Error stopping dependency container {dep_name}: {stop_error}")
+
+                    # Re-raise the original exception after cleanup
                     raise e
+
         return True
 
     def start(self) -> Self:
@@ -142,7 +167,6 @@ class DockerContainer:
         self._configure()
 
         self._start_dependencies()
-
         network_kwargs = (
             {
                 "network": self._network.name,
@@ -256,6 +280,32 @@ class DockerContainer:
         if not self._container:
             raise ContainerStartException("Container should be started before executing a command")
         return self._container.exec_run(command)
+
+    def check_for_circular_dependencies(self) -> None:
+        """
+        Check for circular dependencies before starting containers.
+
+        Raises:
+            ContainerStartException: If a circular dependency is detected.
+        """
+        visited = set()
+        current_path = set()
+
+        def dfs(container: "DockerContainer"):
+            if container in current_path:
+                raise ContainerStartException(f"Circular dependency detected for container: {container.image}")
+            if container in visited:
+                return
+
+            current_path.add(container)
+            visited.add(container)
+
+            for dependency in container._dependencies:
+                dfs(dependency)
+
+            current_path.remove(container)
+
+        dfs(self)
 
     def _configure(self) -> None:
         # placeholder if subclasses want to define this and use the default start method
