@@ -171,6 +171,7 @@ class DockerCompose:
     env_file: Optional[str] = None
     services: Optional[list[str]] = None
     docker_command_path: Optional[str] = None
+    profiles: Optional[list[str]] = None
 
     def __post_init__(self):
         if isinstance(self.compose_file_name, str):
@@ -224,6 +225,9 @@ class DockerCompose:
         else:
             # we run in detached mode instead of blocking
             up_cmd.append("--detach")
+
+        if self.profiles:
+            up_cmd.extend([item for profile in self.profiles for item in ["--profile", profile]])
 
         if self.services:
             up_cmd.extend(self.services)

@@ -352,3 +352,27 @@ def fetch(req: Union[Request, str]):
         if 200 < res.getcode() >= 400:
             raise Exception(f"HTTP Error: {res.getcode()} - {res.reason}: {body}")
         return res.getcode(), body
+
+
+@pytest.mark.parametrize(
+    argnames=["profiles", "running", "not_running"],
+    argvalues=[
+        pytest.param(None, ["runs-always"], ["runs-profile-a", "runs-profile-b"], id="default"),
+        pytest.param(
+            ["profile-a"], ["runs-always", "runs-profile-a"], ["runs-profile-b"], id="one-additional-profile-via-str"
+        ),
+        pytest.param(
+            ["profile-a", "profile-b"],
+            ["runs-always", "runs-profile-a", "runs-profile-b"],
+            [],
+            id="all-profiles-explicitly",
+        ),
+    ],
+)
+def test_compose_profile_support(profiles: list[str] | None, running: list[str], not_running: list[str]):
+    with DockerCompose(context=FIXTURES / "profile_support", profiles=profiles) as compose:
+        for service in running:
+            assert compose.get_container(service) is not None
+        for service in not_running:
+            with pytest.raises(ContainerIsNotRunning):
+                compose.get_container(service)
