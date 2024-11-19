@@ -190,7 +190,6 @@ sqlalchemy-cockroachdb = "2.0.2"
 paramiko = "^3.4.0"
 types-paramiko = "^3.4.0.20240423"
 pytest-mock = "^3.14.0"
-mysqlclient = "^2.2.6"
 
 [[tool.poetry.source]]
 name = "PyPI"
