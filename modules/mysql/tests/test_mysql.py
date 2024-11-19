@@ -40,7 +40,7 @@ def test_docker_run_legacy_mysql():
 def test_docker_run_mysql_8_seed():
     # Avoid pytest CWD path issues
     SEEDS_PATH = (Path(__file__).parent / "seeds").absolute()
-    config = MySqlContainer("mysql:8", seed=str(SEEDS_PATH))
+    config = MySqlContainer("mysql:8", dialect="pymysql", seed=str(SEEDS_PATH))
     with config as mysql:
         engine = sqlalchemy.create_engine(mysql.get_connection_url())
         with engine.begin() as connection:
