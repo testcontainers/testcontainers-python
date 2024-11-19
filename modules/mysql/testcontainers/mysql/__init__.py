@@ -106,11 +106,7 @@ class MySqlContainer(DbContainer):
         )
 
     def get_connection_url(self) -> str:
-        dialect = "mysql"
-
-        if self.dialect is not None:
-            dialect = f"mysql+{self.dialect}"
-
+        dialect = "mysql" if self.dialect is None else f"mysql+{self.dialect}"
         return super()._create_connection_url(
             dialect=dialect, username=self.username, password=self.password, dbname=self.dbname, port=self.port
         )

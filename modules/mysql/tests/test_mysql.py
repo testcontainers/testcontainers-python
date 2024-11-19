@@ -27,7 +27,7 @@ def test_docker_run_mysql():
 
 @pytest.mark.skipif(is_arm(), reason="mysql container not available for ARM")
 def test_docker_run_legacy_mysql():
-    config = MySqlContainer("mysql:5.7.44")
+    config = MySqlContainer("mysql:5.7.44", dialect="pymysql")
     with config as mysql:
         engine = sqlalchemy.create_engine(mysql.get_connection_url())
         with engine.begin() as connection:
@@ -50,7 +50,7 @@ def test_docker_run_mysql_8_seed():
 
 @pytest.mark.parametrize("version", ["11.3.2", "10.11.7"])
 def test_docker_run_mariadb(version: str):
-    with MySqlContainer(f"mariadb:{version}") as mariadb:
+    with MySqlContainer(f"mariadb:{version}", dialect="pymysql") as mariadb:
         engine = sqlalchemy.create_engine(mariadb.get_connection_url())
         with engine.begin() as connection:
             result = connection.execute(sqlalchemy.text("select version()"))
