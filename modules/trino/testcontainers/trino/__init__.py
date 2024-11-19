@@ -25,14 +25,12 @@ class TrinoContainer(DbContainer):
         image="trinodb/trino:latest",
         user: str = "test",
         port: int = 8080,
-        delay: int = 5,
         **kwargs,
     ):
         super().__init__(image=image, **kwargs)
         self.user = user
         self.port = port
         self.with_exposed_ports(self.port)
-        self.delay = delay
 
     @wait_container_is_ready()
     def _connect(self) -> None:
@@ -42,17 +40,21 @@ class TrinoContainer(DbContainer):
             c.max_tries,
             c.sleep_time,
         )
-        # To avoid `TrinoQueryError(type=INTERNAL_ERROR, name=GENERIC_INTERNAL_ERROR, message="nodes is empty")`
-        time.sleep(self.delay)
         conn = connect(
             host=self.get_container_host_ip(),
             port=self.get_exposed_port(self.port),
             user=self.user,
         )
-        cur = conn.cursor()
-        cur.execute("SELECT 1")
-        cur.fetchall()
-        conn.close()
+        deadline = time.time() + c.max_tries
+        while time.time() < deadline:
+            try:
+                cur = conn.cursor()
+                cur.execute("SELECT * FROM tpch.tiny.nation LIMIT 1")
+                cur.fetchall()
+                return
+            except Exception:
+                time.sleep(c.sleep_time)
+        raise TimeoutError(f"Trino did not start within {c.max_tries:.3f} seconds")
 
     def get_connection_url(self):
         return f"trino://{self.user}@{self.get_container_host_ip()}:{self.port}"
