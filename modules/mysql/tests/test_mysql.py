@@ -11,12 +11,12 @@ from testcontainers.mysql import MySqlContainer
 
 @pytest.mark.inside_docker_check
 def test_docker_run_mysql():
-    config = MySqlContainer("mysql:8.3.0")
+    config = MySqlContainer("mysql:8.3.0", dialect="pymysql")
     with config as mysql:
         connection_url = mysql.get_connection_url()
 
-        assert mysql.dialect is None
-        assert connection_url.startswith("mysql://")
+        assert mysql.dialect == "pymysql"
+        assert connection_url.startswith("mysql+pymysql://")
 
         engine = sqlalchemy.create_engine(connection_url)
         with engine.begin() as connection:
@@ -40,7 +40,7 @@ def test_docker_run_legacy_mysql():
 def test_docker_run_mysql_8_seed():
     # Avoid pytest CWD path issues
     SEEDS_PATH = (Path(__file__).parent / "seeds").absolute()
-    config = MySqlContainer("mysql:8", seed=SEEDS_PATH)
+    config = MySqlContainer("mysql:8", seed=str(SEEDS_PATH))
     with config as mysql:
         engine = sqlalchemy.create_engine(mysql.get_connection_url())
         with engine.begin() as connection:
