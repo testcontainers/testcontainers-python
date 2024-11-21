@@ -68,6 +68,21 @@ def test_docker_env_variables():
         assert re.match(pattern, url)
 
 
+@pytest.mark.parametrize(
+    "dialect",
+    [
+        "mysql+pymysql",
+        "mysql+mariadb",
+        "mysql+mysqldb",
+    ],
+)
+def test_mysql_dialect_expecting_error_on_mysql_prefix(dialect: str):
+    match = f"Please remove *.* prefix from dialect parameter"
+
+    with pytest.raises(ValueError, match=match):
+        _ = MySqlContainer("mariadb:10.6.5", dialect=dialect)
+
+
 # This is a feature in the generic DbContainer class
 # but it can't be tested on its own
 # so is tested in various database modules:

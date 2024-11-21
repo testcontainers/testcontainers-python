@@ -73,6 +73,10 @@ class MySqlContainer(DbContainer):
         seed: Optional[str] = None,
         **kwargs,
     ) -> None:
+        if dialect is not None and dialect.startswith("mysql+"):
+            msg = "Please remove 'mysql+' prefix from dialect parameter"
+            raise ValueError(msg)
+
         raise_for_deprecated_parameter(kwargs, "MYSQL_USER", "username")
         raise_for_deprecated_parameter(kwargs, "MYSQL_ROOT_PASSWORD", "root_password")
         raise_for_deprecated_parameter(kwargs, "MYSQL_PASSWORD", "password")
@@ -85,7 +89,9 @@ class MySqlContainer(DbContainer):
         self.root_password = root_password or environ.get("MYSQL_ROOT_PASSWORD", "test")
         self.password = password or environ.get("MYSQL_PASSWORD", "test")
         self.dbname = dbname or environ.get("MYSQL_DATABASE", "test")
+
         self.dialect = dialect or environ.get("MYSQL_DIALECT", None)
+        self._db_url_dialect_part = "mysql" if self.dialect is None else f"mysql+{self.dialect}"
 
         if self.username == "root":
             self.root_password = self.password
@@ -106,9 +112,12 @@ class MySqlContainer(DbContainer):
         )
 
     def get_connection_url(self) -> str:
-        dialect = "mysql" if self.dialect is None else f"mysql+{self.dialect}"
         return super()._create_connection_url(
-            dialect=dialect, username=self.username, password=self.password, dbname=self.dbname, port=self.port
+            dialect=self._db_url_dialect_part,
+            username=self.username,
+            password=self.password,
+            dbname=self.dbname,
+            port=self.port,
         )
 
     def _transfer_seed(self) -> None:
