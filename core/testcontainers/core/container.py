@@ -242,7 +242,7 @@ class Reaper:
         for _ in range(50):
             try:
                 Reaper._socket = socket()
-                Reaper._socket.settimeout(0.5)
+                Reaper._socket.settimeout(1)
                 Reaper._socket.connect((container_host, container_port))
                 last_connection_exception = None
                 break
