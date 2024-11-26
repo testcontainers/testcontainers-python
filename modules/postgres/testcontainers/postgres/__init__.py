@@ -43,7 +43,28 @@ class PostgresContainer(DbContainer):
             ...         version, = result.fetchone()
             >>> version
             'PostgreSQL 16...'
+
+        The optional :code:`seed` parameter enables arbitrary SQL files to be loaded.
+        This is perfect for schema and sample data. This works by mounting the seed to
+        `/docker-entrypoint-initdb./d`, which containerized Postgres are set up to load
+        automatically.
+
+        .. doctest::
+
+            >>> from testcontainers.postgres import PostgresContainer
+            >>> import sqlalchemy
+            >>>
+            >>> with PostgresContainer(seed="../../tests/seeds/") as postgres:
+            ...     engine = sqlalchemy.create_engine(postgres.get_connection_url())
+            ...     with engine.begin() as connection:
+            ...         query = "select * from stuff"  # Can now rely on schema/data
+            ...         result = connection.execute(sqlalchemy.text(query))
+            ...         first_stuff, = result.fetchone()
+
     """
+
+    seed_mountpoint: str = "/docker-entrypoint-initdb.d/"
+    startup_command: str = "source /usr/local/bin/docker-entrypoint.sh; _main "
 
     def __init__(
         self,
@@ -53,6 +74,7 @@ class PostgresContainer(DbContainer):
         password: Optional[str] = None,
         dbname: Optional[str] = None,
         driver: Optional[str] = "psycopg2",
+        seed: Optional[str] = None,
         **kwargs,
     ) -> None:
         raise_for_deprecated_parameter(kwargs, "user", "username")
@@ -62,6 +84,9 @@ class PostgresContainer(DbContainer):
         self.dbname: str = dbname or os.environ.get("POSTGRES_DB", "test")
         self.port = port
         self.driver = f"+{driver}" if driver else ""
+        self.seed = seed
+        if self.seed is not None:
+            super().override_command_for_seed(self.startup_command)
 
         self.with_exposed_ports(self.port)
 
