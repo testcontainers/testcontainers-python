@@ -31,7 +31,7 @@ class MosquittoContainer(DockerContainer):
 
         .. doctest::
 
-            >>> from testcontainers.mqtt import MosquittoContainer
+            >>> from testcontainers.mosquitto import MosquittoContainer
 
             >>> with MosquittoContainer() as mosquitto_broker:
             ...     mqtt_client = mosquitto_broker.get_client()
