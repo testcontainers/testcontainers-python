@@ -1,5 +1,5 @@
 from typing import Union
-from urllib.error import HTTPError
+from urllib.error import HTTPError, URLError
 from urllib.request import urlopen
 
 import httpx
@@ -40,7 +40,7 @@ class ServerContainer(DockerContainer):
         self.internal_port = port
         self.with_exposed_ports(self.internal_port)
 
-    @wait_container_is_ready(HTTPError)
+    @wait_container_is_ready(HTTPError, URLError)
     def _connect(self) -> None:
         # noinspection HttpUrlsUsage
         url = self._create_connection_url()

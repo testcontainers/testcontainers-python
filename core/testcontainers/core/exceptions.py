@@ -16,6 +16,10 @@ class ContainerStartException(RuntimeError):
     pass
 
 
+class ContainerConnectException(RuntimeError):
+    pass
+
+
 class ContainerIsNotRunning(RuntimeError):
     pass
 

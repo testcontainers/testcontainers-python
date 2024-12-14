@@ -1,0 +1,16 @@
+services:
+  runs-always: &simple-service
+    image: alpine:latest
+    init: true
+    command:
+      - sh
+      - -c
+      - 'while true; do sleep 0.1 ; date -Ins; done'
+  runs-profile-a:
+    <<: *simple-service
+    profiles:
+      - profile-a
+  runs-profile-b:
+    <<: *simple-service
+    profiles:
+      - profile-b
