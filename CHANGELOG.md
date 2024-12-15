@@ -1,5 +1,13 @@
 # Changelog
 
+## [4.9.1](https://github.com/testcontainers/testcontainers-python/compare/testcontainers-v4.9.0...testcontainers-v4.9.1) (2024-12-15)
+
+
+### Bug Fixes
+
+* **mysql:** add dialect parameter instead of hardcoded mysql dialect ([#739](https://github.com/testcontainers/testcontainers-python/issues/739)) ([8d77bd3](https://github.com/testcontainers/testcontainers-python/commit/8d77bd3541e1c5e73c7ed5d5bd3c0d7bb617f5c0))
+* **tests:** replace dind-test direct docker usage with sdk ([#750](https://github.com/testcontainers/testcontainers-python/issues/750)) ([ace2a7d](https://github.com/testcontainers/testcontainers-python/commit/ace2a7d143fb80576ddc0859a9106aa8652f2356))
+
 ## [4.9.0](https://github.com/testcontainers/testcontainers-python/compare/testcontainers-v4.8.2...testcontainers-v4.9.0) (2024-11-26)
 
 
