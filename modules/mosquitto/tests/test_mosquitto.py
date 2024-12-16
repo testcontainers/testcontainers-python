@@ -1,6 +1,6 @@
 import pytest
 
-from testcontainers.mqtt import MosquittoContainer
+from testcontainers.mosquitto import MosquittoContainer
 
 VERSIONS = ["1.6.15", "2.0.18"]
 
