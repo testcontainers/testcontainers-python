@@ -2,7 +2,6 @@ from pathlib import Path
 
 import pytest
 from typing import Callable
-import subprocess
 from testcontainers.core.container import DockerClient
 from pprint import pprint
 import sys
@@ -25,10 +24,12 @@ def python_testcontainer_image() -> str:
     """Build an image with test containers python for DinD and DooD tests"""
     py_version = ".".join(map(str, sys.version_info[:2]))
     image_name = f"testcontainers-python:{py_version}"
-    subprocess.run(
-        [*("docker", "build"), *("--build-arg", f"PYTHON_VERSION={py_version}"), *("-t", image_name), "."],
-        cwd=PROJECT_DIR,
-        check=True,
+    client = DockerClient()
+    client.build(
+        path=str(PROJECT_DIR),
+        tag=image_name,
+        rm=False,
+        buildargs={"PYTHON_VERSION": py_version},
     )
     return image_name
 
