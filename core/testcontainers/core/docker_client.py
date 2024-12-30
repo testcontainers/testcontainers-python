@@ -10,10 +10,12 @@
 #    WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the
 #    License for the specific language governing permissions and limitations
 #    under the License.
+import contextlib
 import functools as ft
 import importlib.metadata
 import ipaddress
 import os
+import socket
 import urllib
 import urllib.parse
 from collections.abc import Iterable
@@ -24,11 +26,13 @@ from docker.models.containers import Container, ContainerCollection
 from docker.models.images import Image, ImageCollection
 from typing_extensions import ParamSpec
 
+from testcontainers.core import utils
+from testcontainers.core.auth import DockerAuthInfo, parse_docker_auth_config
+from testcontainers.core.config import ConnectionMode
 from testcontainers.core.config import testcontainers_config as c
 from testcontainers.core.labels import SESSION_ID, create_labels
-from testcontainers.core.utils import default_gateway_ip, inside_container, parse_docker_auth_config, setup_logger
 
-LOGGER = setup_logger(__name__)
+LOGGER = utils.setup_logger(__name__)
 
 _P = ParamSpec("_P")
 _T = TypeVar("_T")
@@ -67,8 +71,11 @@ class DockerClient:
         self.client.api.headers["x-tc-sid"] = SESSION_ID
         self.client.api.headers["User-Agent"] = "tc-python/" + importlib.metadata.version("testcontainers")
 
+        # Verify if we have a docker auth config and login if we do
         if docker_auth_config := get_docker_auth_config():
-            self.login(docker_auth_config)
+            LOGGER.debug(f"DOCKER_AUTH_CONFIG found: {docker_auth_config}")
+            if auth_config := parse_docker_auth_config(docker_auth_config):
+                self.login(auth_config[0])  # Only using the first auth config)
 
     @_wrapped_container_collection
     def run(
@@ -123,8 +130,18 @@ class DockerClient:
         """
         # If we're docker in docker running on a custom network, we need to inherit the
         # network settings, so we can access the resulting container.
+
+        # first to try to find the network the container runs in, if we can determine
+        container_id = utils.get_running_in_container_id()
+        if container_id:
+            with contextlib.suppress(Exception):
+                return self.network_name(container_id)
+
+        # if this results nothing, try to determine the network based on the
+        # docker_host
         try:
-            docker_host = ipaddress.IPv4Address(self.host())
+            host_ip = socket.gethostbyname(self.host())
+            docker_host = ipaddress.IPv4Address(host_ip)
             # See if we can find the host on our networks
             for network in self.client.networks.list(filters={"type": "custom"}):
                 if "IPAM" in network.attrs:
@@ -135,7 +152,7 @@ class DockerClient:
                             continue
                         if docker_host in subnet:
                             return network.name
-        except ipaddress.AddressValueError:
+        except (ipaddress.AddressValueError, OSError):
             pass
         return None
 
@@ -183,6 +200,28 @@ class DockerClient:
         network_name = self.network_name(container_id)
         return container["NetworkSettings"]["Networks"][network_name]["Gateway"]
 
+    def get_connection_mode(self) -> ConnectionMode:
+        """
+        Determine the connection mode.
+
+        See https://github.com/testcontainers/testcontainers-python/issues/475#issuecomment-2407250970
+        """
+        if c.connection_mode_override:
+            return c.connection_mode_override
+        localhosts = {"localhost", "127.0.0.1", "::1"}
+        if not utils.inside_container() or self.host() not in localhosts:
+            # if running not inside a container or with a non-local docker client,
+            # connect ot the docker host per default
+            return ConnectionMode.docker_host
+        elif self.find_host_network():
+            # a host network could be determined, indicator for DooD,
+            # so we should connect to the bridge_ip as the container we run in
+            # and the one we started are connected to the same network
+            # that might have no access to either docker_host or the gateway
+            return ConnectionMode.bridge_ip
+        # default for DinD
+        return ConnectionMode.gateway_ip
+
     def host(self) -> str:
         """
         Get the hostname or ip address of the docker host.
@@ -192,22 +231,23 @@ class DockerClient:
             return host
         try:
             url = urllib.parse.urlparse(self.client.api.base_url)
-
         except ValueError:
             return "localhost"
-        if "http" in url.scheme or "tcp" in url.scheme:
+        if "http" in url.scheme or "tcp" in url.scheme and url.hostname:
+            # see https://github.com/testcontainers/testcontainers-python/issues/415
+            if url.hostname == "localnpipe" and utils.is_windows():
+                return "localhost"
             return url.hostname
-        if inside_container() and ("unix" in url.scheme or "npipe" in url.scheme):
-            ip_address = default_gateway_ip()
+        if utils.inside_container() and ("unix" in url.scheme or "npipe" in url.scheme):
+            ip_address = utils.default_gateway_ip()
             if ip_address:
                 return ip_address
         return "localhost"
 
-    def login(self, docker_auth_config: str) -> None:
+    def login(self, auth_config: DockerAuthInfo) -> None:
         """
         Login to a docker registry using the given auth config.
         """
-        auth_config = parse_docker_auth_config(docker_auth_config)[0]  # Only using the first auth config
         login_info = self.client.login(**auth_config._asdict())
         LOGGER.debug(f"logged in using {login_info}")
 

@@ -1,12 +1,13 @@
 from dataclasses import asdict, dataclass, field, fields
 from functools import cached_property
 from json import loads
+from logging import warning
 from os import PathLike
 from platform import system
 from re import split
 from subprocess import CompletedProcess
 from subprocess import run as subprocess_run
-from typing import Callable, Literal, Optional, TypeVar, Union
+from typing import Any, Callable, Literal, Optional, TypeVar, Union, cast
 from urllib.error import HTTPError, URLError
 from urllib.request import urlopen
 
@@ -14,6 +15,7 @@ from testcontainers.core.exceptions import ContainerIsNotRunning, NoSuchPortExpo
 from testcontainers.core.waiting_utils import wait_container_is_ready
 
 _IPT = TypeVar("_IPT")
+_WARNINGS = {"DOCKER_COMPOSE_GET_CONFIG": "get_config is experimental, see testcontainers/testcontainers-python#669"}
 
 
 def _ignore_properties(cls: type[_IPT], dict_: any) -> _IPT:
@@ -165,9 +167,11 @@ class DockerCompose:
     pull: bool = False
     build: bool = False
     wait: bool = True
+    keep_volumes: bool = False
     env_file: Optional[str] = None
     services: Optional[list[str]] = None
     docker_command_path: Optional[str] = None
+    profiles: Optional[list[str]] = None
 
     def __post_init__(self):
         if isinstance(self.compose_file_name, str):
@@ -178,7 +182,7 @@ class DockerCompose:
         return self
 
     def __exit__(self, exc_type, exc_val, exc_tb) -> None:
-        self.stop()
+        self.stop(not self.keep_volumes)
 
     def docker_compose_command(self) -> list[str]:
         """
@@ -195,6 +199,8 @@ class DockerCompose:
         if self.compose_file_name:
             for file in self.compose_file_name:
                 docker_compose_cmd += ["-f", file]
+        if self.profiles:
+            docker_compose_cmd += [item for profile in self.profiles for item in ["--profile", profile]]
         if self.env_file:
             docker_compose_cmd += ["--env-file", self.env_file]
         return docker_compose_cmd
@@ -256,6 +262,36 @@ class DockerCompose:
 
         result = self._run_command(cmd=logs_cmd)
         return result.stdout.decode("utf-8"), result.stderr.decode("utf-8")
+
+    def get_config(
+        self, *, path_resolution: bool = True, normalize: bool = True, interpolate: bool = True
+    ) -> dict[str, Any]:
+        """
+        Parse, resolve and returns compose file via `docker config --format json`.
+        In case of multiple compose files, the returned value will be a merge of all files.
+
+        See: https://docs.docker.com/reference/cli/docker/compose/config/ for more details
+
+        :param path_resolution: whether to resolve file paths
+        :param normalize: whether to normalize compose model
+        :param interpolate: whether to interpolate environment variables
+
+        Returns:
+            Compose file
+
+        """
+        if "DOCKER_COMPOSE_GET_CONFIG" in _WARNINGS:
+            warning(_WARNINGS.pop("DOCKER_COMPOSE_GET_CONFIG"))
+        config_cmd = [*self.compose_command_property, "config", "--format", "json"]
+        if not path_resolution:
+            config_cmd.append("--no-path-resolution")
+        if not normalize:
+            config_cmd.append("--no-normalize")
+        if not interpolate:
+            config_cmd.append("--no-interpolate")
+
+        cmd_output = self._run_command(cmd=config_cmd).stdout
+        return cast(dict[str, Any], loads(cmd_output))
 
     def get_containers(self, include_all=False) -> list[ComposeContainer]:
         """

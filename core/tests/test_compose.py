@@ -1,10 +1,12 @@
+import subprocess
 from pathlib import Path
 from re import split
 from time import sleep
-from typing import Union
+from typing import Union, Optional
 from urllib.request import urlopen, Request
 
 import pytest
+from pytest_mock import MockerFixture
 
 from testcontainers.compose import DockerCompose, ContainerIsNotRunning, NoSuchPortExposed
 
@@ -147,6 +149,27 @@ def test_compose_logs():
         assert not line or container.Service in next(iter(line.split("|")), None)
 
 
+def test_compose_volumes():
+    _file_in_volume = "/var/lib/example/data/hello"
+    volumes = DockerCompose(context=FIXTURES / "basic_volume", keep_volumes=True)
+    with volumes:
+        stdout, stderr, exitcode = volumes.exec_in_container(
+            ["/bin/sh", "-c", f"echo hello > {_file_in_volume}"], "alpine"
+        )
+    assert exitcode == 0
+
+    # execute another time to confirm the file is still there, but we're not keeping the volumes this time
+    volumes.keep_volumes = False
+    with volumes:
+        stdout, stderr, exitcode = volumes.exec_in_container(["cat", _file_in_volume], "alpine")
+    assert exitcode == 0
+    assert "hello" in stdout
+
+    # third time we expect the file to be missing
+    with volumes, pytest.raises(subprocess.CalledProcessError):
+        volumes.exec_in_container(["cat", _file_in_volume], "alpine")
+
+
 # noinspection HttpUrlsUsage
 def test_compose_ports():
     # fairly straight forward - can we get the right port to request it
@@ -282,6 +305,45 @@ def test_exec_in_container_multiple():
         assert "test_exec_in_container" in body
 
 
+CONTEXT_FIXTURES = [pytest.param(ctx, id=ctx.name) for ctx in FIXTURES.iterdir()]
+
+
+@pytest.mark.parametrize("context", CONTEXT_FIXTURES)
+def test_compose_config(context: Path, mocker: MockerFixture) -> None:
+    compose = DockerCompose(context)
+    run_command = mocker.spy(compose, "_run_command")
+    expected_cmd = [*compose.compose_command_property, "config", "--format", "json"]
+
+    received_config = compose.get_config()
+
+    assert received_config
+    assert isinstance(received_config, dict)
+    assert "services" in received_config
+    assert run_command.call_args.kwargs["cmd"] == expected_cmd
+
+
+@pytest.mark.parametrize("context", CONTEXT_FIXTURES)
+def test_compose_config_raw(context: Path, mocker: MockerFixture) -> None:
+    compose = DockerCompose(context)
+    run_command = mocker.spy(compose, "_run_command")
+    expected_cmd = [
+        *compose.compose_command_property,
+        "config",
+        "--format",
+        "json",
+        "--no-path-resolution",
+        "--no-normalize",
+        "--no-interpolate",
+    ]
+
+    received_config = compose.get_config(path_resolution=False, normalize=False, interpolate=False)
+
+    assert received_config
+    assert isinstance(received_config, dict)
+    assert "services" in received_config
+    assert run_command.call_args.kwargs["cmd"] == expected_cmd
+
+
 def fetch(req: Union[Request, str]):
     if isinstance(req, str):
         req = Request(method="GET", url=req)
@@ -290,3 +352,27 @@ def fetch(req: Union[Request, str]):
         if 200 < res.getcode() >= 400:
             raise Exception(f"HTTP Error: {res.getcode()} - {res.reason}: {body}")
         return res.getcode(), body
+
+
+@pytest.mark.parametrize(
+    argnames=["profiles", "running", "not_running"],
+    argvalues=[
+        pytest.param(None, ["runs-always"], ["runs-profile-a", "runs-profile-b"], id="default"),
+        pytest.param(
+            ["profile-a"], ["runs-always", "runs-profile-a"], ["runs-profile-b"], id="one-additional-profile-via-str"
+        ),
+        pytest.param(
+            ["profile-a", "profile-b"],
+            ["runs-always", "runs-profile-a", "runs-profile-b"],
+            [],
+            id="all-profiles-explicitly",
+        ),
+    ],
+)
+def test_compose_profile_support(profiles: Optional[list[str]], running: list[str], not_running: list[str]):
+    with DockerCompose(context=FIXTURES / "profile_support", profiles=profiles) as compose:
+        for service in running:
+            assert compose.get_container(service) is not None
+        for service in not_running:
+            with pytest.raises(ContainerIsNotRunning):
+                compose.get_container(service)

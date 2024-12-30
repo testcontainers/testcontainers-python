@@ -39,7 +39,7 @@ You need to have the following tools available to you:
 
 ## Adding new containers
 
-We have an [issue template](.github/ISSUE_TEMPLATE/new-container.md) for adding new containers, please refer to that for more information.
+We have an [issue template](./ISSUE_TEMPLATE/new-container.md) for adding new containers, please refer to that for more information.
 Once you've talked to the maintainers (we do our best to reply!) then you can proceed with contributing the new container.
 
 > [!WARNING]

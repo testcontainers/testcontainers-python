@@ -1,6 +1,6 @@
 [tool.poetry]
 name = "testcontainers"
-version = "4.7.1"  # auto-incremented by release-please
+version = "4.9.0"  # auto-incremented by release-please
 description = "Python library for throwaway instances of anything that can run in a Docker container"
 authors = ["Sergey Pirogov <automationremarks@gmail.com>"]
 maintainers = [
@@ -29,12 +29,14 @@ classifiers = [
 packages = [
     { include = "testcontainers", from = "core" },
     { include = "testcontainers", from = "modules/arangodb" },
+    { include = "testcontainers", from = "modules/aws"},
     { include = "testcontainers", from = "modules/azurite" },
     { include = "testcontainers", from = "modules/cassandra" },
     { include = "testcontainers", from = "modules/chroma" },
     { include = "testcontainers", from = "modules/clickhouse" },
     { include = "testcontainers", from = "modules/cockroachdb" },
     { include = "testcontainers", from = "modules/cosmosdb" },
+    { include = "testcontainers", from = "modules/db2" },
     { include = "testcontainers", from = "modules/elasticsearch" },
     { include = "testcontainers", from = "modules/generic" },
     { include = "testcontainers", from = "modules/test_module_import"},
@@ -65,6 +67,8 @@ packages = [
     { include = "testcontainers", from = "modules/registry" },
     { include = "testcontainers", from = "modules/sftp" },
     { include = "testcontainers", from = "modules/selenium" },
+    { include = "testcontainers", from = "modules/scylla" },
+    { include = "testcontainers", from = "modules/trino" },
     { include = "testcontainers", from = "modules/vault" },
     { include = "testcontainers", from = "modules/weaviate" },
 ]
@@ -79,10 +83,12 @@ docker = "*" # ">=4.0"
 urllib3 = "*" # "<2.0"
 wrapt = "*" # "^1.16.0"
 typing-extensions = "*"
+python-dotenv = "*"
 
 # community modules
 python-arango = { version = "^7.8", optional = true }
 azure-storage-blob = { version = "^12.19", optional = true }
+cassandra-driver = { version = "3.29.1", optional = true }
 clickhouse-driver = { version = "*", optional = true }
 google-cloud-pubsub = { version = ">=2", optional = true }
 google-cloud-datastore = { version = ">=2", optional = true }
@@ -111,16 +117,20 @@ bcrypt = { version = "*", optional = true }
 httpx = { version = "*", optional = true }
 azure-cosmos = { version = "*", optional = true }
 cryptography = { version = "*", optional = true }
+trino = { version = "*", optional = true }
+ibm_db_sa = { version = "*", optional = true }
 
 [tool.poetry.extras]
 arangodb = ["python-arango"]
+aws = ["boto3", "httpx"]
 azurite = ["azure-storage-blob"]
 cassandra = []
 clickhouse = ["clickhouse-driver"]
 cosmosdb = ["azure-cosmos"]
 cockroachdb = []
+db2 = ["sqlalchemy", "ibm_db_sa"]
 elasticsearch = []
-generic = ["httpx"]
+generic = ["httpx", "redis"] # The advance doctests for ServerContainer require redis
 test_module_import = ["httpx"]
 google = ["google-cloud-pubsub", "google-cloud-datastore"]
 influxdb = ["influxdb", "influxdb-client"]
@@ -149,10 +159,12 @@ rabbitmq = ["pika"]
 redis = ["redis"]
 registry = ["bcrypt"]
 selenium = ["selenium"]
+scylla = ["cassandra-driver"]
 sftp = ["cryptography"]
 vault = []
 weaviate = ["weaviate-client"]
 chroma = ["chromadb-client"]
+trino = ["trino"]
 
 [tool.poetry.group.dev.dependencies]
 mypy = "1.7.1"
@@ -177,6 +189,7 @@ paho-mqtt = "2.1.0"
 sqlalchemy-cockroachdb = "2.0.2"
 paramiko = "^3.4.0"
 types-paramiko = "^3.4.0.20240423"
+pytest-mock = "^3.14.0"
 
 [[tool.poetry.source]]
 name = "PyPI"
@@ -189,6 +202,9 @@ line-length = 120
 addopts = "--tb=short --strict-markers"
 log_cli = true
 log_cli_level = "INFO"
+markers = [
+    "inside_docker_check: mark test to be used to validate DinD/DooD is working as expected"
+]
 
 [tool.coverage.run]
 branch = true

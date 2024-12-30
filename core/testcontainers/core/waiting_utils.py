@@ -77,8 +77,17 @@ def wait_for(condition: Callable[..., bool]) -> bool:
     return condition()
 
 
+_NOT_EXITED_STATUSES = {"running", "created"}
+
+
 def wait_for_logs(
-    container: "DockerContainer", predicate: Union[Callable, str], timeout: float = config.timeout, interval: float = 1
+    container: "DockerContainer",
+    predicate: Union[Callable, str],
+    timeout: float = config.timeout,
+    interval: float = 1,
+    predicate_streams_and: bool = False,
+    raise_on_exit: bool = False,
+    #
 ) -> float:
     """
     Wait for the container to emit logs satisfying the predicate.
@@ -90,19 +99,32 @@ def wait_for_logs(
         timeout: Number of seconds to wait for the predicate to be satisfied. Defaults to wait
             indefinitely.
         interval: Interval at which to poll the logs.
+        predicate_streams_and: should the predicate be applied to both
 
     Returns:
         duration: Number of seconds until the predicate was satisfied.
     """
     if isinstance(predicate, str):
         predicate = re.compile(predicate, re.MULTILINE).search
+    wrapped = container.get_wrapped_container()
     start = time.time()
     while True:
         duration = time.time() - start
-        stdout = container.get_logs()[0].decode()
-        stderr = container.get_logs()[1].decode()
-        if predicate(stdout) or predicate(stderr):
+        stdout, stderr = container.get_logs()
+        stdout = stdout.decode()
+        stderr = stderr.decode()
+        predicate_result = (
+            predicate(stdout) or predicate(stderr)
+            if predicate_streams_and is False
+            else predicate(stdout) and predicate(stderr)
+            #
+        )
+        if predicate_result:
             return duration
         if duration > timeout:
             raise TimeoutError(f"Container did not emit logs satisfying predicate in {timeout:.3f} " "seconds")
+        if raise_on_exit:
+            wrapped.reload()
+            if wrapped.status not in _NOT_EXITED_STATUSES:
+                raise RuntimeError("Container exited before emitting logs satisfying predicate")
         time.sleep(interval)

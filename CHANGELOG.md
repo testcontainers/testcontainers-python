@@ -1,5 +1,86 @@
 # Changelog
 
+## [4.9.0](https://github.com/testcontainers/testcontainers-python/compare/testcontainers-v4.8.2...testcontainers-v4.9.0) (2024-11-26)
+
+
+### Features
+
+* **compose:** support for setting profiles ([#738](https://github.com/testcontainers/testcontainers-python/issues/738)) ([3e00e71](https://github.com/testcontainers/testcontainers-python/commit/3e00e71da4d2b5e7fd30315468d4e54c86ba6150))
+* **core:** Support working with env files ([#737](https://github.com/testcontainers/testcontainers-python/issues/737)) ([932ee30](https://github.com/testcontainers/testcontainers-python/commit/932ee307955e3591a63f194aee8e2f6d8e2f6bf9))
+
+
+### Bug Fixes
+
+* allow running all tests ([#721](https://github.com/testcontainers/testcontainers-python/issues/721)) ([f958cf9](https://github.com/testcontainers/testcontainers-python/commit/f958cf9fe62a5f3ee2dc255713ec8b16de6a767d))
+* **core:** Avoid hanging upon bad docker host connection ([#742](https://github.com/testcontainers/testcontainers-python/issues/742)) ([4ced198](https://github.com/testcontainers/testcontainers-python/commit/4ced1983162914fe511a6e714f136b670e1dbdfb))
+* **core:** running testcontainer inside container ([#714](https://github.com/testcontainers/testcontainers-python/issues/714)) ([85a6666](https://github.com/testcontainers/testcontainers-python/commit/85a66667c23d76e87aecc6761bbb01429adb3dee))
+* **generic:** Also catch URLError waiting for ServerContainer ([#743](https://github.com/testcontainers/testcontainers-python/issues/743)) ([24e354f](https://github.com/testcontainers/testcontainers-python/commit/24e354f3bfa5912eaf7877da9442a885d7872f1a))
+* update wait_for_logs to not throw on 'created', and an optimization ([#719](https://github.com/testcontainers/testcontainers-python/issues/719)) ([271ca9a](https://github.com/testcontainers/testcontainers-python/commit/271ca9a0fef2e5f2b216457bfee44318e93990bf))
+* Vault health check ([#734](https://github.com/testcontainers/testcontainers-python/issues/734)) ([79434d6](https://github.com/testcontainers/testcontainers-python/commit/79434d6744b2918493884cf8fbf27aeadf78ecfd))
+
+
+### Documentation
+
+* Documentation fix for ServerContainer ([#671](https://github.com/testcontainers/testcontainers-python/issues/671)) ([0303d47](https://github.com/testcontainers/testcontainers-python/commit/0303d47d7173e1c4ec1a4f565efee9b2fe694928))
+
+## [4.8.2](https://github.com/testcontainers/testcontainers-python/compare/testcontainers-v4.8.1...testcontainers-v4.8.2) (2024-09-27)
+
+
+### Bug Fixes
+
+* **core:** Reorganize core tests and improve ([#693](https://github.com/testcontainers/testcontainers-python/issues/693)) ([f1665f3](https://github.com/testcontainers/testcontainers-python/commit/f1665f3aa66eff443923d897ec553e09e47f6a78))
+* **core:** Typing in auth ([#691](https://github.com/testcontainers/testcontainers-python/issues/691)) ([66726b6](https://github.com/testcontainers/testcontainers-python/commit/66726b656ab8fd18a69771ff2ee2a3fd8ca959b0))
+* **core:** Typing in config + utils ([#692](https://github.com/testcontainers/testcontainers-python/issues/692)) ([794a22e](https://github.com/testcontainers/testcontainers-python/commit/794a22e22362227ccfc0b2acd18130196e25775d))
+* **keycloak:** Add support for Keycloak version &gt;=25 ([#694](https://github.com/testcontainers/testcontainers-python/issues/694)) ([62bd0de](https://github.com/testcontainers/testcontainers-python/commit/62bd0debffdb762714de853a069e3b63414fa789))
+* mysql typo ([#705](https://github.com/testcontainers/testcontainers-python/issues/705)) ([85d6078](https://github.com/testcontainers/testcontainers-python/commit/85d6078f9bcc99050c0173e459208402aa4f5026)), closes [#689](https://github.com/testcontainers/testcontainers-python/issues/689)
+* **opensearch:** add support for admin_password in &gt;= 2.12 ([#697](https://github.com/testcontainers/testcontainers-python/issues/697)) ([935693e](https://github.com/testcontainers/testcontainers-python/commit/935693e01686fea9bf3201cd8c70b3e617bda2ee))
+* postgres use psql instead of logs ([#704](https://github.com/testcontainers/testcontainers-python/issues/704)) ([4365754](https://github.com/testcontainers/testcontainers-python/commit/436575410a2906a695b96af66ff55c9ccb8e09a7))
+* **tests:** Missing artifacts (include-hidden-files) ([#699](https://github.com/testcontainers/testcontainers-python/issues/699)) ([8f1165d](https://github.com/testcontainers/testcontainers-python/commit/8f1165dd79ee0dcf16f37f2d186cbc3d47bc11bc))
+
+## [4.8.1](https://github.com/testcontainers/testcontainers-python/compare/testcontainers-v4.8.0...testcontainers-v4.8.1) (2024-08-18)
+
+
+### Bug Fixes
+
+* **generic:** Update the FastAPI install on genric module doctest samples ([#686](https://github.com/testcontainers/testcontainers-python/issues/686)) ([5216b02](https://github.com/testcontainers/testcontainers-python/commit/5216b0241a27afe3419f5c4a6d500dc27154ddd4))
+* **mssql:** use glob to find mssql-tools folder since it moves ([#685](https://github.com/testcontainers/testcontainers-python/issues/685)) ([4912725](https://github.com/testcontainers/testcontainers-python/commit/4912725c2a54a9edce046416fbf11e089cc03cb0)), closes [#666](https://github.com/testcontainers/testcontainers-python/issues/666)
+* wait_for_logs can now fail early when the container stops ([#682](https://github.com/testcontainers/testcontainers-python/issues/682)) ([925329d](https://github.com/testcontainers/testcontainers-python/commit/925329d8d2df78437a491a29b707d5ac97e7b734))
+
+
+### Documentation
+
+* Add a more advance usecase documentation for ServerContainer ([#688](https://github.com/testcontainers/testcontainers-python/issues/688)) ([2cf5a9f](https://github.com/testcontainers/testcontainers-python/commit/2cf5a9fbe6db3fa4254a5bb54e67412ec2d08488))
+
+## [4.8.0](https://github.com/testcontainers/testcontainers-python/compare/testcontainers-v4.7.2...testcontainers-v4.8.0) (2024-08-14)
+
+
+### Features
+
+* Adding support for Cassandra and Scylla ([#167](https://github.com/testcontainers/testcontainers-python/issues/167)) ([2d8bc11](https://github.com/testcontainers/testcontainers-python/commit/2d8bc11c8e151af66456ebad156afc4a87822676))
+* **compose:** ability to retain volumes when using context manager ([#659](https://github.com/testcontainers/testcontainers-python/issues/659)) ([e1e3d13](https://github.com/testcontainers/testcontainers-python/commit/e1e3d13b47923dd7124196e6b743799bd87b6885))
+* **compose:** add ability to get docker compose config ([#669](https://github.com/testcontainers/testcontainers-python/issues/669)) ([8c28a86](https://github.com/testcontainers/testcontainers-python/commit/8c28a861ce4ade9e8204783e2ef2fd99013c90ea))
+* **core:** add ability to do OR & AND for waitforlogs ([#661](https://github.com/testcontainers/testcontainers-python/issues/661)) ([b1453e8](https://github.com/testcontainers/testcontainers-python/commit/b1453e87e1f5443f0f8d04c9b30a278aa835ca9b))
+* **new:** Added AWS Lambda module ([#655](https://github.com/testcontainers/testcontainers-python/issues/655)) ([9161cb6](https://github.com/testcontainers/testcontainers-python/commit/9161cb64a0a13b54a981b2b846a4d073db8c30a2))
+* refactor network setup ([#678](https://github.com/testcontainers/testcontainers-python/issues/678)) ([d5de0aa](https://github.com/testcontainers/testcontainers-python/commit/d5de0aa01c7d3ba304446dd73347a1a7ec1facc7))
+
+
+### Bug Fixes
+
+* Add Db2 support ([#673](https://github.com/testcontainers/testcontainers-python/issues/673)) ([1e43923](https://github.com/testcontainers/testcontainers-python/commit/1e439232e35ce0091f20993273e1f01d8c0119c4))
+* bring back cassandra driver bc otherwise how does it get installed for cassandra module test run? ([#680](https://github.com/testcontainers/testcontainers-python/issues/680)) ([71c3a1a](https://github.com/testcontainers/testcontainers-python/commit/71c3a1a29e1839de91f05c6bcd4c620122195a94))
+* **rabbitmq:** add `vhost` as parameter to RabbitMqContainer ([#656](https://github.com/testcontainers/testcontainers-python/issues/656)) ([fa2081a](https://github.com/testcontainers/testcontainers-python/commit/fa2081a7b325cdd316de28c99b029150022db203))
+* **selenium:** add Arg/Options to api of selenium container ([#654](https://github.com/testcontainers/testcontainers-python/issues/654)) ([e02c1b3](https://github.com/testcontainers/testcontainers-python/commit/e02c1b37a651374f47abe72bc17941849c1fd12e)), closes [#652](https://github.com/testcontainers/testcontainers-python/issues/652)
+
+## [4.7.2](https://github.com/testcontainers/testcontainers-python/compare/testcontainers-v4.7.1...testcontainers-v4.7.2) (2024-07-15)
+
+
+### Bug Fixes
+
+* Add container Trino ([#642](https://github.com/testcontainers/testcontainers-python/issues/642)) ([49ce5a5](https://github.com/testcontainers/testcontainers-python/commit/49ce5a5ff2ac46cf51920e16c5e39684886b699a)), closes [#641](https://github.com/testcontainers/testcontainers-python/issues/641)
+* **core:** Improve private registry support (tolerate not implemented fields in DOCKER_AUTH_CONFIG) ([#647](https://github.com/testcontainers/testcontainers-python/issues/647)) ([766c382](https://github.com/testcontainers/testcontainers-python/commit/766c382a3aee4eb512ee0f482d6595d3412097c3))
+* **kafka:** add a flag to limit to first hostname for use with networks ([#638](https://github.com/testcontainers/testcontainers-python/issues/638)) ([0ce4fec](https://github.com/testcontainers/testcontainers-python/commit/0ce4fecb2872620fd4cb96313abcba4353442cfd)), closes [#637](https://github.com/testcontainers/testcontainers-python/issues/637)
+* **modules:** Mailpit container base API URL helper method ([#643](https://github.com/testcontainers/testcontainers-python/issues/643)) ([df07586](https://github.com/testcontainers/testcontainers-python/commit/df07586d8844c757db62ac0f8b7914c67fd96e05))
+
 ## [4.7.1](https://github.com/testcontainers/testcontainers-python/compare/testcontainers-v4.7.0...testcontainers-v4.7.1) (2024-07-02)
 
 

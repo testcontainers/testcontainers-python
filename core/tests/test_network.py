@@ -45,32 +45,44 @@ def test_network_create_errors():
 
 
 def test_containers_can_communicate_over_network():
-    with Network() as network:
-        with (
-            DockerContainer(NGINX_ALPINE_SLIM_IMAGE)
-            .with_name("alpine1")
-            .with_network_aliases("alpine1-alias-1", "alpine1-alias-2")
-            .with_network(network) as alpine1
-        ):
-            with (
-                DockerContainer(NGINX_ALPINE_SLIM_IMAGE)
-                .with_name("alpine2")
-                .with_network_aliases("alpine2-alias-1", "alpine2-alias-2")
-                .with_network(network) as alpine2
-            ):
-                assert_can_ping(alpine1, "alpine2")
-                assert_can_ping(alpine1, "alpine2-alias-1")
-                assert_can_ping(alpine1, "alpine2-alias-2")
+    with (
+        Network() as network,
+        DockerContainer(NGINX_ALPINE_SLIM_IMAGE)
+        .with_name("alpine1")
+        .with_network_aliases("alpine1-alias-1", "alpine1-alias-2")
+        .with_network(network) as alpine1,
+        DockerContainer(NGINX_ALPINE_SLIM_IMAGE)
+        .with_name("alpine2")
+        .with_network_aliases("alpine2-alias-1", "alpine2-alias-2")
+        .with_network(network) as alpine2,
+    ):
+        assert_can_ping(alpine1, "alpine2")
+        assert_can_ping(alpine1, "alpine2-alias-1")
+        assert_can_ping(alpine1, "alpine2-alias-2")
 
-                assert_can_ping(alpine2, "alpine1")
-                assert_can_ping(alpine2, "alpine1-alias-1")
-                assert_can_ping(alpine2, "alpine1-alias-2")
+        assert_can_ping(alpine2, "alpine1")
+        assert_can_ping(alpine2, "alpine1-alias-1")
+        assert_can_ping(alpine2, "alpine1-alias-2")
+
+        assert_can_request(alpine1, "alpine2")
+        assert_can_request(alpine1, "alpine2-alias-1")
+        assert_can_request(alpine1, "alpine2-alias-2")
+
+        assert_can_request(alpine2, "alpine1")
+        assert_can_request(alpine2, "alpine1-alias-1")
+        assert_can_request(alpine2, "alpine1-alias-2")
 
 
 def assert_can_ping(container: DockerContainer, remote_name: str):
     status, output = container.exec("ping -c 1 %s" % remote_name)
     assert status == 0
     assert "64 bytes" in str(output)
+
+
+def assert_can_request(container: DockerContainer, remote_name: str):
+    status, output = container.exec(f"wget -qO- http://{remote_name}")
+    assert status == 0
+    assert "Welcome to nginx!" in output.decode()
 
 
 def test_network_has_labels():
