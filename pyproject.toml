@@ -58,6 +58,7 @@ packages = [
     { include = "testcontainers", from = "modules/neo4j" },
     { include = "testcontainers", from = "modules/nginx" },
     { include = "testcontainers", from = "modules/ollama" },
+    { include = "testcontainers", from = "modules/openfga" },
     { include = "testcontainers", from = "modules/opensearch" },
     { include = "testcontainers", from = "modules/oracle-free" },
     { include = "testcontainers", from = "modules/postgres" },
@@ -105,6 +106,7 @@ sqlalchemy = { version = "*", optional = true }
 pymssql = { version = "*", optional = true }
 pymysql = { version = "*", extras = ["rsa"], optional = true }
 neo4j = { version = "*", optional = true }
+openfga-sdk = { version = "*", optional = true }
 opensearch-py = { version = "*", optional = true }
 oracledb = { version = "*", optional = true }
 pika = { version = "*", optional = true }
@@ -149,6 +151,7 @@ mysql = ["sqlalchemy", "pymysql"]
 nats = ["nats-py"]
 neo4j = ["neo4j"]
 nginx = []
+openfga = ["openfga-sdk"]
 opensearch = ["opensearch-py"]
 ollama = []
 oracle = ["sqlalchemy", "oracledb"]
@@ -306,6 +309,7 @@ mypy_path = [
 #    "modules/mysql",
 #    "modules/neo4j",
 #    "modules/nginx",
+#    "modules/openfga",
 #    "modules/ollama",
 #    "modules/opensearch",
 #    "modules/oracle",
