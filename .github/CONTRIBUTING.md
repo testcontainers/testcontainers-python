@@ -33,7 +33,7 @@ You need to have the following tools available to you:
 - Run `make install` to get `poetry` to install all dependencies and set up `pre-commit`
   - **Recommended**: Run `make` or `make help` to see other commands available to you.
 - After this, you should have a working virtual environment and proceed with writing code with your favourite IDE
-- **TIP**: You can run `make core/tests` or `make module/<my-module>/tests` to run the tests specifically for that to speed up feedback cycles
+- **TIP**: You can run `make core/tests` or `make modules/<my-module>/tests` to run the tests specifically for that to speed up feedback cycles
 - You can also run `make lint` to run the `pre-commit` for the entire codebase.
 
 
