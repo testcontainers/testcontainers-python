@@ -17,13 +17,15 @@ import requests
 
 from keycloak import KeycloakAdmin
 from testcontainers.core.container import DockerContainer
-from testcontainers.core.waiting_utils import wait_container_is_ready, wait_for_logs
-
-_DEFAULT_DEV_COMMAND = "start-dev"
+from testcontainers.core.waiting_utils import wait_container_is_ready
 
 
 class KeycloakContainer(DockerContainer):
     has_realm_imports = False
+    # Since Keycloak v26.0.0
+    # See: https://www.keycloak.org/server/all-config#category-bootstrap_admin
+    ADMIN_USERNAME_ENVIRONMENT_VARIABLE = "KC_BOOTSTRAP_ADMIN_USERNAME"
+    ADMIN_PASSWORD_ENVIRONMENT_VARIABLE = "KC_BOOTSTRAP_ADMIN_PASSWORD"
 
     """
     Keycloak container.
@@ -46,19 +48,19 @@ class KeycloakContainer(DockerContainer):
         password: Optional[str] = None,
         port: int = 8080,
         management_port: int = 9000,
-        cmd: Optional[str] = _DEFAULT_DEV_COMMAND,
+        cmd: Optional[str] = "start-dev",
     ) -> None:
         super().__init__(image=image)
-        self.username = username or os.environ.get("KEYCLOAK_ADMIN", "test")
-        self.password = password or os.environ.get("KEYCLOAK_ADMIN_PASSWORD", "test")
+        self.username = username or os.environ.get(self.ADMIN_USERNAME_ENVIRONMENT_VARIABLE, "test")
+        self.password = password or os.environ.get(self.ADMIN_PASSWORD_ENVIRONMENT_VARIABLE, "test")
         self.port = port
         self.management_port = management_port
         self.with_exposed_ports(self.port, self.management_port)
         self.cmd = cmd
 
     def _configure(self) -> None:
-        self.with_env("KEYCLOAK_ADMIN", self.username)
-        self.with_env("KEYCLOAK_ADMIN_PASSWORD", self.password)
+        self.with_env(self.ADMIN_USERNAME_ENVIRONMENT_VARIABLE, self.username)
+        self.with_env(self.ADMIN_PASSWORD_ENVIRONMENT_VARIABLE, self.password)
         # Enable health checks
         # see: https://www.keycloak.org/server/health#_relevant_options
         self.with_env("KC_HEALTH_ENABLED", "true")
@@ -88,8 +90,6 @@ class KeycloakContainer(DockerContainer):
         except requests.exceptions.ConnectionError:
             response = requests.get(f"{self.get_url()}/health/ready", timeout=1)
         response.raise_for_status()
-        if _DEFAULT_DEV_COMMAND in self._command:
-            wait_for_logs(self, "Added user .* to realm .*")
 
     def start(self) -> "KeycloakContainer":
         super().start()
