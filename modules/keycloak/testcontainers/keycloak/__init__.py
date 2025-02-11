@@ -19,6 +19,7 @@ from keycloak import KeycloakAdmin
 from testcontainers.core.container import DockerContainer
 from testcontainers.core.waiting_utils import wait_container_is_ready, wait_for_logs
 
+_DEFAULT_DEV_COMMAND = "start-dev"
 # Since Keycloak v26.0.0
 # See: https://www.keycloak.org/server/all-config#category-bootstrap_admin
 ADMIN_USERNAME_ENVIRONMENT_VARIABLE = "KC_BOOTSTRAP_ADMIN_USERNAME"
@@ -49,7 +50,7 @@ class KeycloakContainer(DockerContainer):
         password: Optional[str] = None,
         port: int = 8080,
         management_port: int = 9000,
-        cmd: Optional[str] = "start-dev",
+        cmd: Optional[str] = _DEFAULT_DEV_COMMAND,
     ) -> None:
         super().__init__(image=image)
         self.username = username or os.environ.get(ADMIN_USERNAME_ENVIRONMENT_VARIABLE, "test")
@@ -94,7 +95,7 @@ class KeycloakContainer(DockerContainer):
         except requests.exceptions.ConnectionError:
             response = requests.get(f"{self.get_url()}/health/ready", timeout=1)
         response.raise_for_status()
-        if "start-dev" in self._command:
+        if _DEFAULT_DEV_COMMAND in self._command:
             wait_for_logs(self, "started in \\d+\\.\\d+s")
             wait_for_logs(self, f"Created temporary admin user|Added user '")
 
