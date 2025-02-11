@@ -1,5 +1,18 @@
 # Changelog
 
+## [4.9.2](https://github.com/testcontainers/testcontainers-python/compare/testcontainers-v4.9.1...testcontainers-v4.9.2) (2025-02-11)
+
+
+### Bug Fixes
+
+* **core:** multiple container start invocations with custom labels ([#769](https://github.com/testcontainers/testcontainers-python/issues/769)) ([3e783a8](https://github.com/testcontainers/testcontainers-python/commit/3e783a80aa11b9c87201404a895d922624f0d451))
+* **keycloak:** Fixed Keycloak testcontainer for latest version v26.1.0 ([#766](https://github.com/testcontainers/testcontainers-python/issues/766)) ([b1642e9](https://github.com/testcontainers/testcontainers-python/commit/b1642e98c4d349564c4365782d1b58c9810b719a))
+
+
+### Documentation
+
+* Fixed typo in CONTRIBUTING.md ([#767](https://github.com/testcontainers/testcontainers-python/issues/767)) ([f0bb0f5](https://github.com/testcontainers/testcontainers-python/commit/f0bb0f54bea83885698bd137e24c397498709362))
+
 ## [4.9.1](https://github.com/testcontainers/testcontainers-python/compare/testcontainers-v4.9.0...testcontainers-v4.9.1) (2025-01-21)
 
 
