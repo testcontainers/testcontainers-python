@@ -17,7 +17,7 @@ import requests
 
 from keycloak import KeycloakAdmin
 from testcontainers.core.container import DockerContainer
-from testcontainers.core.waiting_utils import wait_container_is_ready
+from testcontainers.core.waiting_utils import wait_container_is_ready, wait_for_logs
 
 # Since Keycloak v26.0.0
 # See: https://www.keycloak.org/server/all-config#category-bootstrap_admin
@@ -94,6 +94,9 @@ class KeycloakContainer(DockerContainer):
         except requests.exceptions.ConnectionError:
             response = requests.get(f"{self.get_url()}/health/ready", timeout=1)
         response.raise_for_status()
+        if "start-dev" in self._command:
+            wait_for_logs(self, "started in \\d+\\.\\d+s")
+            wait_for_logs(self, f"Created temporary admin user|Added user '")
 
     def start(self) -> "KeycloakContainer":
         super().start()
