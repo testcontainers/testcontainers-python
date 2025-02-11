@@ -97,7 +97,7 @@ class KeycloakContainer(DockerContainer):
         response.raise_for_status()
         if _DEFAULT_DEV_COMMAND in self._command:
             wait_for_logs(self, "started in \\d+\\.\\d+s")
-            wait_for_logs(self, f"Created temporary admin user|Added user '")
+            wait_for_logs(self, "Created temporary admin user|Added user '")
 
     def start(self) -> "KeycloakContainer":
         super().start()
