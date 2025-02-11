@@ -19,13 +19,13 @@ from keycloak import KeycloakAdmin
 from testcontainers.core.container import DockerContainer
 from testcontainers.core.waiting_utils import wait_container_is_ready
 
+# Since Keycloak v26.0.0
+# See: https://www.keycloak.org/server/all-config#category-bootstrap_admin
+ADMIN_USERNAME_ENVIRONMENT_VARIABLE = "KC_BOOTSTRAP_ADMIN_USERNAME"
+ADMIN_PASSWORD_ENVIRONMENT_VARIABLE = "KC_BOOTSTRAP_ADMIN_PASSWORD"
 
 class KeycloakContainer(DockerContainer):
     has_realm_imports = False
-    # Since Keycloak v26.0.0
-    # See: https://www.keycloak.org/server/all-config#category-bootstrap_admin
-    ADMIN_USERNAME_ENVIRONMENT_VARIABLE = "KC_BOOTSTRAP_ADMIN_USERNAME"
-    ADMIN_PASSWORD_ENVIRONMENT_VARIABLE = "KC_BOOTSTRAP_ADMIN_PASSWORD"
 
     """
     Keycloak container.
@@ -51,16 +51,19 @@ class KeycloakContainer(DockerContainer):
         cmd: Optional[str] = "start-dev",
     ) -> None:
         super().__init__(image=image)
-        self.username = username or os.environ.get(self.ADMIN_USERNAME_ENVIRONMENT_VARIABLE, "test")
-        self.password = password or os.environ.get(self.ADMIN_PASSWORD_ENVIRONMENT_VARIABLE, "test")
+        self.username = username or os.environ.get(ADMIN_USERNAME_ENVIRONMENT_VARIABLE, "test")
+        self.password = password or os.environ.get(ADMIN_PASSWORD_ENVIRONMENT_VARIABLE, "test")
         self.port = port
         self.management_port = management_port
         self.with_exposed_ports(self.port, self.management_port)
         self.cmd = cmd
 
     def _configure(self) -> None:
-        self.with_env(self.ADMIN_USERNAME_ENVIRONMENT_VARIABLE, self.username)
-        self.with_env(self.ADMIN_PASSWORD_ENVIRONMENT_VARIABLE, self.password)
+        self.with_env(ADMIN_USERNAME_ENVIRONMENT_VARIABLE, self.username)
+        self.with_env(ADMIN_PASSWORD_ENVIRONMENT_VARIABLE, self.password)
+        # legacy env vars (<= 26.0.0)
+        self.with_env("KEYCLOAK_ADMIN", self.username)
+        self.with_env("KEYCLOAK_ADMIN_PASSWORD", self.password)
         # Enable health checks
         # see: https://www.keycloak.org/server/health#_relevant_options
         self.with_env("KC_HEALTH_ENABLED", "true")
