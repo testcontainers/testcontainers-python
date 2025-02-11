@@ -24,6 +24,7 @@ from testcontainers.core.waiting_utils import wait_container_is_ready
 ADMIN_USERNAME_ENVIRONMENT_VARIABLE = "KC_BOOTSTRAP_ADMIN_USERNAME"
 ADMIN_PASSWORD_ENVIRONMENT_VARIABLE = "KC_BOOTSTRAP_ADMIN_PASSWORD"
 
+
 class KeycloakContainer(DockerContainer):
     has_realm_imports = False
 
