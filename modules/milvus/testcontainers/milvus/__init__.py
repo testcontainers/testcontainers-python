@@ -69,7 +69,7 @@ class MilvusContainer(DockerContainer):
         port = self.get_exposed_port(self.healthcheck_port)
         return f"http://{ip}:{port}"
 
-    @wait_container_is_ready(requests.exceptions.HTTPError)
+    @wait_container_is_ready(requests.exceptions.HTTPError, requests.exceptions.ConnectionError)
     def _healthcheck(self) -> None:
         healthcheck_url = self._get_healthcheck_url()
         response = requests.get(f"{healthcheck_url}/healthz", timeout=1)
