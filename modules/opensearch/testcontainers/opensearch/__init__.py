@@ -2,11 +2,10 @@ from contextlib import suppress
 
 from opensearchpy import OpenSearch
 from opensearchpy.exceptions import ConnectionError, TransportError
-from urllib3.exceptions import ProtocolError
-
 from testcontainers.core.container import DockerContainer
 from testcontainers.core.utils import raise_for_deprecated_parameter
 from testcontainers.core.waiting_utils import wait_container_is_ready
+from urllib3.exceptions import ProtocolError
 
 
 class OpenSearchContainer(DockerContainer):
@@ -57,7 +56,7 @@ class OpenSearchContainer(DockerContainer):
 
         self.with_exposed_ports(self.port)
         self.with_env("discovery.type", "single-node")
-        self.with_env("plugins.security.disabled", "false" if security_enabled else "true")
+        self.with_env("DISABLE_SECURITY_PLUGIN", "false" if security_enabled else "true")
         if self._supports_initial_admin_password(str(image)):
             self.with_env("OPENSEARCH_INITIAL_ADMIN_PASSWORD", self.initial_admin_password)
         if security_enabled:
