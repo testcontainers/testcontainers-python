@@ -189,7 +189,7 @@ class DockerCompose:
         Returns command parts used for the docker compose commands
 
         Returns:
-            cmd: Docker compose command parts.
+            str: Docker compose command parts.
         """
         return self.compose_command_property
 
@@ -255,8 +255,8 @@ class DockerCompose:
         :param services: which services to get the logs for (or omit, for all)
 
         Returns:
-            stdout: Standard output stream.
-            stderr: Standard error stream.
+            str: stdout: Standard output stream.
+            str: stderr: Standard error stream.
         """
         logs_cmd = [*self.compose_command_property, "logs", *services]
 
@@ -362,9 +362,9 @@ class DockerCompose:
         :param command: the command to run in the container
 
         Returns:
-            stdout: Standard output stream.
-            stderr: Standard error stream.
-            exit_code: The command's exit code.
+            str: stdout: Standard output stream.
+            str: stderr: Standard error stream.
+            int: exit_code: The command's exit code.
         """
         if not service_name:
             service_name = self.get_container().Service

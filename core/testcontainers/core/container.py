@@ -172,6 +172,9 @@ class DockerContainer:
         return self._container
 
     def get_docker_client(self) -> DockerClient:
+        """
+        :meta private:
+        """
         return self._docker
 
     def get_logs(self) -> tuple[bytes, bytes]:
@@ -190,6 +193,9 @@ class DockerContainer:
 
 
 class Reaper:
+    """
+    :meta private:
+    """
     _instance: "Optional[Reaper]" = None
     _container: Optional[DockerContainer] = None
     _socket: Optional[socket] = None
