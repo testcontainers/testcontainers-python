@@ -3,7 +3,8 @@ import pytest
 from testcontainers.core.config import (
     TestcontainersConfiguration as TCC,
     TC_FILE,
-    TestcontainersConfiguration, get_user_overwritten_connection_mode,
+    TestcontainersConfiguration,
+    get_user_overwritten_connection_mode,
     ConnectionMode,
     get_docker_socket,
 )
