@@ -189,7 +189,7 @@ class DockerCompose:
         Returns command parts used for the docker compose commands
 
         Returns:
-            str: Docker compose command parts.
+            list[str]: Docker compose command parts.
         """
         return self.compose_command_property
 
