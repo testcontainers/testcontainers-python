@@ -3,7 +3,7 @@ import pytest
 from testcontainers.core.config import (
     TestcontainersConfiguration as TCC,
     TC_FILE,
-    get_user_overwritten_connection_mode,
+    TestcontainersConfiguration, get_user_overwritten_connection_mode,
     ConnectionMode,
     get_docker_socket,
 )
@@ -81,6 +81,7 @@ def test_invalid_connection_mode(monkeypatch: pytest.MonkeyPatch) -> None:
 def test_valid_connection_mode(monkeypatch: pytest.MonkeyPatch, mode: str, use_mapped: bool) -> None:
     monkeypatch.setenv("TESTCONTAINERS_CONNECTION_MODE", mode)
     assert get_user_overwritten_connection_mode().use_mapped_port is use_mapped
+    assert TestcontainersConfiguration().connection_mode_override.use_mapped_port is use_mapped
 
 
 def test_no_connection_mode_given(monkeypatch: pytest.MonkeyPatch) -> None:
