@@ -13,6 +13,17 @@ Testcontainers Core
 
     <hr>
 
+Compose
+-------
+
+It is also possible to use Docker Compose functionality:
+
+.. autoclass:: testcontainers.compose.compose.DockerCompose
+
+.. raw:: html
+
+    <hr>
+
 Examples
 --------
 
