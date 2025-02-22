@@ -196,6 +196,7 @@ class Reaper:
     """
     :meta private:
     """
+
     _instance: "Optional[Reaper]" = None
     _container: Optional[DockerContainer] = None
     _socket: Optional[socket] = None

@@ -148,11 +148,11 @@ class DockerCompose:
 
             >>> from testcontainers.compose import DockerCompose
 
-            >>> compose = DockerCompose("compose/tests", compose_file_name="docker-compose-4.yml",
+            >>> compose = DockerCompose("core/tests/compose_fixtures/basic", compose_file_name="hello.yaml",
             ...                         pull=True)
             >>> with compose:
             ...     stdout, stderr = compose.get_logs()
-            >>> b"Hello from Docker!" in stdout
+            >>> "Hello from Docker!" in stdout
             True
 
         .. code-block:: yaml
@@ -356,7 +356,7 @@ class DockerCompose:
 
         Args:
             service_name: Name of the docker compose service to run the command in.
-        command: Command to execute.
+            command: Command to execute.
 
         :param service_name: specify the service name
         :param command: the command to run in the container
