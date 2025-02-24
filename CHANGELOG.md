@@ -1,5 +1,37 @@
 # Changelog
 
+## [4.9.1](https://github.com/testcontainers/testcontainers-python/compare/testcontainers-v4.9.0...testcontainers-v4.9.1) (2025-01-21)
+
+
+### Bug Fixes
+
+* milvus healthcheck: use correct requests errors ([#759](https://github.com/testcontainers/testcontainers-python/issues/759)) ([78b137c](https://github.com/testcontainers/testcontainers-python/commit/78b137cfe53fc81eb8d5d858e98610fb6a8792ad))
+* **mysql:** add dialect parameter instead of hardcoded mysql dialect ([#739](https://github.com/testcontainers/testcontainers-python/issues/739)) ([8d77bd3](https://github.com/testcontainers/testcontainers-python/commit/8d77bd3541e1c5e73c7ed5d5bd3c0d7bb617f5c0))
+* **tests:** replace dind-test direct docker usage with sdk ([#750](https://github.com/testcontainers/testcontainers-python/issues/750)) ([ace2a7d](https://github.com/testcontainers/testcontainers-python/commit/ace2a7d143fb80576ddc0859a9106aa8652f2356))
+
+## [4.9.0](https://github.com/testcontainers/testcontainers-python/compare/testcontainers-v4.8.2...testcontainers-v4.9.0) (2024-11-26)
+
+
+### Features
+
+* **compose:** support for setting profiles ([#738](https://github.com/testcontainers/testcontainers-python/issues/738)) ([3e00e71](https://github.com/testcontainers/testcontainers-python/commit/3e00e71da4d2b5e7fd30315468d4e54c86ba6150))
+* **core:** Support working with env files ([#737](https://github.com/testcontainers/testcontainers-python/issues/737)) ([932ee30](https://github.com/testcontainers/testcontainers-python/commit/932ee307955e3591a63f194aee8e2f6d8e2f6bf9))
+
+
+### Bug Fixes
+
+* allow running all tests ([#721](https://github.com/testcontainers/testcontainers-python/issues/721)) ([f958cf9](https://github.com/testcontainers/testcontainers-python/commit/f958cf9fe62a5f3ee2dc255713ec8b16de6a767d))
+* **core:** Avoid hanging upon bad docker host connection ([#742](https://github.com/testcontainers/testcontainers-python/issues/742)) ([4ced198](https://github.com/testcontainers/testcontainers-python/commit/4ced1983162914fe511a6e714f136b670e1dbdfb))
+* **core:** running testcontainer inside container ([#714](https://github.com/testcontainers/testcontainers-python/issues/714)) ([85a6666](https://github.com/testcontainers/testcontainers-python/commit/85a66667c23d76e87aecc6761bbb01429adb3dee))
+* **generic:** Also catch URLError waiting for ServerContainer ([#743](https://github.com/testcontainers/testcontainers-python/issues/743)) ([24e354f](https://github.com/testcontainers/testcontainers-python/commit/24e354f3bfa5912eaf7877da9442a885d7872f1a))
+* update wait_for_logs to not throw on 'created', and an optimization ([#719](https://github.com/testcontainers/testcontainers-python/issues/719)) ([271ca9a](https://github.com/testcontainers/testcontainers-python/commit/271ca9a0fef2e5f2b216457bfee44318e93990bf))
+* Vault health check ([#734](https://github.com/testcontainers/testcontainers-python/issues/734)) ([79434d6](https://github.com/testcontainers/testcontainers-python/commit/79434d6744b2918493884cf8fbf27aeadf78ecfd))
+
+
+### Documentation
+
+* Documentation fix for ServerContainer ([#671](https://github.com/testcontainers/testcontainers-python/issues/671)) ([0303d47](https://github.com/testcontainers/testcontainers-python/commit/0303d47d7173e1c4ec1a4f565efee9b2fe694928))
+
 ## [4.8.2](https://github.com/testcontainers/testcontainers-python/compare/testcontainers-v4.8.1...testcontainers-v4.8.2) (2024-09-27)
 
 

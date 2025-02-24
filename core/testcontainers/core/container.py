@@ -1,5 +1,6 @@
 import contextlib
 import time
+from os import PathLike
 from socket import socket
 from typing import TYPE_CHECKING, Optional, Union
 
@@ -7,12 +8,13 @@ import docker.errors
 from docker import version
 from docker.errors import NotFound
 from docker.types import EndpointConfig
+from dotenv import dotenv_values
 from typing_extensions import Self, assert_never
 
 from testcontainers.core.config import ConnectionMode
 from testcontainers.core.config import testcontainers_config as c
 from testcontainers.core.docker_client import DockerClient
-from testcontainers.core.exceptions import ContainerStartException
+from testcontainers.core.exceptions import ContainerConnectException, ContainerStartException
 from testcontainers.core.labels import LABEL_SESSION_ID, SESSION_ID
 from testcontainers.core.network import Network
 from testcontainers.core.utils import is_arm, setup_logger
@@ -58,6 +60,12 @@ class DockerContainer:
 
     def with_env(self, key: str, value: str) -> Self:
         self.env[key] = value
+        return self
+
+    def with_env_file(self, env_file: Union[str, PathLike]) -> Self:
+        env_values = dotenv_values(env_file)
+        for key, value in env_values.items():
+            self.with_env(key, value)
         return self
 
     def with_bind_ports(self, container: int, host: Optional[int] = None) -> Self:
@@ -351,15 +359,21 @@ class Reaper:
             .with_env("RYUK_RECONNECTION_TIMEOUT", c.ryuk_reconnection_timeout)
             .start()
         )
-        wait_for_logs(Reaper._container, r".* Started!")
+        wait_for_logs(Reaper._container, r".* Started!", timeout=20, raise_on_exit=True)
 
         container_host = Reaper._container.get_container_host_ip()
         container_port = int(Reaper._container.get_exposed_port(8080))
+
+        if not container_host or not container_port:
+            raise ContainerConnectException(
+                f"Could not obtain network details for {Reaper._container._container.id}. Host: {container_host} Port: {container_port}"
+            )
 
         last_connection_exception: Optional[Exception] = None
         for _ in range(50):
             try:
                 Reaper._socket = socket()
+                Reaper._socket.settimeout(1)
                 Reaper._socket.connect((container_host, container_port))
                 last_connection_exception = None
                 break

@@ -1,6 +1,6 @@
 [tool.poetry]
 name = "testcontainers"
-version = "4.8.2"  # auto-incremented by release-please
+version = "4.9.1"  # auto-incremented by release-please
 description = "Python library for throwaway instances of anything that can run in a Docker container"
 authors = ["Sergey Pirogov <automationremarks@gmail.com>"]
 maintainers = [
@@ -83,6 +83,7 @@ docker = "*" # ">=4.0"
 urllib3 = "*" # "<2.0"
 wrapt = "*" # "^1.16.0"
 typing-extensions = "*"
+python-dotenv = "*"
 
 # community modules
 python-arango = { version = "^7.8", optional = true }

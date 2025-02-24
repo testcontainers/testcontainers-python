@@ -1,5 +1,5 @@
 from typing import Union
-from urllib.error import HTTPError
+from urllib.error import HTTPError, URLError
 from urllib.request import urlopen
 
 import httpx
@@ -31,8 +31,8 @@ class ServerContainer(DockerContainer):
         ...         delay = wait_for_logs(srv, "GET / HTTP/1.1")
 
 
-    :param path: Path to the Dockerfile to build the image
-    :param tag: Tag for the image to be built (default: None)
+    :param port: Port to be exposed on the container.
+    :param image: Docker image to be used for the container.
     """
 
     def __init__(self, port: int, image: Union[str, DockerImage]) -> None:
@@ -40,7 +40,7 @@ class ServerContainer(DockerContainer):
         self.internal_port = port
         self.with_exposed_ports(self.internal_port)
 
-    @wait_container_is_ready(HTTPError)
+    @wait_container_is_ready(HTTPError, URLError)
     def _connect(self) -> None:
         # noinspection HttpUrlsUsage
         url = self._create_connection_url()
