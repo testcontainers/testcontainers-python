@@ -61,5 +61,5 @@ def test_session_are_module_import_scoped():
 def test_create_no_side_effects():
     input_labels = {"key": "value"}
     expected_labels = input_labels.copy()
-    create_labels("not-ryuk", {"key": "value"})
+    create_labels("not-ryuk", input_labels)
     assert input_labels == expected_labels, input_labels
