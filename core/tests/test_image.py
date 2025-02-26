@@ -64,3 +64,24 @@ def test_docker_image_with_custom_dockerfile_path(dockerfile_path: Optional[Path
             with DockerContainer(str(image)) as container:
                 assert container._container.image.short_id.endswith(image_short_id), "Image ID mismatch"
                 assert container.get_logs() == (("Hello world!\n").encode(), b""), "Container logs mismatch"
+
+
+def test_docker_image_with_kwargs():
+    with tempfile.TemporaryDirectory() as temp_directory:
+        with open(f"{temp_directory}/Dockerfile", "w") as f:
+            f.write(
+                f"""
+                FROM alpine:latest
+                ARG TEST_ARG
+                ENV TEST_ARG $TEST_ARG
+                CMD echo $TEST_ARG
+                """
+            )
+        with DockerImage(
+            path=temp_directory, tag="test", clean_up=True, no_cache=True, buildargs={"TEST_ARG": "new_arg"}
+        ) as image:
+            image_short_id = image.short_id
+            assert image.get_wrapped_image() is not None
+            with DockerContainer(str(image)) as container:
+                assert container._container.image.short_id.endswith(image_short_id), "Image ID mismatch"
+                assert container.get_logs() == (("new_arg\n").encode(), b""), "Container logs mismatch"
