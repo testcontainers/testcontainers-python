@@ -5,12 +5,14 @@ from testcontainers.core.config import (
     TC_FILE,
     get_user_overwritten_connection_mode,
     ConnectionMode,
+    get_docker_socket,
 )
 
 from pytest import MonkeyPatch, mark, LogCaptureFixture
 
 import logging
 import tempfile
+from unittest.mock import Mock
 
 
 def test_read_tc_properties(monkeypatch: MonkeyPatch) -> None:
@@ -84,3 +86,61 @@ def test_valid_connection_mode(monkeypatch: pytest.MonkeyPatch, mode: str, use_m
 def test_no_connection_mode_given(monkeypatch: pytest.MonkeyPatch) -> None:
     monkeypatch.delenv("TESTCONTAINERS_CONNECTION_MODE", raising=False)
     assert get_user_overwritten_connection_mode() is None
+
+
+def test_get_docker_socket_uses_env(monkeypatch: pytest.MonkeyPatch) -> None:
+    """
+    If TESTCONTAINERS_DOCKER_SOCKET_OVERRIDE env var is given prefer it
+    """
+    monkeypatch.setenv("TESTCONTAINERS_DOCKER_SOCKET_OVERRIDE", "/var/test.socket")
+    assert get_docker_socket() == "/var/test.socket"
+
+
+@pytest.fixture
+def mock_docker_client_connections(monkeypatch: pytest.MonkeyPatch) -> None:
+    """
+    Ensure the docker client does not make any actual network calls
+    """
+    from docker.transport.sshconn import SSHHTTPAdapter
+    from docker.api.client import APIClient
+
+    # ensure that no actual connection is tried
+    monkeypatch.setattr(SSHHTTPAdapter, "_connect", Mock())
+    monkeypatch.setattr(SSHHTTPAdapter, "_create_paramiko_client", Mock())
+    monkeypatch.setattr(APIClient, "_retrieve_server_version", Mock(return_value="1.47"))
+
+
+@pytest.mark.usefixtures("mock_docker_client_connections")
+def test_get_docker_host_default(monkeypatch: pytest.MonkeyPatch) -> None:
+    """
+    If non socket docker-host is given return default
+
+    Still ryuk will properly still not work but this is the historical default
+
+    """
+    monkeypatch.delenv("TESTCONTAINERS_DOCKER_SOCKET_OVERRIDE", raising=False)
+    # Define Fake SSH Docker client
+    monkeypatch.setenv("DOCKER_HOST", "ssh://remote_host")
+    assert get_docker_socket() == "/var/run/docker.sock"
+
+
+@pytest.mark.usefixtures("mock_docker_client_connections")
+def test_get_docker_host_non_root(monkeypatch: pytest.MonkeyPatch) -> None:
+    """
+    Use the socket determined by the Docker API Adapter
+    """
+    monkeypatch.delenv("TESTCONTAINERS_DOCKER_SOCKET_OVERRIDE", raising=False)
+    # Define a Non-Root like Docker Client
+    monkeypatch.setenv("DOCKER_HOST", "unix://var/run/user/1000/docker.sock")
+    assert get_docker_socket() == "/var/run/user/1000/docker.sock"
+
+
+@pytest.mark.usefixtures("mock_docker_client_connections")
+def test_get_docker_host_root(monkeypatch: pytest.MonkeyPatch) -> None:
+    """
+    Use the socket determined by the Docker API Adapter
+    """
+    monkeypatch.delenv("TESTCONTAINERS_DOCKER_SOCKET_OVERRIDE", raising=False)
+    # Define a Root like Docker Client
+    monkeypatch.setenv("DOCKER_HOST", "unix://")
+    assert get_docker_socket() == "/var/run/docker.sock"
