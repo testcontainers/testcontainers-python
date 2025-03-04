@@ -63,7 +63,7 @@ class WeaviateContainer(DbContainer):
 
     def __init__(
         self,
-        image: str = "semitechnologies/weaviate:1.24.5",
+        image: str = "semitechnologies/weaviate:1.29.0",
         env_vars: Optional[dict[str, str]] = None,
         **kwargs,
     ) -> None:
