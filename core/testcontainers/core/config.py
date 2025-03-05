@@ -86,7 +86,7 @@ class TestcontainersConfiguration:
     tc_properties: dict[str, str] = field(default_factory=read_tc_properties)
     _docker_auth_config: Optional[str] = field(default_factory=lambda: environ.get("DOCKER_AUTH_CONFIG"))
     tc_host_override: Optional[str] = TC_HOST_OVERRIDE
-    connection_mode_override: Optional[ConnectionMode] = None
+    connection_mode_override: Optional[ConnectionMode] = field(default_factory=get_user_overwritten_connection_mode)
 
     """
     https://github.com/testcontainers/testcontainers-go/blob/dd76d1e39c654433a3d80429690d07abcec04424/docker.go#L644
