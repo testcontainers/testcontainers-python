@@ -19,20 +19,20 @@ jobs:
       - name: Checkout contents
         uses: actions/checkout@v4
         with:
-          fetch-depth: 0  # recommended by tj-actions/changed-files
+          fetch-depth: 0
       - name: Get changed files
         id: changed-files
-        uses: tj-actions/changed-files@v42
+        uses: dorny/paths-filter@v3
         with:
-          path: "./modules"
-          diff_relative: true
-          dir_names: true
-          dir_names_exclude_current_dir: true
-          json: true
+          base: ${{ github.ref }}
+          list-files: 'json'
+          filters: |
+            modules:
+              - 'modules/**'
       - name: Compute modules from files
         id: compute-changes
         run: |
-          modules=$(echo "${{ steps.changed-files.outputs.all_changed_files }}" |  jq '.[] | split("/") | first' | jq -s -c '. | unique')
+          modules=$(echo "${{ toJson(steps.changed-files.outputs.modules_files) }}" | jq '.[] | split("/") | nth(1)' | jq -s -c '. | unique')
           echo "computed_modules=$modules"
           echo "computed_modules=$modules" >> $GITHUB_OUTPUT
     outputs:
