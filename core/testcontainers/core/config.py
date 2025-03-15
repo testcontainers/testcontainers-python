@@ -4,7 +4,7 @@ from logging import warning
 from os import environ
 from os.path import exists
 from pathlib import Path
-from typing import Optional, Union, cast
+from typing import Optional, Union
 
 import docker
 
@@ -21,7 +21,7 @@ class ConnectionMode(Enum):
 
         This is true for everything but bridge mode.
         """
-        if cast(str, self) == self.bridge_ip:
+        if self == self.bridge_ip:  # type: ignore[comparison-overlap]
             return False
         return True
 
