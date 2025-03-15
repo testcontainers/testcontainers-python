@@ -180,17 +180,17 @@ class DockerClient:
         """
         container = self.get_container(container_id)
         network_name = self.network_name(container_id)
-        return cast(str, container["NetworkSettings"]["Networks"][network_name]["IPAddress"])
+        return str(container["NetworkSettings"]["Networks"][network_name]["IPAddress"])
 
     def network_name(self, container_id: str) -> str:
         """
         Get the name of the network this container runs on
         """
         container = self.get_container(container_id)
-        name = container["HostConfig"]["NetworkMode"]
+        name = str(container["HostConfig"]["NetworkMode"])
         if name == "default":
             return "bridge"
-        return cast(str, name)
+        return name
 
     def gateway_ip(self, container_id: str) -> str:
         """
@@ -198,7 +198,7 @@ class DockerClient:
         """
         container = self.get_container(container_id)
         network_name = self.network_name(container_id)
-        return cast(str, container["NetworkSettings"]["Networks"][network_name]["Gateway"])
+        return str(container["NetworkSettings"]["Networks"][network_name]["Gateway"])
 
     def get_connection_mode(self) -> ConnectionMode:
         """
@@ -235,7 +235,8 @@ class DockerClient:
             return "localhost"
         if "http" in url.scheme or "tcp" in url.scheme and url.hostname:
             # see https://github.com/testcontainers/testcontainers-python/issues/415
-            if url.hostname == "localnpipe" and utils.is_windows():
+            hostname = url.hostname
+            if not hostname or (hostname == "localnpipe" and utils.is_windows()):
                 return "localhost"
             return cast(str, url.hostname)
         if utils.inside_container() and ("unix" in url.scheme or "npipe" in url.scheme):
