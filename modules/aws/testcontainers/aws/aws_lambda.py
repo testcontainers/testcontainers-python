@@ -9,6 +9,8 @@ from testcontainers.generic.server import ServerContainer
 RIE_PATH = "/2015-03-31/functions/function/invocations"
 # AWS OS-only base images contain an Amazon Linux distribution and the runtime interface emulator (RIE) for Lambda.
 
+# This comment can be removed (Used for testing)
+
 
 class AWSLambdaContainer(ServerContainer):
     """
