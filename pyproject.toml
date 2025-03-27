@@ -30,6 +30,7 @@ packages = [
     { include = "testcontainers", from = "core" },
     { include = "testcontainers", from = "modules/arangodb" },
     { include = "testcontainers", from = "modules/aws"},
+    { include = "testcontainers", from = "modules/azure" },
     { include = "testcontainers", from = "modules/azurite" },
     { include = "testcontainers", from = "modules/cassandra" },
     { include = "testcontainers", from = "modules/chroma" },
@@ -87,6 +88,7 @@ python-dotenv = "*"
 
 # community modules
 python-arango = { version = "^7.8", optional = true }
+azure-servicebus = { version = "*", optional = true }
 azure-storage-blob = { version = "^12.19", optional = true }
 cassandra-driver = { version = "3.29.1", optional = true }
 clickhouse-driver = { version = "*", optional = true }
@@ -123,6 +125,7 @@ ibm_db_sa = { version = "*", optional = true }
 [tool.poetry.extras]
 arangodb = ["python-arango"]
 aws = ["boto3", "httpx"]
+azure = ["azure-servicebus"]
 azurite = ["azure-storage-blob"]
 cassandra = []
 clickhouse = ["clickhouse-driver"]
