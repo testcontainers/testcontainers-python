@@ -13,7 +13,7 @@
 import random
 import socket
 import string
-from typing import Optional, Self
+from typing import Optional
 
 from testcontainers.core.container import DockerContainer
 from testcontainers.core.waiting_utils import wait_container_is_ready
@@ -46,7 +46,7 @@ class SocatContainer(DockerContainer):
 
         super().__init__(image=image, **kwargs)
 
-    def with_target(self, exposed_port: int, host: str, internal_port: Optional[int] = None) -> Self:
+    def with_target(self, exposed_port: int, host: str, internal_port: Optional[int] = None) -> "SocatContainer":
         """
         Add a target to forward connections from the exposed port to the given host and port.
 
