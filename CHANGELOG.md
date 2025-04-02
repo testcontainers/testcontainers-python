@@ -1,5 +1,18 @@
 # Changelog
 
+## [4.10.0](https://github.com/testcontainers/testcontainers-python/compare/testcontainers-v4.9.2...testcontainers-v4.10.0) (2025-04-02)
+
+
+### Features
+
+* Add SocatContainer ([#795](https://github.com/testcontainers/testcontainers-python/issues/795)) ([2f9139c](https://github.com/testcontainers/testcontainers-python/commit/2f9139ca3ea9fba36325373b63635a5f539a3003))
+
+
+### Bug Fixes
+
+* **ollama:** make device request a list ([#799](https://github.com/testcontainers/testcontainers-python/issues/799)) ([9497a45](https://github.com/testcontainers/testcontainers-python/commit/9497a45c39d13761aa3dd30dd5605676cbbe4b46))
+* **security:** Update track-modules job  ([#787](https://github.com/testcontainers/testcontainers-python/issues/787)) ([f979525](https://github.com/testcontainers/testcontainers-python/commit/f97952505eba089f9cbbc979f8091dafbf520669))
+
 ## [4.9.2](https://github.com/testcontainers/testcontainers-python/compare/testcontainers-v4.9.1...testcontainers-v4.9.2) (2025-02-26)
 
 
