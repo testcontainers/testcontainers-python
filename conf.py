@@ -160,5 +160,5 @@ texinfo_documents = [
 
 intersphinx_mapping = {
     "python": ("https://docs.python.org/3", None),
-    "selenium": ("https://seleniumhq.github.io/selenium/docs/api/py/", None),
+    "selenium": ("https://www.selenium.dev/selenium/docs/api/py/", None),
 }
