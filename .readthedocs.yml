@@ -16,4 +16,4 @@ build:
     post_install:
       - pip install poetry==2.1.2  # match version from poetry.lock
       - poetry config virtualenvs.create false
-      - poetry install --all-extras
+      - POETRY_VIRTUALENVS_CREATE=false poetry install --all-extras
