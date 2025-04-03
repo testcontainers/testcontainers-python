@@ -75,3 +75,24 @@ def test_get_exposed_port_original(container: DockerContainer, monkeypatch: pyte
     monkeypatch.setattr(client, "get_connection_mode", lambda: ConnectionMode.bridge_ip)
 
     assert container.get_exposed_port(8080) == 8080
+
+
+@pytest.mark.parametrize(
+    "init_attr,init_value,class_attr,stored_value",
+    [
+        ("command", "ps", "_command", "ps"),
+        ("env", {"e1": "v1"}, "env", {"e1": "v1"}),
+        ("name", "foo-bar", "_name", "foo-bar"),
+        ("ports", [22, 80], "ports", {22: None, 80: None}),
+        (
+            "volumes",
+            [("/tmp", "/tmp2", "ro")],
+            "volumes",
+            {"/tmp": {"bind": "/tmp2", "mode": "ro"}},
+        ),
+    ],
+)
+def test_attribute(init_attr, init_value, class_attr, stored_value):
+    """Test that the attributes set through the __init__ function are properly stored."""
+    with DockerContainer("ubuntu", **{init_attr: init_value}) as container:
+        assert getattr(container, class_attr) == stored_value

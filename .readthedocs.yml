@@ -14,6 +14,6 @@ build:
   # https://github.com/readthedocs/readthedocs.org/issues/4912#issuecomment-1143587902s
   jobs:
     post_install:
-      - pip install poetry==1.7.1  # match version from poetry.lock
+      - pip install poetry==2.1.2  # match version from poetry.lock
       - poetry config virtualenvs.create false
       - poetry install --all-extras
