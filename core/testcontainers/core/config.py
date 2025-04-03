@@ -127,7 +127,18 @@ class TestcontainersConfiguration:
         self._docker_auth_config = value
 
     def tc_properties_get_tc_host(self) -> Union[str, None]:
-        return self.tc_properties.get("tc.host")
+        tc_properties_host = self.tc_properties.get("tc.host")
+
+        # if host is parsed with back slashes, remove them
+        tc_properties_host = tc_properties_host.replace("\\", "")
+
+        # if parsing still doesn't result in tcp or ssh url, discard
+        from urllib.parse import urlparse
+
+        if urlparse(tc_properties_host).scheme not in {"tcp", "ssh"}:
+            tc_properties_host = None
+
+        return tc_properties_host
 
     @property
     def timeout(self) -> int:
