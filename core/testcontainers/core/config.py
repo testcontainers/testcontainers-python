@@ -35,12 +35,16 @@ def get_docker_socket() -> str:
     if socket_path := environ.get("TESTCONTAINERS_DOCKER_SOCKET_OVERRIDE"):
         return socket_path
 
-    client = docker.from_env()
     try:
-        socket_path = client.api.get_adapter(client.api.base_url).socket_path
-        # return the normalized path as string
-        return str(Path(socket_path).absolute())
-    except AttributeError:
+        client = docker.from_env()
+        try:
+            socket_path = client.api.get_adapter(client.api.base_url).socket_path
+            # return the normalized path as string
+            return str(Path(socket_path).absolute())
+        except AttributeError:
+            return "/var/run/docker.sock"
+
+    except:
         return "/var/run/docker.sock"
 
 
