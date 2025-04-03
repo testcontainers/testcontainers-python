@@ -135,7 +135,12 @@ class TestcontainersConfiguration:
         # if parsing still doesn't result in tcp or ssh url, discard
         from urllib.parse import urlparse
 
-        if urlparse(tc_properties_host).scheme not in {"tcp", "ssh"}:
+        try:
+            scheme = urlparse(tc_properties_host).scheme
+        except:
+            scheme = None
+
+        if scheme not in {"tcp", "ssh"}:
             tc_properties_host = None
 
         return tc_properties_host
