@@ -59,6 +59,10 @@ class DockerContainer:
         self.env[key] = value
         return self
 
+    def with_envs(self, **variables: str) -> Self:
+        self.env.update(variables)
+        return self
+
     def with_env_file(self, env_file: Union[str, PathLike]) -> Self:
         env_values = dotenv_values(env_file)
         for key, value in env_values.items():
