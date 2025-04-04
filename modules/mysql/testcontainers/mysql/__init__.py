@@ -31,14 +31,14 @@ class MySqlContainer(DbContainer):
         The example will spin up a MySql database to which you can connect with the credentials
         passed in the constructor. Alternatively, you may use the :code:`get_connection_url()`
         method which returns a sqlalchemy-compatible url in format
-        :code:`dialect+driver://username:password@host:port/database`.
+        :code:`mysql+dialect://username:password@host:port/database`.
 
         .. doctest::
 
             >>> import sqlalchemy
             >>> from testcontainers.mysql import MySqlContainer
 
-            >>> with MySqlContainer('mysql:5.7.17') as mysql:
+            >>> with MySqlContainer("mysql:5.7.17", dialect="pymysql") as mysql:
             ...     engine = sqlalchemy.create_engine(mysql.get_connection_url())
             ...     with engine.begin() as connection:
             ...         result = connection.execute(sqlalchemy.text("select version()"))
@@ -64,6 +64,7 @@ class MySqlContainer(DbContainer):
     def __init__(
         self,
         image: str = "mysql:latest",
+        dialect: Optional[str] = None,
         username: Optional[str] = None,
         root_password: Optional[str] = None,
         password: Optional[str] = None,
@@ -72,6 +73,10 @@ class MySqlContainer(DbContainer):
         seed: Optional[str] = None,
         **kwargs,
     ) -> None:
+        if dialect is not None and dialect.startswith("mysql+"):
+            msg = "Please remove 'mysql+' prefix from dialect parameter"
+            raise ValueError(msg)
+
         raise_for_deprecated_parameter(kwargs, "MYSQL_USER", "username")
         raise_for_deprecated_parameter(kwargs, "MYSQL_ROOT_PASSWORD", "root_password")
         raise_for_deprecated_parameter(kwargs, "MYSQL_PASSWORD", "password")
@@ -84,6 +89,9 @@ class MySqlContainer(DbContainer):
         self.root_password = root_password or environ.get("MYSQL_ROOT_PASSWORD", "test")
         self.password = password or environ.get("MYSQL_PASSWORD", "test")
         self.dbname = dbname or environ.get("MYSQL_DATABASE", "test")
+
+        self.dialect = dialect or environ.get("MYSQL_DIALECT", None)
+        self._db_url_dialect_part = "mysql" if self.dialect is None else f"mysql+{self.dialect}"
 
         if self.username == "root":
             self.root_password = self.password
@@ -105,7 +113,11 @@ class MySqlContainer(DbContainer):
 
     def get_connection_url(self) -> str:
         return super()._create_connection_url(
-            dialect="mysql+pymysql", username=self.username, password=self.password, dbname=self.dbname, port=self.port
+            dialect=self._db_url_dialect_part,
+            username=self.username,
+            password=self.password,
+            dbname=self.dbname,
+            port=self.port,
         )
 
     def _transfer_seed(self) -> None:

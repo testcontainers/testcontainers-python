@@ -21,12 +21,15 @@ def create_labels(image: str, labels: Optional[dict[str, str]]) -> dict[str, str
             if k.startswith(TESTCONTAINERS_NAMESPACE):
                 raise ValueError("The org.testcontainers namespace is reserved for internal use")
 
-    labels[LABEL_LANG] = "python"
-    labels[LABEL_TESTCONTAINERS] = "true"
-    labels[LABEL_VERSION] = importlib.metadata.version("testcontainers")
+    tc_labels = {
+        **labels,
+        LABEL_LANG: "python",
+        LABEL_TESTCONTAINERS: "true",
+        LABEL_VERSION: importlib.metadata.version("testcontainers"),
+    }
 
     if image == c.ryuk_image:
-        return labels
+        return tc_labels
 
-    labels[LABEL_SESSION_ID] = SESSION_ID
-    return labels
+    tc_labels[LABEL_SESSION_ID] = SESSION_ID
+    return tc_labels

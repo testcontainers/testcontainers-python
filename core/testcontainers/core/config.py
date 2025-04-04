@@ -6,6 +6,8 @@ from os.path import exists
 from pathlib import Path
 from typing import Optional, Union
 
+import docker
+
 
 class ConnectionMode(Enum):
     bridge_ip = "bridge_ip"
@@ -24,6 +26,24 @@ class ConnectionMode(Enum):
         return True
 
 
+def get_docker_socket() -> str:
+    """
+    Determine the docker socket, prefer value given by env variable
+
+    Using the docker api ensure we handle rootless docker properly
+    """
+    if socket_path := environ.get("TESTCONTAINERS_DOCKER_SOCKET_OVERRIDE"):
+        return socket_path
+
+    client = docker.from_env()
+    try:
+        socket_path = client.api.get_adapter(client.api.base_url).socket_path
+        # return the normalized path as string
+        return str(Path(socket_path).absolute())
+    except AttributeError:
+        return "/var/run/docker.sock"
+
+
 MAX_TRIES = int(environ.get("TC_MAX_TRIES", 120))
 SLEEP_TIME = int(environ.get("TC_POOLING_INTERVAL", 1))
 TIMEOUT = MAX_TRIES * SLEEP_TIME
@@ -31,7 +51,7 @@ TIMEOUT = MAX_TRIES * SLEEP_TIME
 RYUK_IMAGE: str = environ.get("RYUK_CONTAINER_IMAGE", "testcontainers/ryuk:0.8.1")
 RYUK_PRIVILEGED: bool = environ.get("TESTCONTAINERS_RYUK_PRIVILEGED", "false") == "true"
 RYUK_DISABLED: bool = environ.get("TESTCONTAINERS_RYUK_DISABLED", "false") == "true"
-RYUK_DOCKER_SOCKET: str = environ.get("TESTCONTAINERS_DOCKER_SOCKET_OVERRIDE", "/var/run/docker.sock")
+RYUK_DOCKER_SOCKET: str = get_docker_socket()
 RYUK_RECONNECTION_TIMEOUT: str = environ.get("RYUK_RECONNECTION_TIMEOUT", "10s")
 TC_HOST_OVERRIDE: Optional[str] = environ.get("TC_HOST", environ.get("TESTCONTAINERS_HOST_OVERRIDE"))
 
@@ -86,7 +106,7 @@ class TestcontainersConfiguration:
     tc_properties: dict[str, str] = field(default_factory=read_tc_properties)
     _docker_auth_config: Optional[str] = field(default_factory=lambda: environ.get("DOCKER_AUTH_CONFIG"))
     tc_host_override: Optional[str] = TC_HOST_OVERRIDE
-    connection_mode_override: Optional[ConnectionMode] = None
+    connection_mode_override: Optional[ConnectionMode] = field(default_factory=get_user_overwritten_connection_mode)
 
     """
     https://github.com/testcontainers/testcontainers-go/blob/dd76d1e39c654433a3d80429690d07abcec04424/docker.go#L644

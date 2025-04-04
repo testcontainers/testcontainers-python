@@ -57,7 +57,7 @@ class OpenSearchContainer(DockerContainer):
 
         self.with_exposed_ports(self.port)
         self.with_env("discovery.type", "single-node")
-        self.with_env("plugins.security.disabled", "false" if security_enabled else "true")
+        self.with_env("DISABLE_SECURITY_PLUGIN", "false" if security_enabled else "true")
         if self._supports_initial_admin_password(str(image)):
             self.with_env("OPENSEARCH_INITIAL_ADMIN_PASSWORD", self.initial_admin_password)
         if security_enabled:

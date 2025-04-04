@@ -20,6 +20,10 @@ from testcontainers.core.container import DockerContainer
 from testcontainers.core.waiting_utils import wait_container_is_ready, wait_for_logs
 
 _DEFAULT_DEV_COMMAND = "start-dev"
+# Since Keycloak v26.0.0
+# See: https://www.keycloak.org/server/all-config#category-bootstrap_admin
+ADMIN_USERNAME_ENVIRONMENT_VARIABLE = "KC_BOOTSTRAP_ADMIN_USERNAME"
+ADMIN_PASSWORD_ENVIRONMENT_VARIABLE = "KC_BOOTSTRAP_ADMIN_PASSWORD"
 
 
 class KeycloakContainer(DockerContainer):
@@ -57,6 +61,9 @@ class KeycloakContainer(DockerContainer):
         self.cmd = cmd
 
     def _configure(self) -> None:
+        self.with_env(ADMIN_USERNAME_ENVIRONMENT_VARIABLE, self.username)
+        self.with_env(ADMIN_PASSWORD_ENVIRONMENT_VARIABLE, self.password)
+        # legacy env vars (<= 26.0.0)
         self.with_env("KEYCLOAK_ADMIN", self.username)
         self.with_env("KEYCLOAK_ADMIN_PASSWORD", self.password)
         # Enable health checks
@@ -89,7 +96,8 @@ class KeycloakContainer(DockerContainer):
             response = requests.get(f"{self.get_url()}/health/ready", timeout=1)
         response.raise_for_status()
         if _DEFAULT_DEV_COMMAND in self._command:
-            wait_for_logs(self, "Added user .* to realm .*")
+            wait_for_logs(self, "started in \\d+\\.\\d+s")
+            wait_for_logs(self, "Created temporary admin user|Added user '")
 
     def start(self) -> "KeycloakContainer":
         super().start()
