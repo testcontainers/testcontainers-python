@@ -182,7 +182,7 @@ class DockerContainer:
             return self.get_docker_client().port(self._container.id, port)
         return port
 
-    def with_command(self, command: str) -> Self:
+    def with_command(self, command: Union[str, list[str]]) -> Self:
         self._command = command
         return self
 
