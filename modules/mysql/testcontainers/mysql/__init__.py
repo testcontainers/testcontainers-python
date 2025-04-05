@@ -11,15 +11,14 @@
 #    License for the specific language governing permissions and limitations
 #    under the License.
 import re
-import tarfile
-from io import BytesIO
 from os import environ
-from pathlib import Path
 from typing import Optional
 
 from testcontainers.core.generic import DbContainer
-from testcontainers.core.utils import raise_for_deprecated_parameter
+from testcontainers.core.utils import raise_for_deprecated_parameter, setup_logger
 from testcontainers.core.waiting_utils import wait_for_logs
+
+LOGGER = setup_logger(__name__)
 
 
 class MySqlContainer(DbContainer):
@@ -50,8 +49,10 @@ class MySqlContainer(DbContainer):
         automatically.
 
         .. doctest::
+
             >>> import sqlalchemy
             >>> from testcontainers.mysql import MySqlContainer
+
             >>> with MySqlContainer(seed="../../tests/seeds/") as mysql:
             ...     engine = sqlalchemy.create_engine(mysql.get_connection_url())
             ...     with engine.begin() as connection:
@@ -61,6 +62,9 @@ class MySqlContainer(DbContainer):
 
     """
 
+    seed_mountpoint: str = "/docker-entrypoint-initdb.d/"
+    startup_command: str = "source /usr/local/bin/docker-entrypoint.sh; _main "
+
     def __init__(
         self,
         image: str = "mysql:latest",
@@ -69,8 +73,8 @@ class MySqlContainer(DbContainer):
         root_password: Optional[str] = None,
         password: Optional[str] = None,
         dbname: Optional[str] = None,
-        port: int = 3306,
         seed: Optional[str] = None,
+        port: int = 3306,
         **kwargs,
     ) -> None:
         if dialect is not None and dialect.startswith("mysql+"):
@@ -96,6 +100,8 @@ class MySqlContainer(DbContainer):
         if self.username == "root":
             self.root_password = self.password
         self.seed = seed
+        if self.seed is not None:
+            super().override_command_for_seed(self.startup_command)
 
     def _configure(self) -> None:
         self.with_env("MYSQL_ROOT_PASSWORD", self.root_password)
@@ -119,14 +125,3 @@ class MySqlContainer(DbContainer):
             dbname=self.dbname,
             port=self.port,
         )
-
-    def _transfer_seed(self) -> None:
-        if self.seed is None:
-            return
-        src_path = Path(self.seed)
-        dest_path = "/docker-entrypoint-initdb.d/"
-        with BytesIO() as archive, tarfile.TarFile(fileobj=archive, mode="w") as tar:
-            for filename in src_path.iterdir():
-                tar.add(filename.absolute(), arcname=filename.relative_to(src_path))
-            archive.seek(0)
-            self.get_wrapped_container().put_archive(dest_path, archive)
