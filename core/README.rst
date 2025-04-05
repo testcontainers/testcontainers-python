@@ -30,3 +30,18 @@ Using `DockerContainer` and `DockerImage` to create a container:
 
 The `DockerImage` class is used to build the image from the specified path and tag.
 The `DockerContainer` class is then used to create a container from the image.
+
+
+Creating a container with an exposed port and a custom environment variable:
+
+.. doctest::
+
+    >>> from testcontainers.core.container import DockerContainer
+    >>> from testcontainers.core.waiting_utils import wait_for_logs
+
+    >>> container = DockerContainer("stain/jena-fuseki:latest")
+    >>> container.with_exposed_ports(3030)
+    >>> container.with_env("ADMIN_PASSWORD", "password")
+    >>> container.start()
+    >>> delay = wait_for_logs(container, "Fuseki is available")
+    >>> container_url = f"http://{container.get_container_host_ip()}:{container.get_exposed_port(3030)}"
