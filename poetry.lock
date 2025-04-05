@@ -4960,7 +4960,7 @@ memcached = []
 milvus = []
 minio = ["minio"]
 mongodb = ["pymongo"]
-mqtt = []
+mosquitto = []
 mssql = ["pymssql", "sqlalchemy"]
 mysql = ["pymysql", "sqlalchemy"]
 nats = ["nats-py"]
@@ -4986,4 +4986,4 @@ weaviate = ["weaviate-client"]
 [metadata]
 lock-version = "2.1"
 python-versions = ">=3.9,<4.0"
-content-hash = "5c400cc87dc9708588ee8d7d50646de789235732d868b74ebc43f1cf2a403c88"
+content-hash = "d4dbd10a31ebbfb0fc524ad71fc8977b85cec5eebcb4d43a926927dccee4e78e"
