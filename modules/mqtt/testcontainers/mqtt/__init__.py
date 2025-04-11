@@ -50,7 +50,7 @@ class MosquittoContainer(DockerContainer):
         super().__init__(image, **kwargs)
         # self.password = password
         # reusable client context:
-        self.client: Optional["Client"] = None
+        self.client: Optional["Client"] = None  # noqa: UP037
 
     @wait_container_is_ready()
     def get_client(self) -> "Client":

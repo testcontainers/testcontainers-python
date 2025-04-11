@@ -17,13 +17,11 @@ class ConnectionMode(Enum):
     @property
     def use_mapped_port(self) -> bool:
         """
-        Return true if we need to use mapped port for this connection
+        Return True if mapped ports should be used for this connection mode.
 
-        This is true for everything but bridge mode.
+        Mapped ports are used for all connection modes except 'bridge_ip'.
         """
-        if self == self.bridge_ip:  # type: ignore[comparison-overlap]
-            return False
-        return True
+        return self != ConnectionMode.bridge_ip
 
 
 def get_docker_socket() -> str:
@@ -137,15 +135,15 @@ class TestcontainersConfiguration:
 testcontainers_config = TestcontainersConfiguration()
 
 __all__ = [
-    # the public API of this module
-    "testcontainers_config",
-    # and all the legacy things that are deprecated:
+    # Legacy things that are deprecated:
     "MAX_TRIES",
-    "SLEEP_TIME",
-    "TIMEOUT",
-    "RYUK_IMAGE",
-    "RYUK_PRIVILEGED",
     "RYUK_DISABLED",
     "RYUK_DOCKER_SOCKET",
+    "RYUK_IMAGE",
+    "RYUK_PRIVILEGED",
     "RYUK_RECONNECTION_TIMEOUT",
+    "SLEEP_TIME",
+    "TIMEOUT",
+    # Public API of this module:
+    "testcontainers_config",
 ]

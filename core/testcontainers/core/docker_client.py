@@ -162,7 +162,7 @@ class DockerClient:
         """
         port_mappings = self.client.api.port(container_id, port)
         if not port_mappings:
-            raise ConnectionError(f"Port mapping for container {container_id} and port {port} is " "not available")
+            raise ConnectionError(f"Port mapping for container {container_id} and port {port} is not available")
         return cast(str, port_mappings[0]["HostPort"])
 
     def get_container(self, container_id: str) -> dict[str, Any]:
@@ -233,7 +233,10 @@ class DockerClient:
             url = urllib.parse.urlparse(self.client.api.base_url)
         except ValueError:
             return "localhost"
-        if "http" in url.scheme or "tcp" in url.scheme and url.hostname:
+
+        is_http_scheme = "http" in url.scheme
+        is_tcp_scheme_with_hostname = "tcp" in url.scheme and url.hostname
+        if is_http_scheme or is_tcp_scheme_with_hostname:
             # see https://github.com/testcontainers/testcontainers-python/issues/415
             hostname = url.hostname
             if not hostname or (hostname == "localnpipe" and utils.is_windows()):
