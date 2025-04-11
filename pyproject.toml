@@ -270,7 +270,9 @@ ignore = [
     # line too long (already checked by black)
     "E501",
     # the must-have __init__.py (we are using package namespaces)
-    "INP001"
+    "INP001",
+    # we do have some imports shadowing builtins
+    "A004"
 ]
 
 [tool.ruff.lint.pyupgrade]
