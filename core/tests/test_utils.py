@@ -66,7 +66,7 @@ def fake_cgroup(monkeypatch: pytest.MonkeyPatch, tmp_path: Path) -> Path:
 def test_get_running_container_id_empty_or_missing(fake_cgroup: Path) -> None:
     # non existing does not fail but is only none
     assert utils.get_running_in_container_id() is None
-    fake_cgroup.write_text("12:devices:/system.slice/sshd.service\n" "13:cpuset:\n")
+    fake_cgroup.write_text("12:devices:/system.slice/sshd.service\n13:cpuset:\n")
     # missing docker does also not fail
     assert utils.get_running_in_container_id() is None
 
