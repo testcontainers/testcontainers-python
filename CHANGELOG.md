@@ -1,5 +1,34 @@
 # Changelog
 
+## [4.10.0](https://github.com/testcontainers/testcontainers-python/compare/testcontainers-v4.9.2...testcontainers-v4.10.0) (2025-04-02)
+
+
+### Features
+
+* Add SocatContainer ([#795](https://github.com/testcontainers/testcontainers-python/issues/795)) ([2f9139c](https://github.com/testcontainers/testcontainers-python/commit/2f9139ca3ea9fba36325373b63635a5f539a3003))
+
+
+### Bug Fixes
+
+* **ollama:** make device request a list ([#799](https://github.com/testcontainers/testcontainers-python/issues/799)) ([9497a45](https://github.com/testcontainers/testcontainers-python/commit/9497a45c39d13761aa3dd30dd5605676cbbe4b46))
+* **security:** Update track-modules job  ([#787](https://github.com/testcontainers/testcontainers-python/issues/787)) ([f979525](https://github.com/testcontainers/testcontainers-python/commit/f97952505eba089f9cbbc979f8091dafbf520669))
+
+## [4.9.2](https://github.com/testcontainers/testcontainers-python/compare/testcontainers-v4.9.1...testcontainers-v4.9.2) (2025-02-26)
+
+
+### Bug Fixes
+
+* Change env var disabling OpenSearch security plugin ([#773](https://github.com/testcontainers/testcontainers-python/issues/773)) ([2620d7f](https://github.com/testcontainers/testcontainers-python/commit/2620d7fb1157caa18c3bef4bf2f9b3b79cd2f075))
+* **core:** create_label test ([#771](https://github.com/testcontainers/testcontainers-python/issues/771)) ([7517297](https://github.com/testcontainers/testcontainers-python/commit/751729722a013b46f67c09b4318b1b3d92b98008))
+* **core:** multiple container start invocations with custom labels ([#769](https://github.com/testcontainers/testcontainers-python/issues/769)) ([3e783a8](https://github.com/testcontainers/testcontainers-python/commit/3e783a80aa11b9c87201404a895d922624f0d451))
+* **keycloak:** Fixed Keycloak testcontainer for latest version v26.1.0 ([#766](https://github.com/testcontainers/testcontainers-python/issues/766)) ([b1642e9](https://github.com/testcontainers/testcontainers-python/commit/b1642e98c4d349564c4365782d1b58c9810b719a))
+* **scylla:** scylla get cluster method ([#778](https://github.com/testcontainers/testcontainers-python/issues/778)) ([46913c1](https://github.com/testcontainers/testcontainers-python/commit/46913c18a8b6f37bf8dc193828148926b6fc56a8))
+
+
+### Documentation
+
+* Fixed typo in CONTRIBUTING.md ([#767](https://github.com/testcontainers/testcontainers-python/issues/767)) ([f0bb0f5](https://github.com/testcontainers/testcontainers-python/commit/f0bb0f54bea83885698bd137e24c397498709362))
+
 ## [4.9.1](https://github.com/testcontainers/testcontainers-python/compare/testcontainers-v4.9.0...testcontainers-v4.9.1) (2025-01-21)
 
 
