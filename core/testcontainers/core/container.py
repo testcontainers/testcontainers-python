@@ -83,7 +83,7 @@ class DockerContainer:
         self.ports[container] = host
         return self
 
-    def with_exposed_ports(self, *ports: tuple[Union[str, int], ...]) -> Self:
+    def with_exposed_ports(self, *ports: Union[str, int]) -> Self:
         """
         Expose ports from the container without binding them to the host.
 
