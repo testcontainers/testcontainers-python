@@ -21,7 +21,7 @@ class ConnectionMode(Enum):
 
         This is true for everything but bridge mode.
         """
-        if self == self.bridge_ip:
+        if self == self.bridge_ip:  # type: ignore[comparison-overlap]
             return False
         return True
 
@@ -63,7 +63,7 @@ def get_user_overwritten_connection_mode() -> Optional[ConnectionMode]:
     """
     Return the user overwritten connection mode.
     """
-    connection_mode: str | None = environ.get("TESTCONTAINERS_CONNECTION_MODE")
+    connection_mode: Union[str, None] = environ.get("TESTCONTAINERS_CONNECTION_MODE")
     if connection_mode:
         try:
             return ConnectionMode(connection_mode)
