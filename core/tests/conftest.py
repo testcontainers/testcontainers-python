@@ -48,7 +48,7 @@ def check_for_image() -> Callable[[str, bool], None]:
         client = DockerClient()
         images = client.client.images.list()
         found = any(image.short_id.endswith(image_short_id) for image in images)
-        assert found is not cleaned, f'Image {image_short_id} was {"found" if cleaned else "not found"}'
+        assert found is not cleaned, f"Image {image_short_id} was {'found' if cleaned else 'not found'}"
 
     return _check_for_image
 

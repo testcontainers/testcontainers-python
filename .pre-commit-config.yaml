@@ -10,7 +10,7 @@ repos:
       - id: end-of-file-fixer
 
   - repo: https://github.com/astral-sh/ruff-pre-commit
-    rev: 'v0.3.5'
+    rev: 'v0.11.5'
     hooks:
       - id: ruff
         # Explicitly setting config to prevent Ruff from using `pyproject.toml` in sub packages.

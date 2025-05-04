@@ -293,7 +293,7 @@ class DockerCompose:
             config_cmd.append("--no-interpolate")
 
         cmd_output = self._run_command(cmd=config_cmd).stdout
-        return cast(dict[str, Any], loads(cmd_output))
+        return cast(dict[str, Any], loads(cmd_output))  # noqa: TC006
 
     def get_containers(self, include_all=False) -> list[ComposeContainer]:
         """

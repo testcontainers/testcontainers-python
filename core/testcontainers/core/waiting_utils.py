@@ -122,7 +122,7 @@ def wait_for_logs(
         if predicate_result:
             return duration
         if duration > timeout:
-            raise TimeoutError(f"Container did not emit logs satisfying predicate in {timeout:.3f} " "seconds")
+            raise TimeoutError(f"Container did not emit logs satisfying predicate in {timeout:.3f} seconds")
         if raise_on_exit:
             wrapped.reload()
             if wrapped.status not in _NOT_EXITED_STATUSES:
