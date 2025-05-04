@@ -101,7 +101,7 @@ class OllamaContainer(DockerContainer):
     def _check_and_add_gpu_capabilities(self):
         info = self.get_docker_client().client.info()
         if "nvidia" in info["Runtimes"]:
-            self._kwargs = {**self._kwargs, "device_requests": DeviceRequest(count=-1, capabilities=[["gpu"]])}
+            self._kwargs = {**self._kwargs, "device_requests": [DeviceRequest(count=-1, capabilities=[["gpu"]])]}
 
     def start(self) -> "OllamaContainer":
         """

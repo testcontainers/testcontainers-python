@@ -56,3 +56,10 @@ def test_session_are_module_import_scoped():
     assert LABEL_SESSION_ID in first_labels
     assert LABEL_SESSION_ID in second_labels
     assert first_labels[LABEL_SESSION_ID] == second_labels[LABEL_SESSION_ID]
+
+
+def test_create_no_side_effects():
+    input_labels = {"key": "value"}
+    expected_labels = input_labels.copy()
+    create_labels("not-ryuk", input_labels)
+    assert input_labels == expected_labels, input_labels
