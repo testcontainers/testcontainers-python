@@ -167,7 +167,7 @@ chroma = ["chromadb-client"]
 trino = ["trino"]
 
 [tool.poetry.group.dev.dependencies]
-mypy = "1.7.1"
+mypy = "1.11.2"
 pre-commit = "^3.6"
 pytest = "7.4.3"
 pytest-cov = "4.1.0"
@@ -284,8 +284,9 @@ namespace_packages = true
 explicit_package_bases = true
 pretty = true
 show_error_codes = true
+warn_return_any = true
 strict = true
-fast_module_lookup = true
+# fast_module_lookup = true
 modules = ["testcontainers.core"]
 mypy_path = [
     "core",
