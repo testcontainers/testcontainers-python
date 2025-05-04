@@ -18,13 +18,13 @@ repos:
       - id: ruff-format
         args: [ '--config', 'pyproject.toml' ]
 
-#  - repo: local
-#    hooks:
-#      - id: mypy
-#        name: mypy
-#        entry: poetry run mypy
-#        args: ["--config-file", "pyproject.toml"]
-#        files: "core"  # start with the core being type checked
-#        language: system
-#        types: [ python ]
-#        require_serial: true
+  - repo: local
+    hooks:
+      - id: mypy
+        name: mypy
+        entry: poetry run mypy
+        args: ["--config-file", "pyproject.toml"]
+        files: "core"  # start with the core being type checked
+        language: system
+        types: [ python ]
+        require_serial: true
