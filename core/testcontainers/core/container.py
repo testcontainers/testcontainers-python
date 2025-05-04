@@ -1,4 +1,7 @@
 import contextlib
+import hashlib
+import logging
+from platform import system
 from os import PathLike
 from socket import socket
 from typing import TYPE_CHECKING, Optional, Union
@@ -53,6 +56,7 @@ class DockerContainer:
         self._name = None
         self._network: Optional[Network] = None
         self._network_aliases: Optional[list[str]] = None
+        self._reuse: bool = False
         self._kwargs = kwargs
 
     def with_env(self, key: str, value: str) -> Self:
@@ -113,17 +117,24 @@ class DockerContainer:
         self._kwargs = kwargs
         return self
 
+    def with_reuse(self, reuse=True) -> Self:
+        self._reuse = reuse
+        return self
+
     def maybe_emulate_amd64(self) -> Self:
         if is_arm():
             return self.with_kwargs(platform="linux/amd64")
         return self
 
     def start(self) -> Self:
-        if not c.ryuk_disabled and self.image != c.ryuk_image:
+        if (
+            not c.ryuk_disabled
+            and self.image != c.ryuk_image
+            and not (self._reuse and c.tc_properties_testcontainers_reuse_enable)
+        ):
             logger.debug("Creating Ryuk container")
             Reaper.get_instance()
         logger.info("Pulling image %s", self.image)
-        docker_client = self.get_docker_client()
         self._configure()
 
         network_kwargs = (
@@ -137,6 +148,45 @@ class DockerContainer:
             else {}
         )
 
+        if self._reuse and not c.tc_properties_testcontainers_reuse_enable:
+            logging.warning(
+                "Reuse was requested (`with_reuse`) but the environment does not "
+                + "support the reuse of containers. To enable container reuse, add "
+                + "'testcontainers.reuse.enable=true' to '~/.testcontainers.properties'."
+            )
+
+        if self._reuse and c.tc_properties_testcontainers_reuse_enable:
+            # NOTE: ideally the docker client would return the full container create
+            # request which could be used to generate the hash.
+            args = [  # Docker run arguments
+                self.image,
+                self._command,
+                self.env,
+                self.ports,
+                self._name,
+                self.volumes,
+                str(tuple(sorted(self._kwargs.values()))),
+            ]
+            hash_ = hashlib.sha256(bytes(str(args), encoding="utf-8")).hexdigest()
+            docker_client = self.get_docker_client()
+            container = docker_client.find_container_by_hash(hash_)
+            if container:
+                if container.status != "running":
+                    container.start()
+                    logger.info("Existing container started: %s", container.id)
+                self._container = container
+                logger.info("Container is already running: %s", container.id)
+            else:
+                self._start(network_kwargs, hash_)
+        else:
+            self._start(network_kwargs)
+
+        if self._network:
+            self._network.connect(self._container.id, self._network_aliases)
+        return self
+
+    def _start(self, network_kwargs, hash_=None):
+        docker_client = self.get_docker_client()
         self._container = docker_client.run(
             self.image,
             command=self._command,
@@ -145,6 +195,7 @@ class DockerContainer:
             ports=self.ports,
             name=self._name,
             volumes=self.volumes,
+            labels={"hash": hash_} if hash is not None else {},
             **network_kwargs,
             **self._kwargs,
         )
