@@ -21,14 +21,18 @@ def test_wait_for_reaper(monkeypatch: MonkeyPatch):
     docker_client = container.get_docker_client().client
 
     container_id = container.get_wrapped_container().short_id
-    reaper_id = Reaper._container.get_wrapped_container().short_id
+    rc = Reaper._container
+    assert rc
+    reaper_id = rc.get_wrapped_container().short_id
 
     assert docker_client.containers.get(container_id) is not None
     assert docker_client.containers.get(reaper_id) is not None
 
     wait_for_logs(container, "Hello from Docker!")
 
-    Reaper._socket.close()
+    rs = Reaper._socket
+    assert rs
+    rs.close()
 
     sleep(0.6)  # Sleep until Ryuk reaps all dangling containers. 0.5 extra seconds for good measure.
 

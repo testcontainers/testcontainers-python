@@ -76,7 +76,7 @@ def test_with_private_registry(image, tag, username, password, monkeypatch):
 
         # Test a container with image from private registry
         with DockerContainer(f"{registry_url}/{image}:{tag}") as test_container:
-            wait_container_is_ready(test_container)
+            wait_container_is_ready()(test_container)
 
     # cleanup
     client.images.remove(f"{registry_url}/{image}:{tag}")
