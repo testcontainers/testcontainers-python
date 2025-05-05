@@ -115,7 +115,9 @@ class DockerClient:
         return container
 
     @_wrapped_image_collection
-    def build(self, path: str, tag: str, rm: bool = True, **kwargs: Any) -> tuple[Image, Iterable[dict[str, Any]]]:
+    def build(
+        self, path: str, tag: Optional[str], rm: bool = True, **kwargs: Any
+    ) -> tuple[Image, Iterable[dict[str, Any]]]:
         """
         Build a Docker image from a directory containing the Dockerfile.
 
