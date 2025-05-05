@@ -4,7 +4,7 @@ import random
 import os
 
 from pathlib import Path
-from typing import Optional
+from typing import Any, Optional
 
 from testcontainers.core.container import DockerContainer
 from testcontainers.core.image import DockerImage
@@ -33,7 +33,9 @@ def test_docker_image(test_image_tag: Optional[str], test_cleanup: bool, check_f
             assert logs[0] == {"stream": "Step 1/2 : FROM alpine:latest"}
             assert logs[3] == {"stream": f'Step 2/2 : CMD echo "{random_string}"'}
             with DockerContainer(str(image)) as container:
-                assert container._container.image.short_id.endswith(image_short_id), "Image ID mismatch"
+                c_c = container._container
+                assert c_c
+                assert c_c.image.short_id.endswith(image_short_id), "Image ID mismatch"
                 assert container.get_logs() == ((random_string + "\n").encode(), b""), "Container logs mismatch"
 
         check_for_image(image_short_id, test_cleanup)
@@ -43,6 +45,7 @@ def test_docker_image(test_image_tag: Optional[str], test_cleanup: bool, check_f
 def test_docker_image_with_custom_dockerfile_path(dockerfile_path: Optional[Path]) -> None:
     with tempfile.TemporaryDirectory() as temp_directory:
         temp_dir_path = Path(temp_directory)
+        dockerfile_kwargs: dict[str, Any] = {}
         if dockerfile_path:
             os.makedirs(temp_dir_path / dockerfile_path.parent, exist_ok=True)
             dockerfile_rel_path = dockerfile_path
@@ -62,7 +65,9 @@ def test_docker_image_with_custom_dockerfile_path(dockerfile_path: Optional[Path
             image_short_id = image.short_id
             assert image.get_wrapped_image() is not None
             with DockerContainer(str(image)) as container:
-                assert container._container.image.short_id.endswith(image_short_id), "Image ID mismatch"
+                c_c = container._container
+                assert c_c
+                assert c_c.image.short_id.endswith(image_short_id), "Image ID mismatch"
                 assert container.get_logs() == (("Hello world!\n").encode(), b""), "Container logs mismatch"
 
 
@@ -83,5 +88,7 @@ def test_docker_image_with_kwargs():
             image_short_id = image.short_id
             assert image.get_wrapped_image() is not None
             with DockerContainer(str(image)) as container:
-                assert container._container.image.short_id.endswith(image_short_id), "Image ID mismatch"
+                c_c = container._container
+                assert c_c
+                assert c_c.image.short_id.endswith(image_short_id), "Image ID mismatch"
                 assert container.get_logs() == (("new_arg\n").encode(), b""), "Container logs mismatch"
