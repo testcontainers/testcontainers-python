@@ -15,7 +15,7 @@
 import re
 import time
 import traceback
-from typing import TYPE_CHECKING, Any, Callable, Union, cast
+from typing import TYPE_CHECKING, Any, Callable, Optional, Union, cast
 
 import wrapt
 
@@ -104,8 +104,14 @@ def wait_for_logs(
     Returns:
         duration: Number of seconds until the predicate was satisfied.
     """
+    re_predicate: Optional[Callable[[str], Any]] = None
     if isinstance(predicate, str):
         re_predicate = re.compile(predicate, re.MULTILINE).search
+    elif callable(predicate):
+        # some modules like mysql sends the search directly to the predicate
+        re_predicate = predicate
+    else:
+        raise TypeError("Predicate must be a string or callable")
     wrapped = container.get_wrapped_container()
     start = time.time()
     while True:
