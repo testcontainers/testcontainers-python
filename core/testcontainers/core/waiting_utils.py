@@ -44,7 +44,7 @@ def wait_container_is_ready(*transient_exceptions: type[BaseException]) -> Calla
     """
     transient_exceptions = TRANSIENT_EXCEPTIONS + tuple(transient_exceptions)
 
-    @wrapt.decorator
+    @wrapt.decorator  # type: ignore[misc]
     def wrapper(wrapped: Callable[..., Any], instance: Any, args: list[Any], kwargs: dict[str, Any]) -> Any:
         from testcontainers.core.container import DockerContainer
 
