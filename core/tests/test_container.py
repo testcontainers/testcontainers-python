@@ -58,7 +58,7 @@ def test_get_container_host_ip(container: DockerContainer, monkeypatch: pytest.M
 def test_get_exposed_port_mapped(
     container: DockerContainer, monkeypatch: pytest.MonkeyPatch, mode: ConnectionMode
 ) -> None:
-    def fake_mapped(container_id: int, port: int) -> int:
+    def fake_mapped(container_id: str, port: int) -> int:
         assert container_id == FAKE_ID
         assert port == 8080
         return 45678

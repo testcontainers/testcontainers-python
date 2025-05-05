@@ -4,7 +4,7 @@ from logging import warning
 from os import environ
 from os.path import exists
 from pathlib import Path
-from typing import Optional, Union
+from typing import Optional, Union, cast
 
 import docker
 
@@ -36,6 +36,7 @@ def get_docker_socket() -> str:
     client = docker.from_env()
     try:
         socket_path = client.api.get_adapter(client.api.base_url).socket_path
+        socket_path = cast("str", socket_path)
         # return the normalized path as string
         return str(Path(socket_path).absolute())
     except AttributeError:
@@ -145,5 +146,6 @@ __all__ = [
     "SLEEP_TIME",
     "TIMEOUT",
     # Public API of this module:
+    "ConnectionMode",
     "testcontainers_config",
 ]

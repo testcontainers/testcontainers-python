@@ -4,9 +4,10 @@ import os
 import time
 import socket
 from pathlib import Path
-from typing import Final, Any
+from typing import Final, Any, Generator
 
 import pytest
+from docker.models.containers import Container
 
 from testcontainers.core import utils
 from testcontainers.core.config import testcontainers_config as tcc
@@ -18,7 +19,7 @@ from testcontainers.core.utils import inside_container
 from testcontainers.core.waiting_utils import wait_for_logs
 
 
-def _wait_for_dind_return_ip(client, dind):
+def _wait_for_dind_return_ip(client: DockerClient, dind: Container):
     # get ip address for DOCKER_HOST
     # avoiding DockerContainer class here to prevent code changes affecting the test
     docker_host_ip = client.bridge_ip(dind.id)
@@ -101,7 +102,7 @@ def test_dind_inherits_network():
 
 
 @contextlib.contextmanager
-def print_surround_header(what: str, header_len: int = 80) -> None:
+def print_surround_header(what: str, header_len: int = 80) -> Generator[None, None, None]:
     """
     Helper to visually mark a block with headers
     """
