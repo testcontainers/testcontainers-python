@@ -59,10 +59,7 @@ class DockerImage:
         logger.info(f"Building image from {self.path}")
         docker_client = self.get_docker_client()
         self._image, self._logs = docker_client.build(
-            path=str(self.path),
-            dockerfile=self._dockerfile_path,
-            nocache=self._no_cache,
-            **{**({"tag": self.tag} if self.tag else {}), **self._kwargs},
+            path=str(self.path), tag=self.tag, dockerfile=self._dockerfile_path, nocache=self._no_cache, **self._kwargs
         )
         logger.info(f"Built image {self.short_id} with tag {self.tag}")
         return self
