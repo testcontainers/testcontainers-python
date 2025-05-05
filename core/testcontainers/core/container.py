@@ -101,7 +101,7 @@ class DockerContainer:
         self.env[key] = value
         return self
 
-    def with_env_file(self, env_file: Union[str, PathLike]) -> Self:
+    def with_env_file(self, env_file: Union[str, PathLike[str]]) -> Self:
         env_values = dotenv_values(env_file)
         for key, value in env_values.items():
             assert value is not None

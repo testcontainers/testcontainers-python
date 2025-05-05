@@ -1,4 +1,4 @@
-from dataclasses import asdict, dataclass, field, fields
+from dataclasses import asdict, dataclass, field, fields, is_dataclass
 from functools import cached_property
 from json import loads
 from logging import warning
@@ -25,9 +25,11 @@ def _ignore_properties(cls: type[_IPT], dict_: Any) -> _IPT:
     https://gist.github.com/alexanderankin/2a4549ac03554a31bef6eaaf2eaf7fd5"""
     if isinstance(dict_, cls):
         return dict_
+    if not is_dataclass(cls):
+        raise TypeError(f"Expected a dataclass type, got {cls}")
     class_fields = {f.name for f in fields(cls)}
     filtered = {k: v for k, v in dict_.items() if k in class_fields}
-    return cls(**filtered)
+    return cast("_IPT", cls(**filtered))
 
 
 @dataclass
