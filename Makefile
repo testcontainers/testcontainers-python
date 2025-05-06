@@ -3,16 +3,28 @@
 
 PYTHON_VERSION ?= 3.10
 IMAGE = testcontainers-python:${PYTHON_VERSION}
-PACKAGES = core $(addprefix modules/,$(notdir $(wildcard modules/*)))
+PACKAGES = core $(addprefix modules/,$(notdir $(filter %/, $(wildcard modules/*/))))
 
 UPLOAD = $(addsuffix /upload,${PACKAGES})
-TESTS = $(addsuffix /tests,$(filter-out meta,${PACKAGES}))
+TESTS = $(addsuffix /tests,$(filter-out meta,$(filter-out %.md %.txt,${PACKAGES})))
 TESTS_DIND = $(addsuffix -dind,${TESTS})
 DOCTESTS = $(addsuffix /doctests,$(filter-out modules/README.md,${PACKAGES}))
 
+ARCH := $(shell uname -m)
+ARM_ARCHS := arm64 aarch64
+IS_ARM := $(filter $(ARCH),$(ARM_ARCHS))
+
+# List of safe extras (excluding 'db2') with original TOML keys
+EXTRAS_LIST := $(shell $(PYTHON) scripts/list_arm_extras.py)
 
 install:  ## Set up the project for development
+ifeq ($(IS_ARM),$(ARCH))
+	@echo "Detected ARM architecture, skipping 'db2' extra (ibm-db is incompatible)"
+	poetry install $(foreach extra,$(EXTRAS_LIST),--extras $(extra))
+else
+	@echo "Detected non-ARM architecture, installing all extras"
 	poetry install --all-extras
+endif
 	poetry run pre-commit install
 
 build:  ## Build the python package

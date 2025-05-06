@@ -26,6 +26,7 @@ def test_docker_run_db2(version: str):
 # - sqlserver
 # - mongodb
 # - db2
+@pytest.mark.skipif(is_arm(), reason="db2 container not available for ARM")
 def test_quoted_password():
     user = "db2inst1"
     dbname = "testdb"
