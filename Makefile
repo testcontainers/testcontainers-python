@@ -12,6 +12,9 @@ DOCTESTS = $(addsuffix /doctests,$(filter-out modules/README.md,${PACKAGES}))
 
 
 install:  ## Set up the project for development
+ifeq ($(IS_ARM),$(ARCH))
+	poetry install $(foreach extra,$(EXTRAS_LIST),--extras $(extra))
+else
 	poetry install --all-extras
 	poetry run pre-commit install
 
