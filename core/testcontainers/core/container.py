@@ -39,6 +39,8 @@ class DockerContainer:
             :code:`get_exposed_port(PORT)` method to get the port number on the host.
         volumes: Volumes to mount into the container. Each entry should be a tuple with
             three values: host path, container path and. mode (default 'ro').
+        network: Optional network to connect the container to.
+        network_aliases: Optional list of aliases for the container in the network.
 
     .. doctest::
 
