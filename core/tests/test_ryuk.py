@@ -8,9 +8,14 @@ from docker.errors import NotFound
 from testcontainers.core.config import testcontainers_config
 from testcontainers.core.container import Reaper
 from testcontainers.core.container import DockerContainer
+from testcontainers.core.utils import is_mac
 from testcontainers.core.waiting_utils import wait_for_logs
 
 
+@pytest.mark.skipif(
+    is_mac(),
+    reason="Ryuk container reaping is unreliable on Docker Desktop for macOS due to VM-based container lifecycle handling",
+)
 @pytest.mark.inside_docker_check
 def test_wait_for_reaper(monkeypatch: MonkeyPatch):
     Reaper.delete_instance()
@@ -41,6 +46,9 @@ def test_wait_for_reaper(monkeypatch: MonkeyPatch):
     Reaper.delete_instance()
 
 
+@pytest.mark.skipif(
+    is_mac(), reason="Ryuk disabling behavior is unreliable on Docker Desktop for macOS due to Docker socket emulation"
+)
 @pytest.mark.inside_docker_check
 def test_container_without_ryuk(monkeypatch: MonkeyPatch):
     Reaper.delete_instance()

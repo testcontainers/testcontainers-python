@@ -19,10 +19,8 @@ EXTRAS_LIST := $(shell $(PYTHON) scripts/list_arm_extras.py)
 
 install:  ## Set up the project for development
 ifeq ($(IS_ARM),$(ARCH))
-	@echo "Detected ARM architecture, skipping 'db2' extra (ibm-db is incompatible)"
 	poetry install $(foreach extra,$(EXTRAS_LIST),--extras $(extra))
 else
-	@echo "Detected non-ARM architecture, installing all extras"
 	poetry install --all-extras
 endif
 	poetry run pre-commit install
