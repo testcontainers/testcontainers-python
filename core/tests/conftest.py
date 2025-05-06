@@ -3,7 +3,10 @@ from pathlib import Path
 import pytest
 from typing import Callable
 from testcontainers.core.container import DockerClient
+from testcontainers.core.utils import is_arm
 import sys
+
+from .list_arm_extras import get_arm_extras
 
 PROJECT_DIR = Path(__file__).parent.parent.parent.resolve()
 
@@ -24,11 +27,16 @@ def python_testcontainer_image() -> str:
     py_version = ".".join(map(str, sys.version_info[:2]))
     image_name = f"testcontainers-python:{py_version}"
     client = DockerClient()
+    build_args = {"PYTHON_VERSION": py_version}
+
+    if is_arm():
+        build_args["POETRY_EXTRAS"] = get_arm_extras()
+
     client.build(
         path=str(PROJECT_DIR),
         tag=image_name,
         rm=False,
-        buildargs={"PYTHON_VERSION": py_version},
+        buildargs=build_args,
     )
     return image_name
 
