@@ -70,9 +70,9 @@ def test_datastore_container_isolation():
 
         # Create a second container and try to fetch the entity to makesure its a different container
         with DatastoreContainer() as datastore2:
-            assert (
-                datastore.get_datastore_emulator_host() != datastore2.get_datastore_emulator_host()
-            ), "Datastore containers use the same port."
+            assert datastore.get_datastore_emulator_host() != datastore2.get_datastore_emulator_host(), (
+                "Datastore containers use the same port."
+            )
             client2 = datastore2.get_datastore_client()
             fetched_entity2 = client2.get(key)
             assert fetched_entity2 is None, "Entity was found in the datastore."

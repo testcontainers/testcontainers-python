@@ -65,11 +65,38 @@ class DockerContainer:
             self.with_env(key, value)
         return self
 
-    def with_bind_ports(self, container: int, host: Optional[int] = None) -> Self:
+    def with_bind_ports(self, container: Union[str, int], host: Optional[Union[str, int]] = None) -> Self:
+        """
+        Bind container port to host port
+
+        :param container: container port
+        :param host: host port
+
+        :doctest:
+
+        >>> from testcontainers.core.container import DockerContainer
+        >>> container = DockerContainer("nginx")
+        >>> container = container.with_bind_ports("8080/tcp", 8080)
+        >>> container = container.with_bind_ports("8081/tcp", 8081)
+
+        """
         self.ports[container] = host
         return self
 
-    def with_exposed_ports(self, *ports: int) -> Self:
+    def with_exposed_ports(self, *ports: Union[str, int]) -> Self:
+        """
+        Expose ports from the container without binding them to the host.
+
+        :param ports: ports to expose
+
+        :doctest:
+
+        >>> from testcontainers.core.container import DockerContainer
+        >>> container = DockerContainer("nginx")
+        >>> container = container.with_exposed_ports("8080/tcp", "8081/tcp")
+
+        """
+
         for port in ports:
             self.ports[port] = None
         return self
