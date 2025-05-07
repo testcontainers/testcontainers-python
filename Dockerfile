@@ -1,8 +1,5 @@
 ARG PYTHON_VERSION=3.10
 FROM python:${PYTHON_VERSION}-slim-bookworm
-ARG POETRY_EXTRAS
-
-ENV PYTHONPATH=/workspace
 
 ENV POETRY_NO_INTERACTION=1 \
     POETRY_VIRTUALENVS_IN_PROJECT=1 \
@@ -23,18 +20,10 @@ RUN bash -c 'python -m venv /opt/poetry-venv && source $_/bin/activate && pip in
 # install dependencies with poetry
 COPY pyproject.toml .
 COPY poetry.lock .
-RUN if [ "$POETRY_EXTRAS" = "" ]; then \
-        poetry install --all-extras --with dev --no-root; \
-    else \
-        poetry install --extras "$POETRY_EXTRAS" --with dev --no-root; \
-    fi
+RUN poetry install --all-extras --with dev --no-root
 
 # copy project source
 COPY . .
 
 # install project with poetry
-RUN if [ "$POETRY_EXTRAS" = "" ]; then \
-        poetry install --all-extras --with dev; \
-    else \
-        poetry install --extras "$POETRY_EXTRAS" --with dev; \
-    fi
+RUN poetry install --all-extras --with dev
