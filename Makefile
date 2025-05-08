@@ -6,9 +6,10 @@ IMAGE = testcontainers-python:${PYTHON_VERSION}
 PACKAGES = core $(addprefix modules/,$(notdir $(wildcard modules/*)))
 
 UPLOAD = $(addsuffix /upload,${PACKAGES})
-TESTS = $(addsuffix /tests,$(filter-out meta,$(filter-out %.md %.txt,${PACKAGES})))
+TESTS = $(addsuffix /tests,$(filter-out meta,${PACKAGES}))
 TESTS_DIND = $(addsuffix -dind,${TESTS})
 DOCTESTS = $(addsuffix /doctests,$(filter-out modules/README.md,${PACKAGES}))
+
 
 install:  ## Set up the project for development
 	poetry install --all-extras
