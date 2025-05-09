@@ -68,3 +68,44 @@ clean-all: clean ## Remove all generated files and reset the local virtual envir
 .PHONY: help
 help:  ## Display command usage
 	@grep -E '^[0-9a-zA-Z_-]+:.*?## .*$$' $(MAKEFILE_LIST) | sort | awk 'BEGIN {FS = ":.*?## "}; {printf "\033[36m%-30s\033[0m %s\n", $$1, $$2}'
+
+## --------------------------------------
+
+DOCS_CONTAINER=mkdocs-container
+DOCS_IMAGE=mkdocs-poetry
+DOCS_DOCKERFILE := Dockerfile.docs
+
+.PHONY: clean-docs
+clean-docs:
+	@echo "Destroying docs"
+	docker rm -f $(DOCS_CONTAINER) || true
+	docker rmi $(DOCS_IMAGE) || true
+
+.PHONY: docs-ensure-image
+docs-ensure-image:
+	@if [ -z "$$(docker images -q $(DOCS_IMAGE))" ]; then \
+		docker build -f $(DOCS_DOCKERFILE) -t $(DOCS_IMAGE) . ; \
+	fi
+
+.PHONY: serve-docs
+serve-docs: docs-ensure-image
+	docker run --rm --name $(DOCS_CONTAINER) -it -p 8000:8000 \
+		-v $(PWD):/testcontainers-go \
+		-w /testcontainers-go \
+		$(DOCS_IMAGE) bash -c "\
+			cd docs && poetry install --no-root && \
+			poetry run mkdocs serve -f ../mkdocs.yml -a 0.0.0.0:8000"
+
+.PHONY: watch-docs
+watch-docs: docs-ensure-image
+	docker run --rm --name $(DOCS_CONTAINER) -it -p 8000:8000 \
+		-v $(PWD):/testcontainers-go \
+		-w /testcontainers-go \
+		$(DOCS_IMAGE) bash -c "\
+			cd docs && poetry install --no-root && \
+			poetry run mkdocs serve -f ../mkdocs.yml -a 0.0.0.0:8000" --live-reload
+
+# Needed if dependencies are added to the docs site
+.PHONY: export-docs-deps
+export-docs-deps:
+	cd docs && poetry export --without-hashes --output requirements.txt

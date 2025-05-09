@@ -1,0 +1,48 @@
+site_name: Testcontainers for Python
+site_url: https://python.testcontainers.org
+plugins:
+  - search
+  - codeinclude
+  - include-markdown
+  - markdownextradata
+theme:
+  name: material
+  custom_dir: docs/theme
+  palette:
+    scheme: testcontainers
+  font:
+    text: Roboto
+    code: Roboto Mono
+  logo: logo.svg
+  favicon: favicon.ico
+extra_css:
+  - "css/extra.css"
+  - "css/tc-header.css"
+repo_name: "testcontainers-python"
+repo_url: "https://github.com/testcontainers/testcontainers-python"
+markdown_extensions:
+  - admonition
+  - codehilite:
+      linenums: false
+  - pymdownx.superfences
+  - pymdownx.tabbed:
+      alternate_style: true
+  - pymdownx.snippets
+  - toc:
+      permalink: true
+  - attr_list
+  - pymdownx.emoji:
+      emoji_generator: !!python/name:material.extensions.emoji.to_svg
+      emoji_index: !!python/name:material.extensions.emoji.twemoji
+nav:
+  - Home: index.md
+  - Features:
+      - features/creating_container.md
+  - Modules:
+      - modules/mysql.md
+  - Contributing: contributing.md
+  - Contributing Docs: contributing_docs.md
+  - Getting help: getting_help.md
+edit_uri: edit/main/docs/
+extra:
+  latest_version: 4.10.0
