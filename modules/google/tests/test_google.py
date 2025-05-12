@@ -1,6 +1,7 @@
 from queue import Queue
 from google.cloud.datastore import Entity
 
+import time
 from testcontainers.core.waiting_utils import wait_for_logs
 from testcontainers.google import PubSubContainer, DatastoreContainer
 
@@ -25,7 +26,8 @@ def test_pubsub_container():
         # Receive the message
         queue = Queue()
         subscriber.subscribe(subscription_path, queue.put)
-        message = queue.get(timeout=1)
+        # timeout 10 is needed to account for slower arm machines
+        message = queue.get(timeout=10)
         assert message.data == b"Hello world!"
         message.ack()
 

@@ -15,6 +15,7 @@ from testcontainers.core.network import Network
 from testcontainers.core.container import DockerContainer
 from testcontainers.core.docker_client import DockerClient, LOGGER
 from testcontainers.core.utils import inside_container
+from testcontainers.core.utils import is_mac
 from testcontainers.core.waiting_utils import wait_for_logs
 
 
@@ -36,6 +37,7 @@ def _wait_for_dind_return_ip(client, dind):
     return docker_host_ip
 
 
+@pytest.mark.skipif(is_mac(), reason="Docker socket forwarding (socat) is unsupported on Docker Desktop for macOS")
 def test_wait_for_logs_docker_in_docker():
     # real dind isn't possible (AFAIK) in CI
     # forwarding the socket to a container port is at least somewhat the same
@@ -64,6 +66,9 @@ def test_wait_for_logs_docker_in_docker():
     not_really_dind.remove()
 
 
+@pytest.mark.skipif(
+    is_mac(), reason="Bridge networking and Docker socket forwarding are not supported on Docker Desktop for macOS"
+)
 def test_dind_inherits_network():
     client = DockerClient()
     try:
@@ -158,6 +163,9 @@ def test_find_host_network_in_dood() -> None:
     assert DockerClient().find_host_network() == os.environ[EXPECTED_NETWORK_VAR]
 
 
+@pytest.mark.skipif(
+    is_mac(), reason="Docker socket mounting and container networking do not work reliably on Docker Desktop for macOS"
+)
 @pytest.mark.skipif(not Path(tcc.ryuk_docker_socket).exists(), reason="No docker socket available")
 def test_dood(python_testcontainer_image: str) -> None:
     """
