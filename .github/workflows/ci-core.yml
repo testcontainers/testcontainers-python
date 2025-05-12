@@ -25,6 +25,14 @@ jobs:
         run: poetry install --all-extras
       - name: Run twine check
         run: poetry build && poetry run twine check dist/*.tar.gz
+      - name: Display Docker and Compose Versions
+        run: |
+          @echo "##[group]Docker Version"
+          @docker --version || echo "Docker is not installed or misconfigured"
+          @echo "##[endgroup]"
+          @echo "##[group]Docker Compose Version"
+          @docker compose version || docker-compose --version || echo "Docker Compose is not installed or misconfigured"
+          @echo "##[endgroup]"
       - name: Run tests
         run: make core/tests
       - name: Rename coverage file
