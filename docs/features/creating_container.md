@@ -7,68 +7,136 @@ Testcontainers-Python is a thin wrapper around Docker designed for use in tests.
 - Log services (e.g. Logstash, Kibana)
 - Other services developed by your team/organization which are already Dockerized
 
-## Run
+## Basic Container Creation
 
-- Since Testcontainers-Python [v3.10.0]()
+The simplest way to create a container is using the `GenericContainer` class:
 
-You can use the high-level run helper to start a container in one call, similar to Docker’s docker run. Under the hood it builds a temporary network, mounts files or tmpfs, and waits for readiness for you.
+```python
+from testcontainers.generic import GenericContainer
+
+def test_basic_container():
+    with GenericContainer("nginx:alpine") as nginx:
+        # Get container connection details
+        host = nginx.get_container_host_ip()
+        port = nginx.get_exposed_port(80)
+
+        # Your test code here
+        # For example, make HTTP requests to the nginx server
+        import requests
+        response = requests.get(f"http://{host}:{port}")
+        assert response.status_code == 200
+```
+
+## Advanced Container Configuration
+
+For more complex scenarios, you can use the `run` helper function which provides a high-level interface similar to Docker's `docker run` command. This helper automatically handles:
+
+- Creating temporary networks
+- Mounting files or tmpfs
+- Waiting for container readiness
+- Container cleanup
+
+Here's an example showing various configuration options:
 
 ```python
 import io
 import pytest
-from docker import DockerClient
 from testcontainers.core.container import run
 from testcontainers.core.network import DockerNetwork
 from testcontainers.core.waiting_utils import wait_for_logs
 
-def test_nginx_run():
+def test_nginx_advanced():
     # Create an isolated network
     network = DockerNetwork()
     network.create()
     pytest.addfinalizer(network.remove)
 
-    # File to mount into the container
-    test_file_content = b"Hello from file!"
+    # Create a test file to mount
+    test_file_content = b"Hello from test file!"
     host_file = io.BytesIO(test_file_content)
 
     # Run the container with various options
     container = run(
         image="nginx:alpine",
         network=network.name,
-        files=[(host_file, "/tmp/file.txt")],
-        tmpfs={"/tmp": "rw"},
-        labels={"testcontainers.label": "true"},
-        environment={"TEST": "true"},
-        ports={"80/tcp": None},  # expose port 80
-        command=["/bin/sh", "-c", "echo hello world"],
-        wait=wait_for_logs("Configuration complete; ready for start"),
-        startup_timeout=5,
+        files=[(host_file, "/usr/share/nginx/html/test.txt")],  # Mount file
+        tmpfs={"/tmp": "rw"},  # Mount tmpfs
+        labels={"testcontainers.label": "true"},  # Add labels
+        environment={"TEST": "true"},  # Set environment variables
+        ports={"80/tcp": None},  # Expose port 80
+        command=["nginx", "-g", "daemon off;"],  # Override default command
+        wait=wait_for_logs("Configuration complete; ready for start"),  # Wait for logs
+        startup_timeout=30,  # Set startup timeout
     )
+
     # Ensure cleanup
     pytest.addfinalizer(container.stop)
     pytest.addfinalizer(container.remove)
 
-    # Inspect runtime state
-    client = DockerClient.from_env()
-    info = client.containers.get(container.id).attrs
+    # Test the container
+    host = container.get_container_host_ip()
+    port = container.get_exposed_port(80)
 
-    # Networks
-    aliases = info["NetworkSettings"]["Networks"][network.name]["Aliases"]
-    assert "nginx-alias" in aliases
-
-    # Environment
-    env = info["Config"]["Env"]
-    assert any(e.startswith("TEST=true") for e in env)
-
-    # Tmpfs
-    tmpfs = info["HostConfig"]["Tmpfs"].get("/tmp")
-    assert tmpfs == ""
-
-    # Labels
-    assert info["Config"]["Labels"]["testcontainers.label"] == "true"
-
-    # File copy
-    bits, _ = client.api.get_archive(container.id, "/tmp/file.txt")
-    archive = io.BytesIO().join(bits)
-    # extract and verify...
+    # Verify the mounted file
+    import requests
+    response = requests.get(f"http://{host}:{port}/test.txt")
+    assert response.text == "Hello from test file!"
 ```
+
+## Container Lifecycle Management
+
+Testcontainers-Python provides several ways to manage container lifecycle:
+
+1. Using context manager (recommended):
+
+```python
+with GenericContainer("nginx:alpine") as container:
+    # Container is automatically started and stopped
+    pass
+```
+
+2. Manual management:
+
+```python
+container = GenericContainer("nginx:alpine")
+container.start()
+try:
+    # Your test code here
+    pass
+finally:
+    container.stop()
+    container.remove()
+```
+
+3. Using pytest fixtures:
+
+```python
+import pytest
+from testcontainers.generic import GenericContainer
+
+@pytest.fixture
+def nginx_container():
+    container = GenericContainer("nginx:alpine")
+    container.start()
+    yield container
+    container.stop()
+    container.remove()
+
+def test_with_nginx(nginx_container):
+    # Your test code here
+    pass
+```
+
+## Container Readiness
+
+For information about waiting for containers to be ready, see the [Wait Strategies](wait_strategies.md) documentation.
+
+## Best Practices
+
+1. Always use context managers or ensure proper cleanup
+2. Set appropriate timeouts for container startup
+3. Use isolated networks for tests
+4. Mount test files instead of copying them
+5. Use tmpfs for temporary data
+6. Add meaningful labels to containers
+7. Configure proper wait conditions

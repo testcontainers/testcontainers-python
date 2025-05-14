@@ -1,4 +1,4 @@
-_Testcontainers for Go_ plays well with the native `go test` framework.
+_Testcontainers for Python_ plays well with Python's testing frameworks like pytest.
 
 The ideal use case is for integration or end to end tests. It helps you to spin
 up and manage the dependencies life cycle via Docker.
@@ -7,72 +7,52 @@ up and manage the dependencies life cycle via Docker.
 
 Please read the [system requirements](../system_requirements) page before you start.
 
-## 2. Install _Testcontainers for Go_
+## 2. Install _Testcontainers for Python_
 
-We use [go mod](https://blog.golang.org/using-go-modules) and you can get it installed via:
+You can install testcontainers-python using pip:
 
-```
-go get github.com/testcontainers/testcontainers-go
+```bash
+pip install testcontainers
 ```
 
 ## 3. Spin up Redis
 
-```go
-import (
-	"context"
-	"testing"
+```python
+import pytest
+from testcontainers.redis import RedisContainer
+import redis
 
-	"github.com/stretchr/testify/require"
+def test_with_redis():
+    with RedisContainer() as redis_container:
+        # Get connection parameters
+        host = redis_container.get_container_host_ip()
+        port = redis_container.get_exposed_port(redis_container.port)
 
-	"github.com/testcontainers/testcontainers-go"
-	"github.com/testcontainers/testcontainers-go/wait"
-)
+        # Create Redis client
+        client = redis.Redis(host=host, port=port, decode_responses=True)
 
-func TestWithRedis(t *testing.T) {
-	ctx := context.Background()
-	req := testcontainers.ContainerRequest{
-		Image:        "redis:latest",
-		ExposedPorts: []string{"6379/tcp"},
-		WaitingFor:   wait.ForLog("Ready to accept connections"),
-	}
-	redisC, err := testcontainers.GenericContainer(ctx, testcontainers.GenericContainerRequest{
-		ContainerRequest: req,
-		Started:          true,
-	})
-	testcontainers.CleanupContainer(t, redisC)
-	require.NoError(t, err)
-}
+        # Test Redis connection
+        client.set("test_key", "Hello, Redis!")
+        value = client.get("test_key")
+        assert value == "Hello, Redis!"
 ```
 
-The `testcontainers.ContainerRequest` describes how the Docker container will
-look.
+The `RedisContainer` class provides a convenient way to start a Redis container for testing.
 
-- `Image` is the Docker image the container starts from.
-- `ExposedPorts` lists the ports to be exposed from the container.
-- `WaitingFor` is a field you can use to validate when a container is ready. It
-  is important to get this set because it helps to know when the container is
-  ready to receive any traffic. In this case, we check for the logs we know come
-  from Redis, telling us that it is ready to accept requests.
+- The container is automatically started when entering the context manager (`with` statement)
+- The container is automatically stopped and removed when exiting the context manager
+- `get_container_host_ip()` returns the host IP where the container is running
+- `get_exposed_port()` returns the mapped port on the host
 
-When you use `ExposedPorts` you have to imagine yourself using `docker run -p
+When you use `get_exposed_port()`, you have to imagine yourself using `docker run -p
 <port>`. When you do so, `dockerd` maps the selected `<port>` from inside the
 container to a random one available on your host.
 
-In the previous example, we expose `6379` for `tcp` traffic to the outside. This
+In the previous example, we expose the default Redis port (6379) for `tcp` traffic to the outside. This
 allows Redis to be reachable from your code that runs outside the container, but
-it also makes parallelization possible because if you add `t.Parallel` to your
-tests, and each of them starts a Redis container each of them will be exposed on a
-different random port.
+it also makes parallelization possible because if you run your tests in parallel, each test will get its own Redis container exposed on a different random port.
 
-`testcontainers.GenericContainer` creates the container. In this example we are
-using `Started: true`. It means that the container function will wait for the
-container to be up and running. If you set the `Start` value to `false` it won't
-start, leaving to you the decision about when to start it.
-
-All the containers must be removed at some point, otherwise they will run until
-the host is overloaded. One of the ways we have to clean up is by deferring the
-terminated function: `defer testcontainers.TerminateContainer(redisC)` which
-automatically handles nil container so is safe to use even in the error case.
+The container is automatically cleaned up when the test finishes, thanks to the context manager (`with` statement). This ensures that no containers are left running after your tests complete.
 
 !!!tip
 
@@ -81,35 +61,39 @@ automatically handles nil container so is safe to use even in the error case.
 
 ## 4. Make your code to talk with the container
 
-This is just an example, but usually Go applications that rely on Redis are
-using the [redis-go](https://github.com/go-redis/redis) client. This code gets
+This is just an example, but usually Python applications that rely on Redis are
+using the [redis-py](https://github.com/redis/redis-py) client. This code gets
 the endpoint from the container we just started, and it configures the client.
 
-```go
-endpoint, err := redisC.Endpoint(ctx, "")
-if err != nil {
-    t.Error(err)
-}
+```python
+def test_redis_operations():
+    with RedisContainer() as redis_container:
+        # Get connection parameters
+        host = redis_container.get_container_host_ip()
+        port = redis_container.get_exposed_port(redis_container.port)
 
-client := redis.NewClient(&redis.Options{
-    Addr: endpoint,
-})
+        # Create Redis client
+        client = redis.Redis(host=host, port=port, decode_responses=True)
 
-_ = client
+        # Test various Redis operations
+        # String operations
+        client.set("greeting", "Hello, Redis!")
+        value = client.get("greeting")
+        assert value == "Hello, Redis!"
+
+        # List operations
+        client.lpush("tasks", "task1", "task2", "task3")
+        tasks = client.lrange("tasks", 0, -1)
+        assert tasks == ["task3", "task2", "task1"]
 ```
-
-We expose only one port, so the `Endpoint` does not need a second argument set.
-
-!!!tip
-
-    If you expose more than one port you can specify the one you need as a second
-    argument.
-
-In this case it returns: `localhost:<mappedportfor-6379>`.
 
 ## 5. Run the test
 
-You can run the test via `go test ./...`
+You can run the test via `pytest`:
+
+```bash
+pytest test_redis.py
+```
 
 ## 6. Want to go deeper with Redis?
 
