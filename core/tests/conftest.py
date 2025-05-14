@@ -3,6 +3,7 @@ from pathlib import Path
 import pytest
 from typing import Callable
 from testcontainers.core.container import DockerClient
+from pprint import pprint
 import sys
 
 PROJECT_DIR = Path(__file__).parent.parent.parent.resolve()
@@ -47,6 +48,19 @@ def check_for_image() -> Callable[[str, bool], None]:
         client = DockerClient()
         images = client.client.images.list()
         found = any(image.short_id.endswith(image_short_id) for image in images)
-        assert found is not cleaned, f'Image {image_short_id} was {"found" if cleaned else "not found"}'
+        assert found is not cleaned, f"Image {image_short_id} was {'found' if cleaned else 'not found'}"
 
     return _check_for_image
+
+
+@pytest.fixture
+def show_container_attributes() -> None:
+    """Wrap the show_container_attributes function in a fixture"""
+
+    def _show_container_attributes(container_id: str) -> None:
+        """Print the attributes of a container"""
+        client = DockerClient().client
+        data = client.containers.get(container_id).attrs
+        pprint(data)
+
+    return _show_container_attributes
