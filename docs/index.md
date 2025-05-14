@@ -24,10 +24,7 @@ Inline documentation and docs where the code live is crucial for us. Testcontain
 
 ## Who is using Testcontainers Python?
 
-- [AWS](https://aws.amazon.com/)
-- [Google](https://google.com/)
-- [Grafana](https://grafana.com/)
-- [Timescale](https://www.timescale.com/)
+- [Timescale](https://www.timescale.com/) - Uses testcontainers-python in their pgai project for testing PostgreSQL integrations, AI model interactions, and AWS service integrations
 
 ## License
 
