@@ -1,23 +1,23 @@
-# MySQL
+# Memcached
 
 Since testcontainers-python <a href="https://github.com/testcontainers/testcontainers-python/releases/tag/v4.4.1"><span class="tc-version">:material-tag: v4.4.1</span></a>
 
 ## Introduction
 
-The Testcontainers module for MySQL.
+The Testcontainers module for Memcached.
 
 ## Adding this module to your project dependencies
 
-Please run the following command to add the MySQL module to your python dependencies:
+Please run the following command to add the Memcached module to your python dependencies:
 
 ```bash
-pip install testcontainers[mysql]
+pip install testcontainers[memcached]
 ```
 
 ## Usage example
 
 <!--codeinclude-->
 
-[Creating a MySQL container](../../modules/mysql/example_basic.py)
+[Creating a Memcached container](../../modules/memcached/example_basic.py)
 
 <!--/codeinclude-->

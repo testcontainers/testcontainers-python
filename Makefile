@@ -78,8 +78,12 @@ DOCS_DOCKERFILE := Dockerfile.docs
 .PHONY: clean-docs
 clean-docs:
 	@echo "Destroying docs"
-	docker rm -f $(DOCS_CONTAINER) || true
-	docker rmi $(DOCS_IMAGE) || true
+	@if docker ps -a --format '{{.Names}}' | grep -q '^$(DOCS_CONTAINER)$$'; then \
+		docker rm -f $(DOCS_CONTAINER); \
+	fi
+	@if docker images -q $(DOCS_IMAGE) | grep -q .; then \
+		docker rmi $(DOCS_IMAGE); \
+	fi
 
 .PHONY: docs-ensure-image
 docs-ensure-image:
@@ -95,15 +99,6 @@ serve-docs: docs-ensure-image
 		$(DOCS_IMAGE) bash -c "\
 			cd docs && poetry install --no-root && \
 			poetry run mkdocs serve -f ../mkdocs.yml -a 0.0.0.0:8000"
-
-.PHONY: watch-docs
-watch-docs: docs-ensure-image
-	docker run --rm --name $(DOCS_CONTAINER) -it -p 8000:8000 \
-		-v $(PWD):/testcontainers-go \
-		-w /testcontainers-go \
-		$(DOCS_IMAGE) bash -c "\
-			cd docs && poetry install --no-root && \
-			poetry run mkdocs serve -f ../mkdocs.yml -a 0.0.0.0:8000" --live-reload
 
 # Needed if dependencies are added to the docs site
 .PHONY: export-docs-deps

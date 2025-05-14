@@ -36,13 +36,60 @@ markdown_extensions:
       emoji_index: !!python/name:material.extensions.emoji.twemoji
 nav:
   - Home: index.md
+  - Quickstart: quickstart.md
   - Features:
       - features/creating_container.md
+      - features/configuration.md
   - Modules:
-      - modules/mysql.md
+      - Databases:
+          - modules/arangodb.md
+          - modules/cassandra.md
+          - modules/chroma.md
+          - modules/clickhouse.md
+          - modules/cockroachdb.md
+          - modules/cosmosdb.md
+          - modules/db2.md
+          - modules/elasticsearch.md
+          - modules/influxdb.md
+          - modules/mongodb.md
+          - modules/mssql.md
+          - modules/mysql.md
+          - modules/neo4j.md
+          - modules/opensearch.md
+          - modules/oracle-free.md
+          - modules/postgres.md
+          - modules/qdrant.md
+          - modules/redis.md
+          - modules/scylla.md
+          - modules/trino.md
+          - modules/weaviate.md
+      - modules/aws.md
+      - modules/azurite.md
+      - modules/generic.md
+      - modules/google.md
+      - modules/k3s.md
+      - modules/keycloak.md
+      - modules/kafka.md
+      - modules/localstack.md
+      - modules/mailpit.md
+      - modules/memcached.md
+      - modules/milvus.md
+      - modules/minio.md
+      - modules/mqtt.md
+      - modules/nats.md
+      - modules/nginx.md
+      - modules/ollama.md
+      - modules/rabbitmq.md
+      - modules/registry.md
+      - modules/selenium.md
+      - modules/sftp.md
+      - modules/test_module_import.md
+      - modules/vault.md
+  - System Requirements:
+      - system_requirements/index.md
+      - system_requirements/docker.md
   - Contributing: contributing.md
-  - Contributing Docs: contributing_docs.md
-  - Getting help: getting_help.md
+  - Getting Help: getting_help.md
 edit_uri: edit/main/docs/
 extra:
   latest_version: 4.10.0

@@ -277,6 +277,9 @@ ignore = [
     "A004",
 ]
 
+[tool.ruff.lint.per-file-ignores]
+"**/example_*.py" = ["T201"]
+
 [tool.ruff.lint.pyupgrade]
 keep-runtime-typing = true
 
