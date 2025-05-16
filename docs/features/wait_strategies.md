@@ -97,6 +97,15 @@ postgres = PostgresContainer()
 postgres.start()  # Will wait until PostgreSQL is ready to accept connections
 ```
 
+## Ryuk Container Wait Behavior
+
+The Ryuk container (used for garbage collection) has its own wait mechanism that combines log-based and connection-based waiting:
+
+1. **Log-based Wait**: Waits for the message ".\* Started!" with a 20-second timeout
+2. **Connection Wait**: After the logs are found, attempts to establish a socket connection to the Ryuk container, retrying up to 50 times with a 0.5-second interval between attempts
+
+This ensures that the Ryuk container is fully operational before any test containers are started.
+
 ## Configuring Wait Behavior
 
 You can configure the wait behavior using environment variables:

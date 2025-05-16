@@ -25,6 +25,8 @@ Inline documentation and docs where the code live is crucial for us. Testcontain
 ## Who is using Testcontainers Python?
 
 - [Timescale](https://www.timescale.com/) - Uses testcontainers-python in their pgai project for testing PostgreSQL integrations, AI model interactions, and AWS service integrations
+- [Redis](https://redis.io/) - Depends on testcontainers-python for their redis vector library implementation
+- [Apache](https://skywalking.apache.org/) - Uses testcontainers-python in their Skywalking project for application performance monitor tool in distributed systems.
 
 ## License
 

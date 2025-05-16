@@ -5,7 +5,7 @@ up and manage the dependencies life cycle via Docker.
 
 ## 1. System requirements
 
-Please read the [system requirements](../system_requirements) page before you start.
+Please read the [system requirements](system_requirements/index.md) page before you start.
 
 ## 2. Install _Testcontainers for Python_
 
@@ -56,7 +56,7 @@ The container is automatically cleaned up when the test finishes, thanks to the 
 
 !!!tip
 
-    Look at [features/garbage_collector](/features/garbage_collector) to know another way to
+    Look at [the garbage collector](features/garbage_collector.md) to know another way to
     clean up resources.
 
 ## 4. Make your code to talk with the container

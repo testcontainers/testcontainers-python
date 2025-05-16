@@ -48,6 +48,8 @@ nav:
       - Wait Strategies: features/wait_strategies.md
       - Docker Compose: features/docker_compose.md
       - Networking: features/networking.md
+      - Garbage Collector: features/garbage_collector.md
+      - Advanced Features: features/advanced_features.md
   - Modules:
       - Databases:
           - modules/arangodb.md
