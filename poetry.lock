@@ -1907,7 +1907,7 @@ description = "Python DBI driver for DB2 (LUW, zOS, i5) and IDS"
 optional = true
 python-versions = "*"
 groups = ["main"]
-markers = "extra == \"db2\""
+markers = "platform_machine != \"aarch64\" and platform_machine != \"arm64\" and extra == \"db2\""
 files = [
     {file = "ibm_db-3.2.3-cp310-cp310-macosx_10_15_x86_64.whl", hash = "sha256:3399466141c29704f4e8ba709a67ba27ab413239c0244c3c4510126e946ff603"},
     {file = "ibm_db-3.2.3-cp310-cp310-manylinux_2_17_i686.manylinux2014_i686.whl", hash = "sha256:e12ff6426d4f718e1ff6615e64a2880bd570826f19a031c82dbf296714cafd7d"},
@@ -1954,7 +1954,7 @@ description = "SQLAlchemy support for IBM Data Servers"
 optional = true
 python-versions = "*"
 groups = ["main"]
-markers = "extra == \"db2\""
+markers = "platform_machine != \"aarch64\" and platform_machine != \"arm64\" and extra == \"db2\""
 files = [
     {file = "ibm_db_sa-0.4.1-py3-none-any.whl", hash = "sha256:49926ba9799e6ebd9ddd847141537c83d179ecf32fe24b7e997ac4614d3f616a"},
     {file = "ibm_db_sa-0.4.1.tar.gz", hash = "sha256:a46df130a3681646490925cf4e1bca12b46283f71eea39b70b4f9a56e95341ac"},
@@ -5951,4 +5951,4 @@ weaviate = ["weaviate-client"]
 [metadata]
 lock-version = "2.1"
 python-versions = ">=3.9,<4.0"
-content-hash = "bacae2cc8c7947dae5d1f6f05bc1a98d488470a5947f95479edabe75cf036f41"
+content-hash = "24c7e4335574e67bef9fac3bbb2b17a3199449734010d7931a60efa679529235"

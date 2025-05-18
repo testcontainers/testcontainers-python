@@ -33,7 +33,6 @@ def test_is_windows(monkeypatch: MonkeyPatch) -> None:
 
 
 def test_is_arm(monkeypatch: MonkeyPatch) -> None:
-    assert not utils.is_arm()
     monkeypatch.setattr("platform.machine", lambda: "arm64")
     assert utils.is_arm()
     monkeypatch.setattr("platform.machine", lambda: "aarch64")
