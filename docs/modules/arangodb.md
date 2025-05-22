@@ -11,7 +11,7 @@ The Testcontainers module for ArangoDB.
 Please run the following command to add the ArangoDB module to your python dependencies:
 
 ```bash
-pip install testcontainers[arangodb]
+pip install testcontainers[arangodb] python-arango
 ```
 
 ## Usage example

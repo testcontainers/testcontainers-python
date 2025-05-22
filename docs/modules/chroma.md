@@ -11,7 +11,7 @@ The Testcontainers module for Chroma.
 Please run the following command to add the Chroma module to your python dependencies:
 
 ```bash
-pip install testcontainers[chroma]
+pip install testcontainers[chroma] chromadb requests
 ```
 
 ## Usage example

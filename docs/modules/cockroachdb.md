@@ -1,6 +1,6 @@
 # CockroachDB
 
-Since testcontainers-python <a href="https://github.com/testcontainers/testcontainers-python/releases/tag/v4.6.0"><span class="tc-version">:material-tag: v4.6.0</span></a>
+Since testcontainers-python <a href="https://github.com/testcontainers/testcontainers-python/releases/tag/v4.7.0"><span class="tc-version">:material-tag: v4.7.0</span></a>
 
 ## Introduction
 
@@ -11,7 +11,7 @@ The Testcontainers module for CockroachDB.
 Please run the following command to add the CockroachDB module to your python dependencies:
 
 ```bash
-pip install testcontainers[cockroachdb]
+pip install testcontainers[cockroachdb] sqlalchemy psycopg2
 ```
 
 ## Usage example

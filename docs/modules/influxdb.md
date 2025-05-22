@@ -1,6 +1,6 @@
 # InfluxDB
 
-Since testcontainers-python <a href="https://github.com/testcontainers/testcontainers-python/releases/tag/v4.4.0"><span class="tc-version">:material-tag: v4.4.0</span></a>
+Since testcontainers-python <a href="https://github.com/testcontainers/testcontainers-python/releases/tag/v4.6.0"><span class="tc-version">:material-tag: v4.6.0</span></a>
 
 ## Introduction
 
@@ -11,7 +11,13 @@ The Testcontainers module for InfluxDB.
 Please run the following command to add the InfluxDB module to your python dependencies:
 
 ```bash
-pip install testcontainers[influxdb]
+# For InfluxDB 1.x
+pip install testcontainers[influxdb] influxdb
+
+# For InfluxDB 2.x
+pip install testcontainers[influxdb] influxdb-client
 ```
 
 ## Usage example
+
+[Creating an InfluxDB container](../../modules/influxdb/example_basic.py)

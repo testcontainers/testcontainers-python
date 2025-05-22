@@ -4,14 +4,14 @@ Since testcontainers-python <a href="https://github.com/testcontainers/testconta
 
 ## Introduction
 
-The Testcontainers module for AWS services, including S3, DynamoDB, and SQS.
+The Testcontainers module for AWS.
 
 ## Adding this module to your project dependencies
 
 Please run the following command to add the AWS module to your python dependencies:
 
-```
-pip install testcontainers[aws]
+```bash
+pip install testcontainers[aws] httpx
 ```
 
 ## Usage example

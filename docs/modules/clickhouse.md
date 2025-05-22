@@ -11,7 +11,7 @@ The Testcontainers module for ClickHouse.
 Please run the following command to add the ClickHouse module to your python dependencies:
 
 ```bash
-pip install testcontainers[clickhouse]
+pip install testcontainers[clickhouse] clickhouse-driver
 ```
 
 ## Usage example

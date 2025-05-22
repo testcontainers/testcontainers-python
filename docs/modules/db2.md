@@ -4,14 +4,14 @@ Since testcontainers-python <a href="https://github.com/testcontainers/testconta
 
 ## Introduction
 
-The Testcontainers module for DB2.
+The Testcontainers module for IBM Db2.
 
 ## Adding this module to your project dependencies
 
 Please run the following command to add the DB2 module to your python dependencies:
 
 ```bash
-pip install testcontainers[db2]
+pip install testcontainers[db2] sqlalchemy ibm-db
 ```
 
 ## Usage example

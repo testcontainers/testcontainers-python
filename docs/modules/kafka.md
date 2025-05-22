@@ -1,6 +1,6 @@
 # Kafka
 
-Since testcontainers-python <a href="https://github.com/testcontainers/testcontainers-python/releases/tag/v4.4.0"><span class="tc-version">:material-tag: v4.4.0</span></a>
+Since testcontainers-python <a href="https://github.com/testcontainers/testcontainers-python/releases/tag/v4.6.0"><span class="tc-version">:material-tag: v4.6.0</span></a>
 
 ## Introduction
 

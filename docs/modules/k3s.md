@@ -1,6 +1,6 @@
 # K3s
 
-Since testcontainers-python <a href="https://github.com/testcontainers/testcontainers-python/releases/tag/v4.8.0"><span class="tc-version">:material-tag: v4.8.0</span></a>
+Since testcontainers-python <a href="https://github.com/testcontainers/testcontainers-python/releases/tag/v4.6.0"><span class="tc-version">:material-tag: v4.6.0</span></a>
 
 ## Introduction
 
@@ -11,7 +11,7 @@ The Testcontainers module for K3s.
 Please run the following command to add the K3s module to your python dependencies:
 
 ```bash
-pip install testcontainers[k3s]
+pip install testcontainers[k3s] kubernetes pyyaml
 ```
 
 ## Usage example

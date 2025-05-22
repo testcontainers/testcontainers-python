@@ -1,6 +1,6 @@
 # Test Module Import
 
-Since testcontainers-python <a href="https://github.com/testcontainers/testcontainers-python/releases/tag/v4.7.1"><span class="tc-version">:material-tag: v4.7.1</span></a>
+Since testcontainers-python <a href="https://github.com/testcontainers/testcontainers-python/releases/tag/v4.7.0"><span class="tc-version">:material-tag: v4.7.0</span></a>
 
 ## Introduction
 

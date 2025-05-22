@@ -11,7 +11,7 @@ The Testcontainers module for Cassandra.
 Please run the following command to add the Cassandra module to your python dependencies:
 
 ```bash
-pip install testcontainers[cassandra]
+pip install testcontainers[cassandra] cassandra-driver
 ```
 
 ## Usage example

@@ -4,14 +4,14 @@ Since testcontainers-python <a href="https://github.com/testcontainers/testconta
 
 ## Introduction
 
-The Testcontainers module for CosmosDB.
+The Testcontainers module for Azure Cosmos DB.
 
 ## Adding this module to your project dependencies
 
 Please run the following command to add the CosmosDB module to your python dependencies:
 
 ```bash
-pip install testcontainers[cosmosdb]
+pip install testcontainers[cosmosdb] pymongo azure-cosmos
 ```
 
 ## Usage example

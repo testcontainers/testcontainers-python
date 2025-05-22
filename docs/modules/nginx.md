@@ -1,6 +1,6 @@
 # Nginx
 
-Since testcontainers-python <a href="https://github.com/testcontainers/testcontainers-python/releases/tag/v4.8.0"><span class="tc-version">:material-tag: v4.8.0</span></a>
+Since testcontainers-python <a href="https://github.com/testcontainers/testcontainers-python/releases/tag/v4.6.0"><span class="tc-version">:material-tag: v4.6.0</span></a>
 
 ## Introduction
 
@@ -18,6 +18,6 @@ pip install testcontainers[nginx]
 
 <!--codeinclude-->
 
-[Creating an Nginx container](../../modules/nginx/example_basic.py)
+[Creating a Nginx container](../../modules/nginx/example_basic.py)
 
 <!--/codeinclude-->
