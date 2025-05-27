@@ -141,6 +141,7 @@ class TestcontainersConfiguration:
         enabled = self.tc_properties.get("testcontainers.reuse.enable")
         return enabled == "true"
 
+    @property
     def timeout(self) -> int:
         return self.max_tries * self.sleep_time
 
