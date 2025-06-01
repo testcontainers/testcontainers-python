@@ -1,4 +1,5 @@
 import contextlib
+import time
 from os import PathLike
 from socket import socket
 from typing import TYPE_CHECKING, Optional, Union
@@ -251,6 +252,17 @@ class DockerContainer:
         # placeholder if subclasses want to define this and use the default start method
         pass
 
+    def wait_for_healthcheck(self, timeout: int = 10):
+        start_time = time.time()
+        underlying = self.get_wrapped_container()
+        while time.time() - start_time < timeout:
+            underlying.reload()
+            if underlying.health == "healthy":
+                break
+            time.sleep(0.1)
+        else:
+            raise NotHealthy()
+
 
 class Reaper:
     _instance: "Optional[Reaper]" = None
@@ -327,3 +339,7 @@ class Reaper:
         Reaper._instance = Reaper()
 
         return Reaper._instance
+
+
+class NotHealthy(Exception):
+    pass
