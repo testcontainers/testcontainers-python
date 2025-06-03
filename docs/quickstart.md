@@ -1,15 +1,14 @@
-_Testcontainers for Python_ plays well with Python's testing frameworks like pytest.
+_Testcontainers for Python_ integrates seamlessly with Python testing frameworks like [pytest](https://docs.pytest.org/en/stable/).
 
-The ideal use case is for integration or end to end tests. It helps you to spin
-up and manage the dependencies life cycle via Docker.
+It's ideal for integration and end-to-end tests, allowing you to easily manage dependencies using Docker.
 
 ## 1. System requirements
 
-Please read the [system requirements](system_requirements/index.md) page before you start.
+Before you begin, review the [system requirements](system_requirements/index.md).
 
 ## 2. Install _Testcontainers for Python_
 
-You can install testcontainers-python using pip:
+Install testcontainers-python with pip:
 
 ```bash
 pip install testcontainers
@@ -37,33 +36,25 @@ def test_with_redis():
         assert value == "Hello, Redis!"
 ```
 
-The `RedisContainer` class provides a convenient way to start a Redis container for testing.
+The `RedisContainer` class makes it easy to start a Redis container for testing:
 
-- The container is automatically started when entering the context manager (`with` statement)
-- The container is automatically stopped and removed when exiting the context manager
-- `get_container_host_ip()` returns the host IP where the container is running
-- `get_exposed_port()` returns the mapped port on the host
+- The container starts automatically when entering the context manager (`with` statement).
+- It stops and removes itself when exiting the context.
+- `get_container_host_ip()` returns the host IP.
+- `get_exposed_port()` returns the mapped host port.
 
-When you use `get_exposed_port()`, you have to imagine yourself using `docker run -p
-<port>`. When you do so, `dockerd` maps the selected `<port>` from inside the
-container to a random one available on your host.
+When using `get_exposed_port()`, think of it as running `docker run -p <port>`. `dockerd` maps the container's internal port to a random available port on your host.
 
-In the previous example, we expose the default Redis port (6379) for `tcp` traffic to the outside. This
-allows Redis to be reachable from your code that runs outside the container, but
-it also makes parallelization possible because if you run your tests in parallel, each test will get its own Redis container exposed on a different random port.
+In the example above, the default Redis port (6379) is exposed for TCP traffic. This setup allows your code to connect to Redis outside the container and supports parallel test execution. Each test gets its own Redis container on a unique, random port.
 
-The container is automatically cleaned up when the test finishes, thanks to the context manager (`with` statement). This ensures that no containers are left running after your tests complete.
+The context manager (`with` statement) ensures containers are cleaned up after tests, so no containers are left running.
 
 !!!tip
+  See [the garbage collector](features/garbage_collector.md) for another way to clean up resources.
 
-    Look at [the garbage collector](features/garbage_collector.md) to know another way to
-    clean up resources.
+## 4. Connect your code to the container
 
-## 4. Make your code to talk with the container
-
-This is just an example, but usually Python applications that rely on Redis are
-using the [redis-py](https://github.com/redis/redis-py) client. This code gets
-the endpoint from the container we just started, and it configures the client.
+Typically, Python applications use the [redis-py](https://github.com/redis/redis-py) client. The following code retrieves the endpoint from the container and configures the client.
 
 ```python
 def test_redis_operations():
@@ -97,4 +88,4 @@ pytest test_redis.py
 
 ## 6. Want to go deeper with Redis?
 
-You can find a more elaborated Redis example in our examples section. Please check it out [here](./modules/redis.md).
+You can find a more elaborated Redis example in our [examples section](./modules/redis.md).
