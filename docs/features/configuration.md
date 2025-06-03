@@ -1,20 +1,20 @@
-# Custom configuration
+# Custom Configuration
 
-You can override some default properties if your environment requires that.
+You can override some default properties if your environment requires it.
 
-## Configuration locations
+## Configuration Locations
 
 The configuration will be loaded from multiple locations. Properties are considered in the following order:
 
 1. Environment variables
-2. `.testcontainers.properties` in user's home folder. Example locations:
+2. `.testcontainers.properties` in the user's home folder. Example locations:
    **Linux:** `/home/myuser/.testcontainers.properties`
    **Windows:** `C:/Users/myuser/.testcontainers.properties`
    **macOS:** `/Users/myuser/.testcontainers.properties`
 
-Note that when using environment variables, configuration property names should be set in upper case with underscore separators, preceded by `TESTCONTAINERS_` - e.g. `ryuk.disabled` becomes `TESTCONTAINERS_RYUK_DISABLED`.
+Note that when using environment variables, configuration property names should be set in uppercase with underscore separators, preceded by `TESTCONTAINERS_` - e.g. `ryuk.disabled` becomes `TESTCONTAINERS_RYUK_DISABLED`.
 
-### Supported properties
+### Supported Properties
 
 Testcontainers-Python provides a configuration class to represent the settings:
 
@@ -57,7 +57,7 @@ Additional configuration options:
 | `TC_POOLING_INTERVAL` | Time between connection attempts            | 1       |
 | `DOCKER_AUTH_CONFIG`  | Docker authentication config (experimental) | -       |
 
-## Docker host detection
+## Docker Host Detection
 
 Testcontainers-Python will attempt to detect the Docker environment and configure everything to work automatically.
 
@@ -74,7 +74,7 @@ However, sometimes customization is required. Testcontainers-Python will respect
 
 5. Read the **docker.host** property in the `~/.testcontainers.properties` file. E.g. `docker.host=tcp://my.docker.host:1234`
 
-6. Read the rootless Docker socket path, checking in the following alternative locations:
+6. Read the rootless Docker socket path, checking the following alternative locations:
 
    1. `${XDG_RUNTIME_DIR}/.docker/run/docker.sock`
    2. `${HOME}/.docker/run/docker.sock`
@@ -83,7 +83,7 @@ However, sometimes customization is required. Testcontainers-Python will respect
 
 7. The library will raise a `DockerHostError` if none of the above are set, meaning that the Docker host was not detected.
 
-## Docker socket path detection
+## Docker Socket Path Detection
 
 Testcontainers-Python will attempt to detect the Docker socket path and configure everything to work automatically.
 
@@ -92,13 +92,13 @@ However, sometimes customization is required. Testcontainers-Python will respect
 1. Read the **TESTCONTAINERS_DOCKER_SOCKET_OVERRIDE** environment variable. Path to Docker's socket. Used by Ryuk, Docker Compose, and a few other containers that need to perform Docker actions.
    Example: `/var/run/docker-alt.sock`
 
-2. If the Operating System retrieved by the Docker client is "Docker Desktop", and the host is running on Windows, it will return the `//var/run/docker.sock` UNC Path. Else return the default docker socket path for rootless docker.
+2. If the operating system retrieved by the Docker client is "Docker Desktop", and the host is running on Windows, it will return the `//var/run/docker.sock` UNC path. Otherwise, it returns the default Docker socket path for rootless Docker.
 
-3. Get the current Docker Host from the existing strategies: see Docker host detection.
+3. Get the current Docker host from the existing strategies: see Docker host detection.
 
 4. If the socket contains the unix schema, the schema is removed (e.g. `unix:///var/run/docker.sock` -> `/var/run/docker.sock`)
 
-5. Else, the default location of the docker socket is used: `/var/run/docker.sock`
+5. Otherwise, the default location of the Docker socket is used: `/var/run/docker.sock`
 
 The library will raise a `DockerHostError` if the Docker host cannot be discovered.
 
@@ -112,7 +112,7 @@ Testcontainers-Python supports different connection modes that determine how con
 
 You can set the connection mode using the `TESTCONTAINERS_CONNECTION_MODE` environment variable or the `connection.mode` property in `.testcontainers.properties`.
 
-## Example configuration file
+## Example Configuration File
 
 Here's an example of a `.testcontainers.properties` file:
 
@@ -133,7 +133,7 @@ tc.host=tcp://my.testcontainers.host:1234
 connection.mode=bridge_ip
 ```
 
-## Using configuration in code
+## Using Configuration in Code
 
 You can access and modify the configuration programmatically:
 
@@ -148,7 +148,7 @@ sleep_time = testcontainers_config.sleep_time
 # Changes should be made through environment variables or .testcontainers.properties
 ```
 
-## Best practices
+## Best Practices
 
 1. Use environment variables for CI/CD environments
 2. Use `.testcontainers.properties` for local development
