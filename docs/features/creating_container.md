@@ -1,4 +1,4 @@
-# How to create a container
+# How to Create a Container
 
 Testcontainers-Python is a thin wrapper around Docker designed for use in tests. Anything you can run in Docker, you can spin up with Testcontainers-Python:
 
@@ -29,14 +29,14 @@ def test_basic_container():
 
 ## Advanced Container Configuration
 
-For more complex scenarios, you can use the `run` helper function which provides a high-level interface similar to Docker's `docker run` command. This helper automatically handles:
+For more complex scenarios, use the `run` helper function. This high-level interface is similar to `docker run` and automatically handles:
 
 - Creating temporary networks
 - Mounting files or tmpfs
 - Waiting for container readiness
 - Container cleanup
 
-Here's an example showing various configuration options:
+Example with various configuration options:
 
 ```python
 import io
@@ -85,18 +85,16 @@ def test_nginx_advanced():
 
 ## Container Lifecycle Management
 
-Testcontainers-Python provides several ways to manage container lifecycle:
+Testcontainers-Python offers several ways to manage container lifecycle:
 
-1. Using context manager (recommended):
-
+1. **Context manager (recommended):**
 ```python
 with GenericContainer("nginx:alpine") as container:
     # Container is automatically started and stopped
     pass
 ```
 
-2. Manual management:
-
+2. **Manual management:**
 ```python
 container = GenericContainer("nginx:alpine")
 container.start()
@@ -108,8 +106,7 @@ finally:
     container.remove()
 ```
 
-3. Using pytest fixtures:
-
+3. **Pytest fixtures:**
 ```python
 import pytest
 from testcontainers.generic import GenericContainer
@@ -129,7 +126,7 @@ def test_with_nginx(nginx_container):
 
 ## Container Readiness
 
-For information about waiting for containers to be ready, see the [Wait Strategies](wait_strategies.md) documentation.
+For details on waiting for containers to be ready, see [Wait strategies](wait_strategies.md).
 
 ## Best Practices
 
