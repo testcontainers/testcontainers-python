@@ -50,7 +50,8 @@ In the example above, the default Redis port (6379) is exposed for TCP traffic. 
 The context manager (`with` statement) ensures containers are cleaned up after tests, so no containers are left running.
 
 !!!tip
-  See [the garbage collector](features/garbage_collector.md) for another way to clean up resources.
+
+    See [the garbage collector](features/garbage_collector.md) for another way to clean up resources.
 
 ## 4. Connect your code to the container
 
