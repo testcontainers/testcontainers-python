@@ -1,0 +1,105 @@
+site_name: Testcontainers for Python
+site_url: https://python.testcontainers.org
+plugins:
+  - search
+  - codeinclude
+  - include-markdown
+  - markdownextradata
+theme:
+  name: material
+  custom_dir: docs/theme
+  palette:
+    scheme: testcontainers
+  font:
+    text: Roboto
+    code: Roboto Mono
+  logo: logo.svg
+  favicon: favicon.ico
+extra_css:
+  - "css/extra.css"
+  - "css/tc-header.css"
+repo_name: "testcontainers-python"
+repo_url: "https://github.com/testcontainers/testcontainers-python"
+markdown_extensions:
+  - admonition
+  - codehilite:
+      linenums: false
+  - pymdownx.superfences
+  - pymdownx.tabbed:
+      alternate_style: true
+  - pymdownx.snippets
+  - toc:
+      permalink: true
+  - attr_list
+  - pymdownx.emoji:
+      emoji_generator: !!python/name:material.extensions.emoji.to_svg
+      emoji_index: !!python/name:material.extensions.emoji.twemoji
+nav:
+  - Home: index.md
+  - Quickstart: quickstart.md
+  - Features:
+      - Creating Containers: features/creating_container.md
+      - Configuration: features/configuration.md
+      - Authentication: features/authentication.md
+      - Executing Commands: features/executing_commands.md
+      - Container Logs: features/container_logs.md
+      - Building Images: features/building_images.md
+      - Copying Data: features/copying_data.md
+      - Wait Strategies: features/wait_strategies.md
+      - Docker Compose: features/docker_compose.md
+      - Networking: features/networking.md
+      - Garbage Collector: features/garbage_collector.md
+      - Advanced Features: features/advanced_features.md
+  - Modules:
+      - Databases:
+          - modules/arangodb.md
+          - modules/cassandra.md
+          - modules/chroma.md
+          - modules/clickhouse.md
+          - modules/cockroachdb.md
+          - modules/cosmosdb.md
+          - modules/db2.md
+          - modules/elasticsearch.md
+          - modules/influxdb.md
+          - modules/mongodb.md
+          - modules/mssql.md
+          - modules/mysql.md
+          - modules/neo4j.md
+          - modules/opensearch.md
+          - modules/oracle-free.md
+          - modules/postgres.md
+          - modules/qdrant.md
+          - modules/redis.md
+          - modules/scylla.md
+          - modules/trino.md
+          - modules/weaviate.md
+      - modules/aws.md
+      - modules/azurite.md
+      - modules/generic.md
+      - modules/google.md
+      - modules/k3s.md
+      - modules/keycloak.md
+      - modules/kafka.md
+      - modules/localstack.md
+      - modules/mailpit.md
+      - modules/memcached.md
+      - modules/milvus.md
+      - modules/minio.md
+      - modules/mqtt.md
+      - modules/nats.md
+      - modules/nginx.md
+      - modules/ollama.md
+      - modules/rabbitmq.md
+      - modules/registry.md
+      - modules/selenium.md
+      - modules/sftp.md
+      - modules/test_module_import.md
+      - modules/vault.md
+  - System Requirements:
+      - system_requirements/index.md
+      - system_requirements/docker.md
+  - Contributing: contributing.md
+  - Getting Help: getting_help.md
+edit_uri: edit/main/docs/
+extra:
+  latest_version: 4.10.0

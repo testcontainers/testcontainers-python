@@ -72,3 +72,6 @@ venv
 .python-version
 .env
 .github-token
+
+# docs build
+site/
