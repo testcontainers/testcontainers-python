@@ -1,4 +1,4 @@
-import pyodbc
+import pymssql
 
 from testcontainers.mssql import MsSqlContainer
 
@@ -12,11 +12,8 @@ def basic_example():
         password = mssql.password
         database = mssql.database
 
-        # Create connection string
-        conn_str = f"DRIVER={{ODBC Driver 17 for SQL Server}};SERVER={host},{port};DATABASE={database};UID={username};PWD={password}"
-
         # Connect to MSSQL
-        connection = pyodbc.connect(conn_str)
+        connection = pymssql.connect(server=host, port=port, user=username, password=password, database=database)
         print("Connected to MSSQL")
 
         # Create cursor
@@ -40,7 +37,7 @@ def basic_example():
         cursor.executemany(
             """
             INSERT INTO test_table (name, value, category)
-            VALUES (?, ?, ?)
+            VALUES (%s, %s, %s)
         """,
             test_data,
         )

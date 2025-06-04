@@ -11,7 +11,7 @@ The Testcontainers module for Microsoft SQL Server.
 Please run the following command to add the MSSQL module to your python dependencies:
 
 ```bash
-pip install testcontainers[mssql] sqlalchemy pymssql
+pip install testcontainers[mssql] pymssql
 ```
 
 ## Usage example

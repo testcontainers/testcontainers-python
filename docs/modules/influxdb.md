@@ -20,4 +20,8 @@ pip install testcontainers[influxdb] influxdb-client
 
 ## Usage example
 
+<!--codeinclude-->
+
 [Creating an InfluxDB container](../../modules/influxdb/example_basic.py)
+
+<!--/codeinclude-->
