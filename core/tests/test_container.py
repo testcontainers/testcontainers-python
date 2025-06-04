@@ -1,8 +1,12 @@
+import pathlib
+import textwrap
+
 import pytest
 
-from testcontainers.core.container import DockerContainer
+from testcontainers.core.container import DockerContainer, NotHealthy
 from testcontainers.core.docker_client import DockerClient
 from testcontainers.core.config import ConnectionMode
+from testcontainers.core.image import DockerImage
 
 FAKE_ID = "ABC123"
 
@@ -96,3 +100,66 @@ def test_attribute(init_attr, init_value, class_attr, stored_value):
     """Test that the attributes set through the __init__ function are properly stored."""
     with DockerContainer("ubuntu", **{init_attr: init_value}) as container:
         assert getattr(container, class_attr) == stored_value
+
+
+@pytest.fixture(name="with_never_healthy_image")
+def with_never_health_image_fixture(tmp_path):
+    DOCKERFILE = """FROM alpine:latest
+    HEALTHCHECK --interval=1s CMD test -e /testfile
+    CMD sleep infinity
+    """
+    dockerfile = tmp_path / "Dockerfile"
+    dockerfile.write_text(textwrap.dedent(DOCKERFILE))
+    with DockerImage(tmp_path) as image:
+        yield image
+
+
+def test_wait_for_healthcheck_never_healthy(with_never_healthy_image: DockerImage):
+    # Given
+    with DockerContainer(image=str(with_never_healthy_image)) as container:
+        # Expect
+        with pytest.raises(NotHealthy):
+            # When
+            container.wait_for_healthcheck()
+
+
+@pytest.fixture(name="with_immediately_healthy_image")
+def with_immediately_healthy_image_fixture(tmp_path):
+    DOCKERFILE = """FROM alpine:latest
+    RUN touch /testfile
+
+    HEALTHCHECK --interval=1s CMD test -e /testfile
+    CMD sleep infinity
+    """
+    dockerfile = tmp_path / "Dockerfile"
+    dockerfile.write_text(textwrap.dedent(DOCKERFILE))
+    with DockerImage(tmp_path) as image:
+        yield image
+
+
+def test_wait_for_healthcheck_immediate_healthy(with_immediately_healthy_image: DockerImage):
+    # Given
+    with DockerContainer(image=str(with_immediately_healthy_image)) as container:
+        # When
+        container.wait_for_healthcheck()
+
+
+@pytest.fixture(name="with_eventually_healthy_image")
+def with_eventually_healthy_image_fixture(tmp_path):
+    DOCKERFILE = """FROM alpine:latest
+    RUN touch /testfile
+
+    HEALTHCHECK --interval=1s CMD test -e /testfile
+    CMD sleep 4 && touch /testfile
+    """
+    dockerfile = tmp_path / "Dockerfile"
+    dockerfile.write_text(textwrap.dedent(DOCKERFILE))
+    with DockerImage(tmp_path) as image:
+        yield image
+
+
+def test_wait_for_healthcheck_eventually_healthy(with_eventually_healthy_image: DockerImage):
+    # Given
+    with DockerContainer(str(with_eventually_healthy_image)) as container:
+        # When
+        container.wait_for_healthcheck()
