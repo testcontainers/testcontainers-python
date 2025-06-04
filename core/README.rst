@@ -18,6 +18,8 @@ Testcontainers Core
 
 .. autoclass:: testcontainers.core.generic.DbContainer
 
+.. autoclass:: testcontainers.core.network.Network
+
 .. raw:: html
 
     <hr>
