@@ -32,7 +32,7 @@ class ChromaContainer(DockerContainer):
 
     def __init__(
         self,
-        image: str = "chromadb/chroma:0.6.3",
+        image: str = "chromadb/chroma:1.0.0",
         port: int = 8000,
         **kwargs,
     ) -> None:
