@@ -133,3 +133,21 @@ def test_none_driver_urls():
 
         url = container.get_connection_url(driver=None)
         assert url == expected_url
+
+
+def test_psycopg_versions():
+    """Test that both psycopg2 and psycopg (v2 and v3) work with the container."""
+
+    postgres_container = PostgresContainer("postgres:16-alpine", driver="psycopg2")
+    with postgres_container as postgres:
+        engine = sqlalchemy.create_engine(postgres.get_connection_url())
+        with engine.begin() as connection:
+            result = connection.execute(sqlalchemy.text("SELECT 1 as test"))
+            assert result.scalar() == 1
+
+    postgres_container = PostgresContainer("postgres:16-alpine", driver="psycopg")
+    with postgres_container as postgres:
+        engine = sqlalchemy.create_engine(postgres.get_connection_url())
+        with engine.begin() as connection:
+            result = connection.execute(sqlalchemy.text("SELECT 1 as test"))
+            assert result.scalar() == 1
