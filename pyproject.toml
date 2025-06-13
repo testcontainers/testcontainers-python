@@ -111,7 +111,7 @@ pika = { version = "*", optional = true }
 redis = { version = "*", optional = true }
 selenium = { version = "*", optional = true }
 weaviate-client = { version = "^4.5.4", optional = true }
-chromadb-client = { version = "*", optional = true }
+chromadb-client = { version = "^1.0.0", optional = true }
 qdrant-client = { version = "*", optional = true }
 bcrypt = { version = "*", optional = true }
 httpx = { version = "*", optional = true }
