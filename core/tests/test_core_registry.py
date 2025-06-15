@@ -18,8 +18,13 @@ from testcontainers.core.docker_client import DockerClient
 from testcontainers.core.waiting_utils import wait_for_logs
 
 from testcontainers.registry import DockerRegistryContainer
+from testcontainers.core.utils import is_mac
 
 
+@pytest.mark.skipif(
+    is_mac(),
+    reason="Docker Desktop on macOS does not support insecure private registries without daemon reconfiguration",
+)
 def test_missing_on_private_registry(monkeypatch):
     username = "user"
     password = "pass"
@@ -41,6 +46,10 @@ def test_missing_on_private_registry(monkeypatch):
                 wait_for_logs(test_container, "Hello from Docker!")
 
 
+@pytest.mark.skipif(
+    is_mac(),
+    reason="Docker Desktop on macOS does not support local insecure registries over HTTP without modifying daemon settings",
+)
 @pytest.mark.parametrize(
     "image,tag,username,password,expected_output",
     [

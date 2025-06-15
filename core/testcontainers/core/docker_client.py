@@ -151,7 +151,7 @@ class DockerClient:
                         except ipaddress.AddressValueError:
                             continue
                         if docker_host in subnet:
-                            return cast(str, network.name)
+                            return cast("str", network.name)
         except (ipaddress.AddressValueError, OSError):
             pass
         return None
@@ -163,7 +163,7 @@ class DockerClient:
         port_mappings = self.client.api.port(container_id, port)
         if not port_mappings:
             raise ConnectionError(f"Port mapping for container {container_id} and port {port} is not available")
-        return cast(str, port_mappings[0]["HostPort"])
+        return cast("str", port_mappings[0]["HostPort"])
 
     def get_container(self, container_id: str) -> dict[str, Any]:
         """
@@ -172,7 +172,7 @@ class DockerClient:
         containers = self.client.api.containers(filters={"id": container_id})
         if not containers:
             raise RuntimeError(f"Could not get container with id {container_id}")
-        return cast(dict[str, Any], containers[0])
+        return cast("dict[str, Any]", containers[0])
 
     def bridge_ip(self, container_id: str) -> str:
         """
@@ -241,7 +241,7 @@ class DockerClient:
             hostname = url.hostname
             if not hostname or (hostname == "localnpipe" and utils.is_windows()):
                 return "localhost"
-            return cast(str, url.hostname)
+            return cast("str", url.hostname)
         if utils.inside_container() and ("unix" in url.scheme or "npipe" in url.scheme):
             ip_address = utils.default_gateway_ip()
             if ip_address:
@@ -257,7 +257,7 @@ class DockerClient:
 
     def client_networks_create(self, name: str, param: dict[str, Any]) -> dict[str, Any]:
         labels = create_labels("", param.get("labels"))
-        return cast(dict[str, Any], self.client.networks.create(name, **{**param, "labels": labels}))
+        return cast("dict[str, Any]", self.client.networks.create(name, **{**param, "labels": labels}))
 
 
 def get_docker_host() -> Optional[str]:

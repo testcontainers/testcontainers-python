@@ -1,4 +1,4 @@
-# Contrinuous Integration for the core package
+# Continuous Integration for the core package
 
 name: core
 
@@ -25,6 +25,8 @@ jobs:
         run: poetry install --all-extras
       - name: Run twine check
         run: poetry build && poetry run twine check dist/*.tar.gz
+      - name: Set up Docker
+        uses: docker/setup-docker-action@v4
       - name: Run tests
         run: make core/tests
       - name: Rename coverage file
