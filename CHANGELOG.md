@@ -1,5 +1,30 @@
 # Changelog
 
+## [4.11.0](https://github.com/testcontainers/testcontainers-python/compare/testcontainers-v4.10.0...testcontainers-v4.11.0) (2025-06-15)
+
+
+### Features
+
+* **core:** Protocol support for container port bind and expose ([#690](https://github.com/testcontainers/testcontainers-python/issues/690)) ([a0d4317](https://github.com/testcontainers/testcontainers-python/commit/a0d4317643005dde4f344eccbfc56c062e83bf05))
+* DockerContainer initializer to accept its private members as kwargs ([#809](https://github.com/testcontainers/testcontainers-python/issues/809)) ([e7feb53](https://github.com/testcontainers/testcontainers-python/commit/e7feb53fe532b6d32d5d0c5a5d517249f8e7de50))
+
+
+### Bug Fixes
+
+* **compose:** use provided docker command instead of default ([#785](https://github.com/testcontainers/testcontainers-python/issues/785)) ([0ae704a](https://github.com/testcontainers/testcontainers-python/commit/0ae704a24de440b715d5f3c11eaa4f18ccd437b5))
+* **core:** Add kwargs to image build ([#708](https://github.com/testcontainers/testcontainers-python/issues/708)) ([cc02f94](https://github.com/testcontainers/testcontainers-python/commit/cc02f9444b41efa62836b21210b07aee1da94d0b))
+* **core:** change with_command type to include list of strings ([#789](https://github.com/testcontainers/testcontainers-python/issues/789)) ([f7c29cb](https://github.com/testcontainers/testcontainers-python/commit/f7c29cb913e4d42d535783c3aa0f3566d4e543bf))
+* **core:** Determine docker socket for rootless docker ([#779](https://github.com/testcontainers/testcontainers-python/issues/779)) ([6817582](https://github.com/testcontainers/testcontainers-python/commit/6817582bf67ed36448b69019ab897c50ae80e7e1))
+* **core:** Typing in docker_client ([#702](https://github.com/testcontainers/testcontainers-python/issues/702)) ([e8bf224](https://github.com/testcontainers/testcontainers-python/commit/e8bf2244c7210e31b34e5fecf2602fdd1b8c0834))
+* **core:** Typing in generic + network ([#700](https://github.com/testcontainers/testcontainers-python/issues/700)) ([2061912](https://github.com/testcontainers/testcontainers-python/commit/2061912e67705be801136f349f372f542a1f262f))
+* **core:** Typing in version ([#701](https://github.com/testcontainers/testcontainers-python/issues/701)) ([9dc2a02](https://github.com/testcontainers/testcontainers-python/commit/9dc2a02ca9b9ffbaacfd7de79ec9f78175758ec0))
+* **core:** wait in test core registry ([#812](https://github.com/testcontainers/testcontainers-python/issues/812)) ([b574c0e](https://github.com/testcontainers/testcontainers-python/commit/b574c0e0a11d57c8c56aef448292f8c2fc233078))
+* **modules:** fix cosmosdb failure ([#827](https://github.com/testcontainers/testcontainers-python/issues/827)) ([dafcbed](https://github.com/testcontainers/testcontainers-python/commit/dafcbed7608e857bebcdd0b4638bec27abadc693))
+* **modules:** update chroma version ([#826](https://github.com/testcontainers/testcontainers-python/issues/826)) ([b7d41dd](https://github.com/testcontainers/testcontainers-python/commit/b7d41ddc5742dd380b6e01c712a02b044a64cbb3))
+* **rabbitmq:** correct pika pypi reference ([#817](https://github.com/testcontainers/testcontainers-python/issues/817)) ([e90d308](https://github.com/testcontainers/testcontainers-python/commit/e90d30826fb7d7cf3cc7db39a86465d448aaa6e0))
+* **registry:** module typed ([#811](https://github.com/testcontainers/testcontainers-python/issues/811)) ([6b11268](https://github.com/testcontainers/testcontainers-python/commit/6b1126884c82529a93bd55030374d322dd0870bc))
+* use connection mode override function in config ([#775](https://github.com/testcontainers/testcontainers-python/issues/775)) ([ab2a1ab](https://github.com/testcontainers/testcontainers-python/commit/ab2a1abd957ffb35719f673a7674df83287f1545)), closes [#774](https://github.com/testcontainers/testcontainers-python/issues/774)
+
 ## [4.10.0](https://github.com/testcontainers/testcontainers-python/compare/testcontainers-v4.9.2...testcontainers-v4.10.0) (2025-04-02)
 
 
