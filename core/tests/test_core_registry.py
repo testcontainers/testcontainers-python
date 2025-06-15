@@ -15,7 +15,7 @@ from docker.errors import NotFound
 from testcontainers.core.config import testcontainers_config
 from testcontainers.core.container import DockerContainer
 from testcontainers.core.docker_client import DockerClient
-from testcontainers.core.waiting_utils import wait_container_is_ready
+from testcontainers.core.waiting_utils import wait_for_logs
 
 from testcontainers.registry import DockerRegistryContainer
 from testcontainers.core.utils import is_mac
@@ -43,7 +43,7 @@ def test_missing_on_private_registry(monkeypatch):
         with pytest.raises(NotFound):
             # Test a container with image from private registry
             with DockerContainer(f"{registry_url}/{image}:{tag}") as test_container:
-                wait_container_is_ready(test_container)
+                wait_for_logs(test_container, "Hello from Docker!")
 
 
 @pytest.mark.skipif(
@@ -51,14 +51,14 @@ def test_missing_on_private_registry(monkeypatch):
     reason="Docker Desktop on macOS does not support local insecure registries over HTTP without modifying daemon settings",
 )
 @pytest.mark.parametrize(
-    "image,tag,username,password",
+    "image,tag,username,password,expected_output",
     [
-        ("nginx", "test", "user", "pass"),
-        ("hello-world", "latest", "new_user", "new_pass"),
-        ("alpine", "3.12", None, None),
+        ("nginx", "test", "user", "pass", "start worker processes"),
+        ("hello-world", "latest", "new_user", "new_pass", "Hello from Docker!"),
+        ("alpine", "3.12", None, None, ""),
     ],
 )
-def test_with_private_registry(image, tag, username, password, monkeypatch):
+def test_with_private_registry(image, tag, username, password, expected_output, monkeypatch):
     client = DockerClient().client
 
     with DockerRegistryContainer(username=username, password=password) as registry:
@@ -85,7 +85,7 @@ def test_with_private_registry(image, tag, username, password, monkeypatch):
 
         # Test a container with image from private registry
         with DockerContainer(f"{registry_url}/{image}:{tag}") as test_container:
-            wait_container_is_ready(test_container)
+            wait_for_logs(test_container, expected_output)
 
     # cleanup
     client.images.remove(f"{registry_url}/{image}:{tag}")
