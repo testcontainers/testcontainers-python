@@ -61,7 +61,7 @@ class DockerContainer:
     def __init__(
         self,
         image: str,
-        docker_client_kw: Optional[dict] = None,
+        docker_client_kw: Optional[dict[str, Any]] = None,
         command: Optional[str] = None,
         env: Optional[dict[str, str]] = None,
         name: Optional[str] = None,
@@ -69,23 +69,23 @@ class DockerContainer:
         volumes: Optional[list[tuple[str, str, str]]] = None,
         network: Optional[Network] = None,
         network_aliases: Optional[list[str]] = None,
-        **kwargs,
+        **kwargs: Any,
     ) -> None:
         self.env = env or {}
 
-        self.ports = {}
+        self.ports: dict[Union[str, int], Optional[Union[str, int]]] = {}
         if ports:
             self.with_exposed_ports(*ports)
 
-        self.volumes = {}
+        self.volumes: dict[str, Mount] = {}
         if volumes:
             for vol in volumes:
                 self.with_volume_mapping(*vol)
 
         self.image = image
         self._docker = DockerClient(**(docker_client_kw or {}))
-        self._container = None
-        self._command = command
+        self._container: Optional[Container] = None
+        self._command: Optional[Union[str, list[str]]] = command
         self._name = name
         self._network: Optional[Network] = None
         if network is not None:
