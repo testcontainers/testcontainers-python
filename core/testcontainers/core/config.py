@@ -36,8 +36,8 @@ def get_docker_socket() -> str:
     if socket_path := environ.get("TESTCONTAINERS_DOCKER_SOCKET_OVERRIDE", ""):
         return socket_path
 
-    client = docker.from_env()
     try:
+        client = docker.from_env()
         socket_path = client.api.get_adapter(client.api.base_url).socket_path
         # return the normalized path as string
         return str(Path(socket_path).absolute())
