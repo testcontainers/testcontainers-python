@@ -8,7 +8,8 @@ from urllib.request import urlopen, Request
 import pytest
 from pytest_mock import MockerFixture
 
-from testcontainers.compose import DockerCompose, ContainerIsNotRunning, NoSuchPortExposed
+from testcontainers.compose import DockerCompose
+from testcontainers.core.exceptions import ContainerIsNotRunning, NoSuchPortExposed
 
 FIXTURES = Path(__file__).parent.joinpath("compose_fixtures")
 
@@ -146,7 +147,7 @@ def test_compose_logs():
         # either the line is blank or the first column (|-separated) contains the service name
         # this is a safe way to split the string
         # docker changes the prefix between versions 24 and 25
-        assert not line or container.Service in next(iter(line.split("|")), None)
+        assert not line or container.Service in next(iter(line.split("|")))
 
 
 def test_compose_volumes():
@@ -196,10 +197,11 @@ def test_compose_multiple_containers_and_ports():
             e.match("get_container failed")
             e.match("not exactly 1 container")
 
-        assert multiple.get_container("alpine")
-        assert multiple.get_container("alpine2")
+        multiple.get_container("alpine")
+        multiple.get_container("alpine2")
 
         a2p = multiple.get_service_port("alpine2")
+        assert a2p is not None
         assert a2p > 0  # > 1024
 
         with pytest.raises(NoSuchPortExposed) as e:

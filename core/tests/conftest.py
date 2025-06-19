@@ -2,7 +2,7 @@ from pathlib import Path
 
 import pytest
 from typing import Callable
-from testcontainers.core.container import DockerClient
+from testcontainers.core.docker_client import DockerClient
 from pprint import pprint
 import sys
 
@@ -54,7 +54,7 @@ def check_for_image() -> Callable[[str, bool], None]:
 
 
 @pytest.fixture
-def show_container_attributes() -> None:
+def show_container_attributes() -> Callable[..., None]:
     """Wrap the show_container_attributes function in a fixture"""
 
     def _show_container_attributes(container_id: str) -> None:
