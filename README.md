@@ -41,6 +41,8 @@ See [CONTRIBUTING.md](.github/CONTRIBUTING.md) for more details.
 
 ## Configuration
 
+You can set environment variables to configure the library behaviour:
+
 | Env Variable                            | Example                     | Description                                                                        |
 | --------------------------------------- | --------------------------- | ---------------------------------------------------------------------------------- |
 | `TESTCONTAINERS_DOCKER_SOCKET_OVERRIDE` | `/var/run/docker.sock`      | Path to Docker's socket used by ryuk                                               |
@@ -48,3 +50,11 @@ See [CONTRIBUTING.md](.github/CONTRIBUTING.md) for more details.
 | `TESTCONTAINERS_RYUK_DISABLED`          | `false`                     | Disable ryuk                                                                       |
 | `RYUK_CONTAINER_IMAGE`                  | `testcontainers/ryuk:0.8.1` | Custom image for ryuk                                                              |
 | `RYUK_RECONNECTION_TIMEOUT`             | `10s`                       | Reconnection timeout for Ryuk TCP socket before Ryuk reaps all dangling containers |
+
+Alternatively you can set the configuration during runtime:
+
+```python
+from testcontainers.core import testcontainers_config
+
+testcontainers_config.ryuk_docker_socket = "/home/user/docker.sock"
+```
