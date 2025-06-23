@@ -1,5 +1,18 @@
 # Changelog
 
+## [4.12.0](https://github.com/testcontainers/testcontainers-python/compare/testcontainers-v4.11.0...testcontainers-v4.12.0) (2025-06-23)
+
+
+### Features
+
+* **main:** New Testcontainers Python Docs Site ([#822](https://github.com/testcontainers/testcontainers-python/issues/822)) ([a6bdf0e](https://github.com/testcontainers/testcontainers-python/commit/a6bdf0ef84643074fbc7edf3a75936ce3f1d0880))
+* make config monkeypatchable, fix config related startup issues ([#833](https://github.com/testcontainers/testcontainers-python/issues/833)) ([ff6a32d](https://github.com/testcontainers/testcontainers-python/commit/ff6a32db803046db8d89ba5a7157bf573d9f25c2))
+
+
+### Bug Fixes
+
+* just use the getLogger API and do not override logger settings ([#836](https://github.com/testcontainers/testcontainers-python/issues/836)) ([f467c84](https://github.com/testcontainers/testcontainers-python/commit/f467c842b851613b9a087bd5f9a08d8c39577cb8))
+
 ## [4.11.0](https://github.com/testcontainers/testcontainers-python/compare/testcontainers-v4.10.0...testcontainers-v4.11.0) (2025-06-15)
 
 
