@@ -1,10 +1,13 @@
+import types
+import warnings
+from collections.abc import Mapping
 from dataclasses import dataclass, field
 from enum import Enum
 from logging import warning
 from os import environ
 from os.path import exists
 from pathlib import Path
-from typing import Optional, Union
+from typing import Final, Optional, Union
 
 import docker
 
@@ -17,13 +20,11 @@ class ConnectionMode(Enum):
     @property
     def use_mapped_port(self) -> bool:
         """
-        Return true if we need to use mapped port for this connection
+        Return True if mapped ports should be used for this connection mode.
 
-        This is true for everything but bridge mode.
+        Mapped ports are used for all connection modes except 'bridge_ip'.
         """
-        if self == self.bridge_ip:
-            return False
-        return True
+        return self != ConnectionMode.bridge_ip
 
 
 def get_docker_socket() -> str:
@@ -32,28 +33,27 @@ def get_docker_socket() -> str:
 
     Using the docker api ensure we handle rootless docker properly
     """
-    if socket_path := environ.get("TESTCONTAINERS_DOCKER_SOCKET_OVERRIDE"):
+    if socket_path := environ.get("TESTCONTAINERS_DOCKER_SOCKET_OVERRIDE", ""):
         return socket_path
 
-    client = docker.from_env()
     try:
+        client = docker.from_env()
         socket_path = client.api.get_adapter(client.api.base_url).socket_path
         # return the normalized path as string
         return str(Path(socket_path).absolute())
-    except AttributeError:
+    except Exception:
         return "/var/run/docker.sock"
 
 
-MAX_TRIES = int(environ.get("TC_MAX_TRIES", 120))
-SLEEP_TIME = int(environ.get("TC_POOLING_INTERVAL", 1))
-TIMEOUT = MAX_TRIES * SLEEP_TIME
+def get_bool_env(name: str) -> bool:
+    """
+    Get environment variable named `name` and convert it to bool.
 
-RYUK_IMAGE: str = environ.get("RYUK_CONTAINER_IMAGE", "testcontainers/ryuk:0.8.1")
-RYUK_PRIVILEGED: bool = environ.get("TESTCONTAINERS_RYUK_PRIVILEGED", "false") == "true"
-RYUK_DISABLED: bool = environ.get("TESTCONTAINERS_RYUK_DISABLED", "false") == "true"
-RYUK_DOCKER_SOCKET: str = get_docker_socket()
-RYUK_RECONNECTION_TIMEOUT: str = environ.get("RYUK_RECONNECTION_TIMEOUT", "10s")
-TC_HOST_OVERRIDE: Optional[str] = environ.get("TC_HOST", environ.get("TESTCONTAINERS_HOST_OVERRIDE"))
+    Defaults to False.
+    """
+    value = environ.get(name, "")
+    return value.lower() in ("yes", "true", "t", "y", "1")
+
 
 TC_FILE = ".testcontainers.properties"
 TC_GLOBAL = Path.home() / TC_FILE
@@ -63,7 +63,7 @@ def get_user_overwritten_connection_mode() -> Optional[ConnectionMode]:
     """
     Return the user overwritten connection mode.
     """
-    connection_mode: str | None = environ.get("TESTCONTAINERS_CONNECTION_MODE")
+    connection_mode: Union[str, None] = environ.get("TESTCONTAINERS_CONNECTION_MODE")
     if connection_mode:
         try:
             return ConnectionMode(connection_mode)
@@ -96,16 +96,16 @@ _WARNINGS = {"DOCKER_AUTH_CONFIG": "DOCKER_AUTH_CONFIG is experimental, see test
 
 @dataclass
 class TestcontainersConfiguration:
-    max_tries: int = MAX_TRIES
-    sleep_time: int = SLEEP_TIME
-    ryuk_image: str = RYUK_IMAGE
-    ryuk_privileged: bool = RYUK_PRIVILEGED
-    ryuk_disabled: bool = RYUK_DISABLED
-    ryuk_docker_socket: str = RYUK_DOCKER_SOCKET
-    ryuk_reconnection_timeout: str = RYUK_RECONNECTION_TIMEOUT
+    max_tries: int = int(environ.get("TC_MAX_TRIES", "120"))
+    sleep_time: int = int(environ.get("TC_POOLING_INTERVAL", "1"))
+    ryuk_image: str = environ.get("RYUK_CONTAINER_IMAGE", "testcontainers/ryuk:0.8.1")
+    ryuk_privileged: bool = get_bool_env("TESTCONTAINERS_RYUK_PRIVILEGED")
+    ryuk_disabled: bool = get_bool_env("TESTCONTAINERS_RYUK_DISABLED")
+    _ryuk_docker_socket: str = ""
+    ryuk_reconnection_timeout: str = environ.get("RYUK_RECONNECTION_TIMEOUT", "10s")
     tc_properties: dict[str, str] = field(default_factory=read_tc_properties)
     _docker_auth_config: Optional[str] = field(default_factory=lambda: environ.get("DOCKER_AUTH_CONFIG"))
-    tc_host_override: Optional[str] = TC_HOST_OVERRIDE
+    tc_host_override: Optional[str] = environ.get("TC_HOST", environ.get("TESTCONTAINERS_HOST_OVERRIDE"))
     connection_mode_override: Optional[ConnectionMode] = field(default_factory=get_user_overwritten_connection_mode)
 
     """
@@ -133,19 +133,54 @@ class TestcontainersConfiguration:
     def timeout(self) -> int:
         return self.max_tries * self.sleep_time
 
+    @property
+    def ryuk_docker_socket(self) -> str:
+        if not self._ryuk_docker_socket:
+            self.ryuk_docker_socket = get_docker_socket()
+        return self._ryuk_docker_socket
 
-testcontainers_config = TestcontainersConfiguration()
+    @ryuk_docker_socket.setter
+    def ryuk_docker_socket(self, value: str) -> None:
+        self._ryuk_docker_socket = value
+
+
+testcontainers_config: Final = TestcontainersConfiguration()
 
 __all__ = [
-    # the public API of this module
+    # Public API of this module:
     "testcontainers_config",
-    # and all the legacy things that are deprecated:
-    "MAX_TRIES",
-    "SLEEP_TIME",
-    "TIMEOUT",
-    "RYUK_IMAGE",
-    "RYUK_PRIVILEGED",
-    "RYUK_DISABLED",
-    "RYUK_DOCKER_SOCKET",
-    "RYUK_RECONNECTION_TIMEOUT",
 ]
+
+_deprecated_attribute_mapping: Final[Mapping[str, str]] = types.MappingProxyType(
+    {
+        "MAX_TRIES": "max_tries",
+        "RYUK_DISABLED": "ryuk_disabled",
+        "RYUK_DOCKER_SOCKET": "ryuk_docker_socket",
+        "RYUK_IMAGE": "ryuk_image",
+        "RYUK_PRIVILEGED": "ryuk_privileged",
+        "RYUK_RECONNECTION_TIMEOUT": "ryuk_reconnection_timeout",
+        "SLEEP_TIME": "sleep_time",
+        "TIMEOUT": "timeout",
+    }
+)
+
+
+def __dir__() -> list[str]:
+    return __all__ + list(_deprecated_attribute_mapping.keys())
+
+
+def __getattr__(name: str) -> object:
+    """
+    Allow getting deprecated legacy settings.
+    """
+    module = f"{__name__!r}"
+
+    if name in _deprecated_attribute_mapping:
+        attrib = _deprecated_attribute_mapping[name]
+        warnings.warn(
+            f"{module}.{name} is deprecated. Use {module}.testcontainers_config.{attrib} instead.",
+            DeprecationWarning,
+            stacklevel=2,
+        )
+        return getattr(testcontainers_config, attrib)
+    raise AttributeError(f"module {module} has no attribute {name!r}")

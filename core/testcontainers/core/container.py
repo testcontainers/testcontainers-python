@@ -28,6 +28,20 @@ class DockerContainer:
     """
     Basic container object to spin up Docker instances.
 
+    Args:
+        image: The name of the image to start.
+        docker_client_kw: Dictionary with arguments that will be passed to the
+            docker.DockerClient init.
+        command: Optional execution command for the container.
+        name: Optional name for the container.
+        ports: Ports to be exposed by the container. The port number will be
+            automatically assigned on the host, use
+            :code:`get_exposed_port(PORT)` method to get the port number on the host.
+        volumes: Volumes to mount into the container. Each entry should be a tuple with
+            three values: host path, container path and. mode (default 'ro').
+        network: Optional network to connect the container to.
+        network_aliases: Optional list of aliases for the container in the network.
+
     .. doctest::
 
         >>> from testcontainers.core.container import DockerContainer
@@ -41,18 +55,40 @@ class DockerContainer:
         self,
         image: str,
         docker_client_kw: Optional[dict] = None,
+        command: Optional[str] = None,
+        env: Optional[dict[str, str]] = None,
+        name: Optional[str] = None,
+        ports: Optional[list[int]] = None,
+        volumes: Optional[list[tuple[str, str, str]]] = None,
+        network: Optional[Network] = None,
+        network_aliases: Optional[list[str]] = None,
         **kwargs,
     ) -> None:
-        self.env = {}
+        self.env = env or {}
+
         self.ports = {}
+        if ports:
+            self.with_exposed_ports(*ports)
+
         self.volumes = {}
+        if volumes:
+            for vol in volumes:
+                self.with_volume_mapping(*vol)
+
         self.image = image
         self._docker = DockerClient(**(docker_client_kw or {}))
         self._container = None
-        self._command = None
-        self._name = None
+        self._command = command
+        self._name = name
+
         self._network: Optional[Network] = None
+        if network is not None:
+            self.with_network(network)
+
         self._network_aliases: Optional[list[str]] = None
+        if network_aliases:
+            self.with_network_aliases(*network_aliases)
+
         self._kwargs = kwargs
 
     def with_env(self, key: str, value: str) -> Self:
@@ -69,11 +105,38 @@ class DockerContainer:
             self.with_env(key, value)
         return self
 
-    def with_bind_ports(self, container: int, host: Optional[int] = None) -> Self:
+    def with_bind_ports(self, container: Union[str, int], host: Optional[Union[str, int]] = None) -> Self:
+        """
+        Bind container port to host port
+
+        :param container: container port
+        :param host: host port
+
+        :doctest:
+
+        >>> from testcontainers.core.container import DockerContainer
+        >>> container = DockerContainer("nginx")
+        >>> container = container.with_bind_ports("8080/tcp", 8080)
+        >>> container = container.with_bind_ports("8081/tcp", 8081)
+
+        """
         self.ports[container] = host
         return self
 
-    def with_exposed_ports(self, *ports: int) -> Self:
+    def with_exposed_ports(self, *ports: Union[str, int]) -> Self:
+        """
+        Expose ports from the container without binding them to the host.
+
+        :param ports: ports to expose
+
+        :doctest:
+
+        >>> from testcontainers.core.container import DockerContainer
+        >>> container = DockerContainer("nginx")
+        >>> container = container.with_exposed_ports("8080/tcp", "8081/tcp")
+
+        """
+
         for port in ports:
             self.ports[port] = None
         return self

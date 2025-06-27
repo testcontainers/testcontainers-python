@@ -65,6 +65,6 @@ class K3SContainer(DockerContainer):
         execution = self.get_wrapped_container().exec_run(["cat", "/etc/rancher/k3s/k3s.yaml"])
         config_yaml = execution.output.decode("utf-8").replace(
             f"https://127.0.0.1:{self.KUBE_SECURE_PORT}",
-            f"https://{self.get_container_host_ip()}:" f"{self.get_exposed_port(self.KUBE_SECURE_PORT)}",
+            f"https://{self.get_container_host_ip()}:{self.get_exposed_port(self.KUBE_SECURE_PORT)}",
         )
         return config_yaml
