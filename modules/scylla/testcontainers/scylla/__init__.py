@@ -1,4 +1,3 @@
-from testcontainers.core.config import MAX_TRIES
 from testcontainers.core.generic import DockerContainer
 from testcontainers.core.waiting_utils import wait_container_is_ready, wait_for_logs
 
@@ -29,7 +28,7 @@ class ScyllaContainer(DockerContainer):
 
     @wait_container_is_ready(OSError)
     def _connect(self):
-        wait_for_logs(self, predicate="Starting listening for CQL clients", timeout=MAX_TRIES)
+        wait_for_logs(self, predicate="Starting listening for CQL clients")
         cluster = self.get_cluster()
         cluster.connect()
 

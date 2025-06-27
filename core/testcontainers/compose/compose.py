@@ -139,6 +139,8 @@ class DockerCompose:
             The list of services to use from this DockerCompose.
         client_args:
             arguments to pass to docker.from_env()
+        docker_command_path:
+            The docker compose command to run.
 
     Example:
 
@@ -195,7 +197,7 @@ class DockerCompose:
 
     @cached_property
     def compose_command_property(self) -> list[str]:
-        docker_compose_cmd = [self.docker_command_path or "docker", "compose"]
+        docker_compose_cmd = [self.docker_command_path] if self.docker_command_path else ["docker", "compose"]
         if self.compose_file_name:
             for file in self.compose_file_name:
                 docker_compose_cmd += ["-f", file]
@@ -291,7 +293,7 @@ class DockerCompose:
             config_cmd.append("--no-interpolate")
 
         cmd_output = self._run_command(cmd=config_cmd).stdout
-        return cast(dict[str, Any], loads(cmd_output))
+        return cast(dict[str, Any], loads(cmd_output))  # noqa: TC006
 
     def get_containers(self, include_all=False) -> list[ComposeContainer]:
         """

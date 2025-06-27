@@ -8,6 +8,8 @@ from testcontainers.core.container import DockerContainer
 from testcontainers.core.utils import raise_for_deprecated_parameter
 from testcontainers.core.waiting_utils import wait_container_is_ready
 
+MIN_REQUIRED_INITIAL_ADMIN_PASSWORD = [2, 12, 0]
+
 
 class OpenSearchContainer(DockerContainer):
     """
@@ -65,7 +67,7 @@ class OpenSearchContainer(DockerContainer):
 
     def _supports_initial_admin_password(self, image: str) -> bool:
         with suppress(Exception):
-            return [int(n) for n in image.split(":")[-1].split(".")] >= [int(n) for n in "2.12.0".split(".")]
+            return [int(n) for n in image.split(":")[-1].split(".")] >= MIN_REQUIRED_INITIAL_ADMIN_PASSWORD
         return False
 
     def get_config(self) -> dict:
