@@ -209,6 +209,12 @@ log_cli_level = "INFO"
 markers = [
     "inside_docker_check: mark test to be used to validate DinD/DooD is working as expected",
 ]
+filterwarnings = [
+    # Suppress expected deprecation warnings for backwards compatibility testing
+    "ignore:The @wait_container_is_ready decorator is deprecated.*:DeprecationWarning",
+    "ignore:The wait_for function is deprecated and will be removed in a future version.*:DeprecationWarning",
+    "ignore:The wait_for_logs function with string or callable predicates is deprecated.*:DeprecationWarning",
+]
 
 [tool.coverage.run]
 branch = true

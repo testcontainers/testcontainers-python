@@ -16,7 +16,8 @@ from testcontainers.core.exceptions import ContainerConnectException, ContainerS
 from testcontainers.core.labels import LABEL_SESSION_ID, SESSION_ID
 from testcontainers.core.network import Network
 from testcontainers.core.utils import is_arm, setup_logger
-from testcontainers.core.waiting_utils import wait_container_is_ready, wait_for_logs
+from testcontainers.core.wait_strategies import LogMessageWaitStrategy
+from testcontainers.core.waiting_utils import WaitStrategy
 
 if TYPE_CHECKING:
     from docker.models.containers import Container
@@ -90,6 +91,7 @@ class DockerContainer:
             self.with_network_aliases(*network_aliases)
 
         self._kwargs = kwargs
+        self._wait_strategy: Optional[WaitStrategy] = None
 
     def with_env(self, key: str, value: str) -> Self:
         self.env[key] = value
@@ -154,6 +156,11 @@ class DockerContainer:
             return self.with_kwargs(platform="linux/amd64")
         return self
 
+    def waiting_for(self, strategy: WaitStrategy) -> "DockerContainer":
+        """Set a wait strategy to be used after container start."""
+        self._wait_strategy = strategy
+        return self
+
     def start(self) -> Self:
         if not c.ryuk_disabled and self.image != c.ryuk_image:
             logger.debug("Creating Ryuk container")
@@ -186,6 +193,9 @@ class DockerContainer:
         )
 
         logger.info("Container started: %s", self._container.short_id)
+
+        if self._wait_strategy is not None:
+            self._wait_strategy.wait_until_ready(self)
         return self
 
     def stop(self, force=True, delete_volume=True) -> None:
@@ -212,7 +222,6 @@ class DockerContainer:
             # ensure that we covered all possible connection_modes
             assert_never(connection_mode)
 
-    @wait_container_is_ready()
     def get_exposed_port(self, port: int) -> int:
         if self.get_docker_client().get_connection_mode().use_mapped_port:
             return self.get_docker_client().port(self._container.id, port)
@@ -241,6 +250,18 @@ class DockerContainer:
         if not self._container:
             raise ContainerStartException("Container should be started before getting logs")
         return self._container.logs(stderr=False), self._container.logs(stdout=False)
+
+    def reload(self) -> None:
+        """Reload container information for compatibility with wait strategies."""
+        if self._container:
+            self._container.reload()
+
+    @property
+    def status(self) -> str:
+        """Get container status for compatibility with wait strategies."""
+        if not self._container:
+            return "not_started"
+        return self._container.status
 
     def exec(self, command: Union[str, list[str]]) -> tuple[int, bytes]:
         if not self._container:
@@ -291,7 +312,7 @@ class Reaper:
             .with_env("RYUK_RECONNECTION_TIMEOUT", c.ryuk_reconnection_timeout)
             .start()
         )
-        wait_for_logs(Reaper._container, r".* Started!", timeout=20, raise_on_exit=True)
+        Reaper._container.waiting_for(LogMessageWaitStrategy(r".* Started!").with_startup_timeout(20))
 
         container_host = Reaper._container.get_container_host_ip()
         container_port = int(Reaper._container.get_exposed_port(8080))
