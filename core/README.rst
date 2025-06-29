@@ -3,22 +3,28 @@ Testcontainers Core
 
 :code:`testcontainers-core` is the core functionality for spinning up Docker containers in test environments.
 
-.. autoclass:: testcontainers.core.container.DockerContainer
-    :members: with_bind_ports, with_exposed_ports
-
-.. note::
-    When using `with_bind_ports` or `with_exposed_ports`
-    you can specify the port in the following formats: :code:`{private_port}/{protocol}`
-
-    e.g. `8080/tcp` or `8125/udp` or just `8080` (default protocol is tcp)
-
-    For legacy reasons, the port can be an *integer*
+.. automodule:: testcontainers.core.container
+    :members:
+    :undoc-members:
+    
+.. autoclass:: testcontainers.core.network.Network
+    :members:
 
 .. autoclass:: testcontainers.core.image.DockerImage
 
 .. autoclass:: testcontainers.core.generic.DbContainer
 
-.. autoclass:: testcontainers.core.network.Network
+.. raw:: html
+
+    <hr>
+
+Compose
+-------
+
+It is also possible to use Docker Compose functionality:
+
+.. automodule:: testcontainers.compose.compose
+    :members:
 
 .. raw:: html
 
