@@ -83,7 +83,7 @@ _NOT_EXITED_STATUSES = {"running", "created"}
 def wait_for_logs(
     container: "DockerContainer",
     predicate: Union[Callable[..., bool], str],
-    timeout: float = config.timeout,
+    timeout: Union[float, None] = None,
     interval: float = 1,
     predicate_streams_and: bool = False,
     raise_on_exit: bool = False,
@@ -105,6 +105,8 @@ def wait_for_logs(
         duration: Number of seconds until the predicate was satisfied.
     """
     re_predicate: Optional[Callable[[str], Any]] = None
+    if timeout is None:
+        timeout = config.timeout
     if isinstance(predicate, str):
         re_predicate = re.compile(predicate, re.MULTILINE).search
     elif callable(predicate):

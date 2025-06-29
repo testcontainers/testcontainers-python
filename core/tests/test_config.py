@@ -150,3 +150,23 @@ def test_get_docker_host_root(monkeypatch: pytest.MonkeyPatch) -> None:
     # Define a Root like Docker Client
     monkeypatch.setenv("DOCKER_HOST", "unix://")
     assert get_docker_socket() == "/var/run/docker.sock"
+
+
+def test_deprecated_settings() -> None:
+    """
+    Getting deprecated settings raises a DepcrationWarning
+    """
+    from testcontainers.core import config
+
+    with pytest.warns(DeprecationWarning):
+        assert config.TIMEOUT
+
+
+def test_attribut_error() -> None:
+    """
+    Accessing a not existing attribute raises an AttributeError
+    """
+    from testcontainers.core import config
+
+    with pytest.raises(AttributeError):
+        config.missing
