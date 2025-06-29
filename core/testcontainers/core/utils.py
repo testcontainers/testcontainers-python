@@ -3,7 +3,8 @@ import os
 import platform
 import subprocess
 import sys
-from typing import Any, Optional
+from pathlib import Path
+from typing import Any, Final, Optional
 
 LINUX = "linux"
 MAC = "mac"
@@ -12,10 +13,10 @@ WIN = "win"
 
 def setup_logger(name: str) -> logging.Logger:
     logger = logging.getLogger(name)
-    logger.setLevel(logging.INFO)
-    handler = logging.StreamHandler()
-    handler.setLevel(logging.INFO)
-    logger.addHandler(handler)
+    # logger.setLevel(logging.INFO)
+    # handler = logging.StreamHandler()
+    # handler.setLevel(logging.INFO)
+    # logger.addHandler(handler)
     return logger
 
 
@@ -80,3 +81,20 @@ def raise_for_deprecated_parameter(kwargs: dict[Any, Any], name: str, replacemen
     if kwargs.pop(name, None):
         raise ValueError(f"Use `{replacement}` instead of `{name}`")
     return kwargs
+
+
+CGROUP_FILE: Final[Path] = Path("/proc/self/cgroup")
+
+
+def get_running_in_container_id() -> Optional[str]:
+    """
+    Get the id of the currently running container
+    """
+    if not CGROUP_FILE.is_file():
+        return None
+    cgroup = CGROUP_FILE.read_text()
+    for line in cgroup.splitlines(keepends=False):
+        path = line.rpartition(":")[2]
+        if path.startswith("/docker"):
+            return path.removeprefix("/docker/")
+    return None

@@ -77,10 +77,13 @@ def wait_for(condition: Callable[..., bool]) -> bool:
     return condition()
 
 
+_NOT_EXITED_STATUSES = {"running", "created"}
+
+
 def wait_for_logs(
     container: "DockerContainer",
     predicate: Union[Callable, str],
-    timeout: float = config.timeout,
+    timeout: Union[float, None] = None,
     interval: float = 1,
     predicate_streams_and: bool = False,
     raise_on_exit: bool = False,
@@ -101,13 +104,17 @@ def wait_for_logs(
     Returns:
         duration: Number of seconds until the predicate was satisfied.
     """
+    if timeout is None:
+        timeout = config.timeout
     if isinstance(predicate, str):
         predicate = re.compile(predicate, re.MULTILINE).search
+    wrapped = container.get_wrapped_container()
     start = time.time()
     while True:
         duration = time.time() - start
-        stdout = container.get_logs()[0].decode()
-        stderr = container.get_logs()[1].decode()
+        stdout, stderr = container.get_logs()
+        stdout = stdout.decode()
+        stderr = stderr.decode()
         predicate_result = (
             predicate(stdout) or predicate(stderr)
             if predicate_streams_and is False
@@ -117,7 +124,9 @@ def wait_for_logs(
         if predicate_result:
             return duration
         if duration > timeout:
-            raise TimeoutError(f"Container did not emit logs satisfying predicate in {timeout:.3f} " "seconds")
-        if raise_on_exit and container.get_wrapped_container().status != "running":
-            raise RuntimeError("Container exited before emitting logs satisfying predicate")
+            raise TimeoutError(f"Container did not emit logs satisfying predicate in {timeout:.3f} seconds")
+        if raise_on_exit:
+            wrapped.reload()
+            if wrapped.status not in _NOT_EXITED_STATUSES:
+                raise RuntimeError("Container exited before emitting logs satisfying predicate")
         time.sleep(interval)

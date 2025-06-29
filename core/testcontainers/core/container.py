@@ -1,19 +1,21 @@
 import contextlib
-from platform import system
+from os import PathLike
 from socket import socket
 from typing import TYPE_CHECKING, Optional, Union
 
 import docker.errors
 from docker import version
 from docker.types import EndpointConfig
-from typing_extensions import Self
+from dotenv import dotenv_values
+from typing_extensions import Self, assert_never
 
+from testcontainers.core.config import ConnectionMode
 from testcontainers.core.config import testcontainers_config as c
 from testcontainers.core.docker_client import DockerClient
-from testcontainers.core.exceptions import ContainerStartException
+from testcontainers.core.exceptions import ContainerConnectException, ContainerStartException
 from testcontainers.core.labels import LABEL_SESSION_ID, SESSION_ID
 from testcontainers.core.network import Network
-from testcontainers.core.utils import inside_container, is_arm, setup_logger
+from testcontainers.core.utils import is_arm, setup_logger
 from testcontainers.core.waiting_utils import wait_container_is_ready, wait_for_logs
 
 if TYPE_CHECKING:
@@ -25,6 +27,20 @@ logger = setup_logger(__name__)
 class DockerContainer:
     """
     Basic container object to spin up Docker instances.
+
+    Args:
+        image: The name of the image to start.
+        docker_client_kw: Dictionary with arguments that will be passed to the
+            docker.DockerClient init.
+        command: Optional execution command for the container.
+        name: Optional name for the container.
+        ports: Ports to be exposed by the container. The port number will be
+            automatically assigned on the host, use
+            :code:`get_exposed_port(PORT)` method to get the port number on the host.
+        volumes: Volumes to mount into the container. Each entry should be a tuple with
+            three values: host path, container path and. mode (default 'ro').
+        network: Optional network to connect the container to.
+        network_aliases: Optional list of aliases for the container in the network.
 
     .. doctest::
 
@@ -39,29 +55,84 @@ class DockerContainer:
         self,
         image: str,
         docker_client_kw: Optional[dict] = None,
+        command: Optional[str] = None,
+        env: Optional[dict[str, str]] = None,
+        name: Optional[str] = None,
+        ports: Optional[list[int]] = None,
+        volumes: Optional[list[tuple[str, str, str]]] = None,
+        network: Optional[Network] = None,
+        network_aliases: Optional[list[str]] = None,
         **kwargs,
     ) -> None:
-        self.env = {}
+        self.env = env or {}
+
         self.ports = {}
+        if ports:
+            self.with_exposed_ports(*ports)
+
         self.volumes = {}
+        if volumes:
+            for vol in volumes:
+                self.with_volume_mapping(*vol)
+
         self.image = image
         self._docker = DockerClient(**(docker_client_kw or {}))
         self._container = None
-        self._command = None
-        self._name = None
+        self._command = command
+        self._name = name
+
         self._network: Optional[Network] = None
+        if network is not None:
+            self.with_network(network)
+
         self._network_aliases: Optional[list[str]] = None
+        if network_aliases:
+            self.with_network_aliases(*network_aliases)
+
         self._kwargs = kwargs
 
     def with_env(self, key: str, value: str) -> Self:
         self.env[key] = value
         return self
 
-    def with_bind_ports(self, container: int, host: Optional[int] = None) -> Self:
+    def with_env_file(self, env_file: Union[str, PathLike]) -> Self:
+        env_values = dotenv_values(env_file)
+        for key, value in env_values.items():
+            self.with_env(key, value)
+        return self
+
+    def with_bind_ports(self, container: Union[str, int], host: Optional[Union[str, int]] = None) -> Self:
+        """
+        Bind container port to host port
+
+        :param container: container port
+        :param host: host port
+
+        :doctest:
+
+        >>> from testcontainers.core.container import DockerContainer
+        >>> container = DockerContainer("nginx")
+        >>> container = container.with_bind_ports("8080/tcp", 8080)
+        >>> container = container.with_bind_ports("8081/tcp", 8081)
+
+        """
         self.ports[container] = host
         return self
 
-    def with_exposed_ports(self, *ports: int) -> Self:
+    def with_exposed_ports(self, *ports: Union[str, int]) -> Self:
+        """
+        Expose ports from the container without binding them to the host.
+
+        :param ports: ports to expose
+
+        :doctest:
+
+        >>> from testcontainers.core.container import DockerContainer
+        >>> container = DockerContainer("nginx")
+        >>> container = container.with_exposed_ports("8080/tcp", "8081/tcp")
+
+        """
+
         for port in ports:
             self.ports[port] = None
         return self
@@ -129,40 +200,25 @@ class DockerContainer:
         self.stop()
 
     def get_container_host_ip(self) -> str:
-        # infer from docker host
-        host = self.get_docker_client().host()
-        if not host:
-            return "localhost"
-        # see https://github.com/testcontainers/testcontainers-python/issues/415
-        if host == "localnpipe" and system() == "Windows":
-            return "localhost"
-
-        # # check testcontainers itself runs inside docker container
-        # if inside_container() and not os.getenv("DOCKER_HOST") and not host.startswith("http://"):
-        #     # If newly spawned container's gateway IP address from the docker
-        #     # "bridge" network is equal to detected host address, we should use
-        #     # container IP address, otherwise fall back to detected host
-        #     # address. Even it's inside container, we need to double check,
-        #     # because docker host might be set to docker:dind, usually in CI/CD environment
-        #     gateway_ip = self.get_docker_client().gateway_ip(self._container.id)
-
-        #     if gateway_ip == host:
-        #         return self.get_docker_client().bridge_ip(self._container.id)
-        #     return gateway_ip
-        return host
+        connection_mode: ConnectionMode
+        connection_mode = self.get_docker_client().get_connection_mode()
+        if connection_mode == ConnectionMode.docker_host:
+            return self.get_docker_client().host()
+        elif connection_mode == ConnectionMode.gateway_ip:
+            return self.get_docker_client().gateway_ip(self._container.id)
+        elif connection_mode == ConnectionMode.bridge_ip:
+            return self.get_docker_client().bridge_ip(self._container.id)
+        else:
+            # ensure that we covered all possible connection_modes
+            assert_never(connection_mode)
 
     @wait_container_is_ready()
-    def get_exposed_port(self, port: int) -> str:
-        mapped_port = self.get_docker_client().port(self._container.id, port)
-        if inside_container():
-            gateway_ip = self.get_docker_client().gateway_ip(self._container.id)
-            host = self.get_docker_client().host()
+    def get_exposed_port(self, port: int) -> int:
+        if self.get_docker_client().get_connection_mode().use_mapped_port:
+            return self.get_docker_client().port(self._container.id, port)
+        return port
 
-            if gateway_ip == host:
-                return port
-        return mapped_port
-
-    def with_command(self, command: str) -> Self:
+    def with_command(self, command: Union[str, list[str]]) -> Self:
         self._command = command
         return self
 
@@ -235,15 +291,21 @@ class Reaper:
             .with_env("RYUK_RECONNECTION_TIMEOUT", c.ryuk_reconnection_timeout)
             .start()
         )
-        wait_for_logs(Reaper._container, r".* Started!")
+        wait_for_logs(Reaper._container, r".* Started!", timeout=20, raise_on_exit=True)
 
         container_host = Reaper._container.get_container_host_ip()
         container_port = int(Reaper._container.get_exposed_port(8080))
+
+        if not container_host or not container_port:
+            raise ContainerConnectException(
+                f"Could not obtain network details for {Reaper._container._container.id}. Host: {container_host} Port: {container_port}"
+            )
 
         last_connection_exception: Optional[Exception] = None
         for _ in range(50):
             try:
                 Reaper._socket = socket()
+                Reaper._socket.settimeout(1)
                 Reaper._socket.connect((container_host, container_port))
                 last_connection_exception = None
                 break
