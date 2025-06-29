@@ -1,5 +1,6 @@
 from os import PathLike
-from typing import TYPE_CHECKING, Optional, Union
+from types import TracebackType
+from typing import TYPE_CHECKING, Any, Optional, Union
 
 from typing_extensions import Self
 
@@ -7,7 +8,9 @@ from testcontainers.core.docker_client import DockerClient
 from testcontainers.core.utils import setup_logger
 
 if TYPE_CHECKING:
-    from docker.models.containers import Image
+    from collections.abc import Iterable
+
+    from docker.models.images import Image
 
 logger = setup_logger(__name__)
 
@@ -34,21 +37,21 @@ class DockerImage:
 
     def __init__(
         self,
-        path: Union[str, PathLike],
-        docker_client_kw: Optional[dict] = None,
+        path: Union[str, PathLike[str]],
+        docker_client_kw: Optional[dict[str, Any]] = None,
         tag: Optional[str] = None,
         clean_up: bool = True,
-        dockerfile_path: Union[str, PathLike] = "Dockerfile",
+        dockerfile_path: Union[str, PathLike[str]] = "Dockerfile",
         no_cache: bool = False,
-        **kwargs,
+        **kwargs: Any,
     ) -> None:
         self.tag = tag
         self.path = path
         self._docker = DockerClient(**(docker_client_kw or {}))
         self.clean_up = clean_up
         self._kwargs = kwargs
-        self._image = None
-        self._logs = None
+        self._image: Optional[Image] = None
+        self._logs: Optional[Iterable[dict[str, Any]]] = None
         self._dockerfile_path = dockerfile_path
         self._no_cache = no_cache
 
@@ -66,11 +69,15 @@ class DockerImage:
         """
         The ID of the image truncated to 12 characters, without the ``sha256:`` prefix.
         """
-        if self._image.id.startswith("sha256:"):
-            return self._image.id.split(":")[1][:12]
-        return self._image.id[:12]
+        i = self._image
+        assert i
+        i_id = i.id
+        assert isinstance(i_id, str)
+        if i_id.startswith("sha256:"):
+            return i_id.split(":")[1][:12]
+        return i_id[:12]
 
-    def remove(self, force=True, noprune=False) -> None:
+    def remove(self, force: bool = True, noprune: bool = False) -> None:
         """
         Remove the image.
 
@@ -88,7 +95,9 @@ class DockerImage:
     def __enter__(self) -> Self:
         return self.build()
 
-    def __exit__(self, exc_type, exc_val, exc_tb) -> None:
+    def __exit__(
+        self, exc_type: Optional[type[BaseException]], exc_val: Optional[BaseException], exc_tb: Optional[TracebackType]
+    ) -> None:
         self.remove()
 
     def get_wrapped_image(self) -> "Image":
@@ -97,5 +106,8 @@ class DockerImage:
     def get_docker_client(self) -> DockerClient:
         return self._docker
 
-    def get_logs(self) -> list[dict]:
-        return list(self._logs)
+    def get_logs(self) -> list[dict[str, Any]]:
+        logs = self._logs
+        if logs is None:
+            return []
+        return list(logs)

@@ -13,7 +13,7 @@
 import random
 import socket
 import string
-from typing import Optional
+from typing import Any, Optional
 
 from testcontainers.core.container import DockerContainer
 from testcontainers.core.waiting_utils import wait_container_is_ready
@@ -27,7 +27,7 @@ class SocatContainer(DockerContainer):
     def __init__(
         self,
         image: str = "alpine/socat:1.7.4.3-r0",
-        **kwargs,
+        **kwargs: Any,
     ) -> None:
         """
         Initialize a new SocatContainer with the given image.
