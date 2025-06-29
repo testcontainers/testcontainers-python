@@ -7,10 +7,10 @@ from testcontainers.core.labels import (
     TESTCONTAINERS_NAMESPACE,
 )
 import pytest
-from testcontainers.core.config import RYUK_IMAGE
+from testcontainers.core.config import testcontainers_config as config
 
 
-def assert_in_with_value(labels: dict, label: str, value: str, known_before_test_time: bool) -> None:
+def assert_in_with_value(labels: dict[str, str], label: str, value: str, known_before_test_time: bool):
     assert label in labels
     if known_before_test_time:
         assert labels[label] == value
@@ -43,7 +43,7 @@ def test_containers_respect_custom_labels_if_no_collision():
 
 
 def test_if_ryuk_no_session():
-    actual_labels = create_labels(RYUK_IMAGE, None)
+    actual_labels = create_labels(config.ryuk_image, None)
     assert LABEL_SESSION_ID not in actual_labels
 
 
@@ -61,5 +61,5 @@ def test_session_are_module_import_scoped():
 def test_create_no_side_effects():
     input_labels = {"key": "value"}
     expected_labels = input_labels.copy()
-    create_labels("not-ryuk", {"key": "value"})
+    create_labels("not-ryuk", input_labels)
     assert input_labels == expected_labels, input_labels

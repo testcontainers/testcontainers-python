@@ -6,8 +6,8 @@ Testcontainers Core
 .. automodule:: testcontainers.core.container
     :members:
     :undoc-members:
-
-.. automodule:: testcontainers.core.network
+    
+.. autoclass:: testcontainers.core.network.Network
     :members:
 
 .. autoclass:: testcontainers.core.image.DockerImage
