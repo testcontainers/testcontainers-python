@@ -62,7 +62,7 @@ class AzuriteContainer(DockerContainer):
         self.account_name = account_name or os.environ.get("AZURITE_ACCOUNT_NAME", "devstoreaccount1")
         self.account_key = account_key or os.environ.get(
             "AZURITE_ACCOUNT_KEY",
-            "Eby8vdM02xNOcqFlqUwJPLlmEtlCDXJ1OUzFT50uSRZ6IFsuFq2UVErCz4I6tq/" "K1SZFPTOtr/KBHBeksoGMGw==",
+            "Eby8vdM02xNOcqFlqUwJPLlmEtlCDXJ1OUzFT50uSRZ6IFsuFq2UVErCz4I6tq/K1SZFPTOtr/KBHBeksoGMGw==",
         )
 
         raise_for_deprecated_parameter(kwargs, "ports_to_expose", "container.with_exposed_ports")
@@ -76,28 +76,22 @@ class AzuriteContainer(DockerContainer):
     def get_connection_string(self) -> str:
         host_ip = self.get_container_host_ip()
         connection_string = (
-            f"DefaultEndpointsProtocol=http;" f"AccountName={self.account_name};" f"AccountKey={self.account_key};"
+            f"DefaultEndpointsProtocol=http;AccountName={self.account_name};AccountKey={self.account_key};"
         )
 
         if self.blob_service_port in self.ports:
             connection_string += (
-                f"BlobEndpoint=http://{host_ip}:"
-                f"{self.get_exposed_port(self.blob_service_port)}"
-                f"/{self.account_name};"
+                f"BlobEndpoint=http://{host_ip}:{self.get_exposed_port(self.blob_service_port)}/{self.account_name};"
             )
 
         if self.queue_service_port in self.ports:
             connection_string += (
-                f"QueueEndpoint=http://{host_ip}:"
-                f"{self.get_exposed_port(self.queue_service_port)}"
-                f"/{self.account_name};"
+                f"QueueEndpoint=http://{host_ip}:{self.get_exposed_port(self.queue_service_port)}/{self.account_name};"
             )
 
         if self.table_service_port in self.ports:
             connection_string += (
-                f"TableEndpoint=http://{host_ip}:"
-                f"{self.get_exposed_port(self.table_service_port)}"
-                f"/{self.account_name};"
+                f"TableEndpoint=http://{host_ip}:{self.get_exposed_port(self.table_service_port)}/{self.account_name};"
             )
 
         return connection_string

@@ -3,11 +3,28 @@ Testcontainers Core
 
 :code:`testcontainers-core` is the core functionality for spinning up Docker containers in test environments.
 
-.. autoclass:: testcontainers.core.container.DockerContainer
+.. automodule:: testcontainers.core.container
+    :members:
+    :undoc-members:
+    
+.. autoclass:: testcontainers.core.network.Network
+    :members:
 
 .. autoclass:: testcontainers.core.image.DockerImage
 
 .. autoclass:: testcontainers.core.generic.DbContainer
+
+.. raw:: html
+
+    <hr>
+
+Compose
+-------
+
+It is also possible to use Docker Compose functionality:
+
+.. automodule:: testcontainers.compose.compose
+    :members:
 
 .. raw:: html
 

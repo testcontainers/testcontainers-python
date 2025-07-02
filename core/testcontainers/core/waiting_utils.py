@@ -15,7 +15,7 @@
 import re
 import time
 import traceback
-from typing import TYPE_CHECKING, Any, Callable, Union
+from typing import TYPE_CHECKING, Any, Callable, Optional, Union, cast
 
 import wrapt
 
@@ -31,7 +31,7 @@ logger = setup_logger(__name__)
 TRANSIENT_EXCEPTIONS = (TimeoutError, ConnectionError)
 
 
-def wait_container_is_ready(*transient_exceptions) -> Callable:
+def wait_container_is_ready(*transient_exceptions: type[BaseException]) -> Callable[..., Any]:
     """
     Wait until container is ready.
 
@@ -44,8 +44,8 @@ def wait_container_is_ready(*transient_exceptions) -> Callable:
     """
     transient_exceptions = TRANSIENT_EXCEPTIONS + tuple(transient_exceptions)
 
-    @wrapt.decorator
-    def wrapper(wrapped: Callable, instance: Any, args: list, kwargs: dict) -> Any:
+    @wrapt.decorator  # type: ignore[misc]
+    def wrapper(wrapped: Callable[..., Any], instance: Any, args: list[Any], kwargs: dict[str, Any]) -> Any:
         from testcontainers.core.container import DockerContainer
 
         if isinstance(instance, DockerContainer):
@@ -69,7 +69,7 @@ def wait_container_is_ready(*transient_exceptions) -> Callable:
             f"{kwargs}). Exception: {exception}"
         )
 
-    return wrapper
+    return cast("Callable[..., Any]", wrapper)
 
 
 @wait_container_is_ready()
@@ -82,8 +82,8 @@ _NOT_EXITED_STATUSES = {"running", "created"}
 
 def wait_for_logs(
     container: "DockerContainer",
-    predicate: Union[Callable, str],
-    timeout: float = config.timeout,
+    predicate: Union[Callable[..., bool], str],
+    timeout: Union[float, None] = None,
     interval: float = 1,
     predicate_streams_and: bool = False,
     raise_on_exit: bool = False,
@@ -104,25 +104,33 @@ def wait_for_logs(
     Returns:
         duration: Number of seconds until the predicate was satisfied.
     """
+    re_predicate: Optional[Callable[[str], Any]] = None
+    if timeout is None:
+        timeout = config.timeout
     if isinstance(predicate, str):
-        predicate = re.compile(predicate, re.MULTILINE).search
+        re_predicate = re.compile(predicate, re.MULTILINE).search
+    elif callable(predicate):
+        # some modules like mysql sends the search directly to the predicate
+        re_predicate = predicate
+    else:
+        raise TypeError("Predicate must be a string or callable")
     wrapped = container.get_wrapped_container()
     start = time.time()
     while True:
         duration = time.time() - start
-        stdout, stderr = container.get_logs()
-        stdout = stdout.decode()
-        stderr = stderr.decode()
+        stdout_b, stderr_b = container.get_logs()
+        stdout = stdout_b.decode()
+        stderr = stderr_b.decode()
         predicate_result = (
-            predicate(stdout) or predicate(stderr)
+            re_predicate(stdout) or re_predicate(stderr)
             if predicate_streams_and is False
-            else predicate(stdout) and predicate(stderr)
+            else re_predicate(stdout) and re_predicate(stderr)
             #
         )
         if predicate_result:
             return duration
         if duration > timeout:
-            raise TimeoutError(f"Container did not emit logs satisfying predicate in {timeout:.3f} " "seconds")
+            raise TimeoutError(f"Container did not emit logs satisfying predicate in {timeout:.3f} seconds")
         if raise_on_exit:
             wrapped.reload()
             if wrapped.status not in _NOT_EXITED_STATUSES:

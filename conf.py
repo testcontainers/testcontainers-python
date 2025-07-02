@@ -33,6 +33,7 @@ extensions = [
     "sphinx.ext.doctest",
     "sphinx.ext.intersphinx",
     "sphinx.ext.napoleon",
+    "sphinx.ext.autosectionlabel",
 ]
 
 # Configure autodoc to avoid excessively long fully-qualified names.
@@ -161,4 +162,10 @@ texinfo_documents = [
 intersphinx_mapping = {
     "python": ("https://docs.python.org/3", None),
     "selenium": ("https://seleniumhq.github.io/selenium/docs/api/py/", None),
+    "typing_extensions": ("https://typing-extensions.readthedocs.io/en/latest/", None),
 }
+
+nitpick_ignore = [
+    ("py:class", "typing_extensions.Self"),
+    ("py:class", "docker.models.containers.ExecResult"),
+]

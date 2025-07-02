@@ -1,12 +1,12 @@
 [tool.poetry]
 name = "testcontainers"
-version = "4.9.1"  # auto-incremented by release-please
+version = "4.11.0"  # auto-incremented by release-please
 description = "Python library for throwaway instances of anything that can run in a Docker container"
 authors = ["Sergey Pirogov <automationremarks@gmail.com>"]
 maintainers = [
     "Balint Bartha <totallyzen@users.noreply.github.com>",
     "David Ankin <daveankin@gmail.com>",
-    "Vemund Santi <vemund@santi.no>"
+    "Vemund Santi <vemund@santi.no>",
 ]
 readme = "README.md"
 keywords = ["testing", "logging", "docker", "test automation"]
@@ -29,7 +29,7 @@ classifiers = [
 packages = [
     { include = "testcontainers", from = "core" },
     { include = "testcontainers", from = "modules/arangodb" },
-    { include = "testcontainers", from = "modules/aws"},
+    { include = "testcontainers", from = "modules/aws" },
     { include = "testcontainers", from = "modules/azurite" },
     { include = "testcontainers", from = "modules/cassandra" },
     { include = "testcontainers", from = "modules/chroma" },
@@ -39,7 +39,7 @@ packages = [
     { include = "testcontainers", from = "modules/db2" },
     { include = "testcontainers", from = "modules/elasticsearch" },
     { include = "testcontainers", from = "modules/generic" },
-    { include = "testcontainers", from = "modules/test_module_import"},
+    { include = "testcontainers", from = "modules/test_module_import" },
     { include = "testcontainers", from = "modules/google" },
     { include = "testcontainers", from = "modules/influxdb" },
     { include = "testcontainers", from = "modules/k3s" },
@@ -80,9 +80,9 @@ packages = [
 
 [tool.poetry.dependencies]
 python = ">=3.9,<4.0"
-docker = "*" # ">=4.0"
-urllib3 = "*" # "<2.0"
-wrapt = "*" # "^1.16.0"
+docker = "*"            # ">=4.0"
+urllib3 = "*"           # "<2.0"
+wrapt = "*"             # "^1.16.0"
 typing-extensions = "*"
 python-dotenv = "*"
 
@@ -113,14 +113,14 @@ pika = { version = "*", optional = true }
 redis = { version = "*", optional = true }
 selenium = { version = "*", optional = true }
 weaviate-client = { version = "^4.5.4", optional = true }
-chromadb-client = { version = "*", optional = true }
+chromadb-client = { version = "^1.0.0", optional = true }
 qdrant-client = { version = "*", optional = true }
 bcrypt = { version = "*", optional = true }
 httpx = { version = "*", optional = true }
 azure-cosmos = { version = "*", optional = true }
 cryptography = { version = "*", optional = true }
 trino = { version = "*", optional = true }
-ibm_db_sa = { version = "*", optional = true }
+ibm_db_sa = { version = "*", optional = true, markers = "platform_machine != 'aarch64' and platform_machine != 'arm64'" }
 
 [tool.poetry.extras]
 arangodb = ["python-arango"]
@@ -132,7 +132,10 @@ cosmosdb = ["azure-cosmos"]
 cockroachdb = []
 db2 = ["sqlalchemy", "ibm_db_sa"]
 elasticsearch = []
-generic = ["httpx", "redis"] # The advance doctests for ServerContainer require redis
+generic = [
+    "httpx",
+    "redis",
+] # The advance doctests for ServerContainer require redis
 test_module_import = ["httpx"]
 google = ["google-cloud-pubsub", "google-cloud-datastore"]
 influxdb = ["influxdb", "influxdb-client"]
@@ -170,7 +173,7 @@ chroma = ["chromadb-client"]
 trino = ["trino"]
 
 [tool.poetry.group.dev.dependencies]
-mypy = "1.7.1"
+mypy = "1.11.2"
 pre-commit = "^3.6"
 pytest = "7.4.3"
 pytest-cov = "4.1.0"
@@ -195,7 +198,8 @@ types-paramiko = "^3.4.0.20240423"
 pytest-mock = "^3.14.0"
 
 [[tool.poetry.source]]
-name = "PyPI"
+name = "PyPI-public"
+url = "https://pypi.org/simple/"
 priority = "primary"
 
 [tool.black]
@@ -206,19 +210,17 @@ addopts = "--tb=short --strict-markers"
 log_cli = true
 log_cli_level = "INFO"
 markers = [
-    "inside_docker_check: mark test to be used to validate DinD/DooD is working as expected"
+    "inside_docker_check: mark test to be used to validate DinD/DooD is working as expected",
 ]
 
 [tool.coverage.run]
 branch = true
-omit = [
-    "oracle.py"
-]
+omit = ["oracle.py"]
 
 [tool.coverage.report]
 exclude_lines = [
     "pass",
-    "raise NotImplementedError" # TODO: used in core/generic.py, not sure we need DbContainer
+    "raise NotImplementedError", # TODO: used in core/generic.py, not sure we need DbContainer
 ]
 
 [tool.ruff]
@@ -250,13 +252,14 @@ select = [
     # flake8-tidy-imports
     "TID",
     # flake8-type-checking
-    "TCH",
+    "TC",
     # isort
     "I",
     # mccabe
     "C90",
     # pycodestyle
-    "E", "W",
+    "E",
+    "W",
     # pyflakes
     "F",
     # pygrep-hooks
@@ -272,8 +275,14 @@ ignore = [
     # line too long (already checked by black)
     "E501",
     # the must-have __init__.py (we are using package namespaces)
-    "INP001"
+    "INP001",
+    # we do have some imports shadowing builtins
+    "A004",
 ]
+
+[tool.ruff.lint.per-file-ignores]
+"**/example_*.py" = ["T201"]
+"**/examples/*.py" = ["T201"]
 
 [tool.ruff.lint.pyupgrade]
 keep-runtime-typing = true
@@ -287,53 +296,48 @@ namespace_packages = true
 explicit_package_bases = true
 pretty = true
 show_error_codes = true
+warn_return_any = true
 strict = true
-fast_module_lookup = true
+# fast_module_lookup = true
 modules = ["testcontainers.core"]
 mypy_path = [
     "core",
-#    "modules/arangodb",
-#    "modules/azurite",
-#    "modules/cassandra",
-#    "modules/clickhouse",
-#    "modules/elasticsearch",
-#    "modules/google",
-#    "modules/k3s",
-#    "modules/kafka",
-#    "modules/keycloak",
-#    "modules/localstack",
+    #    "modules/arangodb",
+    #    "modules/azurite",
+    #    "modules/cassandra",
+    #    "modules/clickhouse",
+    #    "modules/elasticsearch",
+    #    "modules/google",
+    #    "modules/k3s",
+    #    "modules/kafka",
+    #    "modules/keycloak",
+    #    "modules/localstack",
     "modules/mailpit",
-#    "modules/minio",
-#    "modules/mongodb",
-#    "modules/mssql",
-#    "modules/mysql",
-#    "modules/neo4j",
-#    "modules/nginx",
-#    "modules/openfga",
-#    "modules/ollama",
-#    "modules/opensearch",
-#    "modules/oracle",
-#    "modules/postgres",
-#    "modules/rabbitmq",
-#    "modules/redis",
-#    "modules/selenium"
+    #    "modules/minio",
+    #    "modules/mongodb",
+    #    "modules/mssql",
+    #    "modules/mysql",
+    #    "modules/neo4j",
+    #    "modules/nginx",
+    #    "modules/openfga",
+    #    "modules/ollama",
+    #    "modules/opensearch",
+    #    "modules/oracle",
+    #    "modules/postgres",
+    #    "modules/rabbitmq",
+    #    "modules/redis",
+    #    "modules/selenium"
     "modules/sftp",
-#    "modules/vault"
-#    "modules/weaviate"
+    #    "modules/vault"
+    #    "modules/weaviate"
 ]
-enable_error_code = [
-    "ignore-without-code",
-    "redundant-expr",
-    "truthy-bool",
-]
+enable_error_code = ["ignore-without-code", "redundant-expr", "truthy-bool"]
 
 [[tool.mypy.overrides]]
 module = ['tests.*']
 # in pytest we allow fixtures to be more relaxed, though we check the untyped functions
 check_untyped_defs = true
-disable_error_code = [
-    'no-untyped-def'
-]
+disable_error_code = ['no-untyped-def']
 
 [[tool.mypy.overrides]]
 module = ['docker.*']
@@ -343,6 +347,15 @@ ignore_missing_imports = true
 [[tool.mypy.overrides]]
 module = ['wrapt.*']
 # wrapt doesn't have type annotations
+ignore_missing_imports = true
+
+[[tool.mypy.overrides]]
+module = ['requests.*']
+# requests doesn't have type annotations
+ignore_missing_imports = true
+
+[[tool.mypy.overrides]]
+module = ['testcontainers.registry']
 ignore_missing_imports = true
 
 [build-system]
