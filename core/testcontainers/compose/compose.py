@@ -154,11 +154,11 @@ class DockerCompose:
 
             >>> from testcontainers.compose import DockerCompose
 
-            >>> compose = DockerCompose("compose/tests", compose_file_name="docker-compose-4.yml",
+            >>> compose = DockerCompose("core/tests/compose_fixtures/basic", compose_file_name="hello.yaml",
             ...                         pull=True)
             >>> with compose:
             ...     stdout, stderr = compose.get_logs()
-            >>> b"Hello from Docker!" in stdout
+            >>> "Hello from Docker!" in stdout
             True
 
         .. code-block:: yaml
@@ -197,7 +197,7 @@ class DockerCompose:
         Returns command parts used for the docker compose commands
 
         Returns:
-            cmd: Docker compose command parts.
+            list[str]: Docker compose command parts.
         """
         return self.compose_command_property
 
@@ -263,8 +263,8 @@ class DockerCompose:
         :param services: which services to get the logs for (or omit, for all)
 
         Returns:
-            stdout: Standard output stream.
-            stderr: Standard error stream.
+            str: stdout: Standard output stream.
+            str: stderr: Standard error stream.
         """
         logs_cmd = [*self.compose_command_property, "logs", *services]
 
@@ -364,15 +364,15 @@ class DockerCompose:
 
         Args:
             service_name: Name of the docker compose service to run the command in.
-        command: Command to execute.
+            command: Command to execute.
 
         :param service_name: specify the service name
         :param command: the command to run in the container
 
         Returns:
-            stdout: Standard output stream.
-            stderr: Standard error stream.
-            exit_code: The command's exit code.
+            str: stdout: Standard output stream.
+            str: stderr: Standard error stream.
+            int: exit_code: The command's exit code.
         """
         if not service_name:
             service_name = self.get_container().Service
