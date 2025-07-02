@@ -167,4 +167,5 @@ intersphinx_mapping = {
 
 nitpick_ignore = [
     ("py:class", "typing_extensions.Self"),
+    ("py:class", "docker.models.containers.ExecResult"),
 ]
