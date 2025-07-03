@@ -26,3 +26,14 @@ jobs:
           poetry run pre-commit run end-of-file-fixer
           poetry run pre-commit run ruff
           poetry run pre-commit run ruff-format
+      - name: Execute mypy
+        run: |
+          poetry run mypy --config-file pyproject.toml core > mypy.log 2>&1
+          if [ -s mypy.log ]; then
+            cat mypy.log
+            echo "Mypy issues found. Generating report...";
+            cat mypy.log | poetry run python scripts/mypy_report.py
+            exit 1
+          else
+            echo "No mypy issues found.";
+          fi
