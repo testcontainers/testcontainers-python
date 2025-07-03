@@ -31,7 +31,10 @@ coverage:  ## Target to combine and report coverage.
 lint:  ## Lint all files in the project, which we also run in pre-commit
 	poetry run pre-commit run -a
 
-mypy-core-report:
+mypy-core:  ## Run mypy on the core package
+	poetry run mypy --config-file pyproject.toml core
+
+mypy-core-report:  ## Generate a report for mypy on the core package
 	poetry run mypy --config-file pyproject.toml core | poetry run python scripts/mypy_report.py
 
 docs: ## Build the docs for the project

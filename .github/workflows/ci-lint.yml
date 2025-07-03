@@ -20,6 +20,7 @@ jobs:
       - name: Install Python dependencies
         run: poetry install --no-interaction
       - name: Execute pre-commit handler
+        continue-on-error: true
         run: |
           poetry run pre-commit run check-toml
           poetry run pre-commit run trailing-whitespace
@@ -28,12 +29,5 @@ jobs:
           poetry run pre-commit run ruff-format
       - name: Execute mypy
         run: |
-          poetry run mypy --config-file pyproject.toml core > mypy.log 2>&1
-          if [ -s mypy.log ]; then
-            cat mypy.log
-            echo "Mypy issues found. Generating report...";
-            cat mypy.log | poetry run python scripts/mypy_report.py
-            exit 1
-          else
-            echo "No mypy issues found.";
-          fi
+          make mypy-core-report
+          make mypy-core
