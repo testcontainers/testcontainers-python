@@ -7,7 +7,7 @@ from logging import warning
 from os import environ
 from os.path import exists
 from pathlib import Path
-from typing import Final, Optional, Union, cast
+from typing import Final, Optional, Union
 
 import docker
 
@@ -39,7 +39,6 @@ def get_docker_socket() -> str:
     try:
         client = docker.from_env()
         socket_path = client.api.get_adapter(client.api.base_url).socket_path
-        socket_path = cast("str", socket_path)
         # return the normalized path as string
         return str(Path(socket_path).absolute())
     except Exception:
