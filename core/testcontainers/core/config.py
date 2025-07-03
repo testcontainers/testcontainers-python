@@ -18,7 +18,7 @@ class ConnectionMode(Enum):
     docker_host = "docker_host"
 
     @property
-    def use_mapped_port(self) -> str:
+    def use_mapped_port(self) -> bool:
         """
         Return True if mapped ports should be used for this connection mode.
 
