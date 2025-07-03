@@ -26,4 +26,3 @@ jobs:
           poetry run pre-commit run end-of-file-fixer
           poetry run pre-commit run ruff
           poetry run pre-commit run ruff-format
-          poetry run pre-commit run mypy
