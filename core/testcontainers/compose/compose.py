@@ -137,7 +137,7 @@ class DockerCompose:
             Wait for the services to be healthy
             (as per healthcheck definitions in the docker compose configuration)
         env_file:
-            Path to an '.env' file containing environment variables
+            Path(s) to an '.env' file containing environment variables
             to pass to docker compose.
         services:
             The list of services to use from this DockerCompose.
@@ -174,7 +174,7 @@ class DockerCompose:
     build: bool = False
     wait: bool = True
     keep_volumes: bool = False
-    env_file: Optional[str] = None
+    env_file: Optional[Union[str, list[str]]] = None
     services: Optional[list[str]] = None
     docker_command_path: Optional[str] = None
     profiles: Optional[list[str]] = None
@@ -182,6 +182,8 @@ class DockerCompose:
     def __post_init__(self) -> None:
         if isinstance(self.compose_file_name, str):
             self.compose_file_name = [self.compose_file_name]
+        if isinstance(self.env_file, str):
+            self.env_file = [self.env_file]
 
     def __enter__(self) -> "DockerCompose":
         self.start()
@@ -210,7 +212,8 @@ class DockerCompose:
         if self.profiles:
             docker_compose_cmd += [item for profile in self.profiles for item in ["--profile", profile]]
         if self.env_file:
-            docker_compose_cmd += ["--env-file", self.env_file]
+            for env_file in self.env_file:
+                docker_compose_cmd += ["--env-file", env_file]
         return docker_compose_cmd
 
     def start(self) -> None:
