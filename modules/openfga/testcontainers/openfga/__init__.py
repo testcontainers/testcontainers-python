@@ -11,14 +11,24 @@
 #    License for the specific language governing permissions and limitations
 #    under the License.
 
-from typing import Optional, List
+from typing import Optional
 
 import requests
-from openfga_sdk import ClientConfiguration
-from openfga_sdk.credentials import Credentials, CredentialConfiguration
-from openfga_sdk.sync import OpenFgaClient
+
 from testcontainers.core.container import DockerContainer
 from testcontainers.core.waiting_utils import wait_container_is_ready
+
+no_client = False
+try:
+    from openfga_sdk import ClientConfiguration
+    from openfga_sdk.credentials import CredentialConfiguration, Credentials
+    from openfga_sdk.sync import OpenFgaClient
+except ImportError:
+    no_client = True
+
+    class OpenFgaClient:
+        pass
+
 
 _DEFAULT_RUN_COMMAND = "run"
 
@@ -41,13 +51,13 @@ class OpenFGAContainer(DockerContainer):
 
     # pylint: disable=too-many-arguments
     def __init__(
-            self,
-            image: str = "openfga/openfga:latest",
-            preshared_keys: Optional[List[str]] = None,
-            playground_port: int = 3000,
-            http_port: int = 8080,
-            grpc_port: int = 8081,
-            cmd: str = _DEFAULT_RUN_COMMAND,
+        self,
+        image: str = "openfga/openfga:latest",
+        preshared_keys: Optional[list[str]] = None,
+        playground_port: int = 3000,
+        http_port: int = 8080,
+        grpc_port: int = 8081,
+        cmd: str = _DEFAULT_RUN_COMMAND,
     ) -> None:
         super().__init__(image=image)
         self.preshared_keys = preshared_keys
@@ -60,7 +70,7 @@ class OpenFGAContainer(DockerContainer):
     def _configure(self) -> None:
         if self.preshared_keys:
             self.cmd += " --authn-method=preshared"
-            self.cmd += f" --authn-preshared-keys=\"{','.join(self.preshared_keys)}\""
+            self.cmd += f' --authn-preshared-keys="{",".join(self.preshared_keys)}"'
         self.with_command(self.cmd)
 
     def get_api_url(self) -> str:
@@ -77,14 +87,17 @@ class OpenFGAContainer(DockerContainer):
         self._readiness_probe()
         return self
 
-    def get_preshared_keys(self) -> Optional[List[str]]:
+    def get_preshared_keys(self) -> Optional[list[str]]:
         return self.preshared_keys
 
-    def get_client(self) -> OpenFgaClient:
+    def get_client(self) -> "OpenFgaClient":
+        if no_client:
+            raise NotImplementedError("failed to import openfga_sdk: is python < 3.10?")
+
         credentials = None
         if preshared_keys := self.get_preshared_keys():
             credentials = Credentials(
-                method='api_token',
+                method="api_token",
                 configuration=CredentialConfiguration(
                     api_token=preshared_keys[0],
                 ),
