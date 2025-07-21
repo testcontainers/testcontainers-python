@@ -4693,7 +4693,7 @@ description = "DB-API interface to Microsoft SQL Server for Python. (new Cython-
 optional = true
 python-versions = "*"
 groups = ["main"]
-markers = "extra == \"mssql\""
+markers = "(python_version >= \"3.10\" or platform_machine != \"arm64\") and extra == \"mssql\""
 files = [
     {file = "pymssql-2.2.11-cp310-cp310-macosx_11_0_x86_64.whl", hash = "sha256:692ab328ac290bd2031bc4dd6deae32665dfffda1b12aaa92928d3ebc667d5ad"},
     {file = "pymssql-2.2.11-cp310-cp310-manylinux_2_12_i686.manylinux2010_i686.whl", hash = "sha256:723a4612421027a01b51e42e786678a18c4a27613a3ccecf331c026e0cc41353"},
@@ -6820,4 +6820,4 @@ weaviate = ["weaviate-client"]
 [metadata]
 lock-version = "2.1"
 python-versions = ">=3.9,<4.0"
-content-hash = "247aed84c7b51b75c6887809d237eedfdf863324ba491615ae78c36c4d47d3de"
+content-hash = "495578a8d383aa0bf5496c6ec2db38e81bb36b30c5cd4b5fdd2d186b4a74b3f1"

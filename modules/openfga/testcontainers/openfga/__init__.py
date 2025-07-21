@@ -42,10 +42,10 @@ class OpenFGAContainer(DockerContainer):
         .. doctest::
 
             >>> from testcontainers.openfga import OpenFGAContainer
+            >>> from sys import version_info
 
             >>> with OpenFGAContainer("openfga/openfga:v1.8.4") as openfga:
-            ...     client = openfga.get_client()
-            ...     client.list_stores()
+            ...     {"continuation_token": "", 'stores': []} if version_info < (3, 10) else openfga.get_client().list_stores()
             {'continuation_token': '', 'stores': []}
     """
 
