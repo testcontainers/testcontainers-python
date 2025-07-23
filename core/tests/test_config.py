@@ -81,8 +81,12 @@ def test_invalid_connection_mode(monkeypatch: pytest.MonkeyPatch) -> None:
 @pytest.mark.parametrize("mode, use_mapped", (("bridge_ip", False), ("gateway_ip", True), ("docker_host", True)))
 def test_valid_connection_mode(monkeypatch: pytest.MonkeyPatch, mode: str, use_mapped: bool) -> None:
     monkeypatch.setenv("TESTCONTAINERS_CONNECTION_MODE", mode)
-    assert get_user_overwritten_connection_mode().use_mapped_port is use_mapped
-    assert TestcontainersConfiguration().connection_mode_override.use_mapped_port is use_mapped
+    uo_cmo = get_user_overwritten_connection_mode()
+    assert uo_cmo
+    assert uo_cmo.use_mapped_port is use_mapped
+    cmo = TestcontainersConfiguration().connection_mode_override
+    assert cmo
+    assert cmo.use_mapped_port is use_mapped
 
 
 def test_no_connection_mode_given(monkeypatch: pytest.MonkeyPatch) -> None:
@@ -146,3 +150,23 @@ def test_get_docker_host_root(monkeypatch: pytest.MonkeyPatch) -> None:
     # Define a Root like Docker Client
     monkeypatch.setenv("DOCKER_HOST", "unix://")
     assert get_docker_socket() == "/var/run/docker.sock"
+
+
+def test_deprecated_settings() -> None:
+    """
+    Getting deprecated settings raises a DepcrationWarning
+    """
+    from testcontainers.core import config
+
+    with pytest.warns(DeprecationWarning):
+        assert config.TIMEOUT
+
+
+def test_attribut_error() -> None:
+    """
+    Accessing a not existing attribute raises an AttributeError
+    """
+    from testcontainers.core import config
+
+    with pytest.raises(AttributeError):
+        config.missing

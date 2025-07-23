@@ -1,5 +1,5 @@
 import pytest
-from typing import Union, Optional
+from typing import Any, Union, Optional
 from testcontainers.core.container import DockerContainer
 
 from docker.errors import APIError
@@ -26,8 +26,10 @@ def test_docker_container_with_bind_ports(container_port: Union[str, int], host_
     container.start()
 
     # prepare to inspect container
-    container_id = container._container.id
-    client = container._container.client
+    c_c = container._container
+    assert c_c
+    container_id = c_c.id
+    client = c_c.client
 
     # assemble expected output to compare to container API
     container_port = str(container_port)
@@ -73,13 +75,15 @@ def test_error_docker_container_with_bind_ports(container_port: Union[str, int],
         (("9001", 9002, "9003/udp", 9004), {"9001/tcp": {}, "9002/tcp": {}, "9003/udp": {}, "9004/tcp": {}}),
     ],
 )
-def test_docker_container_with_exposed_ports(ports: tuple[Union[str, int], ...], expected: dict):
+def test_docker_container_with_exposed_ports(ports: tuple[Union[str, int], ...], expected: dict[str, Any]):
     container = DockerContainer("alpine:latest")
     container.with_exposed_ports(*ports)
     container.start()
 
-    container_id = container._container.id
-    client = container._container.client
+    c_c = container._container
+    assert c_c
+    container_id = c_c.id
+    client = c_c.client
     assert client.containers.get(container_id).attrs["Config"]["ExposedPorts"] == expected
     container.stop()
 

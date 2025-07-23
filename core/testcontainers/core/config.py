@@ -1,10 +1,13 @@
+import types
+import warnings
+from collections.abc import Mapping
 from dataclasses import dataclass, field
 from enum import Enum
 from logging import warning
 from os import environ
 from os.path import exists
 from pathlib import Path
-from typing import Optional, Union
+from typing import Final, Optional, Union
 
 import docker
 
@@ -30,15 +33,15 @@ def get_docker_socket() -> str:
 
     Using the docker api ensure we handle rootless docker properly
     """
-    if socket_path := environ.get("TESTCONTAINERS_DOCKER_SOCKET_OVERRIDE"):
+    if socket_path := environ.get("TESTCONTAINERS_DOCKER_SOCKET_OVERRIDE", ""):
         return socket_path
 
-    client = docker.from_env()
     try:
+        client = docker.from_env()
         socket_path = client.api.get_adapter(client.api.base_url).socket_path
         # return the normalized path as string
         return str(Path(socket_path).absolute())
-    except AttributeError:
+    except Exception:
         return "/var/run/docker.sock"
 
 
@@ -103,7 +106,7 @@ class TestcontainersConfiguration:
     ryuk_reconnection_timeout: str = RYUK_RECONNECTION_TIMEOUT
     tc_properties: dict[str, str] = field(default_factory=read_tc_properties)
     _docker_auth_config: Optional[str] = field(default_factory=lambda: environ.get("DOCKER_AUTH_CONFIG"))
-    tc_host_override: Optional[str] = TC_HOST_OVERRIDE
+    tc_host_override: Optional[str] = environ.get("TC_HOST", environ.get("TESTCONTAINERS_HOST_OVERRIDE"))
     connection_mode_override: Optional[ConnectionMode] = field(default_factory=get_user_overwritten_connection_mode)
 
     """
@@ -136,18 +139,44 @@ class TestcontainersConfiguration:
         return get_docker_socket()
 
 
-testcontainers_config = TestcontainersConfiguration()
+testcontainers_config: Final = TestcontainersConfiguration()
 
 __all__ = [
-    # Legacy things that are deprecated:
-    "MAX_TRIES",
-    "RYUK_DISABLED",
-    "RYUK_DOCKER_SOCKET",
-    "RYUK_IMAGE",
-    "RYUK_PRIVILEGED",
-    "RYUK_RECONNECTION_TIMEOUT",
-    "SLEEP_TIME",
-    "TIMEOUT",
     # Public API of this module:
+    "ConnectionMode",
     "testcontainers_config",
 ]
+
+_deprecated_attribute_mapping: Final[Mapping[str, str]] = types.MappingProxyType(
+    {
+        "MAX_TRIES": "max_tries",
+        "RYUK_DISABLED": "ryuk_disabled",
+        "RYUK_DOCKER_SOCKET": "ryuk_docker_socket",
+        "RYUK_IMAGE": "ryuk_image",
+        "RYUK_PRIVILEGED": "ryuk_privileged",
+        "RYUK_RECONNECTION_TIMEOUT": "ryuk_reconnection_timeout",
+        "SLEEP_TIME": "sleep_time",
+        "TIMEOUT": "timeout",
+    }
+)
+
+
+def __dir__() -> list[str]:
+    return __all__ + list(_deprecated_attribute_mapping.keys())
+
+
+def __getattr__(name: str) -> object:
+    """
+    Allow getting deprecated legacy settings.
+    """
+    module = f"{__name__!r}"
+
+    if name in _deprecated_attribute_mapping:
+        attrib = _deprecated_attribute_mapping[name]
+        warnings.warn(
+            f"{module}.{name} is deprecated. Use {module}.testcontainers_config.{attrib} instead.",
+            DeprecationWarning,
+            stacklevel=2,
+        )
+        return getattr(testcontainers_config, attrib)
+    raise AttributeError(f"module {module} has no attribute {name!r}")

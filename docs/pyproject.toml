@@ -1,0 +1,25 @@
+[tool.poetry]
+name = "testcontainers-docs"
+version = "0.1.0"
+description = "Documentation site for testcontainers-python"
+authors = ["Sergey Pirogov <automationremarks@gmail.com>"]
+maintainers = [
+    "Balint Bartha <totallyzen@users.noreply.github.com>",
+    "David Ankin <daveankin@gmail.com>",
+    "Vemund Santi <vemund@santi.no>",
+]
+
+[tool.poetry.dependencies]
+python = ">=3.9,<4.0"
+mkdocs = "^1.5.3"
+mkdocs-material = "^9.5.0"
+mkdocs-markdownextradata-plugin = "^0.2.6"
+mkdocs-codeinclude-plugin = "^0.2.1"
+mkdocs-include-markdown-plugin = "^7.1.5"
+
+[tool.poetry.requires-plugins]
+poetry-plugin-export = ">=1.8"
+
+[build-system]
+requires = ["poetry-core"]
+build-backend = "poetry.core.masonry.api"
