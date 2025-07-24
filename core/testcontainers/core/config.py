@@ -26,12 +26,11 @@ class ConnectionMode(Enum):
         """
         return self != ConnectionMode.bridge_ip
 
-
 def get_docker_socket() -> str:
     """
-    Determine the docker socket, prefer value given by env variable
+    Determine the Docker socket, preferring the value provided by the environment variable.
 
-    Using the docker api ensure we handle rootless docker properly
+    This ensures proper handling of rootless Docker using the Docker API.
     """
     if socket_path := environ.get("TESTCONTAINERS_DOCKER_SOCKET_OVERRIDE", ""):
         return socket_path
@@ -39,12 +38,10 @@ def get_docker_socket() -> str:
     try:
         client = docker.from_env()
         socket_path = client.api.get_adapter(client.api.base_url).socket_path
-        # return the normalized path as string
+        # Return the normalized path as a string
         return str(Path(socket_path).absolute())
     except Exception:
         return "/var/run/docker.sock"
-
-
 MAX_TRIES = int(environ.get("TC_MAX_TRIES", 120))
 SLEEP_TIME = int(environ.get("TC_POOLING_INTERVAL", 1))
 TIMEOUT = MAX_TRIES * SLEEP_TIME
