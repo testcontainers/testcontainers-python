@@ -1,7 +1,8 @@
 import tempfile
 from pathlib import Path
 
-from testcontainers.core.container import DockerContainer, Transferrable
+from testcontainers.core.container import DockerContainer
+from testcontainers.core.transferable import Transferable
 
 
 def test_garbage_collection_is_defensive():
@@ -89,7 +90,7 @@ def test_copy_file_into_container_via_initializer(tmp_path: Path):
     destination_in_container = "/tmp/my_file"
 
     with DockerContainer(
-        "bash", command="sleep infinity", transferrables=(Transferrable(my_file, destination_in_container),)
+        "bash", command="sleep infinity", transferrables=(Transferable(my_file, destination_in_container),)
     ) as container:
         # When
         result = container.exec(f"cat {destination_in_container}")
@@ -138,7 +139,7 @@ def test_copy_bytes_to_container_via_initializer():
     destination_in_container = "/tmp/my_file"
 
     with DockerContainer(
-        "bash", command="sleep infinity", transferrables=(Transferrable(file_content, destination_in_container),)
+        "bash", command="sleep infinity", transferrables=(Transferable(file_content, destination_in_container),)
     ) as container:
         # When
         result = container.exec(f"cat {destination_in_container}")

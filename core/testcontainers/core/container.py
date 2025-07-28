@@ -21,6 +21,7 @@ from testcontainers.core.docker_client import DockerClient
 from testcontainers.core.exceptions import ContainerConnectException, ContainerStartException
 from testcontainers.core.labels import LABEL_SESSION_ID, SESSION_ID
 from testcontainers.core.network import Network
+from testcontainers.core.transferable import Transferable
 from testcontainers.core.utils import is_arm, setup_logger
 from testcontainers.core.waiting_utils import wait_container_is_ready, wait_for_logs
 
@@ -33,13 +34,6 @@ logger = setup_logger(__name__)
 class Mount(TypedDict):
     bind: str
     mode: str
-
-
-@dataclasses.dataclass
-class Transferrable:
-    source: Union[bytes, PathLike]
-    destination_in_container: str
-    mode: int = 0o644
 
 
 class DockerContainer:
@@ -80,7 +74,7 @@ class DockerContainer:
         volumes: Optional[list[tuple[str, str, str]]] = None,
         network: Optional[Network] = None,
         network_aliases: Optional[list[str]] = None,
-        transferrables: Optional[tuple[Transferrable]] = None,
+        transferrables: Optional[list[Transferable]] = None,
         **kwargs: Any,
     ) -> None:
         self.env = env or {}
@@ -108,7 +102,7 @@ class DockerContainer:
             self.with_network_aliases(*network_aliases)
 
         self._kwargs = kwargs
-        self._transferrables = transferrables or []
+        self._transferables: list[Transferable] = transferrables or []
 
     def with_env(self, key: str, value: str) -> Self:
         self.env[key] = value
@@ -210,7 +204,7 @@ class DockerContainer:
 
         logger.info("Container started: %s", self._container.short_id)
 
-        for t in self._transferrables:
+        for t in self._transferables:
             self._transfer_into_container(t.source, t.destination_in_container, t.mode)
 
         return self
@@ -293,10 +287,10 @@ class DockerContainer:
     def with_copy_into_container(
         self, file_content: bytes | PathLike, destination_in_container: str, mode: int = 0o644
     ):
-        self._transferrables.append(Transferrable(file_content, destination_in_container, mode))
+        self._transferables.append(Transferable(file_content, destination_in_container, mode))
         return self
 
-    def copy_into_container(self, file_content: bytes, destination_in_container: str, mode: int = 0o644):
+    def copy_into_container(self, file_content: bytes | PathLike, destination_in_container: str, mode: int = 0o644):
         return self._transfer_into_container(file_content, destination_in_container, mode)
 
     def _transfer_into_container(self, source: bytes | PathLike, destination_in_container: str, mode: int):
