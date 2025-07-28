@@ -88,10 +88,9 @@ def test_copy_file_into_container_via_initializer(tmp_path: Path):
     my_file = tmp_path / "my_file"
     my_file.write_text("hello world")
     destination_in_container = "/tmp/my_file"
+    transferables = [Transferable(my_file, destination_in_container)]
 
-    with DockerContainer(
-        "bash", command="sleep infinity", transferrables=(Transferable(my_file, destination_in_container),)
-    ) as container:
+    with DockerContainer("bash", command="sleep infinity", transferables=transferables) as container:
         # When
         result = container.exec(f"cat {destination_in_container}")
 
@@ -137,10 +136,9 @@ def test_copy_bytes_to_container_via_initializer():
     # Given
     file_content = b"hello world"
     destination_in_container = "/tmp/my_file"
+    transferables = [Transferable(file_content, destination_in_container)]
 
-    with DockerContainer(
-        "bash", command="sleep infinity", transferrables=(Transferable(file_content, destination_in_container),)
-    ) as container:
+    with DockerContainer("bash", command="sleep infinity", transferables=transferables) as container:
         # When
         result = container.exec(f"cat {destination_in_container}")
 

@@ -1,5 +1,4 @@
 import contextlib
-import dataclasses
 import io
 import pathlib
 import tarfile
@@ -74,7 +73,7 @@ class DockerContainer:
         volumes: Optional[list[tuple[str, str, str]]] = None,
         network: Optional[Network] = None,
         network_aliases: Optional[list[str]] = None,
-        transferrables: Optional[list[Transferable]] = None,
+        transferables: Optional[list[Transferable]] = None,
         **kwargs: Any,
     ) -> None:
         self.env = env or {}
@@ -102,7 +101,7 @@ class DockerContainer:
             self.with_network_aliases(*network_aliases)
 
         self._kwargs = kwargs
-        self._transferables: list[Transferable] = transferrables or []
+        self._transferables: list[Transferable] = transferables or []
 
     def with_env(self, key: str, value: str) -> Self:
         self.env[key] = value
@@ -285,20 +284,23 @@ class DockerContainer:
         pass
 
     def with_copy_into_container(
-        self, file_content: bytes | PathLike, destination_in_container: str, mode: int = 0o644
-    ):
+        self, file_content: Union[bytes, pathlib.Path], destination_in_container: str, mode: int = 0o644
+    ) -> Self:
         self._transferables.append(Transferable(file_content, destination_in_container, mode))
         return self
 
-    def copy_into_container(self, file_content: bytes | PathLike, destination_in_container: str, mode: int = 0o644):
+    def copy_into_container(
+        self, file_content: Union[bytes, pathlib.Path], destination_in_container: str, mode: int = 0o644
+    ) -> None:
         return self._transfer_into_container(file_content, destination_in_container, mode)
 
-    def _transfer_into_container(self, source: bytes | PathLike, destination_in_container: str, mode: int):
+    def _transfer_into_container(
+        self, source: Union[bytes, pathlib.Path], destination_in_container: str, mode: int
+    ) -> None:
         if isinstance(source, bytes):
             file_content = source
-        elif isinstance(source, PathLike):
-            p = pathlib.Path(source)
-            file_content = p.read_bytes()
+        elif isinstance(source, pathlib.Path):
+            file_content = source.read_bytes()
         else:
             raise TypeError("source must be bytes or PathLike")
 
@@ -309,17 +311,21 @@ class DockerContainer:
             tarinfo.mode = mode
             tar.addfile(tarinfo, io.BytesIO(file_content))
         fileobj.seek(0)
+        assert self._container is not None
         rv = self._container.put_archive(path="/", data=fileobj.getvalue())
         assert rv is True
 
-    def copy_from_container(self, source_in_container: str, destination_on_host: PathLike):
+    def copy_from_container(self, source_in_container: str, destination_on_host: pathlib.Path) -> None:
+        assert self._container is not None
         tar_stream, _ = self._container.get_archive(source_in_container)
 
         for chunk in tar_stream:
             with tarfile.open(fileobj=io.BytesIO(chunk)) as tar:
                 for member in tar.getmembers():
                     with open(destination_on_host, "wb") as f:
-                        f.write(tar.extractfile(member).read())
+                        fileobj = tar.extractfile(member)
+                        assert fileobj is not None
+                        f.write(fileobj.read())
 
 
 class Reaper:
