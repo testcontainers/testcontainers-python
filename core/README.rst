@@ -14,6 +14,8 @@ Testcontainers Core
 
 .. autoclass:: testcontainers.core.generic.DbContainer
 
+.. autoclass:: testcontainers.core.transferable.Transferable
+
 .. raw:: html
 
     <hr>
