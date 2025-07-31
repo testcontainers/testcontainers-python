@@ -33,6 +33,7 @@ extensions = [
     "sphinx.ext.doctest",
     "sphinx.ext.intersphinx",
     "sphinx.ext.napoleon",
+    "sphinx.ext.autosectionlabel",
 ]
 
 # Configure autodoc to avoid excessively long fully-qualified names.
@@ -166,4 +167,5 @@ intersphinx_mapping = {
 
 nitpick_ignore = [
     ("py:class", "typing_extensions.Self"),
+    ("py:class", "docker.models.containers.ExecResult"),
 ]

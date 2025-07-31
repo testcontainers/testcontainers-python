@@ -16,6 +16,7 @@ testcontainers-python facilitates the use of Docker containers for functional an
     :maxdepth: 1
 
     core/README
+    compose
     modules/index
 
 Getting Started

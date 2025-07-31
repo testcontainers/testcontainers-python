@@ -19,7 +19,7 @@ import socket
 import urllib
 import urllib.parse
 from collections.abc import Iterable
-from typing import Any, Callable, Optional, TypeVar, Union, cast
+from typing import TYPE_CHECKING, Any, Callable, Optional, TypeVar, Union, cast
 
 import docker
 from docker.models.containers import Container, ContainerCollection
@@ -31,6 +31,9 @@ from testcontainers.core.auth import DockerAuthInfo, parse_docker_auth_config
 from testcontainers.core.config import ConnectionMode
 from testcontainers.core.config import testcontainers_config as c
 from testcontainers.core.labels import SESSION_ID, create_labels
+
+if TYPE_CHECKING:
+    from docker.models.networks import Network as DockerNetwork
 
 LOGGER = utils.setup_logger(__name__)
 
@@ -112,7 +115,9 @@ class DockerClient:
         return container
 
     @_wrapped_image_collection
-    def build(self, path: str, tag: str, rm: bool = True, **kwargs: Any) -> tuple[Image, Iterable[dict[str, Any]]]:
+    def build(
+        self, path: str, tag: Optional[str], rm: bool = True, **kwargs: Any
+    ) -> tuple[Image, Iterable[dict[str, Any]]]:
         """
         Build a Docker image from a directory containing the Dockerfile.
 
@@ -151,7 +156,7 @@ class DockerClient:
                         except ipaddress.AddressValueError:
                             continue
                         if docker_host in subnet:
-                            return cast(str, network.name)
+                            return cast("str", network.name)
         except (ipaddress.AddressValueError, OSError):
             pass
         return None
@@ -163,7 +168,7 @@ class DockerClient:
         port_mappings = self.client.api.port(container_id, port)
         if not port_mappings:
             raise ConnectionError(f"Port mapping for container {container_id} and port {port} is not available")
-        return cast(str, port_mappings[0]["HostPort"])
+        return cast("str", port_mappings[0]["HostPort"])
 
     def get_container(self, container_id: str) -> dict[str, Any]:
         """
@@ -172,7 +177,7 @@ class DockerClient:
         containers = self.client.api.containers(filters={"id": container_id})
         if not containers:
             raise RuntimeError(f"Could not get container with id {container_id}")
-        return cast(dict[str, Any], containers[0])
+        return cast("dict[str, Any]", containers[0])
 
     def bridge_ip(self, container_id: str) -> str:
         """
@@ -241,7 +246,7 @@ class DockerClient:
             hostname = url.hostname
             if not hostname or (hostname == "localnpipe" and utils.is_windows()):
                 return "localhost"
-            return cast(str, url.hostname)
+            return cast("str", url.hostname)
         if utils.inside_container() and ("unix" in url.scheme or "npipe" in url.scheme):
             ip_address = utils.default_gateway_ip()
             if ip_address:
@@ -255,9 +260,9 @@ class DockerClient:
         login_info = self.client.login(**auth_config._asdict())
         LOGGER.debug(f"logged in using {login_info}")
 
-    def client_networks_create(self, name: str, param: dict[str, Any]) -> dict[str, Any]:
+    def client_networks_create(self, name: str, param: dict[str, Any]) -> "DockerNetwork":
         labels = create_labels("", param.get("labels"))
-        return cast(dict[str, Any], self.client.networks.create(name, **{**param, "labels": labels}))
+        return self.client.networks.create(name, **{**param, "labels": labels})
 
     def find_container_by_hash(self, hash_: str) -> Union[Container, None]:
         for container in self.client.containers.list(all=True):
