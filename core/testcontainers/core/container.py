@@ -285,7 +285,7 @@ class DockerContainer:
         """Get container status for compatibility with wait strategies."""
         if not self._container:
             return "not_started"
-        return self._container.status
+        return cast("str", self._container.status)
 
     def exec(self, command: Union[str, list[str]]) -> ExecResult:
         if not self._container:

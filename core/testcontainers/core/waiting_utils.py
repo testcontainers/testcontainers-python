@@ -14,19 +14,15 @@
 
 import re
 import time
-import traceback
 import warnings
 from abc import ABC, abstractmethod
 from datetime import timedelta
-from typing import Any, Callable, Protocol, TypeVar, TYPE_CHECKING, Union, cast
+from typing import Any, Callable, Optional, Protocol, TypeVar, Union, cast
 
 import wrapt
 
 from testcontainers.core.config import testcontainers_config as config
 from testcontainers.core.utils import setup_logger
-
-if TYPE_CHECKING:
-    from testcontainers.core.container import DockerContainer
 
 logger = setup_logger(__name__)
 
@@ -35,6 +31,7 @@ TRANSIENT_EXCEPTIONS = (TimeoutError, ConnectionError)
 
 # Type variables for generic functions
 F = TypeVar("F", bound=Callable[..., Any])
+
 
 class WaitStrategyTarget(Protocol):
     """
@@ -163,7 +160,7 @@ def wait_container_is_ready(*transient_exceptions: type[Exception]) -> Callable[
                     logger.debug(f"Connection attempt failed: {e!s}")
                     time.sleep(self._poll_interval)
 
-    @wrapt.decorator
+    @wrapt.decorator  # type: ignore[misc]
     def wrapper(wrapped: Callable[..., Any], instance: Any, args: list[Any], kwargs: dict[str, Any]) -> Any:
         # Use the LegacyWaitStrategy to handle retries with proper timeout
         strategy = LegacyWaitStrategy(wrapped, instance, args, kwargs)
@@ -176,6 +173,7 @@ def wait_container_is_ready(*transient_exceptions: type[Exception]) -> Callable[
             return wrapped(*args, **kwargs)
 
     return cast("Callable[[F], F]", wrapper)
+
 
 @wait_container_is_ready()
 def wait_for(condition: Callable[..., bool]) -> bool:
@@ -244,8 +242,13 @@ def wait_for_logs(
         # For more complex scenarios, use structured wait strategies directly:
         container.waiting_for(LogMessageWaitStrategy("ready"))
     """
-    # Only warn for legacy usage (string or callable predicates, not WaitStrategy objects)
-    if not isinstance(predicate, WaitStrategy):
+    if isinstance(predicate, WaitStrategy):
+        start = time.time()
+        predicate.with_startup_timeout(int(timeout)).with_poll_interval(interval)
+        predicate.wait_until_ready(container)
+        return time.time() - start
+    else:
+        # Only warn for legacy usage (string or callable predicates, not WaitStrategy objects)
         warnings.warn(
             "The wait_for_logs function with string or callable predicates is deprecated and will be removed in a future version. "
             "Use structured wait strategies instead: "
@@ -254,11 +257,6 @@ def wait_for_logs(
             DeprecationWarning,
             stacklevel=2,
         )
-    if isinstance(predicate, WaitStrategy):
-        start = time.time()
-        predicate.with_startup_timeout(int(timeout)).with_poll_interval(interval)
-        predicate.wait_until_ready(container)
-        return time.time() - start
 
     # Original implementation for backwards compatibility
     re_predicate: Optional[Callable[[str], Any]] = None
