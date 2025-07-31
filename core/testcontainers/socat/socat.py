@@ -13,7 +13,7 @@
 import random
 import socket
 import string
-from typing import Optional
+from typing import Any, Optional
 
 from testcontainers.core.container import DockerContainer
 from testcontainers.core.waiting_utils import wait_container_is_ready
@@ -27,7 +27,7 @@ class SocatContainer(DockerContainer):
     def __init__(
         self,
         image: str = "alpine/socat:1.7.4.3-r0",
-        **kwargs,
+        **kwargs: Any,
     ) -> None:
         """
         Initialize a new SocatContainer with the given image.
@@ -85,4 +85,7 @@ class SocatContainer(DockerContainer):
     @wait_container_is_ready(OSError)
     def _connect(self) -> None:
         with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as s:
-            s.connect((self.get_container_host_ip(), int(self.get_exposed_port(next(iter(self.ports))))))
+            next_port = next(iter(self.ports))
+            # todo remove this limitation
+            assert isinstance(next_port, int)
+            s.connect((self.get_container_host_ip(), int(self.get_exposed_port(next_port))))

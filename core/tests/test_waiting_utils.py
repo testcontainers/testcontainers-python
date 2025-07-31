@@ -18,7 +18,7 @@ def test_wait_container_is_ready_decorator_basic() -> None:
     """Test the basic wait_container_is_ready decorator functionality."""
 
     @wait_container_is_ready()
-    def simple_check():
+    def simple_check() -> bool:
         return True
 
     result = simple_check()
@@ -29,7 +29,7 @@ def test_wait_container_is_ready_decorator_with_container() -> None:
     """Test wait_container_is_ready decorator with a real container."""
 
     @wait_container_is_ready()
-    def check_container_logs(container):
+    def check_container_logs(container: DockerContainer) -> bool:
         stdout, stderr = container.get_logs()
         return b"Hello from Docker!" in stdout or b"Hello from Docker!" in stderr
 

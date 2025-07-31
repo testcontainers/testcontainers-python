@@ -29,12 +29,15 @@ Example:
 import re
 import time
 from datetime import timedelta
-from typing import Union
+from typing import TYPE_CHECKING, Union
 
 from testcontainers.core.utils import setup_logger
 
 # Import base classes from waiting_utils to make them available for tests
 from .waiting_utils import WaitStrategy
+
+if TYPE_CHECKING:
+    from .waiting_utils import WaitStrategyTarget
 
 logger = setup_logger(__name__)
 
@@ -89,7 +92,7 @@ class LogMessageWaitStrategy(WaitStrategy):
             self._poll_interval = interval
         return self
 
-    def wait_until_ready(self, container) -> None:
+    def wait_until_ready(self, container: "WaitStrategyTarget") -> None:
         """
         Wait until the specified message appears in the container logs.
 

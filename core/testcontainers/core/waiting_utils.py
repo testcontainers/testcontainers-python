@@ -11,12 +11,13 @@
 #    License for the specific language governing permissions and limitations
 #    under the License.
 
+
 import re
 import time
 import warnings
 from abc import ABC, abstractmethod
 from datetime import timedelta
-from typing import Any, Callable, Protocol, TypeVar, Union, cast
+from typing import Any, Callable, Optional, Protocol, TypeVar, Union, cast
 
 import wrapt
 
@@ -35,10 +36,8 @@ F = TypeVar("F", bound=Callable[..., Any])
 class WaitStrategyTarget(Protocol):
     """
     Protocol defining the interface that containers must implement for wait strategies.
-
     This allows wait strategies to work with both DockerContainer and ComposeContainer
     without requiring inheritance or type ignores.
-
     Implementation requirement:
     - DockerContainer: Implements this protocol (see core/tests/test_protocol_compliance.py)
     - ComposeContainer: Implements this protocol (see core/tests/test_protocol_compliance.py)
@@ -104,17 +103,14 @@ def wait_container_is_ready(*transient_exceptions: type[Exception]) -> Callable[
     """
     Legacy wait decorator that uses the new wait strategy system internally.
     Maintains backwards compatibility with existing code.
-
     This decorator can be used to wait for a function to succeed without raising
     transient exceptions. It's useful for simple wait scenarios, but for more
     complex cases, consider using structured wait strategies directly.
-
     Example:
         @wait_container_is_ready(HTTPError, URLError)
         def check_http(container):
             with urlopen("http://localhost:8080") as response:
                 return response.status == 200
-
         # For more complex scenarios, use structured wait strategies:
         container.waiting_for(HttpWaitStrategy(8080).for_status_code(200))
     """
@@ -164,7 +160,7 @@ def wait_container_is_ready(*transient_exceptions: type[Exception]) -> Callable[
                     logger.debug(f"Connection attempt failed: {e!s}")
                     time.sleep(self._poll_interval)
 
-    @wrapt.decorator
+    @wrapt.decorator  # type: ignore[misc]
     def wrapper(wrapped: Callable[..., Any], instance: Any, args: list[Any], kwargs: dict[str, Any]) -> Any:
         # Use the LegacyWaitStrategy to handle retries with proper timeout
         strategy = LegacyWaitStrategy(wrapped, instance, args, kwargs)
@@ -202,6 +198,7 @@ def wait_for_logs(
     interval: float = 1,
     predicate_streams_and: bool = False,
     raise_on_exit: bool = False,
+    #
 ) -> float:
     """
     Enhanced version of wait_for_logs that supports both old and new interfaces.
@@ -245,8 +242,13 @@ def wait_for_logs(
         # For more complex scenarios, use structured wait strategies directly:
         container.waiting_for(LogMessageWaitStrategy("ready"))
     """
-    # Only warn for legacy usage (string or callable predicates, not WaitStrategy objects)
-    if not isinstance(predicate, WaitStrategy):
+    if isinstance(predicate, WaitStrategy):
+        start = time.time()
+        predicate.with_startup_timeout(int(timeout)).with_poll_interval(interval)
+        predicate.wait_until_ready(container)
+        return time.time() - start
+    else:
+        # Only warn for legacy usage (string or callable predicates, not WaitStrategy objects)
         warnings.warn(
             "The wait_for_logs function with string or callable predicates is deprecated and will be removed in a future version. "
             "Use structured wait strategies instead: "
@@ -256,32 +258,29 @@ def wait_for_logs(
             stacklevel=2,
         )
 
-    if isinstance(predicate, WaitStrategy):
-        start = time.time()
-        predicate.with_startup_timeout(int(timeout)).with_poll_interval(interval)
-        predicate.wait_until_ready(container)
-        return time.time() - start
-
     # Original implementation for backwards compatibility
+    re_predicate: Optional[Callable[[str], Any]] = None
+    if timeout is None:
+        timeout = config.timeout
     if isinstance(predicate, str):
-        compiled_pattern = re.compile(predicate, re.MULTILINE)
-
-        def predicate_func(text: str) -> bool:
-            return compiled_pattern.search(text) is not None
+        re_predicate = re.compile(predicate, re.MULTILINE).search
+    elif callable(predicate):
+        # some modules like mysql sends the search directly to the predicate
+        re_predicate = predicate
     else:
-        # At this point we know predicate is callable since it's not str and not WaitStrategy
-        predicate_func = predicate
+        raise TypeError("Predicate must be a string or callable")
     wrapped = container.get_wrapped_container()
     start = time.time()
     while True:
         duration = time.time() - start
-        stdout_bytes, stderr_bytes = container.get_logs()
-        stdout = stdout_bytes.decode()
-        stderr = stderr_bytes.decode()
+        stdout_b, stderr_b = container.get_logs()
+        stdout = stdout_b.decode()
+        stderr = stderr_b.decode()
         predicate_result = (
-            predicate_func(stdout) or predicate_func(stderr)
+            re_predicate(stdout) or re_predicate(stderr)
             if predicate_streams_and is False
-            else predicate_func(stdout) and predicate_func(stderr)
+            else re_predicate(stdout) and re_predicate(stderr)
+            #
         )
         if predicate_result:
             return duration
@@ -301,27 +300,16 @@ def wait_for_logs(
         if raise_on_exit:
             wrapped.reload()
             if wrapped.status not in _NOT_EXITED_STATUSES:
-                # Get exit information for better debugging
-                status_info = _get_container_status_info(container)
-
-                raise RuntimeError(
-                    f"Container exited (status: {status_info['status']}, exit code: {status_info['exit_code']}) "
-                    f"before emitting logs satisfying predicate. "
-                    f"Container error: {status_info['error']}. "
-                    f"Hint: Check container logs and ensure the application is configured to start correctly. "
-                    f"The application may be crashing or exiting early."
-                )
+                raise RuntimeError("Container exited before emitting logs satisfying predicate")
         time.sleep(interval)
 
 
 def _get_container_logs_for_debugging(container: WaitStrategyTarget, max_length: int = 200) -> tuple[str, str]:
     """
     Get container logs for debugging purposes.
-
     Args:
         container: The container to get logs from
         max_length: Maximum length of log output to include in error messages
-
     Returns:
         Tuple of (stdout, stderr) as strings
     """
@@ -335,7 +323,6 @@ def _get_container_logs_for_debugging(container: WaitStrategyTarget, max_length:
             stdout_str = "..." + stdout_str[-max_length:]
         if len(stderr_str) > max_length:
             stderr_str = "..." + stderr_str[-max_length:]
-
         return stdout_str, stderr_str
     except Exception:
         return "(failed to get logs)", "(failed to get logs)"
@@ -344,10 +331,8 @@ def _get_container_logs_for_debugging(container: WaitStrategyTarget, max_length:
 def _get_container_status_info(container: WaitStrategyTarget) -> dict[str, str]:
     """
     Get container status information for debugging.
-
     Args:
         container: The container to get status from
-
     Returns:
         Dictionary with status information
     """

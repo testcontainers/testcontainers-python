@@ -1,5 +1,27 @@
 # Changelog
 
+## [4.12.0](https://github.com/testcontainers/testcontainers-python/compare/testcontainers-v4.11.0...testcontainers-v4.12.0) (2025-07-21)
+
+
+### Features
+
+* **main:** New Testcontainers Python Docs Site ([#822](https://github.com/testcontainers/testcontainers-python/issues/822)) ([a6bdf0e](https://github.com/testcontainers/testcontainers-python/commit/a6bdf0ef84643074fbc7edf3a75936ce3f1d0880))
+* make config monkeypatchable, fix config related startup issues ([#833](https://github.com/testcontainers/testcontainers-python/issues/833)) ([ff6a32d](https://github.com/testcontainers/testcontainers-python/commit/ff6a32db803046db8d89ba5a7157bf573d9f25c2))
+* **modules:** add OpenFGA module ([#762](https://github.com/testcontainers/testcontainers-python/issues/762)) ([0b7b482](https://github.com/testcontainers/testcontainers-python/commit/0b7b482f9ec807e87fd43d1372226fa43eb4ed7c))
+* set multiple variables via keyword args ([#804](https://github.com/testcontainers/testcontainers-python/issues/804)) ([1532df5](https://github.com/testcontainers/testcontainers-python/commit/1532df5e9094d15b9f3e9233e7f5843d8bc24386))
+
+
+### Bug Fixes
+
+* **core:** mypy ([#810](https://github.com/testcontainers/testcontainers-python/issues/810)) ([b816762](https://github.com/testcontainers/testcontainers-python/commit/b816762b9a548033b065c3f46267c289a560f6ed))
+* Enable mypy in the CI ([#842](https://github.com/testcontainers/testcontainers-python/issues/842)) ([ef65bd1](https://github.com/testcontainers/testcontainers-python/commit/ef65bd113b564bce614aaf6df13bbf5339b9bc58))
+* just use the getLogger API and do not override logger settings ([#836](https://github.com/testcontainers/testcontainers-python/issues/836)) ([f467c84](https://github.com/testcontainers/testcontainers-python/commit/f467c842b851613b9a087bd5f9a08d8c39577cb8))
+
+
+### Documentation
+
+* missing compose html from old docs ([#776](https://github.com/testcontainers/testcontainers-python/issues/776)) ([d749fc6](https://github.com/testcontainers/testcontainers-python/commit/d749fc69b32715742d834c003ee6893e2077753a))
+
 ## [4.11.0](https://github.com/testcontainers/testcontainers-python/compare/testcontainers-v4.10.0...testcontainers-v4.11.0) (2025-06-15)
 
 

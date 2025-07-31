@@ -1,6 +1,6 @@
 [tool.poetry]
 name = "testcontainers"
-version = "4.11.0"  # auto-incremented by release-please
+version = "4.12.0"  # auto-incremented by release-please
 description = "Python library for throwaway instances of anything that can run in a Docker container"
 authors = ["Sergey Pirogov <automationremarks@gmail.com>"]
 maintainers = [
@@ -58,6 +58,7 @@ packages = [
     { include = "testcontainers", from = "modules/neo4j" },
     { include = "testcontainers", from = "modules/nginx" },
     { include = "testcontainers", from = "modules/ollama" },
+    { include = "testcontainers", from = "modules/openfga" },
     { include = "testcontainers", from = "modules/opensearch" },
     { include = "testcontainers", from = "modules/oracle-free" },
     { include = "testcontainers", from = "modules/postgres" },
@@ -102,9 +103,10 @@ minio = { version = "*", optional = true }
 nats-py = { version = "*", optional = true }
 pymongo = { version = "*", optional = true }
 sqlalchemy = { version = "*", optional = true }
-pymssql = { version = "*", optional = true }
+pymssql = { version = "*", optional = true, markers = "platform_machine != 'arm64' or python_version >= '3.10'" }
 pymysql = { version = "*", extras = ["rsa"], optional = true }
 neo4j = { version = "*", optional = true }
+openfga-sdk = { version = "*", optional = true, markers = "python_version >= '3.10'" }
 opensearch-py = { version = "*", optional = true }
 oracledb = { version = "*", optional = true }
 pika = { version = "*", optional = true }
@@ -152,6 +154,7 @@ mysql = ["sqlalchemy", "pymysql"]
 nats = ["nats-py"]
 neo4j = ["neo4j"]
 nginx = []
+openfga = ["openfga-sdk"]
 opensearch = ["opensearch-py"]
 ollama = []
 oracle = ["sqlalchemy", "oracledb"]
@@ -323,6 +326,7 @@ mypy_path = [
     #    "modules/neo4j",
     #    "modules/nginx",
     #    "modules/ollama",
+    #    "modules/openfga",
     #    "modules/opensearch",
     #    "modules/oracle",
     #    "modules/postgres",
@@ -354,6 +358,10 @@ ignore_missing_imports = true
 [[tool.mypy.overrides]]
 module = ['requests.*']
 # requests doesn't have type annotations
+ignore_missing_imports = true
+
+[[tool.mypy.overrides]]
+module = ['testcontainers.registry']
 ignore_missing_imports = true
 
 [build-system]

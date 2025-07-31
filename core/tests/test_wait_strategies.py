@@ -1,15 +1,17 @@
+import itertools
 import re
 import time
+import typing
 from datetime import timedelta
-from unittest.mock import Mock, patch, MagicMock
-import pytest
-import itertools
+from unittest.mock import Mock, patch
 
-from testcontainers.core.container import DockerContainer
-from testcontainers.core.wait_strategies import (
-    LogMessageWaitStrategy,
-    WaitStrategy,
-)
+import pytest
+
+from testcontainers.core.wait_strategies import LogMessageWaitStrategy
+from testcontainers.core.waiting_utils import WaitStrategy
+
+if typing.TYPE_CHECKING:
+    from testcontainers.core.waiting_utils import WaitStrategyTarget
 
 
 class ConcreteWaitStrategy(WaitStrategy):

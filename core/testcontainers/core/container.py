@@ -1,10 +1,12 @@
 import contextlib
 from os import PathLike
 from socket import socket
-from typing import TYPE_CHECKING, Optional, Union
+from types import TracebackType
+from typing import TYPE_CHECKING, Any, Optional, TypedDict, Union, cast
 
 import docker.errors
 from docker import version
+from docker.models.containers import ExecResult
 from docker.types import EndpointConfig
 from dotenv import dotenv_values
 from typing_extensions import Self, assert_never
@@ -17,12 +19,17 @@ from testcontainers.core.labels import LABEL_SESSION_ID, SESSION_ID
 from testcontainers.core.network import Network
 from testcontainers.core.utils import is_arm, setup_logger
 from testcontainers.core.wait_strategies import LogMessageWaitStrategy
-from testcontainers.core.waiting_utils import WaitStrategy
+from testcontainers.core.waiting_utils import WaitStrategy, wait_container_is_ready
 
 if TYPE_CHECKING:
     from docker.models.containers import Container
 
 logger = setup_logger(__name__)
+
+
+class Mount(TypedDict):
+    bind: str
+    mode: str
 
 
 class DockerContainer:
@@ -55,7 +62,7 @@ class DockerContainer:
     def __init__(
         self,
         image: str,
-        docker_client_kw: Optional[dict] = None,
+        docker_client_kw: Optional[dict[str, Any]] = None,
         command: Optional[str] = None,
         env: Optional[dict[str, str]] = None,
         name: Optional[str] = None,
@@ -63,25 +70,25 @@ class DockerContainer:
         volumes: Optional[list[tuple[str, str, str]]] = None,
         network: Optional[Network] = None,
         network_aliases: Optional[list[str]] = None,
-        **kwargs,
+        _wait_strategy: Optional[WaitStrategy] = None,
+        **kwargs: Any,
     ) -> None:
         self.env = env or {}
 
-        self.ports = {}
+        self.ports: dict[Union[str, int], Optional[Union[str, int]]] = {}
         if ports:
             self.with_exposed_ports(*ports)
 
-        self.volumes = {}
+        self.volumes: dict[str, Mount] = {}
         if volumes:
             for vol in volumes:
                 self.with_volume_mapping(*vol)
 
         self.image = image
         self._docker = DockerClient(**(docker_client_kw or {}))
-        self._container = None
-        self._command = command
+        self._container: Optional[Container] = None
+        self._command: Optional[Union[str, list[str]]] = command
         self._name = name
-
         self._network: Optional[Network] = None
         if network is not None:
             self.with_network(network)
@@ -91,15 +98,20 @@ class DockerContainer:
             self.with_network_aliases(*network_aliases)
 
         self._kwargs = kwargs
-        self._wait_strategy: Optional[WaitStrategy] = None
+        self._wait_strategy: Optional[WaitStrategy] = _wait_strategy
 
     def with_env(self, key: str, value: str) -> Self:
         self.env[key] = value
         return self
 
-    def with_env_file(self, env_file: Union[str, PathLike]) -> Self:
+    def with_envs(self, **variables: str) -> Self:
+        self.env.update(variables)
+        return self
+
+    def with_env_file(self, env_file: Union[str, PathLike[str]]) -> Self:
         env_values = dotenv_values(env_file)
         for key, value in env_values.items():
+            assert value is not None
             self.with_env(key, value)
         return self
 
@@ -143,11 +155,11 @@ class DockerContainer:
         self._network = network
         return self
 
-    def with_network_aliases(self, *aliases) -> Self:
-        self._network_aliases = aliases
+    def with_network_aliases(self, *aliases: str) -> Self:
+        self._network_aliases = list(aliases)
         return self
 
-    def with_kwargs(self, **kwargs) -> Self:
+    def with_kwargs(self, **kwargs: Any) -> Self:
         self._kwargs = kwargs
         return self
 
@@ -185,20 +197,19 @@ class DockerContainer:
             command=self._command,
             detach=True,
             environment=self.env,
-            ports=self.ports,
+            ports=cast("dict[int, Optional[int]]", self.ports),
             name=self._name,
             volumes=self.volumes,
-            **network_kwargs,
-            **self._kwargs,
+            **{**network_kwargs, **self._kwargs},
         )
-
-        logger.info("Container started: %s", self._container.short_id)
 
         if self._wait_strategy is not None:
             self._wait_strategy.wait_until_ready(self)
+
+        logger.info("Container started: %s", self._container.short_id)
         return self
 
-    def stop(self, force=True, delete_volume=True) -> None:
+    def stop(self, force: bool = True, delete_volume: bool = True) -> None:
         if self._container:
             self._container.remove(force=force, v=delete_volume)
         self.get_docker_client().client.close()
@@ -206,25 +217,35 @@ class DockerContainer:
     def __enter__(self) -> Self:
         return self.start()
 
-    def __exit__(self, exc_type, exc_val, exc_tb) -> None:
+    def __exit__(
+        self, exc_type: Optional[type[BaseException]], exc_val: Optional[BaseException], exc_tb: Optional[TracebackType]
+    ) -> None:
         self.stop()
 
     def get_container_host_ip(self) -> str:
         connection_mode: ConnectionMode
         connection_mode = self.get_docker_client().get_connection_mode()
+
+        # mypy:
+        container = self._container
+        assert container is not None
+
         if connection_mode == ConnectionMode.docker_host:
             return self.get_docker_client().host()
         elif connection_mode == ConnectionMode.gateway_ip:
-            return self.get_docker_client().gateway_ip(self._container.id)
+            return self.get_docker_client().gateway_ip(container.id)
         elif connection_mode == ConnectionMode.bridge_ip:
-            return self.get_docker_client().bridge_ip(self._container.id)
+            return self.get_docker_client().bridge_ip(container.id)
         else:
             # ensure that we covered all possible connection_modes
             assert_never(connection_mode)
 
+    @wait_container_is_ready()
     def get_exposed_port(self, port: int) -> int:
         if self.get_docker_client().get_connection_mode().use_mapped_port:
-            return self.get_docker_client().port(self._container.id, port)
+            c = self._container
+            assert c is not None
+            return int(self.get_docker_client().port(c.id, port))
         return port
 
     def with_command(self, command: Union[str, list[str]]) -> Self:
@@ -235,15 +256,18 @@ class DockerContainer:
         self._name = name
         return self
 
-    def with_volume_mapping(self, host: str, container: str, mode: str = "ro") -> Self:
-        mapping = {"bind": container, "mode": mode}
-        self.volumes[host] = mapping
+    def with_volume_mapping(self, host: Union[str, PathLike[str]], container: str, mode: str = "ro") -> Self:
+        mapping: Mount = {"bind": container, "mode": mode}
+        self.volumes[str(host)] = mapping
         return self
 
     def get_wrapped_container(self) -> "Container":
         return self._container
 
     def get_docker_client(self) -> DockerClient:
+        """
+        :meta private:
+        """
         return self._docker
 
     def get_logs(self) -> tuple[bytes, bytes]:
@@ -261,9 +285,9 @@ class DockerContainer:
         """Get container status for compatibility with wait strategies."""
         if not self._container:
             return "not_started"
-        return self._container.status
+        return cast("str", self._container.status)
 
-    def exec(self, command: Union[str, list[str]]) -> tuple[int, bytes]:
+    def exec(self, command: Union[str, list[str]]) -> ExecResult:
         if not self._container:
             raise ContainerStartException("Container should be started before executing a command")
         return self._container.exec_run(command)
@@ -274,6 +298,10 @@ class DockerContainer:
 
 
 class Reaper:
+    """
+    :meta private:
+    """
+
     _instance: "Optional[Reaper]" = None
     _container: Optional[DockerContainer] = None
     _socket: Optional[socket] = None
@@ -312,22 +340,27 @@ class Reaper:
             .with_env("RYUK_RECONNECTION_TIMEOUT", c.ryuk_reconnection_timeout)
             .start()
         )
-        Reaper._container.waiting_for(LogMessageWaitStrategy(r".* Started!").with_startup_timeout(20))
+        rc = Reaper._container
+        assert rc is not None
+        rc.waiting_for(LogMessageWaitStrategy(r".* Started!").with_startup_timeout(20))
 
-        container_host = Reaper._container.get_container_host_ip()
-        container_port = int(Reaper._container.get_exposed_port(8080))
+        container_host = rc.get_container_host_ip()
+        container_port = int(rc.get_exposed_port(8080))
 
         if not container_host or not container_port:
+            rcc = rc._container
+            assert rcc
             raise ContainerConnectException(
-                f"Could not obtain network details for {Reaper._container._container.id}. Host: {container_host} Port: {container_port}"
+                f"Could not obtain network details for {rcc.id}. Host: {container_host} Port: {container_port}"
             )
 
         last_connection_exception: Optional[Exception] = None
         for _ in range(50):
             try:
-                Reaper._socket = socket()
-                Reaper._socket.settimeout(1)
-                Reaper._socket.connect((container_host, container_port))
+                s = socket()
+                Reaper._socket = s
+                s.settimeout(1)
+                s.connect((container_host, container_port))
                 last_connection_exception = None
                 break
             except (ConnectionRefusedError, OSError) as e:
@@ -343,7 +376,9 @@ class Reaper:
         if last_connection_exception:
             raise last_connection_exception
 
-        Reaper._socket.send(f"label={LABEL_SESSION_ID}={SESSION_ID}\r\n".encode())
+        rs = Reaper._socket
+        assert rs is not None
+        rs.send(f"label={LABEL_SESSION_ID}={SESSION_ID}\r\n".encode())
 
         Reaper._instance = Reaper()
 

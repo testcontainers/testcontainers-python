@@ -148,6 +148,7 @@ testcontainers_config: Final = TestcontainersConfiguration()
 
 __all__ = [
     # Public API of this module:
+    "ConnectionMode",
     "testcontainers_config",
 ]
 
