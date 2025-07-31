@@ -528,14 +528,14 @@ class DockerCompose:
 
         Example:
             # Simple URL wait (legacy style)
-            compose.wait_for("http://localhost:8080")
-
+            compose.wait_for("http://localhost:8080") \
+            \
             # For more complex scenarios, use structured wait strategies:
-            from testcontainers.core.waiting_utils import HttpWaitStrategy, LogMessageWaitStrategy
-
-            compose.waiting_for({
-                "web": HttpWaitStrategy(8080).for_status_code(200),
-                "db": LogMessageWaitStrategy("database system is ready to accept connections")
+            from testcontainers.core.waiting_utils import HttpWaitStrategy, LogMessageWaitStrategy \
+            \
+            compose.waiting_for({ \
+                "web": HttpWaitStrategy(8080).for_status_code(200), \
+                "db": LogMessageWaitStrategy("database system is ready to accept connections") \
             })
         """
         import time
