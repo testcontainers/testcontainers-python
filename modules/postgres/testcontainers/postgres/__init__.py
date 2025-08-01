@@ -63,7 +63,7 @@ class PostgresContainer(DbContainer):
         self.port = port
         self.driver = f"+{driver}" if driver else ""
 
-        self.with_exposed_ports(self.port)
+        self.with_bind_ports("5432/tcp", self.port)
 
     def _configure(self) -> None:
         self.with_env("POSTGRES_USER", self.username)

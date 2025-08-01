@@ -151,3 +151,14 @@ def test_psycopg_versions():
         with engine.begin() as connection:
             result = connection.execute(sqlalchemy.text("SELECT 1 as test"))
             assert result.scalar() == 1
+
+
+def test_port_binding():
+    """Test that binding to a different port works as expected."""
+
+    postgres_container = PostgresContainer("postgres:16-alpine", port=12345)
+    with postgres_container as postgres:
+        engine = sqlalchemy.create_engine(postgres.get_connection_url())
+        with engine.begin() as connection:
+            result = connection.execute(sqlalchemy.text("SELECT 1 as test"))
+            assert result.scalar() == 1
