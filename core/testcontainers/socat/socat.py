@@ -85,4 +85,7 @@ class SocatContainer(DockerContainer):
     @wait_container_is_ready(OSError)
     def _connect(self) -> None:
         with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as s:
-            s.connect((self.get_container_host_ip(), int(self.get_exposed_port(next(iter(self.ports))))))
+            next_port = next(iter(self.ports))
+            # todo remove this limitation
+            assert isinstance(next_port, int)
+            s.connect((self.get_container_host_ip(), int(self.get_exposed_port(next_port))))

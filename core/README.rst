@@ -14,6 +14,8 @@ Testcontainers Core
 
 .. autoclass:: testcontainers.core.generic.DbContainer
 
+.. autoclass:: testcontainers.core.wait_strategies.WaitStrategy
+
 .. raw:: html
 
     <hr>
