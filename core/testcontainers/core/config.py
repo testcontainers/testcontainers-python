@@ -130,7 +130,7 @@ class TestcontainersConfiguration:
         return self.tc_properties.get("tc.host")
 
     @property
-    def timeout(self) -> int:
+    def timeout(self) -> float:
         return self.max_tries * self.sleep_time
 
     @property
