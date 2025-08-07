@@ -62,6 +62,7 @@ class DbContainer(DockerContainer):
         if self._container is None:
             raise ContainerStartException("container has not been started")
         host = host or self.get_container_host_ip()
+        assert port is not None
         port = self.get_exposed_port(port)
         quoted_password = quote(password, safe=" +")
         url = f"{dialect}://{username}:{quoted_password}@{host}:{port}"

@@ -6,13 +6,15 @@ Testcontainers Core
 .. automodule:: testcontainers.core.container
     :members:
     :undoc-members:
-    
+
 .. autoclass:: testcontainers.core.network.Network
     :members:
 
 .. autoclass:: testcontainers.core.image.DockerImage
 
 .. autoclass:: testcontainers.core.generic.DbContainer
+
+.. autoclass:: testcontainers.core.wait_strategies.WaitStrategy
 
 .. raw:: html
 

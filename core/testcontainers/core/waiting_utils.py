@@ -14,66 +14,177 @@
 
 import re
 import time
-import traceback
-from typing import TYPE_CHECKING, Any, Callable, Optional, Union, cast
+import warnings
+from abc import ABC, abstractmethod
+from datetime import timedelta
+from typing import Any, Callable, Optional, Protocol, TypeVar, Union, cast
 
 import wrapt
 
 from testcontainers.core.config import testcontainers_config as config
 from testcontainers.core.utils import setup_logger
 
-if TYPE_CHECKING:
-    from testcontainers.core.container import DockerContainer
-
 logger = setup_logger(__name__)
 
 # Get a tuple of transient exceptions for which we'll retry. Other exceptions will be raised.
 TRANSIENT_EXCEPTIONS = (TimeoutError, ConnectionError)
 
+# Type variables for generic functions
+F = TypeVar("F", bound=Callable[..., Any])
 
-def wait_container_is_ready(*transient_exceptions: type[BaseException]) -> Callable[..., Any]:
+
+class WaitStrategyTarget(Protocol):
     """
-    Wait until container is ready.
-
-    Function that spawn container should be decorated by this method Max wait is configured by
-    config. Default is 120 sec. Polling interval is 1 sec.
-
-    Args:
-        *transient_exceptions: Additional transient exceptions that should be retried if raised. Any
-            non-transient exceptions are fatal, and the exception is re-raised immediately.
+    Protocol defining the interface that containers must implement for wait strategies.
+    This allows wait strategies to work with both DockerContainer and ComposeContainer
+    without requiring inheritance or type ignores.
+    Implementation requirement:
+    - DockerContainer: Implements this protocol (see core/tests/test_protocol_compliance.py)
+    - ComposeContainer: Implements this protocol (see core/tests/test_protocol_compliance.py)
     """
-    transient_exceptions = TRANSIENT_EXCEPTIONS + tuple(transient_exceptions)
+
+    def get_container_host_ip(self) -> str:
+        """Get the host IP address for the container."""
+        ...
+
+    def get_exposed_port(self, port: int) -> int:
+        """Get the exposed port mapping for the given internal port."""
+        ...
+
+    def get_wrapped_container(self) -> Any:
+        """Get the underlying container object."""
+        ...
+
+    def get_logs(self) -> tuple[bytes, bytes]:
+        """Get container logs as (stdout, stderr) tuple."""
+        ...
+
+    def reload(self) -> None:
+        """Reload container information."""
+        ...
+
+    @property
+    def status(self) -> str:
+        """Get container status."""
+        ...
+
+
+class WaitStrategy(ABC):
+    """Base class for all wait strategies."""
+
+    def __init__(self) -> None:
+        self._startup_timeout: float = config.timeout
+        self._poll_interval: float = config.sleep_time
+
+    def with_startup_timeout(self, timeout: Union[int, timedelta]) -> "WaitStrategy":
+        """Set the maximum time to wait for the container to be ready."""
+        if isinstance(timeout, timedelta):
+            self._startup_timeout = float(int(timeout.total_seconds()))
+        else:
+            self._startup_timeout = float(timeout)
+        return self
+
+    def with_poll_interval(self, interval: Union[float, timedelta]) -> "WaitStrategy":
+        """Set how frequently to check if the container is ready."""
+        if isinstance(interval, timedelta):
+            self._poll_interval = interval.total_seconds()
+        else:
+            self._poll_interval = interval
+        return self
+
+    @abstractmethod
+    def wait_until_ready(self, container: WaitStrategyTarget) -> None:
+        """Wait until the container is ready."""
+        pass
+
+
+# Keep existing wait_container_is_ready but make it use the new system internally
+def wait_container_is_ready(*transient_exceptions: type[Exception]) -> Callable[[F], F]:
+    """
+    Legacy wait decorator that uses the new wait strategy system internally.
+    Maintains backwards compatibility with existing code.
+    This decorator can be used to wait for a function to succeed without raising
+    transient exceptions. It's useful for simple wait scenarios, but for more
+    complex cases, consider using structured wait strategies directly.
+    Example:
+        @wait_container_is_ready(HTTPError, URLError)
+        def check_http(container):
+            with urlopen("http://localhost:8080") as response:
+                return response.status == 200
+        # For more complex scenarios, use structured wait strategies:
+        container.waiting_for(HttpWaitStrategy(8080).for_status_code(200))
+    """
+    warnings.warn(
+        "The @wait_container_is_ready decorator is deprecated and will be removed in a future version. "
+        "Use structured wait strategies instead: "
+        "container.waiting_for(HttpWaitStrategy(8080).for_status_code(200)) or "
+        "container.waiting_for(LogMessageWaitStrategy('ready'))",
+        DeprecationWarning,
+        stacklevel=2,
+    )
+
+    class LegacyWaitStrategy(WaitStrategy):
+        def __init__(self, func: Callable[..., Any], instance: Any, args: list[Any], kwargs: dict[str, Any]):
+            super().__init__()
+            self.func = func
+            self.instance = instance
+            self.args = args
+            self.kwargs = kwargs
+            self.transient_exceptions: tuple[type[Exception], ...] = TRANSIENT_EXCEPTIONS + tuple(transient_exceptions)
+
+        def wait_until_ready(self, container: WaitStrategyTarget) -> Any:
+            start_time = time.time()
+            while True:
+                try:
+                    # Handle different function call patterns:
+                    # 1. Standalone functions (like wait_for): call with just args/kwargs
+                    # 2. Methods: call with instance as first argument
+                    if self.instance is None:
+                        # Standalone function case
+                        result = self.func(*self.args, **self.kwargs)
+                    elif self.instance is container:
+                        # Staticmethod case: self.instance is the container
+                        result = self.func(*self.args, **self.kwargs)
+                    else:
+                        # Method case: self.instance is the instance (self)
+                        result = self.func(self.instance, *self.args, **self.kwargs)
+                    return result
+                except self.transient_exceptions as e:
+                    if time.time() - start_time > self._startup_timeout:
+                        raise TimeoutError(
+                            f"Wait time ({self._startup_timeout}s) exceeded for {self.func.__name__}"
+                            f"(args: {self.args}, kwargs: {self.kwargs}). Exception: {e}. "
+                            f"Hint: Check if the container is ready, the function parameters are correct, "
+                            f"and the expected conditions are met for the function to succeed."
+                        ) from e
+                    logger.debug(f"Connection attempt failed: {e!s}")
+                    time.sleep(self._poll_interval)
 
     @wrapt.decorator  # type: ignore[misc]
     def wrapper(wrapped: Callable[..., Any], instance: Any, args: list[Any], kwargs: dict[str, Any]) -> Any:
-        from testcontainers.core.container import DockerContainer
-
-        if isinstance(instance, DockerContainer):
-            logger.info("Waiting for container %s with image %s to be ready ...", instance._container, instance.image)
+        # Use the LegacyWaitStrategy to handle retries with proper timeout
+        strategy = LegacyWaitStrategy(wrapped, instance, args, kwargs)
+        # For backwards compatibility, assume the instance is the container
+        container = instance if hasattr(instance, "get_container_host_ip") else args[0] if args else None
+        if container:
+            return strategy.wait_until_ready(container)
         else:
-            logger.info("Waiting for %s to be ready ...", instance)
+            # Fallback to direct call if we can't identify the container
+            return wrapped(*args, **kwargs)
 
-        exception = None
-        for attempt_no in range(config.max_tries):
-            try:
-                return wrapped(*args, **kwargs)
-            except transient_exceptions as e:
-                logger.debug(
-                    f"Connection attempt '{attempt_no + 1}' of '{config.max_tries + 1}' "
-                    f"failed: {traceback.format_exc()}"
-                )
-                time.sleep(config.sleep_time)
-                exception = e
-        raise TimeoutError(
-            f"Wait time ({config.timeout}s) exceeded for {wrapped.__name__}(args: {args}, kwargs: "
-            f"{kwargs}). Exception: {exception}"
-        )
-
-    return cast("Callable[..., Any]", wrapper)
+    return cast("Callable[[F], F]", wrapper)
 
 
 @wait_container_is_ready()
 def wait_for(condition: Callable[..., bool]) -> bool:
+    warnings.warn(
+        "The wait_for function is deprecated and will be removed in a future version. "
+        "Use structured wait strategies instead: "
+        "container.waiting_for(LogMessageWaitStrategy('ready')) or "
+        "container.waiting_for(HttpWaitStrategy(8080).for_status_code(200))",
+        DeprecationWarning,
+        stacklevel=2,
+    )
     return condition()
 
 
@@ -81,29 +192,73 @@ _NOT_EXITED_STATUSES = {"running", "created"}
 
 
 def wait_for_logs(
-    container: "DockerContainer",
-    predicate: Union[Callable[..., bool], str],
-    timeout: Union[float, None] = None,
+    container: WaitStrategyTarget,
+    predicate: Union[Callable[[str], bool], str, WaitStrategy],
+    timeout: float = config.timeout,
     interval: float = 1,
     predicate_streams_and: bool = False,
     raise_on_exit: bool = False,
     #
 ) -> float:
     """
-    Wait for the container to emit logs satisfying the predicate.
+    Enhanced version of wait_for_logs that supports both old and new interfaces.
+
+    This function waits for container logs to satisfy a predicate. It supports
+    multiple input types for the predicate and maintains backwards compatibility
+    with existing code while adding support for the new WaitStrategy system.
+
+    This is a convenience function that can be used for simple log-based waits.
+    For more complex scenarios, consider using structured wait strategies directly.
 
     Args:
-        container: Container whose logs to wait for.
-        predicate: Predicate that should be satisfied by the logs. If a string, then it is used as
-        the pattern for a multiline regular expression search.
-        timeout: Number of seconds to wait for the predicate to be satisfied. Defaults to wait
-            indefinitely.
-        interval: Interval at which to poll the logs.
-        predicate_streams_and: should the predicate be applied to both
+        container: The DockerContainer to monitor
+        predicate: The predicate to check against logs. Can be:
+            - A callable function that takes log text and returns bool
+            - A string that will be compiled to a regex pattern
+            - A WaitStrategy object
+        timeout: Maximum time to wait in seconds (default: config.timeout)
+        interval: How frequently to check in seconds (default: 1)
+        predicate_streams_and: If True, predicate must match both stdout and stderr (default: False)
+        raise_on_exit: If True, raise RuntimeError if container exits before predicate matches (default: False)
 
     Returns:
-        duration: Number of seconds until the predicate was satisfied.
+        The time in seconds that was spent waiting
+
+    Raises:
+        TimeoutError: If the predicate is not satisfied within the timeout period
+        RuntimeError: If raise_on_exit is True and container exits before predicate matches
+
+    Example:
+        # Wait for a simple string
+        wait_for_logs(container, "ready for start")
+
+        # Wait with custom predicate
+        wait_for_logs(container, lambda logs: "database" in logs and "ready" in logs)
+
+        # Wait with WaitStrategy
+        strategy = LogMessageWaitStrategy("ready")
+        wait_for_logs(container, strategy)
+
+        # For more complex scenarios, use structured wait strategies directly:
+        container.waiting_for(LogMessageWaitStrategy("ready"))
     """
+    if isinstance(predicate, WaitStrategy):
+        start = time.time()
+        predicate.with_startup_timeout(int(timeout)).with_poll_interval(interval)
+        predicate.wait_until_ready(container)
+        return time.time() - start
+    else:
+        # Only warn for legacy usage (string or callable predicates, not WaitStrategy objects)
+        warnings.warn(
+            "The wait_for_logs function with string or callable predicates is deprecated and will be removed in a future version. "
+            "Use structured wait strategies instead: "
+            "container.waiting_for(LogMessageWaitStrategy('ready')) or "
+            "container.waiting_for(LogMessageWaitStrategy(re.compile(r'pattern')))",
+            DeprecationWarning,
+            stacklevel=2,
+        )
+
+    # Original implementation for backwards compatibility
     re_predicate: Optional[Callable[[str], Any]] = None
     if timeout is None:
         timeout = config.timeout
@@ -130,9 +285,81 @@ def wait_for_logs(
         if predicate_result:
             return duration
         if duration > timeout:
-            raise TimeoutError(f"Container did not emit logs satisfying predicate in {timeout:.3f} seconds")
+            # Get current logs and status for debugging
+            stdout_str, stderr_str = _get_container_logs_for_debugging(container)
+            status_info = _get_container_status_info(container)
+
+            raise TimeoutError(
+                f"Container did not emit logs satisfying predicate in {timeout:.3f} seconds. "
+                f"Container status: {status_info['status']}, health: {status_info['health_status']}. "
+                f"Recent stdout: {stdout_str}. "
+                f"Recent stderr: {stderr_str}. "
+                f"Hint: Check if the container is starting correctly and the expected log pattern is being generated. "
+                f"Verify the predicate function or pattern matches the actual log output."
+            )
         if raise_on_exit:
             wrapped.reload()
             if wrapped.status not in _NOT_EXITED_STATUSES:
                 raise RuntimeError("Container exited before emitting logs satisfying predicate")
         time.sleep(interval)
+
+
+def _get_container_logs_for_debugging(container: WaitStrategyTarget, max_length: int = 200) -> tuple[str, str]:
+    """
+    Get container logs for debugging purposes.
+    Args:
+        container: The container to get logs from
+        max_length: Maximum length of log output to include in error messages
+    Returns:
+        Tuple of (stdout, stderr) as strings
+    """
+    try:
+        stdout_bytes, stderr_bytes = container.get_logs()
+        stdout_str = stdout_bytes.decode() if stdout_bytes else ""
+        stderr_str = stderr_bytes.decode() if stderr_bytes else ""
+
+        # Truncate if too long
+        if len(stdout_str) > max_length:
+            stdout_str = "..." + stdout_str[-max_length:]
+        if len(stderr_str) > max_length:
+            stderr_str = "..." + stderr_str[-max_length:]
+        return stdout_str, stderr_str
+    except Exception:
+        return "(failed to get logs)", "(failed to get logs)"
+
+
+def _get_container_status_info(container: WaitStrategyTarget) -> dict[str, str]:
+    """
+    Get container status information for debugging.
+    Args:
+        container: The container to get status from
+    Returns:
+        Dictionary with status information
+    """
+    try:
+        wrapped = container.get_wrapped_container()
+        wrapped.reload()
+
+        state = wrapped.attrs.get("State", {})
+        return {
+            "status": wrapped.status,
+            "exit_code": str(state.get("ExitCode", "unknown")),
+            "error": state.get("Error", ""),
+            "health_status": state.get("Health", {}).get("Status", "no health check"),
+        }
+    except Exception:
+        return {
+            "status": "unknown",
+            "exit_code": "unknown",
+            "error": "failed to get status",
+            "health_status": "unknown",
+        }
+
+
+__all__ = [
+    "WaitStrategy",
+    "WaitStrategyTarget",
+    "wait_container_is_ready",
+    "wait_for",
+    "wait_for_logs",
+]
