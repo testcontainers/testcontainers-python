@@ -97,7 +97,7 @@ _WARNINGS = {"DOCKER_AUTH_CONFIG": "DOCKER_AUTH_CONFIG is experimental, see test
 @dataclass
 class TestcontainersConfiguration:
     max_tries: int = int(environ.get("TC_MAX_TRIES", "120"))
-    sleep_time: int = int(environ.get("TC_POOLING_INTERVAL", "1"))
+    sleep_time: float = float(environ.get("TC_POOLING_INTERVAL", "1"))
     ryuk_image: str = environ.get("RYUK_CONTAINER_IMAGE", "testcontainers/ryuk:0.8.1")
     ryuk_privileged: bool = get_bool_env("TESTCONTAINERS_RYUK_PRIVILEGED")
     ryuk_disabled: bool = get_bool_env("TESTCONTAINERS_RYUK_DISABLED")
@@ -130,7 +130,7 @@ class TestcontainersConfiguration:
         return self.tc_properties.get("tc.host")
 
     @property
-    def timeout(self) -> int:
+    def timeout(self) -> float:
         return self.max_tries * self.sleep_time
 
     @property
