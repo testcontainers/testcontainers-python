@@ -1,5 +1,17 @@
 # Changelog
 
+## [4.13.0](https://github.com/testcontainers/testcontainers-python/compare/testcontainers-v4.12.0...testcontainers-v4.13.0) (2025-08-08)
+
+
+### Features
+
+* **core:** DockerCompose: support list of env_files ([#847](https://github.com/testcontainers/testcontainers-python/issues/847)) ([fe206eb](https://github.com/testcontainers/testcontainers-python/commit/fe206eb48ee9e18623761926900bfc33a8a869a7))
+
+
+### Bug Fixes
+
+* **core:** Make TC_POOLING_INTERVAL/sleep_time a float ([#839](https://github.com/testcontainers/testcontainers-python/issues/839)) ([a072f3f](https://github.com/testcontainers/testcontainers-python/commit/a072f3fad46b3b3e7c5bea6255f27b79826aaf5f))
+
 ## [4.12.0](https://github.com/testcontainers/testcontainers-python/compare/testcontainers-v4.11.0...testcontainers-v4.12.0) (2025-07-21)
 
 
