@@ -106,16 +106,15 @@ class AzuriteContainer(DockerContainer):
         :rtype: str
         :raises ValueError: If an unrecognized `connection_string_type` is provided.
         """
-        match connection_string_type:
-            case ConnectionStringType.LOCALHOST:
-                return self.__get_local_connection_string()
-            case ConnectionStringType.NETWORK:
-                return self.__get_external_connection_string()
-            case _:
-                raise ValueError(
-                    f"unrecognized connection string type {connection_string_type}, "
-                    f"Supported values are ConnectionStringType.LOCALHOST or ConnectionStringType.NETWORK "
-                )
+        if connection_string_type == ConnectionStringType.LOCALHOST:
+            return self.__get_local_connection_string()
+        elif connection_string_type == ConnectionStringType.NETWORK:
+            return self.__get_external_connection_string()
+        else:
+            raise ValueError(
+                f"unrecognized connection string type {connection_string_type}, "
+                f"Supported values are ConnectionStringType.LOCALHOST or ConnectionStringType.NETWORK "
+            )
 
     def __get_local_connection_string(self) -> str:
         """Generates a connection string for Azurite accessible from the local host machine.
