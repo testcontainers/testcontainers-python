@@ -1,4 +1,7 @@
 import contextlib
+import io
+import pathlib
+import tarfile
 from os import PathLike
 from socket import socket
 from types import TracebackType
@@ -17,6 +20,7 @@ from testcontainers.core.docker_client import DockerClient
 from testcontainers.core.exceptions import ContainerConnectException, ContainerStartException
 from testcontainers.core.labels import LABEL_SESSION_ID, SESSION_ID
 from testcontainers.core.network import Network
+from testcontainers.core.transferable import Transferable
 from testcontainers.core.utils import is_arm, setup_logger
 from testcontainers.core.wait_strategies import LogMessageWaitStrategy
 from testcontainers.core.waiting_utils import WaitStrategy, wait_container_is_ready
@@ -71,6 +75,7 @@ class DockerContainer:
         network: Optional[Network] = None,
         network_aliases: Optional[list[str]] = None,
         _wait_strategy: Optional[WaitStrategy] = None,
+        transferables: Optional[list[Transferable]] = None,
         **kwargs: Any,
     ) -> None:
         self.env = env or {}
@@ -99,6 +104,7 @@ class DockerContainer:
 
         self._kwargs = kwargs
         self._wait_strategy: Optional[WaitStrategy] = _wait_strategy
+        self._transferables: list[Transferable] = transferables or []
 
     def with_env(self, key: str, value: str) -> Self:
         self.env[key] = value
@@ -207,6 +213,10 @@ class DockerContainer:
             self._wait_strategy.wait_until_ready(self)
 
         logger.info("Container started: %s", self._container.short_id)
+
+        for t in self._transferables:
+            self._transfer_into_container(t.source, t.destination_in_container, t.mode)
+
         return self
 
     def stop(self, force: bool = True, delete_volume: bool = True) -> None:
@@ -295,6 +305,50 @@ class DockerContainer:
     def _configure(self) -> None:
         # placeholder if subclasses want to define this and use the default start method
         pass
+
+    def with_copy_into_container(
+        self, file_content: Union[bytes, pathlib.Path], destination_in_container: str, mode: int = 0o644
+    ) -> Self:
+        self._transferables.append(Transferable(file_content, destination_in_container, mode))
+        return self
+
+    def copy_into_container(
+        self, file_content: Union[bytes, pathlib.Path], destination_in_container: str, mode: int = 0o644
+    ) -> None:
+        return self._transfer_into_container(file_content, destination_in_container, mode)
+
+    def _transfer_into_container(
+        self, source: Union[bytes, pathlib.Path], destination_in_container: str, mode: int
+    ) -> None:
+        if isinstance(source, bytes):
+            file_content = source
+        elif isinstance(source, pathlib.Path):
+            file_content = source.read_bytes()
+        else:
+            raise TypeError("source must be bytes or PathLike")
+
+        fileobj = io.BytesIO()
+        with tarfile.open(fileobj=fileobj, mode="w") as tar:
+            tarinfo = tarfile.TarInfo(name=destination_in_container)
+            tarinfo.size = len(file_content)
+            tarinfo.mode = mode
+            tar.addfile(tarinfo, io.BytesIO(file_content))
+        fileobj.seek(0)
+        assert self._container is not None
+        rv = self._container.put_archive(path="/", data=fileobj.getvalue())
+        assert rv is True
+
+    def copy_from_container(self, source_in_container: str, destination_on_host: pathlib.Path) -> None:
+        assert self._container is not None
+        tar_stream, _ = self._container.get_archive(source_in_container)
+
+        for chunk in tar_stream:
+            with tarfile.open(fileobj=io.BytesIO(chunk)) as tar:
+                for member in tar.getmembers():
+                    with open(destination_on_host, "wb") as f:
+                        fileobj = tar.extractfile(member)
+                        assert fileobj is not None
+                        f.write(fileobj.read())
 
 
 class Reaper:

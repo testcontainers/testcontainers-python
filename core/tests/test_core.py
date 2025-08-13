@@ -2,6 +2,7 @@ import tempfile
 from pathlib import Path
 
 from testcontainers.core.container import DockerContainer
+from testcontainers.core.transferable import Transferable
 
 
 def test_garbage_collection_is_defensive():
@@ -46,3 +47,119 @@ def test_docker_container_with_env_file():
             assert "ADMIN_EMAIL=admin@example.org" in output
             assert "ROOT_URL=example.org/app" in output
             print(output)
+
+
+def test_copy_file_into_container_at_runtime(tmp_path: Path):
+    # Given
+    my_file = tmp_path / "my_file"
+    my_file.write_text("hello world")
+    destination_in_container = "/tmp/my_file"
+
+    with DockerContainer("bash", command="sleep infinity") as container:
+        # When
+        container.copy_into_container(my_file, destination_in_container)
+        result = container.exec(f"cat {destination_in_container}")
+
+    # Then
+    assert result.exit_code == 0
+    assert result.output == b"hello world"
+
+
+def test_copy_file_into_container_at_startup(tmp_path: Path):
+    # Given
+    my_file = tmp_path / "my_file"
+    my_file.write_text("hello world")
+    destination_in_container = "/tmp/my_file"
+
+    container = DockerContainer("bash", command="sleep infinity")
+    container.with_copy_into_container(my_file, destination_in_container)
+
+    with container:
+        # When
+        result = container.exec(f"cat {destination_in_container}")
+
+    # Then
+    assert result.exit_code == 0
+    assert result.output == b"hello world"
+
+
+def test_copy_file_into_container_via_initializer(tmp_path: Path):
+    # Given
+    my_file = tmp_path / "my_file"
+    my_file.write_text("hello world")
+    destination_in_container = "/tmp/my_file"
+    transferables = [Transferable(my_file, destination_in_container)]
+
+    with DockerContainer("bash", command="sleep infinity", transferables=transferables) as container:
+        # When
+        result = container.exec(f"cat {destination_in_container}")
+
+    # Then
+    assert result.exit_code == 0
+    assert result.output == b"hello world"
+
+
+def test_copy_bytes_to_container_at_runtime():
+    # Given
+    file_content = b"hello world"
+    destination_in_container = "/tmp/my_file"
+
+    with DockerContainer("bash", command="sleep infinity") as container:
+        # When
+        container.copy_into_container(file_content, destination_in_container)
+
+        # Then
+        result = container.exec(f"cat {destination_in_container}")
+
+    assert result.exit_code == 0
+    assert result.output == b"hello world"
+
+
+def test_copy_bytes_to_container_at_startup():
+    # Given
+    file_content = b"hello world"
+    destination_in_container = "/tmp/my_file"
+
+    container = DockerContainer("bash", command="sleep infinity")
+    container.with_copy_into_container(file_content, destination_in_container)
+
+    with container:
+        # When
+        result = container.exec(f"cat {destination_in_container}")
+
+    # Then
+    assert result.exit_code == 0
+    assert result.output == b"hello world"
+
+
+def test_copy_bytes_to_container_via_initializer():
+    # Given
+    file_content = b"hello world"
+    destination_in_container = "/tmp/my_file"
+    transferables = [Transferable(file_content, destination_in_container)]
+
+    with DockerContainer("bash", command="sleep infinity", transferables=transferables) as container:
+        # When
+        result = container.exec(f"cat {destination_in_container}")
+
+    # Then
+    assert result.exit_code == 0
+    assert result.output == b"hello world"
+
+
+def test_copy_file_from_container(tmp_path: Path):
+    # Given
+    file_in_container = "/tmp/foo.txt"
+    destination_on_host = tmp_path / "foo.txt"
+    assert not destination_on_host.is_file()
+
+    with DockerContainer("bash", command="sleep infinity") as container:
+        result = container.exec(f'bash -c "echo -n hello world > {file_in_container}"')
+        assert result.exit_code == 0
+
+        # When
+        container.copy_from_container(file_in_container, destination_on_host)
+
+    # Then
+    assert destination_on_host.is_file()
+    assert destination_on_host.read_text() == "hello world"
