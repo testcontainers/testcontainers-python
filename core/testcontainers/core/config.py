@@ -11,6 +11,8 @@ from typing import Final, Optional, Union
 
 import docker
 
+ENABLE_FLAGS = ("yes", "true", "t", "y", "1")
+
 
 class ConnectionMode(Enum):
     bridge_ip = "bridge_ip"
@@ -52,7 +54,7 @@ def get_bool_env(name: str) -> bool:
     Defaults to False.
     """
     value = environ.get(name, "")
-    return value.lower() in ("yes", "true", "t", "y", "1")
+    return value.lower() in ENABLE_FLAGS
 
 
 TC_FILE = ".testcontainers.properties"
@@ -96,11 +98,20 @@ _WARNINGS = {"DOCKER_AUTH_CONFIG": "DOCKER_AUTH_CONFIG is experimental, see test
 
 @dataclass
 class TestcontainersConfiguration:
+    def _render_bool(self, env_name: str, prop_name: str) -> bool:
+        env_val = environ.get(env_name, None)
+        if env_val is not None:
+            return env_val.lower() in ENABLE_FLAGS
+        prop_val = self.tc_properties.get(prop_name, None)
+        if prop_val is not None:
+            return prop_val.lower() in ENABLE_FLAGS
+        return False
+
     max_tries: int = int(environ.get("TC_MAX_TRIES", "120"))
     sleep_time: float = float(environ.get("TC_POOLING_INTERVAL", "1"))
     ryuk_image: str = environ.get("RYUK_CONTAINER_IMAGE", "testcontainers/ryuk:0.8.1")
-    ryuk_privileged: bool = get_bool_env("TESTCONTAINERS_RYUK_PRIVILEGED")
-    ryuk_disabled: bool = get_bool_env("TESTCONTAINERS_RYUK_DISABLED")
+    _ryuk_privileged: Optional[bool] = None
+    _ryuk_disabled: Optional[bool] = None
     _ryuk_docker_socket: str = ""
     ryuk_reconnection_timeout: str = environ.get("RYUK_RECONNECTION_TIMEOUT", "10s")
     tc_properties: dict[str, str] = field(default_factory=read_tc_properties)
@@ -128,6 +139,29 @@ class TestcontainersConfiguration:
 
     def tc_properties_get_tc_host(self) -> Union[str, None]:
         return self.tc_properties.get("tc.host")
+
+    @property
+    def ryuk_privileged(self) -> bool:
+        if self._ryuk_privileged:
+            return self._ryuk_privileged
+        self._ryuk_privileged = self._render_bool("TESTCONTAINERS_RYUK_PRIVILEGED", "ryuk.container.privileged")
+        return self._ryuk_privileged
+
+    @ryuk_privileged.setter
+    def ryuk_privileged(self, value: bool) -> None:
+        self._ryuk_privileged = value
+
+    @property
+    def ryuk_disabled(self) -> bool:
+        if self._ryuk_disabled:
+            return self._ryuk_disabled
+
+        self._ryuk_disabled = self._render_bool("TESTCONTAINERS_RYUK_DISABLED", "ryuk.disabled")
+        return self._ryuk_disabled
+
+    @ryuk_disabled.setter
+    def ryuk_disabled(self, value: bool) -> None:
+        self._ryuk_disabled = value
 
     @property
     def timeout(self) -> float:
