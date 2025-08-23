@@ -47,16 +47,6 @@ def get_docker_socket() -> str:
         return "/var/run/docker.sock"
 
 
-def get_bool_env(name: str) -> bool:
-    """
-    Get environment variable named `name` and convert it to bool.
-
-    Defaults to False.
-    """
-    value = environ.get(name, "")
-    return value.lower() in ENABLE_FLAGS
-
-
 TC_FILE = ".testcontainers.properties"
 TC_GLOBAL = Path.home() / TC_FILE
 
@@ -142,8 +132,8 @@ class TestcontainersConfiguration:
 
     @property
     def ryuk_privileged(self) -> bool:
-        if self._ryuk_privileged:
-            return self._ryuk_privileged
+        if self._ryuk_privileged is not None:
+            return bool(self._ryuk_privileged)
         self._ryuk_privileged = self._render_bool("TESTCONTAINERS_RYUK_PRIVILEGED", "ryuk.container.privileged")
         return self._ryuk_privileged
 
@@ -153,9 +143,8 @@ class TestcontainersConfiguration:
 
     @property
     def ryuk_disabled(self) -> bool:
-        if self._ryuk_disabled:
-            return self._ryuk_disabled
-
+        if self._ryuk_disabled is not None:
+            return bool(self._ryuk_disabled)
         self._ryuk_disabled = self._render_bool("TESTCONTAINERS_RYUK_DISABLED", "ryuk.disabled")
         return self._ryuk_disabled
 
