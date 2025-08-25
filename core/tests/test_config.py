@@ -28,6 +28,68 @@ def test_read_tc_properties(monkeypatch: MonkeyPatch) -> None:
         assert config.tc_properties == {"tc.host": "some_value"}
 
 
+def test_set_tc_properties(monkeypatch: MonkeyPatch) -> None:
+    """
+    Ensure the configuration file variables can be read if no environment variable is set
+    """
+    with tempfile.TemporaryDirectory() as tmpdirname:
+        file = f"{tmpdirname}/{TC_FILE}"
+        with open(file, "w") as f:
+            f.write("ryuk.disabled=true\n")
+            f.write("ryuk.container.privileged=false\n")
+
+        monkeypatch.setattr("testcontainers.core.config.TC_GLOBAL", file)
+
+        config = TCC()
+
+        assert config.ryuk_disabled == True
+        assert config.ryuk_privileged == False
+
+
+def test_override_tc_properties_1(monkeypatch: MonkeyPatch) -> None:
+    """
+    Ensure that we can re-set the configuration variables programattically to override
+    testcontainers.properties
+    """
+    with tempfile.TemporaryDirectory() as tmpdirname:
+        file = f"{tmpdirname}/{TC_FILE}"
+        with open(file, "w") as f:
+            f.write("ryuk.disabled=true\n")
+            f.write("ryuk.container.privileged=false\n")
+
+        monkeypatch.setattr("testcontainers.core.config.TC_GLOBAL", file)
+
+        config = TCC()
+        config.ryuk_disabled = False
+        config.ryuk_privileged = True
+
+        assert config.ryuk_disabled == False
+        assert config.ryuk_privileged == True
+
+
+def test_override_tc_properties_2(monkeypatch: MonkeyPatch) -> None:
+    """
+    Ensure that we can override the testcontainers.properties with environment variables
+    """
+    with tempfile.TemporaryDirectory() as tmpdirname:
+        file = f"{tmpdirname}/{TC_FILE}"
+        with open(file, "w") as f:
+            f.write("ryuk.disabled=true\n")
+            f.write("ryuk.container.privileged=false\n")
+
+        monkeypatch.setattr("testcontainers.core.config.TC_GLOBAL", file)
+
+        import os
+
+        os.environ["TESTCONTAINERS_RYUK_DISABLED"] = "false"
+        os.environ["TESTCONTAINERS_RYUK_PRIVILEGED"] = "true"
+
+        config = TCC()
+
+        assert config.ryuk_disabled == False
+        assert config.ryuk_privileged == True
+
+
 @mark.parametrize("docker_auth_config_env", ["key=value", ""])
 @mark.parametrize("warning_dict", [{}, {"key": "value"}, {"DOCKER_AUTH_CONFIG": "TEST"}])
 @mark.parametrize("warning_dict_post", [{}, {"key": "value"}, {"DOCKER_AUTH_CONFIG": "TEST"}])
