@@ -73,15 +73,15 @@ class WaitStrategy(ABC):
     """Base class for all wait strategies."""
 
     def __init__(self) -> None:
-        self._startup_timeout: int = config.timeout
+        self._startup_timeout: float = config.timeout
         self._poll_interval: float = config.sleep_time
 
     def with_startup_timeout(self, timeout: Union[int, timedelta]) -> "WaitStrategy":
         """Set the maximum time to wait for the container to be ready."""
         if isinstance(timeout, timedelta):
-            self._startup_timeout = int(timeout.total_seconds())
+            self._startup_timeout = float(int(timeout.total_seconds()))
         else:
-            self._startup_timeout = timeout
+            self._startup_timeout = float(timeout)
         return self
 
     def with_poll_interval(self, interval: Union[float, timedelta]) -> "WaitStrategy":
