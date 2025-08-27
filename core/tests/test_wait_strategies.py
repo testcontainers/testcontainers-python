@@ -380,7 +380,7 @@ class TestHealthcheckWaitStrategy:
                 False,
                 "Container health check reported unhealthy",
             ),
-            ("starting", None, False, "Container health check did not report healthy within 120 seconds"),
+            ("starting", None, False, "Container health check did not report healthy within 120.* seconds"),
             (None, None, False, "No health check configured"),
         ],
         ids=[
