@@ -236,15 +236,17 @@ class DockerContainer:
         connection_mode: ConnectionMode
         connection_mode = self.get_docker_client().get_connection_mode()
 
-        # mypy:
-        container = self._container
-        assert container is not None
-
         if connection_mode == ConnectionMode.docker_host:
             return self.get_docker_client().host()
         elif connection_mode == ConnectionMode.gateway_ip:
+            # mypy:
+            container = self._container
+            assert container is not None
             return self.get_docker_client().gateway_ip(container.id)
         elif connection_mode == ConnectionMode.bridge_ip:
+            # mypy:
+            container = self._container
+            assert container is not None
             return self.get_docker_client().bridge_ip(container.id)
         else:
             # ensure that we covered all possible connection_modes
