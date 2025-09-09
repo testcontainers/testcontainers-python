@@ -21,6 +21,11 @@ class SqlServerContainer(DbContainer):
             ...    engine = sqlalchemy.create_engine(mssql.get_connection_url())
             ...    with engine.begin() as connection:
             ...        result = connection.execute(sqlalchemy.text("select @@VERSION"))
+
+    Notes
+    -----
+    Requires `ODBC Driver 17 for SQL Server <https://docs.microsoft.com/en-us/sql/connect/odbc/
+    linux-mac/installing-the-microsoft-odbc-driver-for-sql-server>`_.
     """
 
     def __init__(
@@ -31,6 +36,7 @@ class SqlServerContainer(DbContainer):
         port: int = 1433,
         dbname: str = "tempdb",
         dialect: str = "mssql+pymssql",
+        driver: str = "ODBC Driver 17 for SQL Server",
         **kwargs,
     ) -> None:
         raise_for_deprecated_parameter(kwargs, "user", "username")
@@ -43,6 +49,7 @@ class SqlServerContainer(DbContainer):
         self.username = username
         self.dbname = dbname
         self.dialect = dialect
+        self.driver = driver
 
     def _configure(self) -> None:
         self.with_env("SA_PASSWORD", self.password)
@@ -58,6 +65,8 @@ class SqlServerContainer(DbContainer):
         assert status == 0, "Cannot run 'SELECT 1': container is not ready"
 
     def get_connection_url(self) -> str:
-        return super()._create_connection_url(
+        base_url = super()._create_connection_url(
             dialect=self.dialect, username=self.username, password=self.password, dbname=self.dbname, port=self.port
         )
+        url = base_url + f"?driver={'+'.join(self.driver.split(' '))}"
+        return url
