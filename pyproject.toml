@@ -181,7 +181,7 @@ sphinx = "7.2.6"
 twine = "4.0.2"
 anyio = "4.3.0"
 # for tests only
-psycopg2-binary = "2.9.9"
+psycopg2-binary = "2.9.10"
 pg8000 = "1.30.5"
 sqlalchemy = "2.0.28"
 psycopg = "3.1.18"
