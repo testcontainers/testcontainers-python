@@ -1,10 +1,9 @@
 import tempfile
 from pathlib import Path
-from typing import Union
 
 import pytest
 from testcontainers.core.container import DockerContainer
-from testcontainers.core.transferable import Transferable
+from testcontainers.core.transferable import Transferable, TransferSpec
 
 
 def test_garbage_collection_is_defensive():
@@ -51,8 +50,8 @@ def test_docker_container_with_env_file():
             print(output)
 
 
-@pytest.fixture(name="copy_source", params=(bytes, Path))
-def copy_source_fixture(request, tmp_path: Path):
+@pytest.fixture(name="transferable", params=(bytes, Path))
+def copy_sources_fixture(request, tmp_path: Path):
     """
     Provide source argument for tests of copy_into_container
     """
@@ -66,13 +65,13 @@ def copy_source_fixture(request, tmp_path: Path):
     pytest.fail("Invalid type")
 
 
-def test_copy_into_container_at_runtime(copy_source: Union[bytes, Path]):
+def test_copy_into_container_at_runtime(transferable: Transferable):
     # Given
     destination_in_container = "/tmp/my_file"
 
     with DockerContainer("bash", command="sleep infinity") as container:
         # When
-        container.copy_into_container(copy_source, destination_in_container)
+        container.copy_into_container(transferable, destination_in_container)
         result = container.exec(f"cat {destination_in_container}")
 
     # Then
@@ -80,12 +79,12 @@ def test_copy_into_container_at_runtime(copy_source: Union[bytes, Path]):
     assert result.output == b"hello world"
 
 
-def test_copy_into_container_at_startup(copy_source: Union[bytes, Path]):
+def test_copy_into_container_at_startup(transferable: Transferable):
     # Given
     destination_in_container = "/tmp/my_file"
 
     container = DockerContainer("bash", command="sleep infinity")
-    container.with_copy_into_container(copy_source, destination_in_container)
+    container.with_copy_into_container(transferable, destination_in_container)
 
     with container:
         # When
@@ -96,10 +95,10 @@ def test_copy_into_container_at_startup(copy_source: Union[bytes, Path]):
     assert result.output == b"hello world"
 
 
-def test_copy_into_container_via_initializer(copy_source: Union[bytes, Path]):
+def test_copy_into_container_via_initializer(transferable: Transferable):
     # Given
     destination_in_container = "/tmp/my_file"
-    transferables = [Transferable(copy_source, destination_in_container)]
+    transferables: list[TransferSpec] = [(transferable, destination_in_container, 0o644)]
 
     with DockerContainer("bash", command="sleep infinity", transferables=transferables) as container:
         # When

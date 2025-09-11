@@ -20,7 +20,7 @@ from testcontainers.core.docker_client import DockerClient
 from testcontainers.core.exceptions import ContainerConnectException, ContainerStartException
 from testcontainers.core.labels import LABEL_SESSION_ID, SESSION_ID
 from testcontainers.core.network import Network
-from testcontainers.core.transferable import Transferable
+from testcontainers.core.transferable import Transferable, TransferSpec
 from testcontainers.core.utils import is_arm, setup_logger
 from testcontainers.core.wait_strategies import LogMessageWaitStrategy
 from testcontainers.core.waiting_utils import WaitStrategy, wait_container_is_ready
@@ -75,7 +75,7 @@ class DockerContainer:
         network: Optional[Network] = None,
         network_aliases: Optional[list[str]] = None,
         _wait_strategy: Optional[WaitStrategy] = None,
-        transferables: Optional[list[Transferable]] = None,
+        transferables: Optional[list[TransferSpec]] = None,
         **kwargs: Any,
     ) -> None:
         self.env = env or {}
@@ -104,7 +104,11 @@ class DockerContainer:
 
         self._kwargs = kwargs
         self._wait_strategy: Optional[WaitStrategy] = _wait_strategy
-        self._transferables: list[Transferable] = transferables or []
+
+        self._transferable_specs: list[TransferSpec] = []
+        if transferables:
+            for t in transferables:
+                self.with_copy_into_container(*t)
 
     def with_env(self, key: str, value: str) -> Self:
         self.env[key] = value
@@ -214,8 +218,8 @@ class DockerContainer:
 
         logger.info("Container started: %s", self._container.short_id)
 
-        for t in self._transferables:
-            self._transfer_into_container(t.source, t.destination_in_container, t.mode)
+        for t in self._transferable_specs:
+            self._transfer_into_container(*t)
 
         return self
 
@@ -309,24 +313,20 @@ class DockerContainer:
         pass
 
     def with_copy_into_container(
-        self, file_content: Union[bytes, pathlib.Path], destination_in_container: str, mode: int = 0o644
+        self, transferable: Transferable, destination_in_container: str, mode: int = 0o644
     ) -> Self:
-        self._transferables.append(Transferable(file_content, destination_in_container, mode))
+        self._transferable_specs.append((transferable, destination_in_container, mode))
         return self
 
-    def copy_into_container(
-        self, file_content: Union[bytes, pathlib.Path], destination_in_container: str, mode: int = 0o644
-    ) -> None:
-        return self._transfer_into_container(file_content, destination_in_container, mode)
+    def copy_into_container(self, transferable: Transferable, destination_in_container: str, mode: int = 0o644) -> None:
+        return self._transfer_into_container(transferable, destination_in_container, mode)
 
-    def _transfer_into_container(
-        self, source: Union[bytes, pathlib.Path], destination_in_container: str, mode: int
-    ) -> None:
-        if isinstance(source, bytes):
-            file_content = source
-        elif isinstance(source, pathlib.Path):
-            assert source.is_file()  # Temporary, only copying file supported
-            file_content = source.read_bytes()
+    def _transfer_into_container(self, transferable: Transferable, destination_in_container: str, mode: int) -> None:
+        if isinstance(transferable, bytes):
+            file_content = transferable
+        elif isinstance(transferable, pathlib.Path):
+            assert transferable.is_file()  # Temporary, only copying file supported
+            file_content = transferable.read_bytes()
         else:
             raise TypeError("source must be bytes or PathLike")
 
