@@ -1,6 +1,8 @@
 import tempfile
 from pathlib import Path
+from typing import Union
 
+import pytest
 from testcontainers.core.container import DockerContainer
 from testcontainers.core.transferable import Transferable
 
@@ -49,15 +51,28 @@ def test_docker_container_with_env_file():
             print(output)
 
 
-def test_copy_file_into_container_at_runtime(tmp_path: Path):
+@pytest.fixture(name="copy_source", params=(bytes, Path))
+def copy_source_fixture(request, tmp_path: Path):
+    """
+    Provide source argument for tests of copy_into_container
+    """
+    raw_data = b"hello world"
+    if request.param is bytes:
+        return raw_data
+    elif request.param is Path:
+        my_file = tmp_path / "my_file"
+        my_file.write_bytes(raw_data)
+        return my_file
+    pytest.fail("Invalid type")
+
+
+def test_copy_into_container_at_runtime(copy_source: Union[bytes, Path]):
     # Given
-    my_file = tmp_path / "my_file"
-    my_file.write_text("hello world")
     destination_in_container = "/tmp/my_file"
 
     with DockerContainer("bash", command="sleep infinity") as container:
         # When
-        container.copy_into_container(my_file, destination_in_container)
+        container.copy_into_container(copy_source, destination_in_container)
         result = container.exec(f"cat {destination_in_container}")
 
     # Then
@@ -65,14 +80,12 @@ def test_copy_file_into_container_at_runtime(tmp_path: Path):
     assert result.output == b"hello world"
 
 
-def test_copy_file_into_container_at_startup(tmp_path: Path):
+def test_copy_into_container_at_startup(copy_source: Union[bytes, Path]):
     # Given
-    my_file = tmp_path / "my_file"
-    my_file.write_text("hello world")
     destination_in_container = "/tmp/my_file"
 
     container = DockerContainer("bash", command="sleep infinity")
-    container.with_copy_into_container(my_file, destination_in_container)
+    container.with_copy_into_container(copy_source, destination_in_container)
 
     with container:
         # When
@@ -83,60 +96,10 @@ def test_copy_file_into_container_at_startup(tmp_path: Path):
     assert result.output == b"hello world"
 
 
-def test_copy_file_into_container_via_initializer(tmp_path: Path):
+def test_copy_into_container_via_initializer(copy_source: Union[bytes, Path]):
     # Given
-    my_file = tmp_path / "my_file"
-    my_file.write_text("hello world")
     destination_in_container = "/tmp/my_file"
-    transferables = [Transferable(my_file, destination_in_container)]
-
-    with DockerContainer("bash", command="sleep infinity", transferables=transferables) as container:
-        # When
-        result = container.exec(f"cat {destination_in_container}")
-
-    # Then
-    assert result.exit_code == 0
-    assert result.output == b"hello world"
-
-
-def test_copy_bytes_to_container_at_runtime():
-    # Given
-    file_content = b"hello world"
-    destination_in_container = "/tmp/my_file"
-
-    with DockerContainer("bash", command="sleep infinity") as container:
-        # When
-        container.copy_into_container(file_content, destination_in_container)
-
-        # Then
-        result = container.exec(f"cat {destination_in_container}")
-
-    assert result.exit_code == 0
-    assert result.output == b"hello world"
-
-
-def test_copy_bytes_to_container_at_startup():
-    # Given
-    file_content = b"hello world"
-    destination_in_container = "/tmp/my_file"
-
-    container = DockerContainer("bash", command="sleep infinity")
-    container.with_copy_into_container(file_content, destination_in_container)
-
-    with container:
-        # When
-        result = container.exec(f"cat {destination_in_container}")
-
-    # Then
-    assert result.exit_code == 0
-    assert result.output == b"hello world"
-
-
-def test_copy_bytes_to_container_via_initializer():
-    # Given
-    file_content = b"hello world"
-    destination_in_container = "/tmp/my_file"
-    transferables = [Transferable(file_content, destination_in_container)]
+    transferables = [Transferable(copy_source, destination_in_container)]
 
     with DockerContainer("bash", command="sleep infinity", transferables=transferables) as container:
         # When

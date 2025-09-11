@@ -325,6 +325,7 @@ class DockerContainer:
         if isinstance(source, bytes):
             file_content = source
         elif isinstance(source, pathlib.Path):
+            assert source.is_file()  # Temporary, only copying file supported
             file_content = source.read_bytes()
         else:
             raise TypeError("source must be bytes or PathLike")
