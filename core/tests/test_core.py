@@ -125,3 +125,32 @@ def test_copy_file_from_container(tmp_path: Path):
     # Then
     assert destination_on_host.is_file()
     assert destination_on_host.read_text() == "hello world"
+
+
+def test_copy_directory_into_container(tmp_path: Path):
+    # Given
+    source_dir = tmp_path / "my_directory"
+    source_dir.mkdir()
+    my_file = source_dir / "my_file"
+    my_file.write_bytes(b"hello world")
+
+    destination_in_container = "/tmp/my_destination_directory"
+
+    with DockerContainer("bash", command="sleep infinity") as container:
+        # When
+        container.copy_into_container(source_dir, destination_in_container)
+        result = container.exec(f"ls {destination_in_container}")
+
+        # Then - my_directory exists
+        assert result.exit_code == 0
+        assert result.output == b"my_directory\n"
+
+        # Then - my_file is in directory
+        result = container.exec(f"ls {destination_in_container}/my_directory")
+        assert result.exit_code == 0
+        assert result.output == b"my_file\n"
+
+        # Then - my_file contents are correct
+        result = container.exec(f"cat {destination_in_container}/my_directory/my_file")
+        assert result.exit_code == 0
+        assert result.output == b"hello world"

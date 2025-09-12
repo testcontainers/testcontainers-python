@@ -323,13 +323,20 @@ class DockerContainer:
 
     def _transfer_into_container(self, transferable: Transferable, destination_in_container: str, mode: int) -> None:
         if isinstance(transferable, bytes):
-            file_content = transferable
+            self._transfer_file_content_into_container(transferable, destination_in_container, mode)
         elif isinstance(transferable, pathlib.Path):
-            assert transferable.is_file()  # Temporary, only copying file supported
-            file_content = transferable.read_bytes()
+            if transferable.is_file():
+                self._transfer_file_content_into_container(transferable.read_bytes(), destination_in_container, mode)
+            elif transferable.is_dir():
+                self._transfer_directory_into_container(transferable, destination_in_container, mode)
+            else:
+                raise TypeError(f"Path {transferable} is neither a file nor directory")
         else:
             raise TypeError("source must be bytes or PathLike")
 
+    def _transfer_file_content_into_container(
+        self, file_content: bytes, destination_in_container: str, mode: int
+    ) -> None:
         fileobj = io.BytesIO()
         with tarfile.open(fileobj=fileobj, mode="w") as tar:
             tarinfo = tarfile.TarInfo(name=destination_in_container)
@@ -339,6 +346,20 @@ class DockerContainer:
         fileobj.seek(0)
         assert self._container is not None
         rv = self._container.put_archive(path="/", data=fileobj.getvalue())
+        assert rv is True
+
+    def _transfer_directory_into_container(
+        self, source_directory: pathlib.Path, destination_in_container: str, mode: int
+    ) -> None:
+        assert self._container is not None
+        result = self._container.exec_run(["mkdir", "-p", destination_in_container])
+        assert result.exit_code == 0
+
+        fileobj = io.BytesIO()
+        with tarfile.open(fileobj=fileobj, mode="w") as tar:
+            tar.add(source_directory, arcname=source_directory.name)
+        fileobj.seek(0)
+        rv = self._container.put_archive(path=destination_in_container, data=fileobj.getvalue())
         assert rv is True
 
     def copy_from_container(self, source_in_container: str, destination_on_host: pathlib.Path) -> None:
