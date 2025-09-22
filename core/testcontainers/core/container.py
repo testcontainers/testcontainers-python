@@ -1,4 +1,5 @@
 import contextlib
+import sys
 from os import PathLike
 from socket import socket
 from types import TracebackType
@@ -215,7 +216,11 @@ class DockerContainer:
         self.get_docker_client().client.close()
 
     def __enter__(self) -> Self:
-        return self.start()
+        try:
+            return self.start()
+        except:  # noqa: E722, RUF100
+            self.__exit__(*sys.exc_info())
+            raise
 
     def __exit__(
         self, exc_type: Optional[type[BaseException]], exc_val: Optional[BaseException], exc_tb: Optional[TracebackType]

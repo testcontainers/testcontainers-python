@@ -1,3 +1,4 @@
+import sys
 from dataclasses import asdict, dataclass, field, fields, is_dataclass
 from functools import cached_property
 from json import loads
@@ -223,8 +224,12 @@ class DockerCompose:
             self.env_file = [self.env_file]
 
     def __enter__(self) -> "DockerCompose":
-        self.start()
-        return self
+        try:
+            self.start()
+            return self
+        except:  # noqa: E722, RUF100
+            self.__exit__(*sys.exc_info())
+            raise
 
     def __exit__(
         self, exc_type: Optional[type[BaseException]], exc_val: Optional[BaseException], exc_tb: Optional[TracebackType]
