@@ -10,6 +10,7 @@ maintainers = [
 ]
 readme = "README.md"
 keywords = ["testing", "logging", "docker", "test automation"]
+license = "Apache-2.0"
 classifiers = [
     "License :: OSI Approved :: Apache Software License",
     "Intended Audience :: Information Technology",
