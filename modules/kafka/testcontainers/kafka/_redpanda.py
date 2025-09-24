@@ -1,3 +1,4 @@
+import os.path
 import tarfile
 import time
 from io import BytesIO
@@ -21,7 +22,7 @@ class RedpandaContainer(DockerContainer):
             ...    connection = redpanda.get_bootstrap_server()
     """
 
-    TC_START_SCRIPT = "/tc-start.sh"
+    TC_START_SCRIPT = "/var/lib/redpanda/tc-start.sh"
 
     def __init__(
         self,
@@ -74,9 +75,10 @@ class RedpandaContainer(DockerContainer):
 
     def create_file(self, content: bytes, path: str) -> None:
         with BytesIO() as archive, tarfile.TarFile(fileobj=archive, mode="w") as tar:
-            tarinfo = tarfile.TarInfo(name=path)
+            dirname, basename = os.path.split(path)
+            tarinfo = tarfile.TarInfo(name=basename)
             tarinfo.size = len(content)
             tarinfo.mtime = time.time()
             tar.addfile(tarinfo, BytesIO(content))
             archive.seek(0)
-            self.get_wrapped_container().put_archive("/", archive)
+            self.get_wrapped_container().put_archive(dirname, archive)
