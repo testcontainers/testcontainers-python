@@ -1,5 +1,13 @@
 # Changelog
 
+## [4.13.1](https://github.com/testcontainers/testcontainers-python/compare/testcontainers-v4.13.0...testcontainers-v4.13.1) (2025-09-24)
+
+
+### Bug Fixes
+
+* **core:** Added 'compose' in compose_command_property ([#879](https://github.com/testcontainers/testcontainers-python/issues/879)) ([769b7b6](https://github.com/testcontainers/testcontainers-python/commit/769b7b688fe254cb8e38e05f453c4e3fe7999ad5))
+* **core:** make sure context manager exits ([#876](https://github.com/testcontainers/testcontainers-python/issues/876)) ([10089f6](https://github.com/testcontainers/testcontainers-python/commit/10089f6e2fe07e53cc47a69521e67a1bf3310065))
+
 ## [4.13.0](https://github.com/testcontainers/testcontainers-python/compare/testcontainers-v4.12.0...testcontainers-v4.13.0) (2025-08-27)
 
 
