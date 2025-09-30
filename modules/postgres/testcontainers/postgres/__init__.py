@@ -64,6 +64,11 @@ class PostgresContainer(DbContainer):
         self.driver = f"+{driver}" if driver else ""
 
         self.with_exposed_ports(self.port)
+        self.waiting_for(
+            LogMessageWaitStrategy(
+                'database system is ready to accept connections').with_startup_timeout(10)
+        )
+
 
     def _configure(self) -> None:
         self.with_env("POSTGRES_USER", self.username)
@@ -87,7 +92,6 @@ class PostgresContainer(DbContainer):
             port=self.port,
         )
 
-    @wait_container_is_ready()
     def _connect(self) -> None:
         escaped_single_password = self.password.replace("'", "'\"'\"'")
         result = self.exec(
