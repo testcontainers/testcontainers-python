@@ -169,7 +169,7 @@ class DockerContainer:
             return self.with_kwargs(platform="linux/amd64")
         return self
 
-    def waiting_for(self, strategy: WaitStrategy) -> "DockerContainer":
+    def waiting_for(self, strategy: WaitStrategy) -> Self:
         """Set a wait strategy to be used after container start."""
         self._wait_strategy = strategy
         return self
