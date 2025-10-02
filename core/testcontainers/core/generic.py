@@ -30,6 +30,7 @@ class DbContainer(DockerContainer):
     """
     **DEPRECATED (for removal)**
     Please use database-specific container classes or `SqlContainer` instead.
+    # from testcontainers.generic.sql import SqlContainer
 
     Generic database container.
     """
