@@ -1,15 +1,3 @@
-#
-#    Licensed under the Apache License, Version 2.0 (the "License"); you may
-#    not use this file except in compliance with the License. You may obtain
-#    a copy of the License at
-#
-#         http://www.apache.org/licenses/LICENSE-2.0
-#
-#    Unless required by applicable law or agreed to in writing, software
-#    distributed under the License is distributed on an "AS IS" BASIS, WITHOUT
-#    WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the
-#    License for the specific language governing permissions and limitations
-#    under the License.
 import logging
 from typing import Any, Optional
 from urllib.parse import quote, urlencode
@@ -30,16 +18,12 @@ except ImportError:
     logger.debug("SQLAlchemy not available, skipping DBAPIError handling")
 
 
-class DbContainer(DockerContainer):
+class SqlContainer(DockerContainer):
     """
-    Generic database container providing common database functionality.
+    Generic SQL database container providing common functionality.
 
-    This class serves as a base for database-specific container implementations.
+    This class can serve as a base for database-specific container implementations.
     It provides connection management, URL construction, and basic lifecycle methods.
-
-    Note:
-        This class is deprecated and will be removed in a future version.
-        Use database-specific container classes instead.
     """
 
     @wait_container_is_ready(*ADDITIONAL_TRANSIENT_ERRORS)
@@ -58,7 +42,6 @@ class DbContainer(DockerContainer):
             raise ImportError("SQLAlchemy is required for database containers") from e
 
         connection_url = self.get_connection_url()
-        logger.debug(f"Testing database connection to {self._mask_password_in_url(connection_url)}")
 
         engine = sqlalchemy.create_engine(connection_url)
         try:
@@ -147,33 +130,14 @@ class DbContainer(DockerContainer):
             query_string = urlencode(query_params)
             url = f"{url}?{query_string}"
 
-        logger.debug(f"Created connection URL: {self._mask_password_in_url(url)}")
         return url
 
-    def _mask_password_in_url(self, url: str) -> str:
-        """
-        Mask password in URL for safe logging.
-
-        Args:
-            url: Database connection URL
-
-        Returns:
-            str: URL with masked password
-        """
-        try:
-            # Simple regex-based masking for logging
-            import re
-
-            return re.sub(r"://([^:]+):([^@]+)@", r"://\1:***@", url)
-        except Exception:
-            return "[URL with masked credentials]"
-
-    def start(self) -> "DbContainer":
+    def start(self) -> "SqlContainer":
         """
         Start the database container and perform initialization.
 
         Returns:
-            DbContainer: Self for method chaining
+            SqlContainer: Self for method chaining
 
         Raises:
             ContainerStartException: If container fails to start
