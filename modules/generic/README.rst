@@ -54,7 +54,7 @@ A more advance use-case, where we are using a FastAPI container that is using Re
 .. autoclass:: testcontainers.generic.SqlContainer
 .. title:: testcontainers.generic.SqlContainer
 
-SQL container that is using :code:`SqlContainer`
+Postgres container that is using :code:`SqlContainer`
 
 .. doctest::
 
@@ -62,7 +62,25 @@ SQL container that is using :code:`SqlContainer`
     >>> from sqlalchemy import text
     >>> import sqlalchemy
 
-    >>> with SqlContainer(image="postgres:15-alpine", port=5432, username="test", password="test", dbname="test") as postgres:
+    >>> class CustomPostgresContainer(SqlContainer):
+    ...     def __init__(self, image="postgres:15-alpine",
+    ...                  port=5432, username="test", password="test", dbname="test"):
+    ...         super().__init__(image=image)
+    ...         self.port_to_expose = port
+    ...         self.username = username
+    ...         self.password = password
+    ...         self.dbname = dbname
+    ...     def get_connection_url(self) -> str:
+    ...         host = self.get_container_host_ip()
+    ...         port = self.get_exposed_port(self.port_to_expose)
+    ...         return f"postgresql://{self.username}:{self.password}@{host}:{port}/{self.dbname}"
+    ...     def _configure(self) -> None:
+    ...         self.with_exposed_ports(self.port_to_expose)
+    ...         self.with_env("POSTGRES_USER", self.username)
+    ...         self.with_env("POSTGRES_PASSWORD", self.password)
+    ...         self.with_env("POSTGRES_DB", self.dbname)
+
+    >>> with CustomPostgresContainer() as postgres:
     ...     engine = sqlalchemy.create_engine(postgres.get_connection_url())
     ...     with engine.connect() as conn:
     ...         result = conn.execute(text("SELECT 1"))
