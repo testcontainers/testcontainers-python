@@ -58,7 +58,6 @@ class CrateDBContainer(DockerContainer):
         ports: t.Optional[dict] = None,
         user: t.Optional[str] = None,
         password: t.Optional[str] = None,
-        dbname: t.Optional[str] = None,
         cmd_opts: t.Optional[dict] = None,
         **kwargs,
     ) -> None:
@@ -72,7 +71,6 @@ class CrateDBContainer(DockerContainer):
                       to the 15432 port on the host.
         :param user:  optional username to access the DB; if None, try `CRATEDB_USER` environment variable
         :param password: optional password to access the DB; if None, try `CRATEDB_PASSWORD` environment variable
-        :param dbname: optional database name to access the DB; if None, try `CRATEDB_DB` environment variable
         :param cmd_opts: an optional dict with CLI arguments to be passed to the DB entrypoint inside the container
         :param kwargs: misc keyword arguments
         """
@@ -82,7 +80,6 @@ class CrateDBContainer(DockerContainer):
 
         self.CRATEDB_USER = user or os.environ.get("CRATEDB_USER", "crate")
         self.CRATEDB_PASSWORD = password or os.environ.get("CRATEDB_PASSWORD", "crate")
-        self.CRATEDB_DB = dbname or os.environ.get("CRATEDB_DB", "doc")
 
         self.port_mapping = ports if ports else {4200: None}
         self.port_to_expose = next(iter(self.port_mapping.items()))
@@ -124,7 +121,6 @@ class CrateDBContainer(DockerContainer):
     def _configure_credentials(self) -> None:
         self.with_env("CRATEDB_USER", self.CRATEDB_USER)
         self.with_env("CRATEDB_PASSWORD", self.CRATEDB_PASSWORD)
-        self.with_env("CRATEDB_DB", self.CRATEDB_DB)
 
     def _configure(self) -> None:
         self._configure_ports()
@@ -145,7 +141,6 @@ class CrateDBContainer(DockerContainer):
             password=self.CRATEDB_PASSWORD,
             host=host,
             port=self.port_to_expose[0],
-            dbname=self.CRATEDB_DB,
         )
 
     def _create_connection_url(

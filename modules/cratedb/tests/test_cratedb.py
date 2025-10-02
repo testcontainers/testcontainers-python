@@ -34,11 +34,10 @@ def test_docker_run_cratedb_ports(ports, expected):
 
 
 def test_docker_run_cratedb_credentials():
-    expected_user, expected_password, expected_db, expected_port = "user1", "pass1", "host1", 4200
+    expected_user, expected_password, expected_port = "user1", "pass1", 4200
     expected_default_dialect, expected_default_host = "crate", "localhost"
     expected_defined_dialect, expected_defined_host = "somedialect", "somehost"
     os.environ["CRATEDB_USER"], os.environ["CRATEDB_PASSWORD"] = expected_user, expected_password
-    os.environ["CRATEDB_DB"] = expected_db
 
     with CrateDBContainer("crate:latest", ports={4200: expected_port}) as container:
         url = urllib.parse.urlparse(container.get_connection_url())
@@ -49,7 +48,6 @@ def test_docker_run_cratedb_credentials():
         assert url.scheme == expected_default_dialect
         assert host == expected_default_host
         assert int(port) == expected_port
-        assert url.path.replace("/", "") == expected_db
 
         url = urllib.parse.urlparse(
             container.get_connection_url(dialect=expected_defined_dialect, host=expected_defined_host)
