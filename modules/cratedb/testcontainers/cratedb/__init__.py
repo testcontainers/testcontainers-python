@@ -33,24 +33,19 @@ class CrateDBContainer(DockerContainer):
 
         .. doctest::
 
-            >>> from cratedb_toolkit.testing.testcontainers.cratedb import CrateDBContainer
+            >>> from testcontainers import cratedb import CrateDBContainer
             >>> import sqlalchemy
 
-            >>> cratedb_container = CrateDBContainer("crate:5.2.3")
-            >>> cratedb_container.start()
-            >>> with cratedb_container as cratedb:
+            >>> cratedb_container =
+            >>> with CrateDBContainer("crate:6.0") as cratedb:
             ...     engine = sqlalchemy.create_engine(cratedb.get_connection_url())
             ...     with engine.begin() as connection:
             ...         result = connection.execute(sqlalchemy.text("select version()"))
             ...         version, = result.fetchone()
             >>> version
-            'CrateDB 5.2.3...'
+            'CrateDB 6.0.2..'
     """
 
-    CRATEDB_USER = os.environ.get("CRATEDB_USER", "crate")
-    CRATEDB_PASSWORD = os.environ.get("CRATEDB_PASSWORD", "crate")
-    CRATEDB_DB = os.environ.get("CRATEDB_DB", "doc")
-    KEEPALIVE = asbool(os.environ.get("CRATEDB_KEEPALIVE", os.environ.get("TC_KEEPALIVE", False)))
     CMD_OPTS: t.ClassVar[dict[str, str]] = {
         "discovery.type": "single-node",
         "node.attr.storage": "hot",
@@ -82,20 +77,29 @@ class CrateDBContainer(DockerContainer):
         :param kwargs: misc keyword arguments
         """
         super().__init__(image=image, **kwargs)
-
-        self._name = "testcontainers-cratedb"
-
         cmd_opts = cmd_opts or {}
         self._command = self._build_cmd({**self.CMD_OPTS, **cmd_opts})
 
-        self.CRATEDB_USER = user or self.CRATEDB_USER
-        self.CRATEDB_PASSWORD = password or self.CRATEDB_PASSWORD
-        self.CRATEDB_DB = dbname or self.CRATEDB_DB
+        self.CRATEDB_USER = user or os.environ.get("CRATEDB_USER", "crate")
+        self.CRATEDB_PASSWORD = password or os.environ.get("CRATEDB_PASSWORD", "crate")
+        self.CRATEDB_DB = dbname or os.environ.get("CRATEDB_DB", "doc")
 
         self.port_mapping = ports if ports else {4200: None}
-        self.port_to_expose, _ = next(iter(self.port_mapping.items()))
+        self.port_to_expose = next(iter(self.port_mapping.items()))
 
         self.waiting_for(HttpWaitStrategy(4200).for_status_code(200).with_startup_timeout(5))
+
+    def exposed_ports(self) -> dict[int, int]:
+        """Returns a dictionary with the ports that are currently exposed in the container.
+
+        Contrary to the '--port' parameter used in docker cli, this returns {internal_port: external_port}
+
+            Examples:
+                {4200: 19382}
+
+            :returns: The exposed ports.
+        """
+        return {port: self.get_exposed_port(port) for port in self.ports}
 
     @staticmethod
     def _build_cmd(opts: dict) -> str:
@@ -127,6 +131,7 @@ class CrateDBContainer(DockerContainer):
         self._configure_credentials()
 
     def get_connection_url(self, dialect: str = "crate", host: t.Optional[str] = None) -> str:
+        # We should remove this method once the new DBContainer generic gets added to the library.
         """
         Return a connection URL to the DB
 
@@ -134,14 +139,13 @@ class CrateDBContainer(DockerContainer):
         :param dialect: a string with the dialect name to generate a DB URI
         :return: string containing a connection URL to te DB
         """
-        # TODO: When using `db_name=self.CRATEDB_DB`:
-        #       Connection.__init__() got an unexpected keyword argument 'database'
         return self._create_connection_url(
             dialect=dialect,
             username=self.CRATEDB_USER,
             password=self.CRATEDB_PASSWORD,
             host=host,
-            port=self.port_to_expose,
+            port=self.port_to_expose[0],
+            dbname=self.CRATEDB_DB,
         )
 
     def _create_connection_url(
@@ -156,12 +160,16 @@ class CrateDBContainer(DockerContainer):
     ) -> str:
         if raise_for_deprecated_parameter(kwargs, "db_name", "dbname"):
             raise ValueError(f"Unexpected arguments: {','.join(kwargs)}")
+
         if self._container is None:
             raise ContainerStartException("container has not been started")
+
         host = host or self.get_container_host_ip()
         assert port is not None
+
         port = self.get_exposed_port(port)
         quoted_password = quote(password, safe=" +")
+
         url = f"{dialect}://{username}:{quoted_password}@{host}:{port}"
         if dbname:
             url = f"{url}/{dbname}"
