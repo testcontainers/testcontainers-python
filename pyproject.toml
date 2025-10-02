@@ -136,6 +136,7 @@ elasticsearch = []
 generic = [
     "httpx",
     "redis",
+    "sqlalchemy",
 ] # The advance doctests for ServerContainer require redis
 test_module_import = ["httpx"]
 google = ["google-cloud-pubsub", "google-cloud-datastore"]
