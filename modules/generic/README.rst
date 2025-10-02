@@ -50,3 +50,20 @@ A more advance use-case, where we are using a FastAPI container that is using Re
     ...             response = client.get(f"/get/{test_data['key']}")
     ...             assert response.status_code == 200, "Failed to get data"
     ...             assert response.json() == {"key": test_data["key"], "value": test_data["value"]}
+
+.. autoclass:: testcontainers.generic.SqlContainer
+.. title:: testcontainers.generic.SqlContainer
+
+SQL container that is using :code:`SqlContainer`
+
+.. doctest::
+
+    >>> from testcontainers.generic import SqlContainer
+    >>> from sqlalchemy import text
+    >>> import sqlalchemy
+
+    >>> with SqlContainer(image="postgres:15-alpine", port=5432, username="test", password="test", dbname="test") as postgres:
+    ...     engine = sqlalchemy.create_engine(postgres.get_connection_url())
+    ...     with engine.connect() as conn:
+    ...         result = conn.execute(text("SELECT 1"))
+    ...         assert result.scalar() == 1
