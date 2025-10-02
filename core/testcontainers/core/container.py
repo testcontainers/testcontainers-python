@@ -39,15 +39,11 @@ class DockerContainer:
 
     Args:
         image: The name of the image to start.
-        docker_client_kw: Dictionary with arguments that will be passed to the
-            docker.DockerClient init.
+        docker_client_kw: Dictionary with arguments that will be passed to the docker.DockerClient init.
         command: Optional execution command for the container.
         name: Optional name for the container.
-        ports: Ports to be exposed by the container. The port number will be
-            automatically assigned on the host, use
-            :code:`get_exposed_port(PORT)` method to get the port number on the host.
-        volumes: Volumes to mount into the container. Each entry should be a tuple with
-            three values: host path, container path and. mode (default 'ro').
+        ports: Ports to be exposed by the container. The port number will be automatically assigned on the host, use :code:`get_exposed_port(PORT)` method to get the port number on the host.
+        volumes: Volumes to mount into the container. Each entry should be a tuple with three values: host path, container path and mode (default 'ro').
         network: Optional network to connect the container to.
         network_aliases: Optional list of aliases for the container in the network.
 
