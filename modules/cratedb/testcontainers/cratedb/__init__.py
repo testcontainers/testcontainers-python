@@ -8,19 +8,6 @@ from testcontainers.core.utils import raise_for_deprecated_parameter
 from testcontainers.core.wait_strategies import HttpWaitStrategy
 
 
-def asbool(obj) -> bool:
-    # from sqlalchemy.util.langhelpers
-    if isinstance(obj, str):
-        obj = obj.strip().lower()
-        if obj in ["true", "yes", "on", "y", "t", "1"]:
-            return True
-        elif obj in ["false", "no", "off", "n", "f", "0"]:
-            return False
-        else:
-            raise ValueError(f"String is not true/false: {obj!r}")
-    return bool(obj)
-
-
 # DockerSkippingContainer, KeepaliveContainer,
 class CrateDBContainer(DockerContainer):
     """
