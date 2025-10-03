@@ -8,7 +8,6 @@ from testcontainers.core.utils import raise_for_deprecated_parameter
 from testcontainers.core.wait_strategies import HttpWaitStrategy
 
 
-# DockerSkippingContainer, KeepaliveContainer,
 class CrateDBContainer(DockerContainer):
     """
     CrateDB database container.
@@ -35,13 +34,11 @@ class CrateDBContainer(DockerContainer):
 
     CMD_OPTS: t.ClassVar[dict[str, str]] = {
         "discovery.type": "single-node",
-        "node.attr.storage": "hot",
-        "path.repo": "/tmp/snapshots",
     }
 
     def __init__(
         self,
-        image: str = "crate/crate:nightly",
+        image: str = "crate/crate:latest",
         ports: t.Optional[dict] = None,
         user: t.Optional[str] = None,
         password: t.Optional[str] = None,

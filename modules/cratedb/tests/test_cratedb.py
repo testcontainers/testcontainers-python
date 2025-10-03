@@ -63,22 +63,12 @@ def test_docker_run_cratedb_credentials():
     [
         pytest.param(
             {"indices.breaker.total.limit": "90%"},
-            (
-                "-Cdiscovery.type=single-node "
-                "-Cnode.attr.storage=hot "
-                "-Cpath.repo=/tmp/snapshots "
-                "-Cindices.breaker.total.limit=90%"
-            ),
+            ("-Cdiscovery.type=single-node -Cindices.breaker.total.limit=90%"),
             id="add_cmd_option",
         ),
         pytest.param(
             {"discovery.type": "zen", "indices.breaker.total.limit": "90%"},
-            (
-                "-Cdiscovery.type=zen "
-                "-Cnode.attr.storage=hot "
-                "-Cpath.repo=/tmp/snapshots "
-                "-Cindices.breaker.total.limit=90%"
-            ),
+            ("-Cdiscovery.type=zen -Cindices.breaker.total.limit=90%"),
             id="override_defaults",
         ),
     ],
