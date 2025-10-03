@@ -5,7 +5,7 @@ from urllib.parse import quote, urlencode
 from testcontainers.core.container import DockerContainer
 from testcontainers.core.exceptions import ContainerStartException
 from testcontainers.core.utils import raise_for_deprecated_parameter
-from testcontainers.core.waiting_utils import wait_container_is_ready
+from testcontainers.core.waiting_utils import WaitStrategy, WaitStrategyTarget
 
 logger = logging.getLogger(__name__)
 
@@ -18,18 +18,66 @@ except ImportError:
     logger.debug("SQLAlchemy not available, skipping DBAPIError handling")
 
 
+class DatabaseConnectionWaitStrategy(WaitStrategy):
+    """
+    Wait strategy for database connection readiness using SqlContainer._connect().
+
+    This strategy implements retry logic and calls SqlContainer._connect()
+    repeatedly until it succeeds or times out.
+    """
+
+    def __init__(self, sql_container: "SqlContainer"):
+        super().__init__()
+        self.sql_container = sql_container
+
+    def wait_until_ready(self, container: WaitStrategyTarget) -> None:
+        """
+        Test database connectivity with retry logic by calling SqlContainer._connect().
+
+        Raises:
+            TimeoutError: If connection fails after timeout
+            Exception: Any non-transient errors from _connect()
+        """
+        import time
+
+        start_time = time.time()
+
+        transient_exceptions = (TimeoutError, ConnectionError, *ADDITIONAL_TRANSIENT_ERRORS)
+
+        while True:
+            if time.time() - start_time > self._startup_timeout:
+                raise TimeoutError(
+                    f"Database connection failed after {self._startup_timeout}s timeout. "
+                    f"Hint: Check if the database container is ready and accessible."
+                )
+
+            try:
+                self.sql_container._connect()
+                return
+            except transient_exceptions as e:
+                logger.debug(f"Database connection attempt failed: {e}, retrying in {self._poll_interval}s...")
+            except Exception as e:
+                logger.error(f"Database connection test failed with non-transient error: {e}")
+                raise
+
+            time.sleep(self._poll_interval)
+
+
 class SqlContainer(DockerContainer):
     """
     Generic SQL database container providing common functionality.
 
     This class can serve as a base for database-specific container implementations.
     It provides connection management, URL construction, and basic lifecycle methods.
+    Database connection readiness is automatically handled by DatabaseConnectionWaitStrategy.
     """
 
-    @wait_container_is_ready(*ADDITIONAL_TRANSIENT_ERRORS)
     def _connect(self) -> None:
         """
         Test database connectivity using SQLAlchemy.
+
+        This method performs a single connection test without retry logic.
+        Retry logic is handled by the DatabaseConnectionWaitStrategy.
 
         Raises:
             ImportError: If SQLAlchemy is not installed
@@ -42,28 +90,16 @@ class SqlContainer(DockerContainer):
             raise ImportError("SQLAlchemy is required for database containers") from e
 
         connection_url = self.get_connection_url()
-
         engine = sqlalchemy.create_engine(connection_url)
+
         try:
             with engine.connect():
                 logger.info("Database connection test successful")
         except Exception as e:
-            logger.error(f"Database connection test failed: {e}")
+            logger.debug(f"Database connection attempt failed: {e}")
             raise
         finally:
             engine.dispose()
-
-    def get_connection_url(self) -> str:
-        """
-        Get the database connection URL.
-
-        Returns:
-            str: Database connection URL
-
-        Raises:
-            NotImplementedError: Must be implemented by subclasses
-        """
-        raise NotImplementedError("Subclasses must implement get_connection_url()")
 
     def _create_connection_url(
         self,
@@ -147,9 +183,10 @@ class SqlContainer(DockerContainer):
 
         try:
             self._configure()
+            # Set up database connection wait strategy before starting
+            self.waiting_for(DatabaseConnectionWaitStrategy(self))
             super().start()
             self._transfer_seed()
-            self._connect()
             logger.info("Database container started successfully")
         except Exception as e:
             logger.error(f"Failed to start database container: {e}")
@@ -174,3 +211,15 @@ class SqlContainer(DockerContainer):
         database-specific seeding functionality.
         """
         logger.debug("No seed data to transfer")
+
+    def get_connection_url(self) -> str:
+        """
+        Get the database connection URL.
+
+        Returns:
+            str: Database connection URL
+
+        Raises:
+            NotImplementedError: Must be implemented by subclasses
+        """
+        raise NotImplementedError("Subclasses must implement get_connection_url()")
