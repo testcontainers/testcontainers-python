@@ -75,6 +75,7 @@ class WaitStrategy(ABC):
     def __init__(self) -> None:
         self._startup_timeout: float = testcontainers_config.timeout
         self._poll_interval: float = testcontainers_config.sleep_time
+        self._transient_exceptions: list[type[Exception]] = [*TRANSIENT_EXCEPTIONS]
 
     def with_startup_timeout(self, timeout: Union[int, timedelta]) -> "WaitStrategy":
         """Set the maximum time to wait for the container to be ready."""
@@ -92,12 +93,21 @@ class WaitStrategy(ABC):
             self._poll_interval = interval
         return self
 
+    def with_transient_exceptions(self, *transient_exceptions: type[Exception]) -> "WaitStrategy":
+        self._transient_exceptions.extend(transient_exceptions)
+        return self
+
     @abstractmethod
     def wait_until_ready(self, container: WaitStrategyTarget) -> None:
         """Wait until the container is ready."""
         pass
 
-    def _poll(self, check: Callable[[], bool]) -> bool:
+    def _poll(self, check: Callable[[], bool], transient_exceptions: list[type[Exception]] = None) -> bool:
+        if not transient_exceptions:
+            all_te_types = self._transient_exceptions
+        else:
+            all_te_types = [*self._transient_exceptions, *(transient_exceptions or [])]
+
         start = time.time()
         while True:
             start_attempt = time.time()
@@ -112,8 +122,13 @@ class WaitStrategy(ABC):
                     return result
             except StopIteration:
                 return False
-            except:  # noqa: E722, RUF100
-                pass
+            except Exception as e:  # noqa: E722, RUF100
+                is_transient = False
+                for et in all_te_types:
+                    if isinstance(e, et):
+                        is_transient = True
+                if not is_transient:
+                    raise RuntimeError(f"exception while checking for strategy {self}") from e
 
             seconds_left_until_next = self._poll_interval - (time.time() - start_attempt)
             time.sleep(max(0.0, seconds_left_until_next))

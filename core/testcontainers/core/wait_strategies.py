@@ -35,6 +35,8 @@ from typing import Any, Callable, Optional, TYPE_CHECKING, Union
 from urllib.error import HTTPError, URLError
 from urllib.request import Request, urlopen
 
+from typing_extensions import Self
+
 from testcontainers.compose import DockerCompose
 from testcontainers.core.utils import setup_logger
 # Import base classes from waiting_utils to make them available for tests
@@ -724,6 +726,24 @@ class CompositeWaitStrategy(WaitStrategy):
     def __init__(self, *strategies: WaitStrategy) -> None:
         super().__init__()
         self._strategies = list(strategies)
+
+    def with_poll_interval(self, interval: Union[float, timedelta]) -> Self:
+        super().with_poll_interval(interval)
+        for _strategy in self._strategies:
+            _strategy.with_poll_interval(interval)
+        return self
+
+    def with_startup_timeout(self, timeout: Union[int, timedelta]) -> Self:
+        super().with_startup_timeout(timeout)
+        for _strategy in self._strategies:
+            _strategy.with_startup_timeout(timeout)
+        return self
+
+    def with_transient_exceptions(self, *transient_exceptions: type[Exception]) -> Self:
+        super().with_transient_exceptions(*transient_exceptions)
+        for _strategy in self._strategies:
+            _strategy.with_transient_exceptions(*transient_exceptions)
+        return self
 
     def wait_until_ready(self, container: WaitStrategyTarget) -> None:
         """
