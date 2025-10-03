@@ -19,46 +19,52 @@ except ImportError:
 SQL_TRANSIENT_EXCEPTIONS = (TimeoutError, ConnectionError, *ADDITIONAL_TRANSIENT_ERRORS)
 
 
-class ExceptionsWaitStrategy(WaitStrategy):
+class ConnectWaitStrategy(WaitStrategy):
     """
-    Generic wait strategy that retries a callable until it succeeds or times out.
+    Wait strategy that retries a container's _connect method until it succeeds or times out.
 
-    This strategy can be used with any container method that needs retry logic
-    for handling transient errors. It calls the provided callable repeatedly
-    until it succeeds or the timeout is reached.
+    This strategy assumes the container has a _connect method and will call it repeatedly
+    until it succeeds or the timeout is reached. It handles transient connection errors
+    and provides appropriate retry logic for database connectivity testing.
     """
 
-    def __init__(self, callable_func: callable, transient_exceptions: Optional[tuple] = None):
+    def __init__(self, transient_exceptions: Optional[tuple] = None):
         super().__init__()
-        self.callable_func = callable_func
         self.transient_exceptions = transient_exceptions or (TimeoutError, ConnectionError)
 
     def wait_until_ready(self, container: WaitStrategyTarget) -> None:
         """
-        Execute the callable with retry logic until it succeeds or times out.
+        Execute the container's _connect method with retry logic until it succeeds or times out.
+
+        Args:
+            container: The container that must have a _connect method
 
         Raises:
-            TimeoutError: If callable fails after timeout
-            Exception: Any non-transient errors from the callable
+            TimeoutError: If _connect fails after timeout
+            AttributeError: If container doesn't have _connect method
+            Exception: Any non-transient errors from _connect
         """
         import time
+
+        if not hasattr(container, "_connect"):
+            raise AttributeError(f"Container {container} must have a _connect method")
 
         start_time = time.time()
 
         while True:
             if time.time() - start_time > self._startup_timeout:
                 raise TimeoutError(
-                    f"Callable failed after {self._startup_timeout}s timeout. "
-                    f"Hint: Check if the container is ready and the operation can succeed."
+                    f"Container _connect failed after {self._startup_timeout}s timeout. "
+                    f"Hint: Check if the container is ready and the database is accessible."
                 )
 
             try:
-                self.callable_func()
+                container._connect()
                 return
             except self.transient_exceptions as e:
-                logger.debug(f"Callable attempt failed: {e}, retrying in {self._poll_interval}s...")
+                logger.debug(f"Connection attempt failed: {e}, retrying in {self._poll_interval}s...")
             except Exception as e:
-                logger.error(f"Callable failed with non-transient error: {e}")
+                logger.error(f"Connection failed with non-transient error: {e}")
                 raise
 
             time.sleep(self._poll_interval)
@@ -70,7 +76,7 @@ class SqlContainer(DockerContainer):
 
     This class can serve as a base for database-specific container implementations.
     It provides connection management, URL construction, and basic lifecycle methods.
-    Database connection readiness is automatically handled by ExceptionsWaitStrategy.
+    Database connection readiness is automatically handled by ConnectWaitStrategy.
     """
 
     def _connect(self) -> None:
@@ -78,7 +84,7 @@ class SqlContainer(DockerContainer):
         Test database connectivity using SQLAlchemy.
 
         This method performs a single connection test without retry logic.
-        Retry logic is handled by the DatabaseConnectionWaitStrategy.
+        Retry logic is handled by the ConnectWaitStrategy.
 
         Raises:
             ImportError: If SQLAlchemy is not installed
@@ -184,7 +190,7 @@ class SqlContainer(DockerContainer):
 
         try:
             self._configure()
-            self.waiting_for(ExceptionsWaitStrategy(self._connect, SQL_TRANSIENT_EXCEPTIONS))
+            self.waiting_for(ConnectWaitStrategy(SQL_TRANSIENT_EXCEPTIONS))
             super().start()
             self._transfer_seed()
             logger.info("Database container started successfully")
