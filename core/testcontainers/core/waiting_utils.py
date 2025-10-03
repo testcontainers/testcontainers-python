@@ -20,6 +20,7 @@ from datetime import timedelta
 from typing import Any, Callable, Optional, Protocol, TypeVar, Union, cast
 
 import wrapt
+from typing_extensions import Self
 
 from testcontainers.core.config import testcontainers_config
 from testcontainers.core.utils import setup_logger
@@ -77,7 +78,7 @@ class WaitStrategy(ABC):
         self._poll_interval: float = testcontainers_config.sleep_time
         self._transient_exceptions: list[type[Exception]] = [*TRANSIENT_EXCEPTIONS]
 
-    def with_startup_timeout(self, timeout: Union[int, timedelta]) -> "WaitStrategy":
+    def with_startup_timeout(self, timeout: Union[int, timedelta]) -> Self:
         """Set the maximum time to wait for the container to be ready."""
         if isinstance(timeout, timedelta):
             self._startup_timeout = float(int(timeout.total_seconds()))
@@ -85,7 +86,7 @@ class WaitStrategy(ABC):
             self._startup_timeout = float(timeout)
         return self
 
-    def with_poll_interval(self, interval: Union[float, timedelta]) -> "WaitStrategy":
+    def with_poll_interval(self, interval: Union[float, timedelta]) -> Self:
         """Set how frequently to check if the container is ready."""
         if isinstance(interval, timedelta):
             self._poll_interval = interval.total_seconds()
@@ -93,7 +94,7 @@ class WaitStrategy(ABC):
             self._poll_interval = interval
         return self
 
-    def with_transient_exceptions(self, *transient_exceptions: type[Exception]) -> "WaitStrategy":
+    def with_transient_exceptions(self, *transient_exceptions: type[Exception]) -> Self:
         self._transient_exceptions.extend(transient_exceptions)
         return self
 
