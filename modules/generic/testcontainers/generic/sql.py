@@ -16,48 +16,49 @@ try:
     ADDITIONAL_TRANSIENT_ERRORS.append(DBAPIError)
 except ImportError:
     logger.debug("SQLAlchemy not available, skipping DBAPIError handling")
+SQL_TRANSIENT_EXCEPTIONS = (TimeoutError, ConnectionError, *ADDITIONAL_TRANSIENT_ERRORS)
 
 
-class DatabaseConnectionWaitStrategy(WaitStrategy):
+class ExceptionsWaitStrategy(WaitStrategy):
     """
-    Wait strategy for database connection readiness using SqlContainer._connect().
+    Generic wait strategy that retries a callable until it succeeds or times out.
 
-    This strategy implements retry logic and calls SqlContainer._connect()
-    repeatedly until it succeeds or times out.
+    This strategy can be used with any container method that needs retry logic
+    for handling transient errors. It calls the provided callable repeatedly
+    until it succeeds or the timeout is reached.
     """
 
-    def __init__(self, sql_container: "SqlContainer"):
+    def __init__(self, callable_func: callable, transient_exceptions: Optional[tuple] = None):
         super().__init__()
-        self.sql_container = sql_container
+        self.callable_func = callable_func
+        self.transient_exceptions = transient_exceptions or (TimeoutError, ConnectionError)
 
     def wait_until_ready(self, container: WaitStrategyTarget) -> None:
         """
-        Test database connectivity with retry logic by calling SqlContainer._connect().
+        Execute the callable with retry logic until it succeeds or times out.
 
         Raises:
-            TimeoutError: If connection fails after timeout
-            Exception: Any non-transient errors from _connect()
+            TimeoutError: If callable fails after timeout
+            Exception: Any non-transient errors from the callable
         """
         import time
 
         start_time = time.time()
 
-        transient_exceptions = (TimeoutError, ConnectionError, *ADDITIONAL_TRANSIENT_ERRORS)
-
         while True:
             if time.time() - start_time > self._startup_timeout:
                 raise TimeoutError(
-                    f"Database connection failed after {self._startup_timeout}s timeout. "
-                    f"Hint: Check if the database container is ready and accessible."
+                    f"Callable failed after {self._startup_timeout}s timeout. "
+                    f"Hint: Check if the container is ready and the operation can succeed."
                 )
 
             try:
-                self.sql_container._connect()
+                self.callable_func()
                 return
-            except transient_exceptions as e:
-                logger.debug(f"Database connection attempt failed: {e}, retrying in {self._poll_interval}s...")
+            except self.transient_exceptions as e:
+                logger.debug(f"Callable attempt failed: {e}, retrying in {self._poll_interval}s...")
             except Exception as e:
-                logger.error(f"Database connection test failed with non-transient error: {e}")
+                logger.error(f"Callable failed with non-transient error: {e}")
                 raise
 
             time.sleep(self._poll_interval)
@@ -69,7 +70,7 @@ class SqlContainer(DockerContainer):
 
     This class can serve as a base for database-specific container implementations.
     It provides connection management, URL construction, and basic lifecycle methods.
-    Database connection readiness is automatically handled by DatabaseConnectionWaitStrategy.
+    Database connection readiness is automatically handled by ExceptionsWaitStrategy.
     """
 
     def _connect(self) -> None:
@@ -183,8 +184,7 @@ class SqlContainer(DockerContainer):
 
         try:
             self._configure()
-            # Set up database connection wait strategy before starting
-            self.waiting_for(DatabaseConnectionWaitStrategy(self))
+            self.waiting_for(ExceptionsWaitStrategy(self._connect, SQL_TRANSIENT_EXCEPTIONS))
             super().start()
             self._transfer_seed()
             logger.info("Database container started successfully")
