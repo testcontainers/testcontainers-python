@@ -251,7 +251,9 @@ class DockerContainer:
         from testcontainers.core.wait_strategies import ContainerStatusWaitStrategy as C
 
         C().wait_until_ready(self)
+        return self._get_exposed_port(port)
 
+    def _get_exposed_port(self, port: int) -> int:
         if self.get_docker_client().get_connection_mode().use_mapped_port:
             c = self._container
             assert c is not None
