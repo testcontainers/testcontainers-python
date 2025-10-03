@@ -20,7 +20,7 @@ from testcontainers.core.labels import LABEL_SESSION_ID, SESSION_ID
 from testcontainers.core.network import Network
 from testcontainers.core.utils import is_arm, setup_logger
 from testcontainers.core.wait_strategies import LogMessageWaitStrategy
-from testcontainers.core.waiting_utils import WaitStrategy, wait_container_is_ready
+from testcontainers.core.waiting_utils import WaitStrategy
 
 if TYPE_CHECKING:
     from docker.models.containers import Container
@@ -247,8 +247,13 @@ class DockerContainer:
             # ensure that we covered all possible connection_modes
             assert_never(connection_mode)
 
-    @wait_container_is_ready()
     def get_exposed_port(self, port: int) -> int:
+        from testcontainers.core.wait_strategies import ContainerStatusWaitStrategy as C
+
+        C().wait_until_ready(self)
+        return self._get_exposed_port(port)
+
+    def _get_exposed_port(self, port: int) -> int:
         if self.get_docker_client().get_connection_mode().use_mapped_port:
             c = self._container
             assert c is not None

@@ -484,7 +484,7 @@ class TestPortWaitStrategy:
             strategy.wait_until_ready(mock_container)
             mock_socket_instance.connect.assert_called_once_with(("localhost", 8080))
         else:
-            with pytest.raises(TimeoutError, match="Port 8080 not available within 1 seconds"):
+            with pytest.raises(TimeoutError, match="Port 8080 not available within 1.0 seconds"):
                 strategy.wait_until_ready(mock_container)
 
 
