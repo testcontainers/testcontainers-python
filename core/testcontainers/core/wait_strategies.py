@@ -31,7 +31,7 @@ import socket
 import time
 from datetime import timedelta
 from pathlib import Path
-from typing import Any, Callable, Optional, TYPE_CHECKING, Union
+from typing import TYPE_CHECKING, Any, Callable, Optional, Union, cast
 from urllib.error import HTTPError, URLError
 from urllib.request import Request, urlopen
 
@@ -39,6 +39,7 @@ from typing_extensions import Self
 
 from testcontainers.compose import DockerCompose
 from testcontainers.core.utils import setup_logger
+
 # Import base classes from waiting_utils to make them available for tests
 from testcontainers.core.waiting_utils import WaitStrategy, WaitStrategyTarget
 
@@ -655,9 +656,10 @@ class ContainerStatusWaitStrategy(WaitStrategy):
         dead
     https://docs.docker.com/reference/cli/docker/container/ls/#status
     """
-    CONTINUE_STATUSES = {"created", "restarting"}
 
-    def __init__(self):
+    CONTINUE_STATUSES = frozenset(("created", "restarting"))
+
+    def __init__(self) -> None:
         super().__init__()
 
     def wait_until_ready(self, container: WaitStrategyTarget) -> None:
@@ -671,7 +673,11 @@ class ContainerStatusWaitStrategy(WaitStrategy):
             logger.debug("status is now running")
             return True
         if status in ContainerStatusWaitStrategy.CONTINUE_STATUSES:
-            logger.debug("status is %s, which is valid for continuing (%s)", status, ContainerStatusWaitStrategy.CONTINUE_STATUSES)
+            logger.debug(
+                "status is %s, which is valid for continuing (%s)",
+                status,
+                ContainerStatusWaitStrategy.CONTINUE_STATUSES,
+            )
             return False
         raise StopIteration(f"container status not valid for continuing: {status}")
 
@@ -689,7 +695,7 @@ class ContainerStatusWaitStrategy(WaitStrategy):
         logger.debug("fetching status of container %s", container)
         wrapped = container.get_wrapped_container()
         wrapped.reload()
-        return wrapped.status
+        return cast("str", wrapped.status)
 
     @staticmethod
     def _get_status_compose_container(container: DockerCompose) -> str:

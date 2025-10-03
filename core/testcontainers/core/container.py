@@ -20,7 +20,7 @@ from testcontainers.core.labels import LABEL_SESSION_ID, SESSION_ID
 from testcontainers.core.network import Network
 from testcontainers.core.utils import is_arm, setup_logger
 from testcontainers.core.wait_strategies import LogMessageWaitStrategy
-from testcontainers.core.waiting_utils import WaitStrategy, wait_container_is_ready
+from testcontainers.core.waiting_utils import WaitStrategy
 
 if TYPE_CHECKING:
     from docker.models.containers import Container

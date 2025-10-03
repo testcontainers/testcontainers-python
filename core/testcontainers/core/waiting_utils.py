@@ -103,7 +103,7 @@ class WaitStrategy(ABC):
         """Wait until the container is ready."""
         pass
 
-    def _poll(self, check: Callable[[], bool], transient_exceptions: list[type[Exception]] = None) -> bool:
+    def _poll(self, check: Callable[[], bool], transient_exceptions: Optional[list[type[Exception]]] = None) -> bool:
         if not transient_exceptions:
             all_te_types = self._transient_exceptions
         else:

@@ -247,7 +247,9 @@ class DockerCompose:
 
     @cached_property
     def compose_command_property(self) -> list[str]:
-        docker_compose_cmd = [self.docker_command_path, "compose"] if self.docker_command_path else ["docker", "compose"]
+        docker_compose_cmd = (
+            [self.docker_command_path, "compose"] if self.docker_command_path else ["docker", "compose"]
+        )
         if self.compose_file_name:
             for file in self.compose_file_name:
                 docker_compose_cmd += ["-f", file]
