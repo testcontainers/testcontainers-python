@@ -151,7 +151,7 @@ class TestSqlContainer:
         assert hasattr(container, "start")
 
     def test_additional_transient_errors_list(self):
-        from testcontainers.generic.sql import ADDITIONAL_TRANSIENT_ERRORS
+        from testcontainers.generic.sql_utils import ADDITIONAL_TRANSIENT_ERRORS
 
         assert isinstance(ADDITIONAL_TRANSIENT_ERRORS, list)
         # List may be empty if SQLAlchemy not available, or contain DBAPIError if it is
