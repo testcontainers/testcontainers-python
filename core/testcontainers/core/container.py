@@ -247,8 +247,11 @@ class DockerContainer:
             # ensure that we covered all possible connection_modes
             assert_never(connection_mode)
 
-    @wait_container_is_ready()
     def get_exposed_port(self, port: int) -> int:
+        from testcontainers.core.wait_strategies import ContainerStatusWaitStrategy as C
+
+        C().wait_until_ready(self)
+
         if self.get_docker_client().get_connection_mode().use_mapped_port:
             c = self._container
             assert c is not None

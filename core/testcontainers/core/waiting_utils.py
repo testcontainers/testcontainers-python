@@ -21,7 +21,7 @@ from typing import Any, Callable, Optional, Protocol, TypeVar, Union, cast
 
 import wrapt
 
-from testcontainers.core.config import testcontainers_config as config
+from testcontainers.core.config import testcontainers_config
 from testcontainers.core.utils import setup_logger
 
 logger = setup_logger(__name__)
@@ -73,8 +73,8 @@ class WaitStrategy(ABC):
     """Base class for all wait strategies."""
 
     def __init__(self) -> None:
-        self._startup_timeout: float = config.timeout
-        self._poll_interval: float = config.sleep_time
+        self._startup_timeout: float = testcontainers_config.timeout
+        self._poll_interval: float = testcontainers_config.sleep_time
 
     def with_startup_timeout(self, timeout: Union[int, timedelta]) -> "WaitStrategy":
         """Set the maximum time to wait for the container to be ready."""
@@ -96,6 +96,27 @@ class WaitStrategy(ABC):
     def wait_until_ready(self, container: WaitStrategyTarget) -> None:
         """Wait until the container is ready."""
         pass
+
+    def _poll(self, check: Callable[[], bool]) -> bool:
+        start = time.time()
+        while True:
+            start_attempt = time.time()
+            duration = start_attempt - start
+            if duration > self._startup_timeout:
+                return False
+
+            # noinspection PyBroadException
+            try:
+                result = check()
+                if result:
+                    return result
+            except StopIteration:
+                return False
+            except:  # noqa: E722, RUF100
+                pass
+
+            seconds_left_until_next = self._poll_interval - (time.time() - start_attempt)
+            time.sleep(max(0.0, seconds_left_until_next))
 
 
 # Keep existing wait_container_is_ready but make it use the new system internally
@@ -194,7 +215,7 @@ _NOT_EXITED_STATUSES = {"running", "created"}
 def wait_for_logs(
     container: WaitStrategyTarget,
     predicate: Union[Callable[[str], bool], str, WaitStrategy],
-    timeout: float = config.timeout,
+    timeout: float = testcontainers_config.timeout,
     interval: float = 1,
     predicate_streams_and: bool = False,
     raise_on_exit: bool = False,
@@ -261,7 +282,7 @@ def wait_for_logs(
     # Original implementation for backwards compatibility
     re_predicate: Optional[Callable[[str], Any]] = None
     if timeout is None:
-        timeout = config.timeout
+        timeout = testcontainers_config.timeout
     if isinstance(predicate, str):
         re_predicate = re.compile(predicate, re.MULTILINE).search
     elif callable(predicate):

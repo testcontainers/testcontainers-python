@@ -31,14 +31,18 @@ import socket
 import time
 from datetime import timedelta
 from pathlib import Path
-from typing import Any, Callable, Optional, Union
+from typing import TYPE_CHECKING, Any, Callable, Optional, Union
 from urllib.error import HTTPError, URLError
 from urllib.request import Request, urlopen
 
 from testcontainers.core.utils import setup_logger
-
+from . import testcontainers_config
 # Import base classes from waiting_utils to make them available for tests
-from .waiting_utils import WaitStrategy, WaitStrategyTarget
+from testcontainers.core.waiting_utils import WaitStrategy, WaitStrategyTarget
+from testcontainers.compose import DockerCompose
+
+if TYPE_CHECKING:
+    from testcontainers.core.container import DockerContainer
 
 logger = setup_logger(__name__)
 
@@ -718,6 +722,60 @@ class FileExistsWaitStrategy(WaitStrategy):
             time.sleep(self._poll_interval)
 
 
+class ContainerStatusWaitStrategy(WaitStrategy):
+    """
+    The possible values for the container status are:
+        created
+        running
+        paused
+        restarting
+        exited
+        removing
+        dead
+    https://docs.docker.com/reference/cli/docker/container/ls/#status
+    """
+    CONTINUE_STATUSES = {"created", "restarting"}
+
+    def __init__(self):
+        super().__init__()
+
+    def wait_until_ready(self, container: WaitStrategyTarget) -> None:
+        result = self._poll(lambda: self.running(self.get_status(container)))
+        if not result:
+            raise TimeoutError("container did not become running")
+
+    @staticmethod
+    def running(status: str) -> bool:
+        if status == "running":
+            logger.debug("status is now running")
+            return True
+        if status in ContainerStatusWaitStrategy.CONTINUE_STATUSES:
+            logger.debug("status is %s, which is valid for continuing (%s)", status, ContainerStatusWaitStrategy.CONTINUE_STATUSES)
+            return False
+        raise StopIteration(f"container status not valid for continuing: {status}")
+
+    def get_status(self, container: Any) -> str:
+        from testcontainers.core.container import DockerContainer
+
+        if isinstance(container, DockerContainer):
+            return self._get_status_tc_container(container)
+        if isinstance(container, DockerCompose):
+            return self._get_status_compose_container(container)
+        raise TypeError(f"not supported operation: 'get_status' for type: {type(container)}")
+
+    @staticmethod
+    def _get_status_tc_container(container: "DockerContainer") -> str:
+        logger.debug("fetching status of container %s", container)
+        wrapped = container.get_wrapped_container()
+        wrapped.reload()
+        return wrapped.status
+
+    @staticmethod
+    def _get_status_compose_container(container: DockerCompose) -> str:
+        logger.debug("fetching status of compose container %s", container)
+        raise NotImplementedError
+
+
 class CompositeWaitStrategy(WaitStrategy):
     """
     Wait for multiple conditions to be satisfied in sequence.
@@ -816,6 +874,7 @@ class CompositeWaitStrategy(WaitStrategy):
 
 __all__ = [
     "CompositeWaitStrategy",
+    "ContainerStatusWaitStrategy",
     "FileExistsWaitStrategy",
     "HealthcheckWaitStrategy",
     "HttpWaitStrategy",
