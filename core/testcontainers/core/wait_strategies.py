@@ -31,15 +31,14 @@ import socket
 import time
 from datetime import timedelta
 from pathlib import Path
-from typing import TYPE_CHECKING, Any, Callable, Optional, Union
+from typing import Any, Callable, Optional, TYPE_CHECKING, Union
 from urllib.error import HTTPError, URLError
 from urllib.request import Request, urlopen
 
+from testcontainers.compose import DockerCompose
 from testcontainers.core.utils import setup_logger
-from . import testcontainers_config
 # Import base classes from waiting_utils to make them available for tests
 from testcontainers.core.waiting_utils import WaitStrategy, WaitStrategyTarget
-from testcontainers.compose import DockerCompose
 
 if TYPE_CHECKING:
     from testcontainers.core.container import DockerContainer
@@ -80,22 +79,6 @@ class LogMessageWaitStrategy(WaitStrategy):
         self._message = message if isinstance(message, re.Pattern) else re.compile(message, re.MULTILINE)
         self._times = times
         self._predicate_streams_and = predicate_streams_and
-
-    def with_startup_timeout(self, timeout: Union[int, timedelta]) -> "LogMessageWaitStrategy":
-        """Set the maximum time to wait for the container to be ready."""
-        if isinstance(timeout, timedelta):
-            self._startup_timeout = int(timeout.total_seconds())
-        else:
-            self._startup_timeout = timeout
-        return self
-
-    def with_poll_interval(self, interval: Union[float, timedelta]) -> "LogMessageWaitStrategy":
-        """Set how frequently to check if the container is ready."""
-        if isinstance(interval, timedelta):
-            self._poll_interval = interval.total_seconds()
-        else:
-            self._poll_interval = interval
-        return self
 
     def wait_until_ready(self, container: "WaitStrategyTarget") -> None:
         """
@@ -201,22 +184,6 @@ class HttpWaitStrategy(WaitStrategy):
         self._method = "GET"
         self._body: Optional[str] = None
         self._insecure_tls = False
-
-    def with_startup_timeout(self, timeout: Union[int, timedelta]) -> "HttpWaitStrategy":
-        """Set the maximum time to wait for the container to be ready."""
-        if isinstance(timeout, timedelta):
-            self._startup_timeout = int(timeout.total_seconds())
-        else:
-            self._startup_timeout = timeout
-        return self
-
-    def with_poll_interval(self, interval: Union[float, timedelta]) -> "HttpWaitStrategy":
-        """Set how frequently to check if the container is ready."""
-        if isinstance(interval, timedelta):
-            self._poll_interval = interval.total_seconds()
-        else:
-            self._poll_interval = interval
-        return self
 
     @classmethod
     def from_url(cls, url: str) -> "HttpWaitStrategy":
@@ -487,22 +454,6 @@ class HealthcheckWaitStrategy(WaitStrategy):
     def __init__(self) -> None:
         super().__init__()
 
-    def with_startup_timeout(self, timeout: Union[int, timedelta]) -> "HealthcheckWaitStrategy":
-        """Set the maximum time to wait for the container to be ready."""
-        if isinstance(timeout, timedelta):
-            self._startup_timeout = int(timeout.total_seconds())
-        else:
-            self._startup_timeout = timeout
-        return self
-
-    def with_poll_interval(self, interval: Union[float, timedelta]) -> "HealthcheckWaitStrategy":
-        """Set how frequently to check if the container is ready."""
-        if isinstance(interval, timedelta):
-            self._poll_interval = interval.total_seconds()
-        else:
-            self._poll_interval = interval
-        return self
-
     def wait_until_ready(self, container: WaitStrategyTarget) -> None:
         """
         Wait until the container's health check reports as healthy.
@@ -585,22 +536,6 @@ class PortWaitStrategy(WaitStrategy):
         super().__init__()
         self._port = port
 
-    def with_startup_timeout(self, timeout: Union[int, timedelta]) -> "PortWaitStrategy":
-        """Set the maximum time to wait for the container to be ready."""
-        if isinstance(timeout, timedelta):
-            self._startup_timeout = int(timeout.total_seconds())
-        else:
-            self._startup_timeout = timeout
-        return self
-
-    def with_poll_interval(self, interval: Union[float, timedelta]) -> "PortWaitStrategy":
-        """Set how frequently to check if the container is ready."""
-        if isinstance(interval, timedelta):
-            self._poll_interval = interval.total_seconds()
-        else:
-            self._poll_interval = interval
-        return self
-
     def wait_until_ready(self, container: WaitStrategyTarget) -> None:
         """
         Wait until the specified port is available for connection.
@@ -657,22 +592,6 @@ class FileExistsWaitStrategy(WaitStrategy):
     def __init__(self, file_path: Union[str, Path]) -> None:
         super().__init__()
         self._file_path = Path(file_path)
-
-    def with_startup_timeout(self, timeout: Union[int, timedelta]) -> "FileExistsWaitStrategy":
-        """Set the maximum time to wait for the container to be ready."""
-        if isinstance(timeout, timedelta):
-            self._startup_timeout = int(timeout.total_seconds())
-        else:
-            self._startup_timeout = timeout
-        return self
-
-    def with_poll_interval(self, interval: Union[float, timedelta]) -> "FileExistsWaitStrategy":
-        """Set how frequently to check if the container is ready."""
-        if isinstance(interval, timedelta):
-            self._poll_interval = interval.total_seconds()
-        else:
-            self._poll_interval = interval
-        return self
 
     def wait_until_ready(self, container: WaitStrategyTarget) -> None:
         """
@@ -805,44 +724,6 @@ class CompositeWaitStrategy(WaitStrategy):
     def __init__(self, *strategies: WaitStrategy) -> None:
         super().__init__()
         self._strategies = list(strategies)
-
-    def with_startup_timeout(self, timeout: Union[int, timedelta]) -> "CompositeWaitStrategy":
-        """
-        Set the startup timeout for all contained strategies.
-
-        Args:
-            timeout: Maximum time to wait in seconds
-
-        Returns:
-            self for method chaining
-        """
-        if isinstance(timeout, timedelta):
-            self._startup_timeout = int(timeout.total_seconds())
-        else:
-            self._startup_timeout = timeout
-
-        for strategy in self._strategies:
-            strategy.with_startup_timeout(timeout)
-        return self
-
-    def with_poll_interval(self, interval: Union[float, timedelta]) -> "CompositeWaitStrategy":
-        """
-        Set the poll interval for all contained strategies.
-
-        Args:
-            interval: How frequently to check in seconds
-
-        Returns:
-            self for method chaining
-        """
-        if isinstance(interval, timedelta):
-            self._poll_interval = interval.total_seconds()
-        else:
-            self._poll_interval = interval
-
-        for strategy in self._strategies:
-            strategy.with_poll_interval(interval)
-        return self
 
     def wait_until_ready(self, container: WaitStrategyTarget) -> None:
         """
