@@ -4,6 +4,7 @@ from urllib.parse import quote, urlencode
 
 from testcontainers.core.container import DockerContainer
 from testcontainers.core.exceptions import ContainerStartException
+from testcontainers.core.waiting_utils import WaitStrategy
 
 from .sql_utils import SqlConnectWaitStrategy
 
@@ -16,8 +17,20 @@ class SqlContainer(DockerContainer):
 
     This class can serve as a base for database-specific container implementations.
     It provides connection management, URL construction, and basic lifecycle methods.
-    Database connection readiness is automatically handled by ConnectWaitStrategy.
+    Database connection readiness is automatically handled by the provided wait strategy.
     """
+
+    def __init__(self, image: str, wait_strategy: Optional[WaitStrategy] = None, **kwargs):
+        """
+        Initialize SqlContainer with optional wait strategy.
+
+        Args:
+            image: Docker image name
+            wait_strategy: Wait strategy for SQL database connectivity (defaults to SqlConnectWaitStrategy)
+            **kwargs: Additional arguments passed to DockerContainer
+        """
+        super().__init__(image, **kwargs)
+        self.wait_strategy = wait_strategy or SqlConnectWaitStrategy()
 
     def _create_connection_url(
         self,
@@ -99,7 +112,7 @@ class SqlContainer(DockerContainer):
 
         try:
             self._configure()
-            self.waiting_for(SqlConnectWaitStrategy())
+            self.waiting_for(self.wait_strategy)
             super().start()
             self._transfer_seed()
             logger.info("Database container started successfully")
