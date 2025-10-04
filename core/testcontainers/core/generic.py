@@ -16,7 +16,6 @@ from urllib.parse import quote
 from testcontainers.core.container import DockerContainer
 from testcontainers.core.exceptions import ContainerStartException
 from testcontainers.core.utils import raise_for_deprecated_parameter
-from testcontainers.core.waiting_utils import wait_container_is_ready
 
 ADDITIONAL_TRANSIENT_ERRORS = []
 try:
@@ -36,8 +35,11 @@ class DbContainer(DockerContainer):
     Generic database container.
     """
 
-    @wait_container_is_ready(*ADDITIONAL_TRANSIENT_ERRORS)
     def _connect(self) -> None:
+        from testcontainers.core.wait_strategies import ContainerStatusWaitStrategy as C
+
+        C().with_transient_exceptions(*ADDITIONAL_TRANSIENT_ERRORS).wait_until_ready(self)
+
         import sqlalchemy
 
         engine = sqlalchemy.create_engine(self.get_connection_url())
