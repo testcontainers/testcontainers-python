@@ -1,3 +1,6 @@
+# This module provides a wait strategy for SQL database connectivity testing using SQLAlchemy.
+# It includes handling for transient exceptions and connection retries.
+
 import logging
 
 from testcontainers.core.waiting_utils import WaitStrategy, WaitStrategyTarget

@@ -1,8 +1,8 @@
 import pytest
 
 from testcontainers.core.exceptions import ContainerStartException
-from testcontainers.generic.sql_utils import SqlConnectWaitStrategy
 from testcontainers.generic.sql import SqlContainer
+from testcontainers.generic.providers.sql_connector import SqlConnectWaitStrategy
 
 
 class SimpleSqlContainer(SqlContainer):
@@ -153,7 +153,7 @@ class TestSqlContainer:
         assert hasattr(container, "start")
 
     def test_additional_transient_errors_list(self):
-        from testcontainers.generic.sql_utils import ADDITIONAL_TRANSIENT_ERRORS
+        from testcontainers.generic.providers.sql_connector import ADDITIONAL_TRANSIENT_ERRORS
 
         assert isinstance(ADDITIONAL_TRANSIENT_ERRORS, list)
         # List may be empty if SQLAlchemy not available, or contain DBAPIError if it is
