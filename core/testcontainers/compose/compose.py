@@ -36,8 +36,7 @@ def _ignore_properties(cls: type[_IPT], dict_: Any) -> _IPT:
 @dataclass
 class PublishedPortModel:
     """
-    Class that represents the response we get from compose when inquiring status
-    via `DockerCompose.get_running_containers()`.
+    Class that represents the response we get from compose when inquiring status via `DockerCompose.get_running_containers()`.
     """
 
     URL: Optional[str] = None
@@ -263,6 +262,7 @@ class DockerCompose:
     def waiting_for(self, strategies: dict[str, WaitStrategy]) -> "DockerCompose":
         """
         Set wait strategies for specific services.
+
         Args:
             strategies: Dictionary mapping service names to wait strategies
         """
