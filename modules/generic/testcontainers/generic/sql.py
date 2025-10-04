@@ -6,8 +6,6 @@ from testcontainers.core.container import DockerContainer
 from testcontainers.core.exceptions import ContainerStartException
 from testcontainers.core.waiting_utils import WaitStrategy
 
-from .sql_utils import SqlConnectWaitStrategy
-
 logger = logging.getLogger(__name__)
 
 
@@ -20,17 +18,17 @@ class SqlContainer(DockerContainer):
     Database connection readiness is automatically handled by the provided wait strategy.
     """
 
-    def __init__(self, image: str, wait_strategy: Optional[WaitStrategy] = None, **kwargs):
+    def __init__(self, image: str, wait_strategy: WaitStrategy, **kwargs):
         """
         Initialize SqlContainer with optional wait strategy.
 
         Args:
             image: Docker image name
-            wait_strategy: Wait strategy for SQL database connectivity (defaults to SqlConnectWaitStrategy)
+            wait_strategy: Wait strategy for SQL database connectivity
             **kwargs: Additional arguments passed to DockerContainer
         """
         super().__init__(image, **kwargs)
-        self.wait_strategy = wait_strategy or SqlConnectWaitStrategy()
+        self.wait_strategy = wait_strategy
 
     def _create_connection_url(
         self,
