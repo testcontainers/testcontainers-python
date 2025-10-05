@@ -9,6 +9,7 @@ FastAPI container that is using :code:`ServerContainer`
 
     >>> from testcontainers.generic import ServerContainer
     >>> from testcontainers.core.waiting_utils import wait_for_logs
+    >>> from testcontainers.core.image import DockerImage
 
     >>> with DockerImage(path="./modules/generic/tests/samples/fastapi", tag="fastapi-test:latest") as image:
     ...     with ServerContainer(port=80, image=image) as fastapi_server:
