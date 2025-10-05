@@ -231,6 +231,9 @@ exclude_lines = [
     "pass",
     "raise NotImplementedError", # TODO: used in core/generic.py, not sure we need DbContainer
 ]
+omit = [
+    "core/testcontainers/core/generic.py", # Marked for deprecation
+]
 
 [tool.ruff]
 target-version = "py39"
