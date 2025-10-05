@@ -4,12 +4,11 @@ from testcontainers.core.container import DockerContainer
 
 
 def test_docker_custom_image():
-    container = DockerContainer("mysql:5.7.17")
-    container.with_exposed_ports(3306)
-    container.with_env("MYSQL_ROOT_PASSWORD", "root")
+    container = DockerContainer("nginx:alpine-slim")
+    container.with_exposed_ports(80)
 
     with container:
-        port = container.get_exposed_port(3306)
+        port = container.get_exposed_port(80)
         assert int(port) > 0
 
 
