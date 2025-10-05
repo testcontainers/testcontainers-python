@@ -67,30 +67,16 @@ class SqlContainer(DockerContainer):
         if self._container is None:
             raise ContainerStartException("Container has not been started")
 
-        # Validate required parameters
-        if not dialect:
-            raise ValueError("Database dialect is required")
-        if not username:
-            raise ValueError("Database username is required")
-        if port is None:
-            raise ValueError("Database port is required")
-
         host = host or self.get_container_host_ip()
         exposed_port = self.get_exposed_port(port)
-
-        # Safely quote password to handle special characters
         quoted_password = quote(password, safe="")
         quoted_username = quote(username, safe="")
-
-        # Build base URL
         url = f"{dialect}://{quoted_username}:{quoted_password}@{host}:{exposed_port}"
 
-        # Add database name if provided
         if dbname:
             quoted_dbname = quote(dbname, safe="")
             url = f"{url}/{quoted_dbname}"
 
-        # Add query parameters if provided
         if query_params:
             query_string = urlencode(query_params)
             url = f"{url}?{query_string}"
