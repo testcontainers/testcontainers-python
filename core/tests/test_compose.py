@@ -378,3 +378,60 @@ def test_compose_profile_support(profiles: Optional[list[str]], running: list[st
         for service in not_running:
             with pytest.raises(ContainerIsNotRunning):
                 compose.get_container(service)
+
+
+def test_container_info():
+    """Test get_container_info functionality"""
+    basic = DockerCompose(context=FIXTURES / "basic")
+    with basic:
+        container = basic.get_container("alpine")
+
+        info = container.get_container_info()
+        assert info is not None
+        assert info.Id is not None
+        assert info.Name is not None
+        assert info.Image is not None
+
+        assert info.State is not None
+        assert info.State.Status == "running"
+        assert info.State.Running is True
+        assert info.State.Pid is not None
+
+        assert info.Config is not None
+        assert info.Config.Image is not None
+        assert info.Config.Hostname is not None
+
+        network_settings = info.get_network_settings()
+        assert network_settings is not None
+        assert network_settings.Networks is not None
+
+        info2 = container.get_container_info()
+        assert info is info2
+
+
+def test_container_info_network_details():
+    """Test network details in container info"""
+    single = DockerCompose(context=FIXTURES / "port_single")
+    with single:
+        container = single.get_container()
+        info = container.get_container_info()
+        assert info is not None
+
+        network_settings = info.get_network_settings()
+        assert network_settings is not None
+
+        if network_settings.Networks:
+            # Test first network
+            network_name, network = next(iter(network_settings.Networks.items()))
+            assert network.IPAddress is not None
+            assert network.Gateway is not None
+            assert network.NetworkID is not None
+
+
+def test_container_info_none_when_no_docker_compose():
+    """Test get_container_info returns None when docker_compose reference is missing"""
+    from testcontainers.compose.compose import ComposeContainer
+
+    container = ComposeContainer()
+    info = container.get_container_info()
+    assert info is None
