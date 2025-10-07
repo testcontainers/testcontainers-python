@@ -14,7 +14,7 @@ from typing_extensions import Self, assert_never
 
 from testcontainers.core.config import ConnectionMode
 from testcontainers.core.config import testcontainers_config as c
-from testcontainers.core.docker_client import DockerClient
+from testcontainers.core.docker_client import ContainerInspectInfo, DockerClient
 from testcontainers.core.exceptions import ContainerConnectException, ContainerStartException
 from testcontainers.core.labels import LABEL_SESSION_ID, SESSION_ID
 from testcontainers.core.network import Network
@@ -96,6 +96,7 @@ class DockerContainer:
 
         self._kwargs = kwargs
         self._wait_strategy: Optional[WaitStrategy] = _wait_strategy
+        self._cached_container_info: Optional[ContainerInspectInfo] = None
 
     def with_env(self, key: str, value: str) -> Self:
         self.env[key] = value
@@ -299,6 +300,24 @@ class DockerContainer:
         if not self._container:
             raise ContainerStartException("Container should be started before executing a command")
         return self._container.exec_run(command)
+
+    def get_container_info(self) -> Optional[ContainerInspectInfo]:
+        """Get container information via docker inspect (lazy loaded)."""
+        if self._cached_container_info is not None:
+            return self._cached_container_info
+
+        if not self._container:
+            return None
+
+        try:
+            raw_data = self._container.attrs
+            self._cached_container_info = ContainerInspectInfo.from_dict(raw_data)
+
+        except Exception as e:
+            logger.warning(f"Failed to get container info for {self._container.id}: {e}")
+            self._cached_container_info = None
+
+        return self._cached_container_info
 
     def _configure(self) -> None:
         # placeholder if subclasses want to define this and use the default start method

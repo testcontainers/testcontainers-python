@@ -435,3 +435,27 @@ def test_container_info_none_when_no_docker_compose():
     container = ComposeContainer()
     info = container.get_container_info()
     assert info is None
+
+
+def test_docker_container_info():
+    """Test get_container_info works with DockerContainer too"""
+    from testcontainers.core.container import DockerContainer
+
+    with DockerContainer("hello-world") as container:
+        info = container.get_container_info()
+        assert info is not None
+        assert info.Id is not None
+        assert info.Image is not None
+
+        if info.State:
+            assert hasattr(info.State, "Status")
+            assert hasattr(info.State, "Running")
+
+        if info.Config:
+            assert hasattr(info.Config, "Image")
+            assert hasattr(info.Config, "Hostname")
+
+        network_settings = info.get_network_settings()
+        if network_settings:
+            assert hasattr(network_settings, "IPAddress")
+            assert hasattr(network_settings, "Networks")

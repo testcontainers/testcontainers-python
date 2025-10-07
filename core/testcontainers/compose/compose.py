@@ -11,6 +11,7 @@ from subprocess import run as subprocess_run
 from types import TracebackType
 from typing import Any, Callable, Literal, Optional, TypeVar, Union, cast
 
+from testcontainers.core.docker_client import ContainerInspectInfo, _ignore_properties
 from testcontainers.core.exceptions import ContainerIsNotRunning, NoSuchPortExposed
 from testcontainers.core.waiting_utils import WaitStrategy
 
