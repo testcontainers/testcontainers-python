@@ -73,6 +73,7 @@ packages = [
     { include = "testcontainers", from = "modules/trino" },
     { include = "testcontainers", from = "modules/vault" },
     { include = "testcontainers", from = "modules/weaviate" },
+    { include = "testcontainers", from = "modules/cratedb" }
 ]
 
 [tool.poetry.urls]
@@ -122,6 +123,8 @@ azure-cosmos = { version = "*", optional = true }
 cryptography = { version = "*", optional = true }
 trino = { version = "*", optional = true }
 ibm_db_sa = { version = "*", optional = true, markers = "platform_machine != 'aarch64' and platform_machine != 'arm64'" }
+crate = { version = "*", optional = true }
+sqlalchemy-cratedb = { version = "*", optional = true }
 
 [tool.poetry.extras]
 arangodb = ["python-arango"]
@@ -172,6 +175,7 @@ vault = []
 weaviate = ["weaviate-client"]
 chroma = ["chromadb-client"]
 trino = ["trino"]
+cratedb = ["crate", "sqlalchemy-cratedb"]
 
 [tool.poetry.group.dev.dependencies]
 mypy = "1.11.2"
@@ -338,6 +342,7 @@ mypy_path = [
     "modules/sftp",
     #    "modules/vault"
     #    "modules/weaviate"
+    #    "modules/cratedb"
 ]
 enable_error_code = ["ignore-without-code", "redundant-expr", "truthy-bool"]
 
