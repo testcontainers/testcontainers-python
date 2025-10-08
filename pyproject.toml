@@ -73,6 +73,7 @@ packages = [
     { include = "testcontainers", from = "modules/trino" },
     { include = "testcontainers", from = "modules/vault" },
     { include = "testcontainers", from = "modules/weaviate" },
+    { include = "testcontainers", from = "modules/starrocks" },
 ]
 
 [tool.poetry.urls]
@@ -172,6 +173,7 @@ vault = []
 weaviate = ["weaviate-client"]
 chroma = ["chromadb-client"]
 trino = ["trino"]
+starrocks = ["sqlalchemy", "pymysql"]
 
 [tool.poetry.group.dev.dependencies]
 mypy = "1.11.2"
