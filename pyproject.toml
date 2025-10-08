@@ -136,6 +136,7 @@ elasticsearch = []
 generic = [
     "httpx",
     "redis",
+    "sqlalchemy",
 ] # The advance doctests for ServerContainer require redis
 test_module_import = ["httpx"]
 google = ["google-cloud-pubsub", "google-cloud-datastore"]
@@ -229,6 +230,9 @@ omit = ["oracle.py"]
 exclude_lines = [
     "pass",
     "raise NotImplementedError", # TODO: used in core/generic.py, not sure we need DbContainer
+]
+omit = [
+    "core/testcontainers/core/generic.py", # Marked for deprecation
 ]
 
 [tool.ruff]
