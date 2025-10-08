@@ -310,8 +310,7 @@ class DockerContainer:
             return None
 
         try:
-            raw_data = self._container.attrs
-            self._cached_container_info = ContainerInspectInfo.from_dict(raw_data)
+            self._cached_container_info = self.get_docker_client().get_container_inspect_info(self._container.id)
 
         except Exception as e:
             logger.warning(f"Failed to get container info for {self._container.id}: {e}")

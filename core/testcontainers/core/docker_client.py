@@ -266,6 +266,11 @@ class DockerClient:
         labels = create_labels("", param.get("labels"))
         return self.client.networks.create(name, **{**param, "labels": labels})
 
+    def get_container_inspect_info(self, container_id: str) -> "ContainerInspectInfo":
+        """Get container inspect information with fresh data."""
+        container = self.client.containers.get(container_id)
+        return ContainerInspectInfo.from_dict(container.attrs)
+
 
 def get_docker_host() -> Optional[str]:
     return c.tc_properties_get_tc_host() or os.getenv("DOCKER_HOST")
@@ -542,6 +547,44 @@ class ContainerHostConfig:
     MaskedPaths: Optional[list[str]] = None
     ReadonlyPaths: Optional[list[str]] = None
 
+    def __post_init__(self) -> None:
+        list_conversions = [
+            ("BlkioWeightDevice", ContainerBlkioWeightDevice),
+            ("BlkioDeviceReadBps", ContainerBlkioDeviceRate),
+            ("BlkioDeviceWriteBps", ContainerBlkioDeviceRate),
+            ("BlkioDeviceReadIOps", ContainerBlkioDeviceRate),
+            ("BlkioDeviceWriteIOps", ContainerBlkioDeviceRate),
+            ("Devices", ContainerDeviceMapping),
+            ("DeviceRequests", ContainerDeviceRequest),
+            ("Ulimits", ContainerUlimit),
+            ("Mounts", ContainerMountPoint),
+        ]
+
+        for field_name, target_class in list_conversions:
+            field_value = getattr(self, field_name)
+            if field_value is not None and isinstance(field_value, list):
+                setattr(
+                    self,
+                    field_name,
+                    [
+                        _ignore_properties(target_class, item) if isinstance(item, dict) else item
+                        for item in field_value
+                    ],
+                )
+
+        if self.LogConfig is not None and isinstance(self.LogConfig, dict):
+            self.LogConfig = _ignore_properties(ContainerLogConfig, self.LogConfig)
+
+        if self.RestartPolicy is not None and isinstance(self.RestartPolicy, dict):
+            self.RestartPolicy = _ignore_properties(ContainerRestartPolicy, self.RestartPolicy)
+
+        if self.PortBindings is not None and isinstance(self.PortBindings, dict):
+            for port, bindings in self.PortBindings.items():
+                if bindings is not None and isinstance(bindings, list):
+                    self.PortBindings[port] = [
+                        _ignore_properties(ContainerPortBinding, b) if isinstance(b, dict) else b for b in bindings
+                    ]
+
 
 @dataclass
 class ContainerGraphDriver:
@@ -669,6 +712,31 @@ class ContainerNetworkSettings:
     MacAddress: Optional[str] = None
     Networks: Optional[dict[str, ContainerNetworkEndpoint]] = None
 
+    def __post_init__(self) -> None:
+        if self.Ports is not None and isinstance(self.Ports, dict):
+            for port, bindings in self.Ports.items():
+                if bindings is not None and isinstance(bindings, list):
+                    self.Ports[port] = [
+                        _ignore_properties(ContainerPortBinding, b) if isinstance(b, dict) else b for b in bindings
+                    ]
+
+        if self.Networks is not None and isinstance(self.Networks, dict):
+            for name, network_data in self.Networks.items():
+                if isinstance(network_data, dict):
+                    self.Networks[name] = _ignore_properties(ContainerNetworkEndpoint, network_data)
+
+        if self.SecondaryIPAddresses is not None and isinstance(self.SecondaryIPAddresses, list):
+            self.SecondaryIPAddresses = [
+                _ignore_properties(ContainerAddress, addr) if isinstance(addr, dict) else addr
+                for addr in self.SecondaryIPAddresses
+            ]
+
+        if self.SecondaryIPv6Addresses is not None and isinstance(self.SecondaryIPv6Addresses, list):
+            self.SecondaryIPv6Addresses = [
+                _ignore_properties(ContainerAddress, addr) if isinstance(addr, dict) else addr
+                for addr in self.SecondaryIPv6Addresses
+            ]
+
     def get_networks(self) -> Optional[dict[str, ContainerNetworkEndpoint]]:
         """Get networks for the container."""
         return self.Networks
@@ -730,7 +798,9 @@ class ContainerInspectInfo:
             ProcessLabel=data.get("ProcessLabel"),
             AppArmorProfile=data.get("AppArmorProfile"),
             ExecIDs=data.get("ExecIDs"),
-            HostConfig=cls._parse_host_config(data.get("HostConfig", {})) if data.get("HostConfig") else None,
+            HostConfig=_ignore_properties(ContainerHostConfig, data.get("HostConfig", {}))
+            if data.get("HostConfig")
+            else None,
             GraphDriver=_ignore_properties(ContainerGraphDriver, data.get("GraphDriver", {}))
             if data.get("GraphDriver")
             else None,
@@ -738,7 +808,7 @@ class ContainerInspectInfo:
             SizeRootFs=data.get("SizeRootFs"),
             Mounts=[_ignore_properties(ContainerMount, mount) for mount in data.get("Mounts", [])],
             Config=_ignore_properties(ContainerConfig, data.get("Config", {})) if data.get("Config") else None,
-            NetworkSettings=cls._parse_network_settings(data.get("NetworkSettings", {}))
+            NetworkSettings=_ignore_properties(ContainerNetworkSettings, data.get("NetworkSettings", {}))
             if data.get("NetworkSettings")
             else None,
         )
@@ -799,164 +869,14 @@ class ContainerInspectInfo:
         """Parse HostConfig with all nested objects."""
         if not data:
             return None
-
-        blkio_weight_devices = [
-            _ignore_properties(ContainerBlkioWeightDevice, d) for d in (data.get("BlkioWeightDevice") or [])
-        ]
-        blkio_read_bps = [
-            _ignore_properties(ContainerBlkioDeviceRate, d) for d in (data.get("BlkioDeviceReadBps") or [])
-        ]
-        blkio_write_bps = [
-            _ignore_properties(ContainerBlkioDeviceRate, d) for d in (data.get("BlkioDeviceWriteBps") or [])
-        ]
-        blkio_read_iops = [
-            _ignore_properties(ContainerBlkioDeviceRate, d) for d in (data.get("BlkioDeviceReadIOps") or [])
-        ]
-        blkio_write_iops = [
-            _ignore_properties(ContainerBlkioDeviceRate, d) for d in (data.get("BlkioDeviceWriteIOps") or [])
-        ]
-        devices = [_ignore_properties(ContainerDeviceMapping, d) for d in (data.get("Devices") or [])]
-        device_requests = [_ignore_properties(ContainerDeviceRequest, d) for d in (data.get("DeviceRequests") or [])]
-        ulimits = [_ignore_properties(ContainerUlimit, d) for d in (data.get("Ulimits") or [])]
-        mounts = [_ignore_properties(ContainerMountPoint, d) for d in (data.get("Mounts") or [])]
-
-        port_bindings: dict[str, Optional[list[ContainerPortBinding]]] = {}
-        port_bindings_data = data.get("PortBindings")
-        if port_bindings_data is not None:
-            for port, bindings in port_bindings_data.items():
-                if bindings is None:
-                    port_bindings[port] = None
-                else:
-                    port_bindings[port] = [_ignore_properties(ContainerPortBinding, b) for b in bindings]
-
-        return ContainerHostConfig(
-            CpuShares=data.get("CpuShares"),
-            Memory=data.get("Memory"),
-            CgroupParent=data.get("CgroupParent"),
-            BlkioWeight=data.get("BlkioWeight"),
-            BlkioWeightDevice=blkio_weight_devices if blkio_weight_devices else None,
-            BlkioDeviceReadBps=blkio_read_bps if blkio_read_bps else None,
-            BlkioDeviceWriteBps=blkio_write_bps if blkio_write_bps else None,
-            BlkioDeviceReadIOps=blkio_read_iops if blkio_read_iops else None,
-            BlkioDeviceWriteIOps=blkio_write_iops if blkio_write_iops else None,
-            CpuPeriod=data.get("CpuPeriod"),
-            CpuQuota=data.get("CpuQuota"),
-            CpuRealtimePeriod=data.get("CpuRealtimePeriod"),
-            CpuRealtimeRuntime=data.get("CpuRealtimeRuntime"),
-            CpusetCpus=data.get("CpusetCpus"),
-            CpusetMems=data.get("CpusetMems"),
-            Devices=devices if devices else None,
-            DeviceCgroupRules=data.get("DeviceCgroupRules"),
-            DeviceRequests=device_requests if device_requests else None,
-            KernelMemoryTCP=data.get("KernelMemoryTCP"),
-            MemoryReservation=data.get("MemoryReservation"),
-            MemorySwap=data.get("MemorySwap"),
-            MemorySwappiness=data.get("MemorySwappiness"),
-            NanoCpus=data.get("NanoCpus"),
-            OomKillDisable=data.get("OomKillDisable"),
-            Init=data.get("Init"),
-            PidsLimit=data.get("PidsLimit"),
-            Ulimits=ulimits if ulimits else None,
-            CpuCount=data.get("CpuCount"),
-            CpuPercent=data.get("CpuPercent"),
-            IOMaximumIOps=data.get("IOMaximumIOps"),
-            IOMaximumBandwidth=data.get("IOMaximumBandwidth"),
-            Binds=data.get("Binds"),
-            ContainerIDFile=data.get("ContainerIDFile"),
-            LogConfig=_ignore_properties(ContainerLogConfig, data.get("LogConfig", {}))
-            if data.get("LogConfig")
-            else None,
-            NetworkMode=data.get("NetworkMode"),
-            PortBindings=port_bindings if port_bindings else None,
-            RestartPolicy=_ignore_properties(ContainerRestartPolicy, data.get("RestartPolicy", {}))
-            if data.get("RestartPolicy")
-            else None,
-            AutoRemove=data.get("AutoRemove"),
-            VolumeDriver=data.get("VolumeDriver"),
-            VolumesFrom=data.get("VolumesFrom"),
-            Mounts=mounts if mounts else None,
-            ConsoleSize=data.get("ConsoleSize"),
-            Annotations=data.get("Annotations"),
-            CapAdd=data.get("CapAdd"),
-            CapDrop=data.get("CapDrop"),
-            CgroupnsMode=data.get("CgroupnsMode"),
-            Dns=data.get("Dns"),
-            DnsOptions=data.get("DnsOptions"),
-            DnsSearch=data.get("DnsSearch"),
-            ExtraHosts=data.get("ExtraHosts"),
-            GroupAdd=data.get("GroupAdd"),
-            IpcMode=data.get("IpcMode"),
-            Cgroup=data.get("Cgroup"),
-            Links=data.get("Links"),
-            OomScoreAdj=data.get("OomScoreAdj"),
-            PidMode=data.get("PidMode"),
-            Privileged=data.get("Privileged"),
-            PublishAllPorts=data.get("PublishAllPorts"),
-            ReadonlyRootfs=data.get("ReadonlyRootfs"),
-            SecurityOpt=data.get("SecurityOpt"),
-            StorageOpt=data.get("StorageOpt"),
-            Tmpfs=data.get("Tmpfs"),
-            UTSMode=data.get("UTSMode"),
-            UsernsMode=data.get("UsernsMode"),
-            ShmSize=data.get("ShmSize"),
-            Sysctls=data.get("Sysctls"),
-            Runtime=data.get("Runtime"),
-            Isolation=data.get("Isolation"),
-            MaskedPaths=data.get("MaskedPaths"),
-            ReadonlyPaths=data.get("ReadonlyPaths"),
-        )
+        return _ignore_properties(ContainerHostConfig, data)
 
     @classmethod
     def _parse_network_settings(cls, data: dict[str, Any]) -> Optional[ContainerNetworkSettings]:
         """Parse NetworkSettings with nested Networks and Ports."""
         if not data:
             return None
-
-        ports: dict[str, Optional[list[ContainerPortBinding]]] = {}
-        ports_data = data.get("Ports")
-        if ports_data is not None:
-            for port, bindings in ports_data.items():
-                if bindings is None:
-                    ports[port] = None
-                else:
-                    ports[port] = [_ignore_properties(ContainerPortBinding, b) for b in bindings]
-
-        networks = {}
-        networks_data = data.get("Networks")
-        if networks_data is not None:
-            for name, network_data in networks_data.items():
-                networks[name] = _ignore_properties(ContainerNetworkEndpoint, network_data)
-
-        secondary_ipv4 = []
-        secondary_ipv4_data = data.get("SecondaryIPAddresses")
-        if secondary_ipv4_data is not None:
-            secondary_ipv4 = [_ignore_properties(ContainerAddress, addr) for addr in secondary_ipv4_data]
-
-        secondary_ipv6 = []
-        secondary_ipv6_data = data.get("SecondaryIPv6Addresses")
-        if secondary_ipv6_data is not None:
-            secondary_ipv6 = [_ignore_properties(ContainerAddress, addr) for addr in secondary_ipv6_data]
-
-        return ContainerNetworkSettings(
-            Bridge=data.get("Bridge"),
-            SandboxID=data.get("SandboxID"),
-            HairpinMode=data.get("HairpinMode"),
-            LinkLocalIPv6Address=data.get("LinkLocalIPv6Address"),
-            LinkLocalIPv6PrefixLen=data.get("LinkLocalIPv6PrefixLen"),
-            Ports=ports if ports else None,
-            SandboxKey=data.get("SandboxKey"),
-            SecondaryIPAddresses=secondary_ipv4 if secondary_ipv4 else None,
-            SecondaryIPv6Addresses=secondary_ipv6 if secondary_ipv6 else None,
-            EndpointID=data.get("EndpointID"),
-            Gateway=data.get("Gateway"),
-            GlobalIPv6Address=data.get("GlobalIPv6Address"),
-            GlobalIPv6PrefixLen=data.get("GlobalIPv6PrefixLen"),
-            IPAddress=data.get("IPAddress"),
-            IPPrefixLen=data.get("IPPrefixLen"),
-            IPv6Gateway=data.get("IPv6Gateway"),
-            MacAddress=data.get("MacAddress"),
-            Networks=networks if networks else None,
-        )
+        return _ignore_properties(ContainerNetworkSettings, data)
 
     def get_network_settings(self) -> Optional[ContainerNetworkSettings]:
         """Get network settings for the container."""
