@@ -11,11 +11,10 @@ from subprocess import run as subprocess_run
 from types import TracebackType
 from typing import Any, Callable, Literal, Optional, TypeVar, Union, cast
 
-from testcontainers.core.docker_client import ContainerInspectInfo, _ignore_properties
+from testcontainers.core.docker_client import ContainerInspectInfo, DockerClient, _ignore_properties
 from testcontainers.core.exceptions import ContainerIsNotRunning, NoSuchPortExposed
 from testcontainers.core.waiting_utils import WaitStrategy
 
-_IPT = TypeVar("_IPT")
 _WARNINGS = {"DOCKER_COMPOSE_GET_CONFIG": "get_config is experimental, see testcontainers/testcontainers-python#669"}
 
 logger = getLogger(__name__)
@@ -274,15 +273,8 @@ class ComposeContainer:
             return None
 
         try:
-            inspect_command = ["docker", "inspect", self.ID]
-            result = self._docker_compose._run_command(cmd=inspect_command)
-            inspect_output = result.stdout.decode("utf-8").strip()
-
-            if inspect_output:
-                raw_data = loads(inspect_output)[0]
-                self._cached_container_info = ContainerInspectInfo.from_dict(raw_data)
-            else:
-                self._cached_container_info = None
+            docker_client = self._docker_compose._get_docker_client()
+            self._cached_container_info = docker_client.get_container_inspect_info(self.ID)
 
         except Exception as e:
             logger.warning(f"Failed to get container info for {self.ID}: {e}")
@@ -358,6 +350,7 @@ class DockerCompose:
     docker_command_path: Optional[str] = None
     profiles: Optional[list[str]] = None
     _wait_strategies: Optional[dict[str, Any]] = field(default=None, init=False, repr=False)
+    _docker_client: Optional[DockerClient] = field(default=None, init=False, repr=False)
 
     def __post_init__(self) -> None:
         if isinstance(self.compose_file_name, str):
@@ -718,3 +711,9 @@ class DockerCompose:
         with urlopen(url) as response:
             response.read()
         return self
+
+    def _get_docker_client(self) -> DockerClient:
+        """Get Docker client instance."""
+        if self._docker_client is None:
+            self._docker_client = DockerClient()
+        return self._docker_client

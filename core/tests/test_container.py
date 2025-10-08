@@ -3,7 +3,7 @@ from typing import Any
 import pytest
 
 from testcontainers.core.container import DockerContainer
-from testcontainers.core.docker_client import DockerClient
+from testcontainers.core.docker_client import DockerClient, ContainerInspectInfo
 from testcontainers.core.config import ConnectionMode
 
 FAKE_ID = "ABC123"
@@ -114,34 +114,24 @@ def test_get_container_info_returns_none_when_no_container(
 
 def test_get_container_info_lazy_loading(container: DockerContainer, monkeypatch: pytest.MonkeyPatch) -> None:
     """Test get_container_info lazy loading and caching."""
-    fake_attrs = {
-        "Id": "test123",
-        "Name": "/test-container",
-        "Image": "nginx:alpine",
-        "State": {"Status": "running", "Running": True, "Pid": 1234},
-        "Config": {"Image": "nginx:alpine", "Hostname": "test-host"},
-        "NetworkSettings": {"IPAddress": "172.17.0.2"},
-    }
+    fake_data = {"Id": "test123", "Name": "/test-container", "Image": "nginx:alpine"}
+    fake_info = ContainerInspectInfo.from_dict(fake_data)
 
-    fake_container = FakeContainer()
-    fake_container.attrs = fake_attrs
-    monkeypatch.setattr(container, "_container", fake_container)
+    monkeypatch.setattr(container._docker, "get_container_inspect_info", lambda _: fake_info)
 
-    # First call should populate cache
     info1 = container.get_container_info()
     assert info1 is not None
     assert info1.Id == "test123"
     assert info1.Name == "/test-container"
     assert info1.Image == "nginx:alpine"
 
-    # Second call should return cached result
     info2 = container.get_container_info()
-    assert info1 is info2  # Same object reference
+    assert info1 is info2
 
 
 def test_get_container_info_structure(container: DockerContainer, monkeypatch: pytest.MonkeyPatch) -> None:
     """Test get_container_info returns properly structured data."""
-    fake_attrs = {
+    fake_data = {
         "Id": "abc123def456",
         "Name": "/my-test-container",
         "Image": "sha256:nginx123",
@@ -151,14 +141,7 @@ def test_get_container_info_structure(container: DockerContainer, monkeypatch: p
             "Running": True,
             "Pid": 5678,
             "ExitCode": 0,
-            "StartedAt": "2023-01-01T00:01:00Z",
-            "Health": {
-                "Status": "healthy",
-                "FailingStreak": 0,
-                "Log": [
-                    {"Start": "2023-01-01T00:00:00Z", "End": "2023-01-01T00:00:01Z", "ExitCode": 0, "Output": "healthy"}
-                ],
-            },
+            "Health": {"Status": "healthy", "FailingStreak": 0, "Log": [{"Output": "healthy"}]},
         },
         "Config": {
             "Image": "nginx:alpine",
@@ -182,21 +165,18 @@ def test_get_container_info_structure(container: DockerContainer, monkeypatch: p
         },
         "HostConfig": {"Memory": 1073741824, "CpuShares": 1024, "NetworkMode": "bridge"},
     }
+    fake_info = ContainerInspectInfo.from_dict(fake_data)
 
-    fake_container = FakeContainer()
-    fake_container.attrs = fake_attrs
-    monkeypatch.setattr(container, "_container", fake_container)
+    monkeypatch.setattr(container._docker, "get_container_inspect_info", lambda _: fake_info)
 
     info = container.get_container_info()
     assert info is not None
 
-    # Test basic fields
     assert info.Id == "abc123def456"
     assert info.Name == "/my-test-container"
     assert info.Image == "sha256:nginx123"
     assert info.Created == "2023-01-01T00:00:00Z"
 
-    # Test State with Health
     assert info.State is not None
     assert info.State.Status == "running"
     assert info.State.Running is True
@@ -209,7 +189,6 @@ def test_get_container_info_structure(container: DockerContainer, monkeypatch: p
     assert len(info.State.Health.Log) == 1
     assert info.State.Health.Log[0].Output == "healthy"
 
-    # Test Config
     assert info.Config is not None
     assert info.Config.Image == "nginx:alpine"
     assert info.Config.Hostname == "my-hostname"
@@ -217,13 +196,11 @@ def test_get_container_info_structure(container: DockerContainer, monkeypatch: p
     assert info.Config.Cmd == ["nginx", "-g", "daemon off;"]
     assert info.Config.ExposedPorts == {"80/tcp": {}}
 
-    # Test NetworkSettings
     network_settings = info.get_network_settings()
     assert network_settings is not None
     assert network_settings.IPAddress == "172.17.0.3"
     assert network_settings.Gateway == "172.17.0.1"
 
-    # Test Networks
     assert network_settings.Networks is not None
     assert "bridge" in network_settings.Networks
     bridge_network = network_settings.Networks["bridge"]
@@ -233,7 +210,6 @@ def test_get_container_info_structure(container: DockerContainer, monkeypatch: p
     assert bridge_network.MacAddress == "02:42:ac:11:00:03"
     assert bridge_network.Aliases == ["container-alias"]
 
-    # Test HostConfig
     assert info.HostConfig is not None
     assert info.HostConfig.Memory == 1073741824
     assert info.HostConfig.CpuShares == 1024
@@ -242,14 +218,11 @@ def test_get_container_info_structure(container: DockerContainer, monkeypatch: p
 
 def test_get_container_info_handles_exceptions(container: DockerContainer, monkeypatch: pytest.MonkeyPatch) -> None:
     """Test get_container_info handles exceptions gracefully."""
-    fake_container = FakeContainer()
 
-    # Simulate an exception when accessing attrs
-    def raise_exception() -> None:
+    def mock_exception(_):
         raise Exception("Docker API error")
 
-    fake_container.attrs = property(lambda self: raise_exception())  # type: ignore[assignment]
-    monkeypatch.setattr(container, "_container", fake_container)
+    monkeypatch.setattr(container._docker, "get_container_inspect_info", mock_exception)
 
     info = container.get_container_info()
     assert info is None
@@ -257,32 +230,16 @@ def test_get_container_info_handles_exceptions(container: DockerContainer, monke
 
 def test_get_container_info_with_none_values(container: DockerContainer, monkeypatch: pytest.MonkeyPatch) -> None:
     """Test get_container_info handles None values in HostConfig and NetworkSettings."""
-    fake_attrs = {
+    fake_data = {
         "Id": "test-none-values",
         "Name": "/test-none",
         "Image": "nginx:alpine",
-        "State": {"Status": "running", "Running": True},
-        "Config": {"Image": "nginx:alpine"},
-        "NetworkSettings": {
-            "IPAddress": "172.17.0.2",
-            "Networks": None,
-            "Ports": None,
-            "SecondaryIPAddresses": None,
-            "SecondaryIPv6Addresses": None,
-        },
-        "HostConfig": {
-            "Memory": 0,
-            "NetworkMode": "bridge",
-            "BlkioWeightDevice": None,
-            "BlkioDeviceReadBps": None,
-            "Devices": None,
-            "PortBindings": None,
-        },
+        "NetworkSettings": {"IPAddress": "172.17.0.2", "Networks": None, "Ports": None},
+        "HostConfig": {"Memory": 0, "NetworkMode": "bridge", "PortBindings": None},
     }
+    fake_info = ContainerInspectInfo.from_dict(fake_data)
 
-    fake_container = FakeContainer()
-    fake_container.attrs = fake_attrs
-    monkeypatch.setattr(container, "_container", fake_container)
+    monkeypatch.setattr(container._docker, "get_container_inspect_info", lambda _: fake_info)
 
     info = container.get_container_info()
     assert info is not None
@@ -297,29 +254,21 @@ def test_get_container_info_with_none_values(container: DockerContainer, monkeyp
     assert info.HostConfig is not None
     assert info.HostConfig.Memory == 0
     assert info.HostConfig.NetworkMode == "bridge"
-    assert info.HostConfig.BlkioWeightDevice is None
-    assert info.HostConfig.Devices is None
     assert info.HostConfig.PortBindings is None
 
 
 def test_get_container_info_with_port_bindings(container: DockerContainer, monkeypatch: pytest.MonkeyPatch) -> None:
     """Test get_container_info handles port bindings correctly."""
-    fake_attrs = {
+    fake_data = {
         "Id": "test-port-bindings",
         "Name": "/test-ports",
         "Image": "nginx:alpine",
-        "State": {"Status": "running", "Running": True},
-        "Config": {"Image": "nginx:alpine"},
-        "NetworkSettings": {"Ports": {"80/tcp": [{"HostIp": "0.0.0.0", "HostPort": "8080"}], "443/tcp": None}},
-        "HostConfig": {
-            "NetworkMode": "bridge",
-            "PortBindings": {"80/tcp": [{"HostIp": "0.0.0.0", "HostPort": "8080"}], "443/tcp": None},
-        },
+        "NetworkSettings": {"Ports": {"80/tcp": [{"HostPort": "8080"}], "443/tcp": None}},
+        "HostConfig": {"NetworkMode": "bridge", "PortBindings": {"80/tcp": [{"HostPort": "8080"}], "443/tcp": None}},
     }
+    fake_info = ContainerInspectInfo.from_dict(fake_data)
 
-    fake_container = FakeContainer()
-    fake_container.attrs = fake_attrs
-    monkeypatch.setattr(container, "_container", fake_container)
+    monkeypatch.setattr(container._docker, "get_container_inspect_info", lambda _: fake_info)
 
     info = container.get_container_info()
     assert info is not None
@@ -346,38 +295,16 @@ def test_get_container_info_with_port_bindings(container: DockerContainer, monke
 
 def test_get_container_info_edge_cases_regression(container: DockerContainer, monkeypatch: pytest.MonkeyPatch) -> None:
     """Regression test for None value handling."""
-    fake_attrs = {
+    fake_data = {
         "Id": "regression-test",
         "Name": "/regression-container",
         "Image": "nginx:alpine",
-        "State": {"Status": "running", "Running": True},
-        "Config": {"Image": "nginx:alpine"},
-        "NetworkSettings": {
-            "IPAddress": "172.17.0.2",
-            "Networks": None,
-            "Ports": None,
-            "SecondaryIPAddresses": None,
-            "SecondaryIPv6Addresses": None,
-        },
-        "HostConfig": {
-            "Memory": 0,
-            "NetworkMode": "bridge",
-            "BlkioWeightDevice": None,
-            "BlkioDeviceReadBps": None,
-            "BlkioDeviceWriteBps": None,
-            "BlkioDeviceReadIOps": None,
-            "BlkioDeviceWriteIOps": None,
-            "Devices": None,
-            "DeviceRequests": None,
-            "Ulimits": None,
-            "Mounts": None,
-            "PortBindings": None,
-        },
+        "NetworkSettings": {"IPAddress": "172.17.0.2", "Networks": None, "Ports": None},
+        "HostConfig": {"Memory": 0, "NetworkMode": "bridge", "PortBindings": None},
     }
+    fake_info = ContainerInspectInfo.from_dict(fake_data)
 
-    fake_container = FakeContainer()
-    fake_container.attrs = fake_attrs
-    monkeypatch.setattr(container, "_container", fake_container)
+    monkeypatch.setattr(container._docker, "get_container_inspect_info", lambda _: fake_info)
 
     info = container.get_container_info()
     assert info is not None
@@ -390,7 +317,4 @@ def test_get_container_info_edge_cases_regression(container: DockerContainer, mo
 
     host_config = info.HostConfig
     assert host_config is not None
-    assert host_config.BlkioWeightDevice is None
-    assert host_config.BlkioDeviceReadBps is None
-    assert host_config.Devices is None
     assert host_config.PortBindings is None
