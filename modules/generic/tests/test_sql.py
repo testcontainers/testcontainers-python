@@ -3,14 +3,14 @@ from unittest.mock import patch
 
 from testcontainers.core.exceptions import ContainerStartException
 from testcontainers.generic.sql import SqlContainer
-from testcontainers.generic.providers.sql_connection_wait_strategy import SqlConnectWaitStrategy
+from testcontainers.generic.providers.sql_connection_wait_strategy import SqlAlchemyConnectWaitStrategy
 
 
 class SimpleSqlContainer(SqlContainer):
     """Simple concrete implementation for testing."""
 
     def __init__(self, image: str = "postgres:13"):
-        super().__init__(image, wait_strategy=SqlConnectWaitStrategy())
+        super().__init__(image, wait_strategy=SqlAlchemyConnectWaitStrategy())
         self.username = "testuser"
         self.password = "testpass"
         self.dbname = "testdb"
@@ -30,7 +30,7 @@ class SimpleSqlContainer(SqlContainer):
 
 class TestSqlContainer:
     def test_abstract_methods_raise_not_implemented(self):
-        container = SqlContainer("test:latest", SqlConnectWaitStrategy())
+        container = SqlContainer("test:latest", SqlAlchemyConnectWaitStrategy())
 
         with pytest.raises(NotImplementedError):
             container.get_connection_url()
@@ -39,7 +39,7 @@ class TestSqlContainer:
             container._configure()
 
     def test_transfer_seed_default_behavior(self):
-        container = SqlContainer("test:latest", SqlConnectWaitStrategy())
+        container = SqlContainer("test:latest", SqlAlchemyConnectWaitStrategy())
         # Should not raise an exception
         container._transfer_seed()
 
