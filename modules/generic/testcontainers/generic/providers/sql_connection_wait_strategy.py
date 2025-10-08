@@ -16,7 +16,7 @@ except ImportError:
     logger.debug("SQLAlchemy not available, skipping DBAPIError handling")
 
 
-class SqlConnectWaitStrategy(WaitStrategy):
+class SqlAlchemyConnectWaitStrategy(WaitStrategy):
     """Wait strategy for database connectivity testing using SQLAlchemy."""
 
     def __init__(self):

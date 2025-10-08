@@ -60,14 +60,14 @@ Postgres container that is using :code:`SqlContainer`
 .. doctest::
 
     >>> from testcontainers.generic import SqlContainer
-    >>> from testcontainers.generic.providers.sql_connection_wait_strategy import SqlConnectWaitStrategy
+    >>> from testcontainers.generic.providers.sql_connection_wait_strategy import SqlAlchemyConnectWaitStrategy
     >>> from sqlalchemy import text
     >>> import sqlalchemy
 
     >>> class CustomPostgresContainer(SqlContainer):
     ...     def __init__(self, image="postgres:15-alpine",
     ...                  port=5432, username="test", password="test", dbname="test"):
-    ...         super().__init__(image=image, wait_strategy=SqlConnectWaitStrategy())
+    ...         super().__init__(image=image, wait_strategy=SqlAlchemyConnectWaitStrategy())
     ...         self.port_to_expose = port
     ...         self.username = username
     ...         self.password = password
