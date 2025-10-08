@@ -1,5 +1,17 @@
 # Changelog
 
+## [4.13.2](https://github.com/testcontainers/testcontainers-python/compare/testcontainers-v4.13.1...testcontainers-v4.13.2) (2025-10-07)
+
+
+### Bug Fixes
+
+* **core:** Fix issues with doctests ([#893](https://github.com/testcontainers/testcontainers-python/issues/893)) ([2e4d80a](https://github.com/testcontainers/testcontainers-python/commit/2e4d80ade5a2048c8bc79d7a2438004b8e0954e4))
+* **core:** waiting improvements + remove decorators in core ([#894](https://github.com/testcontainers/testcontainers-python/issues/894)) ([f93f379](https://github.com/testcontainers/testcontainers-python/commit/f93f379380a9de769fe6a1e1168622865cdf613d))
+* issue [#889](https://github.com/testcontainers/testcontainers-python/issues/889) by changing the annotated return type of `waiting_for` to `Self`. ([#890](https://github.com/testcontainers/testcontainers-python/issues/890)) ([fe941b1](https://github.com/testcontainers/testcontainers-python/commit/fe941b17bb97aad15dc4844996f166c9308f4476))
+* **mongo:** mongo start waiting forever for old mongo versions ([#783](https://github.com/testcontainers/testcontainers-python/issues/783)) ([1388612](https://github.com/testcontainers/testcontainers-python/commit/13886120e9cb72666a40ea3691ea13e584805918))
+* **redpanda:** copy the startup script to a path that can be written … ([#867](https://github.com/testcontainers/testcontainers-python/issues/867)) ([e6b976d](https://github.com/testcontainers/testcontainers-python/commit/e6b976de43fc6fe90d7131fd25983f9c6b08429b))
+* **trino:** Remove deprecated class and decorator from Trino container ([#895](https://github.com/testcontainers/testcontainers-python/issues/895)) ([bb646e9](https://github.com/testcontainers/testcontainers-python/commit/bb646e903236a1df72bc38dbb47d1dba95527198))
+
 ## [4.13.1](https://github.com/testcontainers/testcontainers-python/compare/testcontainers-v4.13.0...testcontainers-v4.13.1) (2025-09-24)
 
 
