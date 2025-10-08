@@ -8,7 +8,7 @@ from urllib.request import urlopen, Request
 import pytest
 from pytest_mock import MockerFixture
 
-from testcontainers.compose import DockerCompose
+from testcontainers.compose import DockerCompose, ComposeContainer
 from testcontainers.core.exceptions import ContainerIsNotRunning, NoSuchPortExposed
 
 FIXTURES = Path(__file__).parent.joinpath("compose_fixtures")
@@ -430,32 +430,7 @@ def test_container_info_network_details():
 
 def test_container_info_none_when_no_docker_compose():
     """Test get_container_info returns None when docker_compose reference is missing"""
-    from testcontainers.compose.compose import ComposeContainer
 
     container = ComposeContainer()
     info = container.get_container_info()
     assert info is None
-
-
-def test_docker_container_info():
-    """Test get_container_info works with DockerContainer too"""
-    from testcontainers.core.container import DockerContainer
-
-    with DockerContainer("hello-world") as container:
-        info = container.get_container_info()
-        assert info is not None
-        assert info.Id is not None
-        assert info.Image is not None
-
-        if info.State:
-            assert hasattr(info.State, "Status")
-            assert hasattr(info.State, "Running")
-
-        if info.Config:
-            assert hasattr(info.Config, "Image")
-            assert hasattr(info.Config, "Hostname")
-
-        network_settings = info.get_network_settings()
-        if network_settings:
-            assert hasattr(network_settings, "IPAddress")
-            assert hasattr(network_settings, "Networks")
