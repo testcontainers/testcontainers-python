@@ -1,1 +1,1 @@
-from .sql_connector import SqlConnectWaitStrategy  # noqa: F401
+from .sql_connection_wait_strategy import SqlConnectWaitStrategy  # noqa: F401

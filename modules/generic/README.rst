@@ -60,7 +60,7 @@ Postgres container that is using :code:`SqlContainer`
 .. doctest::
 
     >>> from testcontainers.generic import SqlContainer
-    >>> from testcontainers.generic.providers.sql_connector import SqlConnectWaitStrategy
+    >>> from testcontainers.generic.providers.sql_connection_wait_strategy import SqlConnectWaitStrategy
     >>> from sqlalchemy import text
     >>> import sqlalchemy
 
