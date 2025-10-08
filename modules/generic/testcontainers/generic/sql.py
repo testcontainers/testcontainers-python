@@ -17,7 +17,7 @@ class SqlContainer(DockerContainer):
     It provides connection management, URL construction, and basic lifecycle methods.
     Database connection readiness is automatically handled by the provided wait strategy.
 
-    Note: `SqlConnectWaitStrategy` from `sql_utils` is a provided wait strategy for SQL databases.
+    Note: `SqlConnectWaitStrategy` from `sql_connection_wait_strategy` is a provided wait strategy for SQL databases.
     """
 
     def __init__(self, image: str, wait_strategy: WaitStrategy, **kwargs):
