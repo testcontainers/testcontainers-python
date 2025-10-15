@@ -20,6 +20,7 @@ from datetime import timedelta
 from typing import Any, Callable, Optional, Protocol, TypeVar, Union, cast
 
 import wrapt
+from docker.models.containers import Container
 from typing_extensions import Self
 
 from testcontainers.core.config import testcontainers_config
@@ -52,7 +53,7 @@ class WaitStrategyTarget(Protocol):
         """Get the exposed port mapping for the given internal port."""
         ...
 
-    def get_wrapped_container(self) -> Any:
+    def get_wrapped_container(self) -> Container:
         """Get the underlying container object."""
         ...
 

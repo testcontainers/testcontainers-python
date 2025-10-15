@@ -11,6 +11,8 @@ from subprocess import run as subprocess_run
 from types import TracebackType
 from typing import Any, Callable, Literal, Optional, TypeVar, Union, cast
 
+from docker import DockerClient
+from docker.models.containers import Container
 from testcontainers.core.exceptions import ContainerIsNotRunning, NoSuchPortExposed
 from testcontainers.core.waiting_utils import WaitStrategy
 
@@ -137,9 +139,9 @@ class ComposeContainer:
         stdout, stderr = self._docker_compose.get_logs(self.Service)
         return stdout.encode(), stderr.encode()
 
-    def get_wrapped_container(self) -> "ComposeContainer":
+    def get_wrapped_container(self) -> Container:
         """Get the underlying container object for compatibility."""
-        return self
+        return self._docker_compose._get_docker_client().containers.get(self.ID)
 
     def reload(self) -> None:
         """Reload container information for compatibility with wait strategies."""
@@ -214,7 +216,9 @@ class DockerCompose:
     services: Optional[list[str]] = None
     docker_command_path: Optional[str] = None
     profiles: Optional[list[str]] = None
+    docker_client_kw: Optional[dict[str, Any]] = None
     _wait_strategies: Optional[dict[str, Any]] = field(default=None, init=False, repr=False)
+    _docker_client: Optional[DockerClient] = field(default=None, init=False, repr=False)
 
     def __post_init__(self) -> None:
         if isinstance(self.compose_file_name, str):
@@ -258,6 +262,13 @@ class DockerCompose:
             for env_file in self.env_file:
                 docker_compose_cmd += ["--env-file", env_file]
         return docker_compose_cmd
+
+    def _get_docker_client(self) -> DockerClient:
+        dc = self._docker_client
+        if dc is None:
+            dc = DockerClient(**(self.docker_client_kw or {}))
+            self._docker_client = dc
+        return dc
 
     def waiting_for(self, strategies: dict[str, WaitStrategy]) -> "DockerCompose":
         """
