@@ -703,6 +703,44 @@ class ContainerStatusWaitStrategy(WaitStrategy):
         raise NotImplementedError
 
 
+class RunFunctionWaitStrategy(WaitStrategy):
+    """Runs a functions and waits until it succeeds.
+
+    The function must take a single argument, the WaitStrategyTarget (= DockerContainer)
+    (use a lambda to capture other arguments) and must return a Boolean or raise an Exception.
+
+    Args:
+        func: The function to run. It must return True when the wait is over.
+    """
+
+    def __init__(
+        self,
+        func: Callable[[WaitStrategyTarget], bool],
+    ):
+        super().__init__()
+        self.func = func
+
+    def wait_until_ready(self, container: WaitStrategyTarget) -> Any:
+        start_time = time.time()
+        last_exception = None
+        while True:
+            try:
+                result = self.func(container)
+                if result:
+                    return result
+            except tuple(self._transient_exceptions) as e:
+                logger.debug(f"Check attempt failed: {e!s}")
+                last_exception = str(e)
+            if time.time() - start_time > self._startup_timeout:
+                raise TimeoutError(
+                    f"Wait time ({self._startup_timeout}s) exceeded for {self.func.__name__}"
+                    f"Exception: {last_exception}. "
+                    f"Hint: Check if the container is ready, "
+                    f"and the expected conditions are met for the function to succeed."
+                )
+            time.sleep(self._poll_interval)
+
+
 class CompositeWaitStrategy(WaitStrategy):
     """
     Wait for multiple conditions to be satisfied in sequence.
@@ -787,6 +825,7 @@ __all__ = [
     "HttpWaitStrategy",
     "LogMessageWaitStrategy",
     "PortWaitStrategy",
+    "RunFunctionWaitStrategy",
     "WaitStrategy",
     "WaitStrategyTarget",
 ]
