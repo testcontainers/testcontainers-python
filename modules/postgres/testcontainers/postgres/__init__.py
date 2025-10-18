@@ -15,7 +15,8 @@ from typing import Optional
 
 from testcontainers.core.generic import DbContainer
 from testcontainers.core.utils import raise_for_deprecated_parameter
-from testcontainers.core.waiting_utils import wait_container_is_ready
+from testcontainers.core.wait_strategies import RunFunctionWaitStrategy
+from testcontainers.core.waiting_utils import WaitStrategyTarget
 
 _UNSET = object()
 
@@ -64,6 +65,7 @@ class PostgresContainer(DbContainer):
         self.driver = f"+{driver}" if driver else ""
 
         self.with_exposed_ports(self.port)
+        self.waiting_for(RunFunctionWaitStrategy(_check_postgres_ready))
 
     def _configure(self) -> None:
         self.with_env("POSTGRES_USER", self.username)
@@ -87,7 +89,6 @@ class PostgresContainer(DbContainer):
             port=self.port,
         )
 
-    @wait_container_is_ready()
     def _connect(self) -> None:
         escaped_single_password = self.password.replace("'", "'\"'\"'")
         result = self.exec(
@@ -99,3 +100,11 @@ class PostgresContainer(DbContainer):
         )
         if result.exit_code:
             raise ConnectionError("pg_isready is not ready yet")
+
+
+def _check_postgres_ready(container: WaitStrategyTarget) -> bool:
+    if not isinstance(container, PostgresContainer):
+        raise AssertionError("This check can only wait for postgres containers to start up")
+    # This raises a ConnectionError if not ready yet
+    container._connect()
+    return True
