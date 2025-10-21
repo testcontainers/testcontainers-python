@@ -1,5 +1,12 @@
 # Changelog
 
+## [4.13.3](https://github.com/testcontainers/testcontainers-python/compare/testcontainers-v4.13.2...testcontainers-v4.13.3) (2025-10-21)
+
+
+### Bug Fixes
+
+* **docs:** Update dependencies for docs ([#900](https://github.com/testcontainers/testcontainers-python/issues/900)) ([3f66784](https://github.com/testcontainers/testcontainers-python/commit/3f667847a0d9a893e4f15481d81d131817382d5c))
+
 ## [4.13.2](https://github.com/testcontainers/testcontainers-python/compare/testcontainers-v4.13.1...testcontainers-v4.13.2) (2025-10-07)
 
 
