@@ -1,14 +1,7 @@
-from typing import TYPE_CHECKING
-
-from requests import ConnectionError, get
-
 from minio import Minio
 from testcontainers.core.container import DockerContainer
 from testcontainers.core.utils import raise_for_deprecated_parameter
-from testcontainers.core.waiting_utils import wait_container_is_ready
-
-if TYPE_CHECKING:
-    from requests import Response
+from testcontainers.core.wait_strategies import HttpWaitStrategy
 
 
 class MinioContainer(DockerContainer):
@@ -56,7 +49,11 @@ class MinioContainer(DockerContainer):
             secret_key: Secret key for client connections.
         """
         raise_for_deprecated_parameter(kwargs, "port_to_expose", "port")
-        super().__init__(image, **kwargs)
+        super().__init__(
+            image,
+            _wait_strategy=HttpWaitStrategy(port, "/minio/health/live"),
+            **kwargs,
+        )
         self.port = port
         self.access_key = access_key
         self.secret_key = secret_key
@@ -97,18 +94,3 @@ class MinioContainer(DockerContainer):
             "access_key": self.access_key,
             "secret_key": self.secret_key,
         }
-
-    @wait_container_is_ready(ConnectionError)
-    def _healthcheck(self) -> None:
-        """This is an internal method used to check if the Minio container
-        is healthy and ready to receive requests."""
-        url = f"http://{self.get_config()['endpoint']}/minio/health/live"
-        response: Response = get(url)
-        response.raise_for_status()
-
-    def start(self) -> "MinioContainer":
-        """This method starts the Minio container and runs the healthcheck
-        to verify that the container is ready to use."""
-        super().start()
-        self._healthcheck()
-        return self
