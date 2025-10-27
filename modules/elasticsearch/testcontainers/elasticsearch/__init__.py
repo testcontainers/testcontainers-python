@@ -47,7 +47,7 @@ def _environment_by_version(version: int) -> dict[str, str]:
         return {"discovery.zen.minimum_master_nodes": "1"}
     elif version == 7:
         return {}
-    elif version == 8:
+    elif version in {8, 9}:
         # Elasticsearch uses https now by default. However, our readiness
         # check uses http, which does not work. Hence we disable security
         # which should not be an issue for our context
