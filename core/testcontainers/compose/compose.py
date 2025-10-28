@@ -265,7 +265,11 @@ class ComposeContainer:
         pass
 
     def get_container_info(self) -> Optional[ContainerInspectInfo]:
-        """Get container information via docker inspect (lazy loaded)."""
+        """Get container information via docker inspect (lazy loaded).
+
+        Returns:
+            Container inspect information or None if container is not started.
+        """
         if self._cached_container_info is not None:
             return self._cached_container_info
 
