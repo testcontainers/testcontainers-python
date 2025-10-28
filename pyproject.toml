@@ -80,7 +80,7 @@ packages = [
 "Issue Tracker" = "https://github.com/testcontainers/testcontainers-python/issues"
 
 [tool.poetry.dependencies]
-python = ">=3.9.2,<4.0"
+python = ">=3.9.2"
 docker = "*"            # ">=4.0"
 urllib3 = "*"           # "<2.0"
 wrapt = "*"             # "^1.16.0"
@@ -108,7 +108,7 @@ pymssql = { version = "*", optional = true, markers = "platform_machine != 'arm6
 pymysql = { version = "*", extras = ["rsa"], optional = true }
 neo4j = { version = "*", optional = true }
 openfga-sdk = { version = "*", optional = true, markers = "python_version >= '3.10'" }
-opensearch-py = { version = "*", optional = true }
+opensearch-py = { version = "*", optional = true, markers = "python_version < '4.0'" }
 oracledb = { version = "*", optional = true }
 pika = { version = "*", optional = true }
 redis = { version = "*", optional = true }
@@ -190,7 +190,7 @@ psycopg = "3.1.18"
 cassandra-driver = "3.29.1"
 pytest-asyncio = "0.23.5"
 kafka-python-ng = "^2.2.0"
-hvac = "2.1.0"
+hvac = { version = "2.1.0", markers = "python_version < '4.0'" }
 pymilvus = "2.6.1"
 httpx = "0.28.1"
 cryptography = "45.0.7"
