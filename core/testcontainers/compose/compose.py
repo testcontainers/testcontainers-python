@@ -1,3 +1,4 @@
+import sys
 from dataclasses import asdict, dataclass, field, fields, is_dataclass
 from functools import cached_property
 from json import loads
@@ -35,8 +36,7 @@ def _ignore_properties(cls: type[_IPT], dict_: Any) -> _IPT:
 @dataclass
 class PublishedPortModel:
     """
-    Class that represents the response we get from compose when inquiring status
-    via `DockerCompose.get_running_containers()`.
+    Class that represents the response we get from compose when inquiring status via `DockerCompose.get_running_containers()`.
     """
 
     URL: Optional[str] = None
@@ -223,8 +223,12 @@ class DockerCompose:
             self.env_file = [self.env_file]
 
     def __enter__(self) -> "DockerCompose":
-        self.start()
-        return self
+        try:
+            self.start()
+            return self
+        except:  # noqa: E722, RUF100
+            self.__exit__(*sys.exc_info())
+            raise
 
     def __exit__(
         self, exc_type: Optional[type[BaseException]], exc_val: Optional[BaseException], exc_tb: Optional[TracebackType]
@@ -242,7 +246,9 @@ class DockerCompose:
 
     @cached_property
     def compose_command_property(self) -> list[str]:
-        docker_compose_cmd = [self.docker_command_path] if self.docker_command_path else ["docker", "compose"]
+        docker_compose_cmd = (
+            [self.docker_command_path, "compose"] if self.docker_command_path else ["docker", "compose"]
+        )
         if self.compose_file_name:
             for file in self.compose_file_name:
                 docker_compose_cmd += ["-f", file]
@@ -256,6 +262,7 @@ class DockerCompose:
     def waiting_for(self, strategies: dict[str, WaitStrategy]) -> "DockerCompose":
         """
         Set wait strategies for specific services.
+
         Args:
             strategies: Dictionary mapping service names to wait strategies
         """

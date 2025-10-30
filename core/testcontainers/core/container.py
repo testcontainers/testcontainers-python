@@ -1,6 +1,7 @@
 import contextlib
 import io
 import pathlib
+import sys
 import tarfile
 from os import PathLike
 from socket import socket
@@ -23,7 +24,7 @@ from testcontainers.core.network import Network
 from testcontainers.core.transferable import Transferable, TransferSpec
 from testcontainers.core.utils import is_arm, setup_logger
 from testcontainers.core.wait_strategies import LogMessageWaitStrategy
-from testcontainers.core.waiting_utils import WaitStrategy, wait_container_is_ready
+from testcontainers.core.waiting_utils import WaitStrategy
 
 if TYPE_CHECKING:
     from docker.models.containers import Container
@@ -42,15 +43,11 @@ class DockerContainer:
 
     Args:
         image: The name of the image to start.
-        docker_client_kw: Dictionary with arguments that will be passed to the
-            docker.DockerClient init.
+        docker_client_kw: Dictionary with arguments that will be passed to the docker.DockerClient init.
         command: Optional execution command for the container.
         name: Optional name for the container.
-        ports: Ports to be exposed by the container. The port number will be
-            automatically assigned on the host, use
-            :code:`get_exposed_port(PORT)` method to get the port number on the host.
-        volumes: Volumes to mount into the container. Each entry should be a tuple with
-            three values: host path, container path and. mode (default 'ro').
+        ports: Ports to be exposed by the container. The port number will be automatically assigned on the host, use :code:`get_exposed_port(PORT)` method to get the port number on the host.
+        volumes: Volumes to mount into the container. Each entry should be a tuple with three values: host path, container path and mode (default 'ro').
         network: Optional network to connect the container to.
         network_aliases: Optional list of aliases for the container in the network.
 
@@ -178,7 +175,7 @@ class DockerContainer:
             return self.with_kwargs(platform="linux/amd64")
         return self
 
-    def waiting_for(self, strategy: WaitStrategy) -> "DockerContainer":
+    def waiting_for(self, strategy: WaitStrategy) -> Self:
         """Set a wait strategy to be used after container start."""
         self._wait_strategy = strategy
         return self
@@ -229,7 +226,11 @@ class DockerContainer:
         self.get_docker_client().client.close()
 
     def __enter__(self) -> Self:
-        return self.start()
+        try:
+            return self.start()
+        except:  # noqa: E722, RUF100
+            self.__exit__(*sys.exc_info())
+            raise
 
     def __exit__(
         self, exc_type: Optional[type[BaseException]], exc_val: Optional[BaseException], exc_tb: Optional[TracebackType]
@@ -256,8 +257,13 @@ class DockerContainer:
             # ensure that we covered all possible connection_modes
             assert_never(connection_mode)
 
-    @wait_container_is_ready()
     def get_exposed_port(self, port: int) -> int:
+        from testcontainers.core.wait_strategies import ContainerStatusWaitStrategy as C
+
+        C().wait_until_ready(self)
+        return self._get_exposed_port(port)
+
+    def _get_exposed_port(self, port: int) -> int:
         if self.get_docker_client().get_connection_mode().use_mapped_port:
             c = self._container
             assert c is not None

@@ -67,14 +67,14 @@ def test_get_exposed_port_mapped(
     monkeypatch.setattr(client, "port", fake_mapped)
     monkeypatch.setattr(client, "get_connection_mode", lambda: mode)
 
-    assert container.get_exposed_port(8080) == 45678
+    assert container._get_exposed_port(8080) == 45678
 
 
 def test_get_exposed_port_original(container: DockerContainer, monkeypatch: pytest.MonkeyPatch) -> None:
     client = container._docker
     monkeypatch.setattr(client, "get_connection_mode", lambda: ConnectionMode.bridge_ip)
 
-    assert container.get_exposed_port(8080) == 8080
+    assert container._get_exposed_port(8080) == 8080
 
 
 @pytest.mark.parametrize(

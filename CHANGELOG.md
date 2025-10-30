@@ -1,5 +1,41 @@
 # Changelog
 
+## [4.13.2](https://github.com/testcontainers/testcontainers-python/compare/testcontainers-v4.13.1...testcontainers-v4.13.2) (2025-10-07)
+
+
+### Bug Fixes
+
+* **core:** Fix issues with doctests ([#893](https://github.com/testcontainers/testcontainers-python/issues/893)) ([2e4d80a](https://github.com/testcontainers/testcontainers-python/commit/2e4d80ade5a2048c8bc79d7a2438004b8e0954e4))
+* **core:** waiting improvements + remove decorators in core ([#894](https://github.com/testcontainers/testcontainers-python/issues/894)) ([f93f379](https://github.com/testcontainers/testcontainers-python/commit/f93f379380a9de769fe6a1e1168622865cdf613d))
+* issue [#889](https://github.com/testcontainers/testcontainers-python/issues/889) by changing the annotated return type of `waiting_for` to `Self`. ([#890](https://github.com/testcontainers/testcontainers-python/issues/890)) ([fe941b1](https://github.com/testcontainers/testcontainers-python/commit/fe941b17bb97aad15dc4844996f166c9308f4476))
+* **mongo:** mongo start waiting forever for old mongo versions ([#783](https://github.com/testcontainers/testcontainers-python/issues/783)) ([1388612](https://github.com/testcontainers/testcontainers-python/commit/13886120e9cb72666a40ea3691ea13e584805918))
+* **redpanda:** copy the startup script to a path that can be written … ([#867](https://github.com/testcontainers/testcontainers-python/issues/867)) ([e6b976d](https://github.com/testcontainers/testcontainers-python/commit/e6b976de43fc6fe90d7131fd25983f9c6b08429b))
+* **trino:** Remove deprecated class and decorator from Trino container ([#895](https://github.com/testcontainers/testcontainers-python/issues/895)) ([bb646e9](https://github.com/testcontainers/testcontainers-python/commit/bb646e903236a1df72bc38dbb47d1dba95527198))
+
+## [4.13.1](https://github.com/testcontainers/testcontainers-python/compare/testcontainers-v4.13.0...testcontainers-v4.13.1) (2025-09-24)
+
+
+### Bug Fixes
+
+* **core:** Added 'compose' in compose_command_property ([#879](https://github.com/testcontainers/testcontainers-python/issues/879)) ([769b7b6](https://github.com/testcontainers/testcontainers-python/commit/769b7b688fe254cb8e38e05f453c4e3fe7999ad5))
+* **core:** make sure context manager exits ([#876](https://github.com/testcontainers/testcontainers-python/issues/876)) ([10089f6](https://github.com/testcontainers/testcontainers-python/commit/10089f6e2fe07e53cc47a69521e67a1bf3310065))
+
+## [4.13.0](https://github.com/testcontainers/testcontainers-python/compare/testcontainers-v4.12.0...testcontainers-v4.13.0) (2025-08-27)
+
+
+### Features
+
+* **azurite:** Enhance connection string generation for network and local access ([#859](https://github.com/testcontainers/testcontainers-python/issues/859)) ([b21e5e3](https://github.com/testcontainers/testcontainers-python/commit/b21e5e38075ddbd71fb4f97e843abc104dec6beb))
+* **core:** add enhanced wait strategies ([#855](https://github.com/testcontainers/testcontainers-python/issues/855)) ([60d21f8](https://github.com/testcontainers/testcontainers-python/commit/60d21f875f49f52e170b0714e8790080a6cb4c71))
+* **core:** DockerCompose: support list of env_files ([#847](https://github.com/testcontainers/testcontainers-python/issues/847)) ([fe206eb](https://github.com/testcontainers/testcontainers-python/commit/fe206eb48ee9e18623761926900bfc33a8a869a7))
+
+
+### Bug Fixes
+
+* assert-in-get_container_host_ip-before-start ([#862](https://github.com/testcontainers/testcontainers-python/issues/862)) ([fc4155e](https://github.com/testcontainers/testcontainers-python/commit/fc4155eb70509ba236fff771c2f8973667acb098))
+* **core:** improper reading of .testcontainers.properties ([#863](https://github.com/testcontainers/testcontainers-python/issues/863)) ([350f246](https://github.com/testcontainers/testcontainers-python/commit/350f246a3b6367d727046b8967a63d1c055cf324))
+* **core:** Make TC_POOLING_INTERVAL/sleep_time a float ([#839](https://github.com/testcontainers/testcontainers-python/issues/839)) ([a072f3f](https://github.com/testcontainers/testcontainers-python/commit/a072f3fad46b3b3e7c5bea6255f27b79826aaf5f))
+
 ## [4.12.0](https://github.com/testcontainers/testcontainers-python/compare/testcontainers-v4.11.0...testcontainers-v4.12.0) (2025-07-21)
 
 

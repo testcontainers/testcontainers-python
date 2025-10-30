@@ -1,6 +1,7 @@
 import pytest
 
 from testcontainers.core.container import DockerContainer
+from testcontainers.core.wait_strategies import ContainerStatusWaitStrategy
 from testcontainers.core.waiting_utils import wait_for_logs, wait_for, wait_container_is_ready
 
 
@@ -28,8 +29,15 @@ def test_wait_container_is_ready_decorator_basic() -> None:
 def test_wait_container_is_ready_decorator_with_container() -> None:
     """Test wait_container_is_ready decorator with a real container."""
 
-    @wait_container_is_ready()
     def check_container_logs(container: DockerContainer) -> bool:
+        # wait until it becomes running.
+        # if it is too late, it is actually fine in this case.
+        # we are happy with an exited (even crashed) container that has logs.
+        try:
+            ContainerStatusWaitStrategy().wait_until_ready(container)
+        except TimeoutError:
+            pass
+
         stdout, stderr = container.get_logs()
         return b"Hello from Docker!" in stdout or b"Hello from Docker!" in stderr
 

@@ -11,6 +11,7 @@
 #    License for the specific language governing permissions and limitations
 #    under the License.
 import os
+import re
 from typing import Optional
 
 from pymongo import MongoClient
@@ -77,7 +78,12 @@ class MongoDbContainer(DbContainer):
         )
 
     def _connect(self) -> None:
-        wait_for_logs(self, "Waiting for connections")
+        regex = re.compile(r"waiting for connections", re.MULTILINE | re.IGNORECASE)
+
+        def predicate(text: str) -> bool:
+            return regex.search(text) is not None
+
+        wait_for_logs(self, predicate)
 
     def get_connection_client(self) -> MongoClient:
         return MongoClient(self.get_connection_url())
