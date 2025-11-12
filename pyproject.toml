@@ -354,7 +354,7 @@ mypy_path = [
     #    "modules/openfga",
     #    "modules/opensearch",
     #    "modules/oracle",
-    #    "modules/postgres",
+       "modules/postgres",
     #    "modules/rabbitmq",
     #    "modules/redis",
     #    "modules/selenium"
