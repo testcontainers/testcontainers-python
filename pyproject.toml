@@ -133,6 +133,7 @@ aiohttp = { version = ">=3.13.2", optional = true }
 grpcio-tools = { version = ">=1.76.0", optional = true }
 msgpack = { version = ">=1.1.2", optional = true }
 pandas = { version = ">=2.3.3", optional = true }
+httpcore = { version = ">=1.0.8", optional = true } # we could fix this for everyone but this is httpx's responsibility
 
 [tool.poetry.group.numpy_old.dependencies]
 numpy = { version = ">=2.0", optional = true, markers = "python_version < '3.11'" }
