@@ -1,3 +1,4 @@
+import re
 import tarfile
 import time
 from dataclasses import dataclass, field
@@ -10,7 +11,7 @@ from typing_extensions import Self
 from testcontainers.core.container import DockerContainer
 from testcontainers.core.utils import raise_for_deprecated_parameter
 from testcontainers.core.version import ComparableVersion
-from testcontainers.core.waiting_utils import wait_for_logs
+from testcontainers.core.wait_strategies import LogMessageWaitStrategy
 from testcontainers.kafka._redpanda import RedpandaContainer
 
 __all__ = [
@@ -59,7 +60,7 @@ class KafkaContainer(DockerContainer):
         super().__init__(image, **kwargs)
         self.port = port
         self.kraft_enabled = False
-        self.wait_for = r".*\[KafkaServer id=\d+\] started.*"
+        self.wait_for = re.compile(r".*\[KafkaServer id=\d+\] started.*")
         self.boot_command = ""
         self.cluster_id = "MkU3OEVBNTcwNTJENDM2Qk"
         self.listeners = f"PLAINTEXT://0.0.0.0:{self.port},BROKER://0.0.0.0:9092"
@@ -179,7 +180,8 @@ class KafkaContainer(DockerContainer):
         self.with_command(command)
         super().start()
         self.tc_start()
-        wait_for_logs(self, self.wait_for, timeout=timeout)
+        wait_strategy = LogMessageWaitStrategy(self.wait_for)
+        wait_strategy.wait_until_ready(self)
         return self
 
     def create_file(self, content: bytes, path: str) -> None:
