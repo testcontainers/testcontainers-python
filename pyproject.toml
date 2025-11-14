@@ -93,25 +93,25 @@ python-dotenv = "*"
 python-arango = { version = "^7.8", optional = true }
 azure-storage-blob = { version = "^12.19", optional = true }
 cassandra-driver = { version = "3.29.1", optional = true }
-clickhouse-driver = { version = "*", optional = true }
+#clickhouse-driver = { version = "*", optional = true }
 google-cloud-pubsub = { version = ">=2", optional = true }
 google-cloud-datastore = { version = ">=2", optional = true }
 influxdb = { version = "*", optional = true }
 influxdb-client = { version = "*", optional = true }
 kubernetes = { version = "*", optional = true }
-pyyaml = { version = "*", optional = true }
+pyyaml = { version = ">=6.0.3", optional = true }
 python-keycloak = { version = "*", optional = true }
 boto3 = { version = "*", optional = true }
 minio = { version = "*", optional = true }
 nats-py = { version = "*", optional = true }
 pymongo = { version = "*", optional = true }
 sqlalchemy = { version = "*", optional = true }
-pymssql = { version = "*", optional = true, markers = "platform_machine != 'arm64' or python_version >= '3.10'" }
+pymssql = { version = ">=2.3.9", optional = true, markers = "platform_machine != 'arm64' or python_version >= '3.10'" }
 pymysql = { version = "*", extras = ["rsa"], optional = true }
 neo4j = { version = "*", optional = true }
 openfga-sdk = { version = "*", optional = true, markers = "python_version >= '3.10'" }
 opensearch-py = { version = "*", optional = true, markers = "python_version < '4.0'" }
-oracledb = { version = "*", optional = true }
+oracledb = { version = ">=3.4.1", optional = true }
 pika = { version = "*", optional = true }
 redis = { version = "*", optional = true }
 selenium = { version = "*", optional = true }
@@ -125,6 +125,24 @@ cryptography = { version = "*", optional = true }
 trino = { version = "*", optional = true }
 ibm_db_sa = { version = "*", optional = true, markers = "platform_machine != 'aarch64' and platform_machine != 'arm64'" }
 pydantic = { version = ">=2.12.4", optional = true } # upgrade for 3.14 compat (uses pyo3)
+rpds-py = { version = ">=0.28.0", optional = true, markers = "python_version >= '3.10'" }
+grpcio = { version = ">=1.75.1", optional = true }
+markupsafe = { version = ">=3.0.3", optional = true }
+ujson = { version = ">=5.11.0", optional = true }
+aiohttp = { version = ">=3.13.2", optional = true }
+grpcio-tools = { version = ">=1.76.0", optional = true }
+msgpack = { version = ">=1.1.2", optional = true }
+pandas = { version = ">=2.3.3", optional = true }
+
+[tool.poetry.group.numpy_old.dependencies]
+numpy = { version = ">=2.0", optional = true, markers = "python_version < '3.11'" }
+[tool.poetry.group.numpy_new.dependencies]
+numpy = { version = ">=2.3.4", optional = true, markers = "python_version >= '3.11'" }
+
+[tool.poetry.group.clickhouse-driver_old.dependencies]
+clickhouse-driver = { version = ">=0.1.5", optional = true, markers = "python_version < '3.11'" }
+[tool.poetry.group.clickhouse-driver_new.dependencies]
+clickhouse-driver = { version = ">=0.2.10", optional = true, markers = "python_version >= '3.11' and python_version < '4'"  }
 
 [tool.poetry.extras]
 arangodb = ["python-arango"]
@@ -185,7 +203,7 @@ sphinx = "7.2.6"
 twine = "6.2.0"
 anyio = "4.3.0"
 # for tests only
-psycopg2-binary = "2.9.10"
+psycopg2-binary = "2.9.11"
 pg8000 = "1.30.5"
 sqlalchemy = "2.0.28"
 psycopg = "3.1.18"
