@@ -28,6 +28,8 @@ classifiers = [
     "Operating System :: Unix",
     "Operating System :: MacOS",
 ]
+# Ensure PEP 561 typing marker files are included in distributions
+include = ["**/py.typed"]
 # testcontainers-core is a proper package dependency - only modules needed here
 packages = [
     { include = "testcontainers", from = "core" },
