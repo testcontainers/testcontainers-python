@@ -1,5 +1,5 @@
 import sys
-from dataclasses import asdict, dataclass, field, fields, is_dataclass
+from dataclasses import asdict, dataclass, field
 from functools import cached_property
 from json import loads
 from logging import getLogger, warning
@@ -11,26 +11,13 @@ from subprocess import run as subprocess_run
 from types import TracebackType
 from typing import Any, Callable, Literal, Optional, TypeVar, Union, cast
 
+from testcontainers.core.docker_client import ContainerInspectInfo, DockerClient, _ignore_properties
 from testcontainers.core.exceptions import ContainerIsNotRunning, NoSuchPortExposed
 from testcontainers.core.waiting_utils import WaitStrategy
 
-_IPT = TypeVar("_IPT")
 _WARNINGS = {"DOCKER_COMPOSE_GET_CONFIG": "get_config is experimental, see testcontainers/testcontainers-python#669"}
 
 logger = getLogger(__name__)
-
-
-def _ignore_properties(cls: type[_IPT], dict_: Any) -> _IPT:
-    """omits extra fields like @JsonIgnoreProperties(ignoreUnknown = true)
-
-    https://gist.github.com/alexanderankin/2a4549ac03554a31bef6eaaf2eaf7fd5"""
-    if isinstance(dict_, cls):
-        return dict_
-    if not is_dataclass(cls):
-        raise TypeError(f"Expected a dataclass type, got {cls}")
-    class_fields = {f.name for f in fields(cls)}
-    filtered = {k: v for k, v in dict_.items() if k in class_fields}
-    return cast("_IPT", cls(**filtered))
 
 
 @dataclass
@@ -81,6 +68,7 @@ class ComposeContainer:
     ExitCode: Optional[int] = None
     Publishers: list[PublishedPortModel] = field(default_factory=list)
     _docker_compose: Optional["DockerCompose"] = field(default=None, init=False, repr=False)
+    _cached_container_info: Optional[ContainerInspectInfo] = field(default=None, init=False, repr=False)
 
     def __post_init__(self) -> None:
         if self.Publishers:
@@ -146,6 +134,28 @@ class ComposeContainer:
         # ComposeContainer doesn't need explicit reloading as it's fetched fresh
         # each time through get_container(), but we need this method for compatibility
         pass
+
+    def get_container_info(self) -> Optional[ContainerInspectInfo]:
+        """Get container information via docker inspect (lazy loaded).
+
+        Returns:
+            Container inspect information or None if container is not started.
+        """
+        if self._cached_container_info is not None:
+            return self._cached_container_info
+
+        if not self._docker_compose or not self.ID:
+            return None
+
+        try:
+            docker_client = self._docker_compose._get_docker_client()
+            self._cached_container_info = docker_client.get_container_inspect_info(self.ID)
+
+        except Exception as e:
+            logger.warning(f"Failed to get container info for {self.ID}: {e}")
+            self._cached_container_info = None
+
+        return self._cached_container_info
 
     @property
     def status(self) -> str:
@@ -215,6 +225,7 @@ class DockerCompose:
     docker_command_path: Optional[str] = None
     profiles: Optional[list[str]] = None
     _wait_strategies: Optional[dict[str, Any]] = field(default=None, init=False, repr=False)
+    _docker_client: Optional[DockerClient] = field(default=None, init=False, repr=False)
 
     def __post_init__(self) -> None:
         if isinstance(self.compose_file_name, str):
@@ -575,3 +586,9 @@ class DockerCompose:
         with urlopen(url) as response:
             response.read()
         return self
+
+    def _get_docker_client(self) -> DockerClient:
+        """Get Docker client instance."""
+        if self._docker_client is None:
+            self._docker_client = DockerClient()
+        return self._docker_client
