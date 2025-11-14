@@ -1,5 +1,12 @@
 # Changelog
 
+## [4.13.4](https://github.com/testcontainers/testcontainers-python/compare/testcontainers-v4.13.3...testcontainers-v4.13.4) (2025-11-14)
+
+
+### Bug Fixes
+
+* add ruff to deps ([#919](https://github.com/testcontainers/testcontainers-python/issues/919)) ([5853d32](https://github.com/testcontainers/testcontainers-python/commit/5853d326bb4e9631b7c58355c53ff7fc3ecab92d))
+
 ## [4.13.3](https://github.com/testcontainers/testcontainers-python/compare/testcontainers-v4.13.2...testcontainers-v4.13.3) (2025-11-14)
 
 
