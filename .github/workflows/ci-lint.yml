@@ -5,8 +5,11 @@ name: lint
 on:
   push:
     branches: [main]
+    paths: &push_paths
+      - "**/*.py"
   pull_request:
     branches: [main]
+    paths: *push_paths
 
 jobs:
   python:

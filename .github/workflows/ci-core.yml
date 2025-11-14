@@ -25,8 +25,6 @@ jobs:
         run: poetry install --all-extras
       - name: Run twine check
         run: rm -f LICENSE.txt && poetry build && poetry run twine check dist/*.tar.gz
-      - name: Set up Docker
-        uses: docker/setup-docker-action@v4
       - name: Run tests
         run: make core/tests
       - name: Rename coverage file
