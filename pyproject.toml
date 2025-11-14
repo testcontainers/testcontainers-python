@@ -124,6 +124,7 @@ azure-cosmos = { version = "*", optional = true }
 cryptography = { version = "*", optional = true }
 trino = { version = "*", optional = true }
 ibm_db_sa = { version = "*", optional = true, markers = "platform_machine != 'aarch64' and platform_machine != 'arm64'" }
+pydantic = { version = ">=2.12.4", optional = true } # upgrade for 3.14 compat (uses pyo3)
 
 [tool.poetry.extras]
 arangodb = ["python-arango"]
