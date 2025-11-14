@@ -1,11 +1,11 @@
-import pandas as pd
+import pandas as pd  # type: ignore[import-untyped]
 import sqlalchemy
 from sqlalchemy import text
 
 from testcontainers.postgres import PostgresContainer
 
 
-def basic_example():
+def basic_example() -> None:
     with PostgresContainer() as postgres:
         # Get connection URL
         connection_url = postgres.get_connection_url()
