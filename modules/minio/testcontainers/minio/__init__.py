@@ -76,7 +76,7 @@ class MinioContainer(DockerContainer):
         host_ip = self.get_container_host_ip()
         exposed_port = self.get_exposed_port(self.port)
         return Minio(
-            f"{host_ip}:{exposed_port}",
+            endpoint=f"{host_ip}:{exposed_port}",
             access_key=self.access_key,
             secret_key=self.secret_key,
             secure=False,
