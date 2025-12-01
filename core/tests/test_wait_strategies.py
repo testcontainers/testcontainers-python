@@ -15,6 +15,7 @@ from testcontainers.core.wait_strategies import (
     LogMessageWaitStrategy,
     PortWaitStrategy,
     WaitStrategy,
+    RunFunctionWaitStrategy,
 )
 
 
@@ -548,6 +549,60 @@ class TestFileExistsWaitStrategy:
         else:
             with pytest.raises(TimeoutError, match="File.*did not exist within.*seconds"):
                 strategy.wait_until_ready(mock_container)
+
+
+class TestRunFunctionWaitStrategy:
+    """Test the RunFunctionWaitStrategy class."""
+
+    def test_run_function_wait_strategy_initialization(self):
+        func = lambda x: True
+        strategy = RunFunctionWaitStrategy(func)
+        assert strategy.func == func
+
+    def test_run_function_wait_strategy_wait_until_ready(self):
+        returns = [False, False, True]
+        mock_container = object()
+
+        def func(target) -> bool:
+            assert target is mock_container
+            return returns.pop(0)
+
+        strategy = RunFunctionWaitStrategy(func).with_poll_interval(0)
+        strategy.wait_until_ready(mock_container)  # type: ignore[arg-type]
+
+    def test_run_function_wait_strategy_wait_until_ready_with_unknown_exception(self):
+        mock_container = object()
+
+        def func(target) -> bool:
+            assert target is mock_container
+            raise RuntimeError("Unknown error, abort!")
+
+        strategy = RunFunctionWaitStrategy(func).with_poll_interval(0)
+        with pytest.raises(RuntimeError, match="Unknown error, abort!"):
+            strategy.wait_until_ready(mock_container)  # type: ignore[arg-type]
+
+    @pytest.mark.parametrize("transient_exception", [ConnectionError, NotImplementedError])
+    def test_run_function_wait_strategy_wait_until_ready_with_transient_exception(self, transient_exception):
+        mock_container = object()
+        returns = [False, False, True]
+
+        def func(target) -> bool:
+            assert target is mock_container
+            if returns.pop(0):
+                return True
+            raise transient_exception("Go on")
+
+        # ConnectionError should be in the default transient exceptions, but NotImplementedError ist not
+        strategy = (
+            RunFunctionWaitStrategy(func).with_poll_interval(0.001).with_transient_exceptions(NotImplementedError)
+        )
+        strategy.wait_until_ready(mock_container)  # type: ignore[arg-type]
+
+    def test_run_function_wait_strategy_wait_until_ready_with_timeout(self):
+        mock_container = object()
+        strategy = RunFunctionWaitStrategy(lambda x: False).with_poll_interval(0).with_startup_timeout(0)
+        with pytest.raises(TimeoutError, match=r"Wait time (.*) exceeded for"):
+            strategy.wait_until_ready(mock_container)  # type: ignore[arg-type]
 
 
 class TestCompositeWaitStrategy:
