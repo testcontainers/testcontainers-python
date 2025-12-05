@@ -1,8 +1,8 @@
 from queue import Queue
-from google.cloud.datastore import Entity
 
+from google.cloud.datastore import Entity
 from testcontainers.core.waiting_utils import wait_for_logs
-from testcontainers.google import PubSubContainer, DatastoreContainer
+from testcontainers.google import PubSubContainer, DatastoreContainer, GoogleCloudStorageContainer, BigQueryContainer
 
 
 def test_pubsub_container():
@@ -74,3 +74,31 @@ def test_datastore_container_isolation():
             client2 = datastore2.get_datastore_client()
             fetched_entity2 = client2.get(key)
             assert fetched_entity2 is None, "Entity was found in the datastore."
+
+
+def test_gcs_container():
+    from google.cloud import storage
+
+    gcs: GoogleCloudStorageContainer
+    with GoogleCloudStorageContainer() as gcs:
+        wait_for_logs(gcs, 'level=INFO msg="server started at', timeout=60)
+        # Create a new topic
+        client: storage.Client = gcs.get_storage_client()
+        client.create_bucket("test-bucket")
+
+        buckets = list(client.list_buckets())
+
+        assert any(bucket.name == "test-bucket" for bucket in buckets)
+
+
+def test_bigquery_container():
+    from google.cloud import bigquery
+
+    bigquery: BigQueryContainer
+    with BigQueryContainer() as bigquery:
+        wait_for_logs(bigquery, r"[bigquery-emulator] REST server listening at", timeout=60)
+        # Create a new topic
+        client: bigquery.Client = bigquery.get_bigquery_client()
+        datasets = client.list_datasets(project="test-project")
+
+        assert any(dataset.dataset_id == "test-containers" for dataset in datasets)
