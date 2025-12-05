@@ -59,7 +59,7 @@ def basic_example():
         print(f"\nPython container ID: {container_id}")
 
         # Execute command in container
-        exit_code, output = python.exec_run("python -c 'print(\"Hello from container!\")'")
+        _exit_code, output = python.exec(["python", "-c", 'print("Hello from container!")'])
         print(f"Command output: {output.decode()}")
 
     # Example 5: Container with health check
