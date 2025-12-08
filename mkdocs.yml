@@ -72,6 +72,7 @@ nav:
           - modules/redis.md
           - modules/scylla.md
           - modules/trino.md
+          - modules/valkey.md
           - modules/weaviate.md
       - modules/aws.md
       - modules/azurite.md

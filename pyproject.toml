@@ -73,6 +73,7 @@ packages = [
     { include = "testcontainers", from = "modules/selenium" },
     { include = "testcontainers", from = "modules/scylla" },
     { include = "testcontainers", from = "modules/trino" },
+    { include = "testcontainers", from = "modules/valkey" },
     { include = "testcontainers", from = "modules/vault" },
     { include = "testcontainers", from = "modules/weaviate" },
 ]
@@ -188,6 +189,7 @@ rabbitmq = ["pika"]
 redis = ["redis"]
 registry = ["bcrypt"]
 selenium = ["selenium"]
+valkey = []
 scylla = ["cassandra-driver"]
 sftp = ["cryptography"]
 vault = []

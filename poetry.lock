@@ -7504,10 +7504,11 @@ selenium = ["selenium"]
 sftp = ["cryptography"]
 test-module-import = ["httpx"]
 trino = ["trino"]
+valkey = []
 vault = []
 weaviate = ["weaviate-client"]
 
 [metadata]
 lock-version = "2.1"
 python-versions = ">=3.9.2"
-content-hash = "9a3a047c18407dec1b8e4add0c59b44b9613f208803e4ca83abfb3c60c1c757f"
+content-hash = "c14a70b6a29adf2ca61116c939d79c2ae9abb5e5a03610607f1d927bc32260e2"
