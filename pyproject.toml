@@ -101,6 +101,7 @@ registry = ["bcrypt>=5"]
 selenium = ["selenium>=4"]
 scylla = ["cassandra-driver>=3; python_version < '3.14'"]
 sftp = ["cryptography"]
+valkey = []
 vault = []
 weaviate = ["weaviate-client>=4"]
 chroma = ["chromadb-client>=1"]
@@ -267,6 +268,7 @@ dev-mode-dirs = [
   "modules/selenium",
   "modules/scylla",
   "modules/trino",
+  "modules/valkey",
   "modules/vault",
   "modules/weaviate",
 ]
