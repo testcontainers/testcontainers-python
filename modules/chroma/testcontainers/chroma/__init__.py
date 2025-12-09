@@ -32,13 +32,13 @@ class ChromaContainer(DockerContainer):
 
     def __init__(
         self,
-        image: str = "chromadb/chroma:latest",
+        image: str = "chromadb/chroma:1.0.0",
         port: int = 8000,
         **kwargs,
     ) -> None:
         """
         Args:
-            image: Docker image to use for the MinIO container.
+            image: Docker image to use for the ChromaDB container.
             port: Port to expose on the container.
             access_key: Access key for client connections.
             secret_key: Secret key for client connections.
@@ -55,7 +55,7 @@ class ChromaContainer(DockerContainer):
         including the endpoint.
 
         Returns:
-            dict: {`endpoint`: str}
+            dict: {`endpoint`: str, `host`: str, `port`: int}
         """
         host_ip = self.get_container_host_ip()
         exposed_port = self.get_exposed_port(self.port)
@@ -69,7 +69,7 @@ class ChromaContainer(DockerContainer):
     def _healthcheck(self) -> None:
         """This is an internal method used to check if the Chroma container
         is healthy and ready to receive requests."""
-        url = f"http://{self.get_config()['endpoint']}/api/v1/heartbeat"
+        url = f"http://{self.get_config()['endpoint']}/api/v2/heartbeat"
         response: Response = get(url)
         response.raise_for_status()
 

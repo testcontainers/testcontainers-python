@@ -1,5 +1,110 @@
 # Changelog
 
+## [4.13.3](https://github.com/testcontainers/testcontainers-python/compare/testcontainers-v4.13.2...testcontainers-v4.13.3) (2025-11-14)
+
+
+### Bug Fixes
+
+* do not require consumer of library to state nonsupport for py4 ([#912](https://github.com/testcontainers/testcontainers-python/issues/912)) ([f608df9](https://github.com/testcontainers/testcontainers-python/commit/f608df908f87674484b106831d8e8019fdc1927c))
+* **docs:** Update dependencies for docs ([#900](https://github.com/testcontainers/testcontainers-python/issues/900)) ([3f66784](https://github.com/testcontainers/testcontainers-python/commit/3f667847a0d9a893e4f15481d81d131817382d5c))
+* support python 3.14!!! - ([#917](https://github.com/testcontainers/testcontainers-python/issues/917)) ([f76e982](https://github.com/testcontainers/testcontainers-python/commit/f76e982ca6f40d185d6f430be0a62cd26afbf7e6))
+
+## [4.13.2](https://github.com/testcontainers/testcontainers-python/compare/testcontainers-v4.13.1...testcontainers-v4.13.2) (2025-10-07)
+
+
+### Bug Fixes
+
+* **core:** Fix issues with doctests ([#893](https://github.com/testcontainers/testcontainers-python/issues/893)) ([2e4d80a](https://github.com/testcontainers/testcontainers-python/commit/2e4d80ade5a2048c8bc79d7a2438004b8e0954e4))
+* **core:** waiting improvements + remove decorators in core ([#894](https://github.com/testcontainers/testcontainers-python/issues/894)) ([f93f379](https://github.com/testcontainers/testcontainers-python/commit/f93f379380a9de769fe6a1e1168622865cdf613d))
+* issue [#889](https://github.com/testcontainers/testcontainers-python/issues/889) by changing the annotated return type of `waiting_for` to `Self`. ([#890](https://github.com/testcontainers/testcontainers-python/issues/890)) ([fe941b1](https://github.com/testcontainers/testcontainers-python/commit/fe941b17bb97aad15dc4844996f166c9308f4476))
+* **mongo:** mongo start waiting forever for old mongo versions ([#783](https://github.com/testcontainers/testcontainers-python/issues/783)) ([1388612](https://github.com/testcontainers/testcontainers-python/commit/13886120e9cb72666a40ea3691ea13e584805918))
+* **redpanda:** copy the startup script to a path that can be written … ([#867](https://github.com/testcontainers/testcontainers-python/issues/867)) ([e6b976d](https://github.com/testcontainers/testcontainers-python/commit/e6b976de43fc6fe90d7131fd25983f9c6b08429b))
+* **trino:** Remove deprecated class and decorator from Trino container ([#895](https://github.com/testcontainers/testcontainers-python/issues/895)) ([bb646e9](https://github.com/testcontainers/testcontainers-python/commit/bb646e903236a1df72bc38dbb47d1dba95527198))
+
+## [4.13.1](https://github.com/testcontainers/testcontainers-python/compare/testcontainers-v4.13.0...testcontainers-v4.13.1) (2025-09-24)
+
+
+### Bug Fixes
+
+* **core:** Added 'compose' in compose_command_property ([#879](https://github.com/testcontainers/testcontainers-python/issues/879)) ([769b7b6](https://github.com/testcontainers/testcontainers-python/commit/769b7b688fe254cb8e38e05f453c4e3fe7999ad5))
+* **core:** make sure context manager exits ([#876](https://github.com/testcontainers/testcontainers-python/issues/876)) ([10089f6](https://github.com/testcontainers/testcontainers-python/commit/10089f6e2fe07e53cc47a69521e67a1bf3310065))
+
+## [4.13.0](https://github.com/testcontainers/testcontainers-python/compare/testcontainers-v4.12.0...testcontainers-v4.13.0) (2025-08-27)
+
+
+### Features
+
+* **azurite:** Enhance connection string generation for network and local access ([#859](https://github.com/testcontainers/testcontainers-python/issues/859)) ([b21e5e3](https://github.com/testcontainers/testcontainers-python/commit/b21e5e38075ddbd71fb4f97e843abc104dec6beb))
+* **core:** add enhanced wait strategies ([#855](https://github.com/testcontainers/testcontainers-python/issues/855)) ([60d21f8](https://github.com/testcontainers/testcontainers-python/commit/60d21f875f49f52e170b0714e8790080a6cb4c71))
+* **core:** DockerCompose: support list of env_files ([#847](https://github.com/testcontainers/testcontainers-python/issues/847)) ([fe206eb](https://github.com/testcontainers/testcontainers-python/commit/fe206eb48ee9e18623761926900bfc33a8a869a7))
+
+
+### Bug Fixes
+
+* assert-in-get_container_host_ip-before-start ([#862](https://github.com/testcontainers/testcontainers-python/issues/862)) ([fc4155e](https://github.com/testcontainers/testcontainers-python/commit/fc4155eb70509ba236fff771c2f8973667acb098))
+* **core:** improper reading of .testcontainers.properties ([#863](https://github.com/testcontainers/testcontainers-python/issues/863)) ([350f246](https://github.com/testcontainers/testcontainers-python/commit/350f246a3b6367d727046b8967a63d1c055cf324))
+* **core:** Make TC_POOLING_INTERVAL/sleep_time a float ([#839](https://github.com/testcontainers/testcontainers-python/issues/839)) ([a072f3f](https://github.com/testcontainers/testcontainers-python/commit/a072f3fad46b3b3e7c5bea6255f27b79826aaf5f))
+
+## [4.12.0](https://github.com/testcontainers/testcontainers-python/compare/testcontainers-v4.11.0...testcontainers-v4.12.0) (2025-07-21)
+
+
+### Features
+
+* **main:** New Testcontainers Python Docs Site ([#822](https://github.com/testcontainers/testcontainers-python/issues/822)) ([a6bdf0e](https://github.com/testcontainers/testcontainers-python/commit/a6bdf0ef84643074fbc7edf3a75936ce3f1d0880))
+* make config monkeypatchable, fix config related startup issues ([#833](https://github.com/testcontainers/testcontainers-python/issues/833)) ([ff6a32d](https://github.com/testcontainers/testcontainers-python/commit/ff6a32db803046db8d89ba5a7157bf573d9f25c2))
+* **modules:** add OpenFGA module ([#762](https://github.com/testcontainers/testcontainers-python/issues/762)) ([0b7b482](https://github.com/testcontainers/testcontainers-python/commit/0b7b482f9ec807e87fd43d1372226fa43eb4ed7c))
+* set multiple variables via keyword args ([#804](https://github.com/testcontainers/testcontainers-python/issues/804)) ([1532df5](https://github.com/testcontainers/testcontainers-python/commit/1532df5e9094d15b9f3e9233e7f5843d8bc24386))
+
+
+### Bug Fixes
+
+* **core:** mypy ([#810](https://github.com/testcontainers/testcontainers-python/issues/810)) ([b816762](https://github.com/testcontainers/testcontainers-python/commit/b816762b9a548033b065c3f46267c289a560f6ed))
+* Enable mypy in the CI ([#842](https://github.com/testcontainers/testcontainers-python/issues/842)) ([ef65bd1](https://github.com/testcontainers/testcontainers-python/commit/ef65bd113b564bce614aaf6df13bbf5339b9bc58))
+* just use the getLogger API and do not override logger settings ([#836](https://github.com/testcontainers/testcontainers-python/issues/836)) ([f467c84](https://github.com/testcontainers/testcontainers-python/commit/f467c842b851613b9a087bd5f9a08d8c39577cb8))
+
+
+### Documentation
+
+* missing compose html from old docs ([#776](https://github.com/testcontainers/testcontainers-python/issues/776)) ([d749fc6](https://github.com/testcontainers/testcontainers-python/commit/d749fc69b32715742d834c003ee6893e2077753a))
+
+## [4.11.0](https://github.com/testcontainers/testcontainers-python/compare/testcontainers-v4.10.0...testcontainers-v4.11.0) (2025-06-15)
+
+
+### Features
+
+* **core:** Protocol support for container port bind and expose ([#690](https://github.com/testcontainers/testcontainers-python/issues/690)) ([a0d4317](https://github.com/testcontainers/testcontainers-python/commit/a0d4317643005dde4f344eccbfc56c062e83bf05))
+* DockerContainer initializer to accept its private members as kwargs ([#809](https://github.com/testcontainers/testcontainers-python/issues/809)) ([e7feb53](https://github.com/testcontainers/testcontainers-python/commit/e7feb53fe532b6d32d5d0c5a5d517249f8e7de50))
+
+
+### Bug Fixes
+
+* **compose:** use provided docker command instead of default ([#785](https://github.com/testcontainers/testcontainers-python/issues/785)) ([0ae704a](https://github.com/testcontainers/testcontainers-python/commit/0ae704a24de440b715d5f3c11eaa4f18ccd437b5))
+* **core:** Add kwargs to image build ([#708](https://github.com/testcontainers/testcontainers-python/issues/708)) ([cc02f94](https://github.com/testcontainers/testcontainers-python/commit/cc02f9444b41efa62836b21210b07aee1da94d0b))
+* **core:** change with_command type to include list of strings ([#789](https://github.com/testcontainers/testcontainers-python/issues/789)) ([f7c29cb](https://github.com/testcontainers/testcontainers-python/commit/f7c29cb913e4d42d535783c3aa0f3566d4e543bf))
+* **core:** Determine docker socket for rootless docker ([#779](https://github.com/testcontainers/testcontainers-python/issues/779)) ([6817582](https://github.com/testcontainers/testcontainers-python/commit/6817582bf67ed36448b69019ab897c50ae80e7e1))
+* **core:** Typing in docker_client ([#702](https://github.com/testcontainers/testcontainers-python/issues/702)) ([e8bf224](https://github.com/testcontainers/testcontainers-python/commit/e8bf2244c7210e31b34e5fecf2602fdd1b8c0834))
+* **core:** Typing in generic + network ([#700](https://github.com/testcontainers/testcontainers-python/issues/700)) ([2061912](https://github.com/testcontainers/testcontainers-python/commit/2061912e67705be801136f349f372f542a1f262f))
+* **core:** Typing in version ([#701](https://github.com/testcontainers/testcontainers-python/issues/701)) ([9dc2a02](https://github.com/testcontainers/testcontainers-python/commit/9dc2a02ca9b9ffbaacfd7de79ec9f78175758ec0))
+* **core:** wait in test core registry ([#812](https://github.com/testcontainers/testcontainers-python/issues/812)) ([b574c0e](https://github.com/testcontainers/testcontainers-python/commit/b574c0e0a11d57c8c56aef448292f8c2fc233078))
+* **modules:** fix cosmosdb failure ([#827](https://github.com/testcontainers/testcontainers-python/issues/827)) ([dafcbed](https://github.com/testcontainers/testcontainers-python/commit/dafcbed7608e857bebcdd0b4638bec27abadc693))
+* **modules:** update chroma version ([#826](https://github.com/testcontainers/testcontainers-python/issues/826)) ([b7d41dd](https://github.com/testcontainers/testcontainers-python/commit/b7d41ddc5742dd380b6e01c712a02b044a64cbb3))
+* **rabbitmq:** correct pika pypi reference ([#817](https://github.com/testcontainers/testcontainers-python/issues/817)) ([e90d308](https://github.com/testcontainers/testcontainers-python/commit/e90d30826fb7d7cf3cc7db39a86465d448aaa6e0))
+* **registry:** module typed ([#811](https://github.com/testcontainers/testcontainers-python/issues/811)) ([6b11268](https://github.com/testcontainers/testcontainers-python/commit/6b1126884c82529a93bd55030374d322dd0870bc))
+* use connection mode override function in config ([#775](https://github.com/testcontainers/testcontainers-python/issues/775)) ([ab2a1ab](https://github.com/testcontainers/testcontainers-python/commit/ab2a1abd957ffb35719f673a7674df83287f1545)), closes [#774](https://github.com/testcontainers/testcontainers-python/issues/774)
+
+## [4.10.0](https://github.com/testcontainers/testcontainers-python/compare/testcontainers-v4.9.2...testcontainers-v4.10.0) (2025-04-02)
+
+
+### Features
+
+* Add SocatContainer ([#795](https://github.com/testcontainers/testcontainers-python/issues/795)) ([2f9139c](https://github.com/testcontainers/testcontainers-python/commit/2f9139ca3ea9fba36325373b63635a5f539a3003))
+
+
+### Bug Fixes
+
+* **ollama:** make device request a list ([#799](https://github.com/testcontainers/testcontainers-python/issues/799)) ([9497a45](https://github.com/testcontainers/testcontainers-python/commit/9497a45c39d13761aa3dd30dd5605676cbbe4b46))
+* **security:** Update track-modules job  ([#787](https://github.com/testcontainers/testcontainers-python/issues/787)) ([f979525](https://github.com/testcontainers/testcontainers-python/commit/f97952505eba089f9cbbc979f8091dafbf520669))
+
 ## [4.9.2](https://github.com/testcontainers/testcontainers-python/compare/testcontainers-v4.9.1...testcontainers-v4.9.2) (2025-02-26)
 
 

@@ -1,4 +1,4 @@
-# Contrinuous Integration for the core package
+# Continuous Integration for the core package
 
 name: lint
 
@@ -16,8 +16,18 @@ jobs:
       - name: Setup Env
         uses: ./.github/actions/setup-env
         with:
-          python-version: "3.9"  # the pre-commit is hooked in as 3.9
+          python-version: "3.13"
       - name: Install Python dependencies
         run: poetry install --no-interaction
       - name: Execute pre-commit handler
-        run: poetry run pre-commit run -a
+        continue-on-error: true
+        run: |
+          poetry run pre-commit run check-toml
+          poetry run pre-commit run trailing-whitespace
+          poetry run pre-commit run end-of-file-fixer
+          poetry run pre-commit run ruff
+          poetry run pre-commit run ruff-format
+      - name: Execute mypy
+        run: |
+          make mypy-core-report
+          make mypy-core

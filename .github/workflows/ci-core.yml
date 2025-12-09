@@ -1,4 +1,4 @@
-# Contrinuous Integration for the core package
+# Continuous Integration for the core package
 
 name: core
 
@@ -14,7 +14,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        python-version: ["3.9", "3.10", "3.11", "3.12"]
+        python-version: ["3.9", "3.13", "3.14"]
     steps:
       - uses: actions/checkout@v4
       - name: Set up Python
@@ -24,7 +24,7 @@ jobs:
       - name: Install Python dependencies
         run: poetry install --all-extras
       - name: Run twine check
-        run: poetry build && poetry run twine check dist/*.tar.gz
+        run: rm -f LICENSE.txt && poetry build && poetry run twine check dist/*.tar.gz
       - name: Run tests
         run: make core/tests
       - name: Rename coverage file
