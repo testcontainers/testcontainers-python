@@ -1272,6 +1272,7 @@ files = [
     {file = "cryptography-45.0.7-pp311-pypy311_pp73-win_amd64.whl", hash = "sha256:1f3d56f73595376f4244646dd5c5870c14c196949807be39e79e7bd9bac3da63"},
     {file = "cryptography-45.0.7.tar.gz", hash = "sha256:4b1654dfc64ea479c242508eb8c724044f1e964a47d1d1cacc5132292d851971"},
 ]
+markers = {main = "extra == \"azurite\" or extra == \"keycloak\" or extra == \"mysql\" or extra == \"oracle\" or extra == \"oracle-free\" or extra == \"weaviate\" or extra == \"mailpit\" or extra == \"sftp\""}
 
 [package.dependencies]
 cffi = {version = ">=1.14", markers = "platform_python_implementation != \"PyPy\""}
@@ -3485,6 +3486,7 @@ files = [
     {file = "numpy-2.0.2-pp39-pypy39_pp73-win_amd64.whl", hash = "sha256:a46288ec55ebbd58947d31d72be2c63cbf839f0a63b49cb755022310792a3385"},
     {file = "numpy-2.0.2.tar.gz", hash = "sha256:883c987dee1880e2a864ab0dc9892292582510604156762362d9326444636e78"},
 ]
+markers = {main = "extra == \"qdrant\" or extra == \"chroma\""}
 
 [package.source]
 type = "legacy"
@@ -4520,6 +4522,7 @@ files = [
     {file = "protobuf-6.32.0-py3-none-any.whl", hash = "sha256:ba377e5b67b908c8f3072a57b63e2c6a4cbd18aea4ed98d2584350dbf46f2783"},
     {file = "protobuf-6.32.0.tar.gz", hash = "sha256:a81439049127067fc49ec1d36e25c6ee1d1a2b7be930675f919258d03c04e7d2"},
 ]
+markers = {main = "extra == \"google\" or extra == \"chroma\" or extra == \"weaviate\" or extra == \"qdrant\""}
 
 [package.source]
 type = "legacy"
@@ -5394,6 +5397,7 @@ files = [
     {file = "python-dateutil-2.9.0.post0.tar.gz", hash = "sha256:37dd54208da7e1cd875388217d5e00ebd4179249f90fb72437e91a35459a0ad3"},
     {file = "python_dateutil-2.9.0.post0-py2.py3-none-any.whl", hash = "sha256:a8b2bc7bffae282281c8140a97d3aa9c14da0b136dfe83f850eea9a5f7470427"},
 ]
+markers = {main = "extra == \"influxdb\" or extra == \"k3s\" or extra == \"aws\" or extra == \"localstack\" or extra == \"opensearch\" or extra == \"chroma\" or extra == \"trino\""}
 
 [package.dependencies]
 six = ">=1.5"
@@ -6362,6 +6366,7 @@ files = [
     {file = "setuptools-69.1.1-py3-none-any.whl", hash = "sha256:02fa291a0471b3a18b2b2481ed902af520c69e8ae0919c13da936542754b4c56"},
     {file = "setuptools-69.1.1.tar.gz", hash = "sha256:5c0806c7d9af348e6dd3777b4f4dbb42c7ad85b190104837488eab9a7c945cf8"},
 ]
+markers = {main = "extra == \"arangodb\" or extra == \"influxdb\" or extra == \"weaviate\" or extra == \"qdrant\" or extra == \"chroma\""}
 
 [package.extras]
 docs = ["furo", "jaraco.packaging (>=9.3)", "jaraco.tidelift (>=1.4)", "pygments-github-lexers (==0.0.5)", "rst.linker (>=1.9)", "sphinx (<7.2.5)", "sphinx (>=3.5)", "sphinx-favicon", "sphinx-inline-tabs", "sphinx-lint", "sphinx-notfound-page (>=1,<2)", "sphinx-reredirects", "sphinxcontrib-towncrier"]
@@ -7469,6 +7474,7 @@ chroma = ["chromadb-client"]
 clickhouse = []
 cockroachdb = []
 cosmosdb = ["azure-cosmos"]
+couchbase = ["couchbase"]
 db2 = ["ibm_db_sa", "sqlalchemy"]
 elasticsearch = []
 generic = ["httpx", "redis"]

@@ -39,6 +39,7 @@ packages = [
     { include = "testcontainers", from = "modules/clickhouse" },
     { include = "testcontainers", from = "modules/cockroachdb" },
     { include = "testcontainers", from = "modules/cosmosdb" },
+    { include = "testcontainers", from = "modules/couchbase" },
     { include = "testcontainers", from = "modules/db2" },
     { include = "testcontainers", from = "modules/elasticsearch" },
     { include = "testcontainers", from = "modules/generic" },
@@ -153,6 +154,7 @@ cassandra = []
 clickhouse = ["clickhouse-driver"]
 cosmosdb = ["azure-cosmos"]
 cockroachdb = []
+couchbase = ['couchbase']
 db2 = ["sqlalchemy", "ibm_db_sa"]
 elasticsearch = []
 generic = [
