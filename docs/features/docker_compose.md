@@ -60,6 +60,22 @@ with DockerCompose("path/to/compose/directory") as compose:
 
     # Get container logs
     stdout, stderr = compose.get_logs("web")
+
+    # Get detailed container information
+    container = compose.get_container("web")
+    info = container.get_container_info()
+    if info:
+        print(f"Container ID: {info.Id}")
+        if info.State:
+            print(f"Status: {info.State.Status}")
+        if info.Config:
+            print(f"Image: {info.Config.Image}")
+
+        # Access network settings
+        network_settings = info.get_network_settings()
+        if network_settings and network_settings.Networks:
+            for name, network in network_settings.Networks.items():
+                print(f"Network {name}: IP {network.IPAddress}")
 ```
 
 ## Waiting for Services
@@ -104,6 +120,46 @@ def test_web_application():
         )
         assert exit_code == 0
 ```
+
+## Container Information
+
+You can get detailed information about containers using the `get_container_info()` method:
+
+```python
+with DockerCompose("path/to/compose/directory") as compose:
+    container = compose.get_container("web")
+    info = container.get_container_info()
+
+    if info:
+        # Basic container information
+        print(f"Container ID: {info.Id}")
+        print(f"Name: {info.Name}")
+        print(f"Image: {info.Image}")
+
+        # Container state
+        if info.State:
+            print(f"Status: {info.State.Status}")
+            print(f"Running: {info.State.Running}")
+            print(f"PID: {info.State.Pid}")
+            print(f"Exit Code: {info.State.ExitCode}")
+
+        # Container configuration
+        if info.Config:
+            print(f"Hostname: {info.Config.Hostname}")
+            print(f"Environment: {info.Config.Env}")
+            print(f"Command: {info.Config.Cmd}")
+
+        # Network information
+        network_settings = info.get_network_settings()
+        if network_settings and network_settings.Networks:
+            for network_name, network in network_settings.Networks.items():
+                print(f"Network: {network_name}")
+                print(f"  IP Address: {network.IPAddress}")
+                print(f"  Gateway: {network.Gateway}")
+                print(f"  MAC Address: {network.MacAddress}")
+```
+
+The container information is lazy-loaded and cached, so subsequent calls to `get_container_info()` will return the same data without making additional Docker API calls.
 
 ## Best Practices
 
