@@ -4,7 +4,7 @@ description: set up the python environment
 inputs:
   python-version:
     description: "The python version to install and use"
-    default: "3.12"  # we default to latest supported
+    default: "3.14"  # we default to latest supported
     required: false
 
 runs:

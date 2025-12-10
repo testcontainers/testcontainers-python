@@ -12,12 +12,10 @@
 #    under the License.
 import logging
 import re
-import urllib
-from urllib.error import URLError
 
 from testcontainers.core.container import DockerContainer
 from testcontainers.core.utils import raise_for_deprecated_parameter
-from testcontainers.core.waiting_utils import wait_container_is_ready
+from testcontainers.core.wait_strategies import HttpWaitStrategy
 
 _FALLBACK_VERSION = 8
 """This version is used when no version could be detected from the image name."""
@@ -69,14 +67,14 @@ class ElasticSearchContainer(DockerContainer):
             >>> from testcontainers.elasticsearch import ElasticSearchContainer
 
             >>> with ElasticSearchContainer(f'elasticsearch:8.3.3', mem_limit='3G') as es:
-            ...    resp = urllib.request.urlopen(es.get_url())
+            ...    resp = urllib.request.urlopen(f'http://{es.get_container_host_ip()}:{es.get_exposed_port(es.port)}')
             ...    json.loads(resp.read().decode())['version']['number']
             '8.3.3'
     """
 
     def __init__(self, image: str = "elasticsearch", port: int = 9200, **kwargs) -> None:
         raise_for_deprecated_parameter(kwargs, "port_to_expose", "port")
-        super().__init__(image, **kwargs)
+        super().__init__(image, _wait_strategy=HttpWaitStrategy(port), **kwargs)
         self.port = port
         self.with_exposed_ports(self.port)
         self.with_env("transport.host", "127.0.0.1")
@@ -85,19 +83,3 @@ class ElasticSearchContainer(DockerContainer):
         major_version = _major_version_from_image_name(image)
         for key, value in _environment_by_version(major_version).items():
             self.with_env(key, value)
-
-    @wait_container_is_ready(URLError)
-    def _connect(self) -> None:
-        res = urllib.request.urlopen(self.get_url())
-        if res.status != 200:
-            raise Exception()
-
-    def get_url(self) -> str:
-        host = self.get_container_host_ip()
-        port = self.get_exposed_port(self.port)
-        return f"http://{host}:{port}"
-
-    def start(self) -> "ElasticSearchContainer":
-        super().start()
-        self._connect()
-        return self

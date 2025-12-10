@@ -1,5 +1,14 @@
 # Changelog
 
+## [4.13.3](https://github.com/testcontainers/testcontainers-python/compare/testcontainers-v4.13.2...testcontainers-v4.13.3) (2025-11-14)
+
+
+### Bug Fixes
+
+* do not require consumer of library to state nonsupport for py4 ([#912](https://github.com/testcontainers/testcontainers-python/issues/912)) ([f608df9](https://github.com/testcontainers/testcontainers-python/commit/f608df908f87674484b106831d8e8019fdc1927c))
+* **docs:** Update dependencies for docs ([#900](https://github.com/testcontainers/testcontainers-python/issues/900)) ([3f66784](https://github.com/testcontainers/testcontainers-python/commit/3f667847a0d9a893e4f15481d81d131817382d5c))
+* support python 3.14!!! - ([#917](https://github.com/testcontainers/testcontainers-python/issues/917)) ([f76e982](https://github.com/testcontainers/testcontainers-python/commit/f76e982ca6f40d185d6f430be0a62cd26afbf7e6))
+
 ## [4.13.2](https://github.com/testcontainers/testcontainers-python/compare/testcontainers-v4.13.1...testcontainers-v4.13.2) (2025-10-07)
 
 

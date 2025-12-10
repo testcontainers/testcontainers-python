@@ -15,7 +15,7 @@ from typing import Optional
 
 from testcontainers.core.generic import DbContainer
 from testcontainers.core.utils import raise_for_deprecated_parameter
-from testcontainers.core.waiting_utils import wait_container_is_ready
+from testcontainers.core.wait_strategies import ExecWaitStrategy
 
 _UNSET = object()
 
@@ -87,15 +87,14 @@ class PostgresContainer(DbContainer):
             port=self.port,
         )
 
-    @wait_container_is_ready()
     def _connect(self) -> None:
+        """Wait for Postgres to be ready by executing a query via psql."""
         escaped_single_password = self.password.replace("'", "'\"'\"'")
-        result = self.exec(
+        strategy = ExecWaitStrategy(
             [
                 "sh",
                 "-c",
                 f"PGPASSWORD='{escaped_single_password}' psql --username {self.username} --dbname {self.dbname} --host 127.0.0.1 -c 'select version();'",
             ]
         )
-        if result.exit_code:
-            raise ConnectionError("pg_isready is not ready yet")
+        strategy.wait_until_ready(self)
