@@ -11,29 +11,16 @@
 #    License for the specific language governing permissions and limitations
 #    under the License.
 
-import socket
 from typing import Optional
 
 from testcontainers.core.container import DockerContainer
-from testcontainers.core.waiting_utils import wait_container_is_ready
-
-
-class ValkeyNotReady(Exception):
-    pass
+from testcontainers.core.wait_strategies import ExecWaitStrategy
 
 
 class ValkeyContainer(DockerContainer):
     """
     Valkey container.
 
-    Example:
-
-        .. doctest::
-
-            >>> from testcontainers.valkey import ValkeyContainer
-
-            >>> with ValkeyContainer() as valkey_container:
-            ...     connection_url = valkey_container.get_connection_url()
     """
 
     def __init__(self, image: str = "valkey/valkey:latest", port: int = 6379, **kwargs) -> None:
@@ -53,7 +40,7 @@ class ValkeyContainer(DockerContainer):
             self: Container instance for method chaining.
         """
         self.password = password
-        self.with_command(f"valkey-server --requirepass {password}")
+        self.with_command(["valkey-server", "--requirepass", password])
         return self
 
     def with_image_tag(self, tag: str) -> "ValkeyContainer":
@@ -111,21 +98,6 @@ class ValkeyContainer(DockerContainer):
         """
         return int(super().get_exposed_port(self.port))
 
-    @wait_container_is_ready(ValkeyNotReady)
-    def _connect(self) -> None:
-        """Wait for Valkey to be ready by sending PING command."""
-        with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as s:
-            s.connect((self.get_host(), self.get_exposed_port()))
-            if self.password:
-                s.sendall(f"*2\r\n$4\r\nAUTH\r\n${len(self.password)}\r\n{self.password}\r\n".encode())
-                auth_response = s.recv(1024)
-                if b"+OK" not in auth_response:
-                    raise ValkeyNotReady("Authentication failed")
-            s.sendall(b"*1\r\n$4\r\nPING\r\n")
-            response = s.recv(1024)
-            if b"+PONG" not in response:
-                raise ValkeyNotReady("Valkey not ready yet")
-
     def start(self) -> "ValkeyContainer":
         """
         Start the container and wait for it to be ready.
@@ -133,6 +105,10 @@ class ValkeyContainer(DockerContainer):
         Returns:
             self: Started container instance.
         """
+        if self.password:
+            self.waiting_for(ExecWaitStrategy(["valkey-cli", "-a", self.password, "ping"]))
+        else:
+            self.waiting_for(ExecWaitStrategy(["valkey-cli", "ping"]))
+
         super().start()
-        self._connect()
         return self
