@@ -1,4 +1,4 @@
-import socket
+from glide import GlideClient, NodeAddress
 
 from testcontainers.valkey import ValkeyContainer
 
@@ -13,24 +13,22 @@ def basic_example():
         print(f"Valkey connection URL: {connection_url}")
         print(f"Host: {host}, Port: {port}")
 
-        # Connect using raw socket and RESP protocol
-        with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as s:
-            s.connect((host, port))
+        # Connect using Glide client
+        client = GlideClient([NodeAddress(host, port)])
 
-            # PING command
-            s.sendall(b"*1\r\n$4\r\nPING\r\n")
-            response = s.recv(1024)
-            print(f"PING response: {response.decode()}")
+        # PING command
+        pong = client.ping()
+        print(f"PING response: {pong}")
 
-            # SET command
-            s.sendall(b"*3\r\n$3\r\nSET\r\n$3\r\nkey\r\n$5\r\nvalue\r\n")
-            response = s.recv(1024)
-            print(f"SET response: {response.decode()}")
+        # SET command
+        client.set("key", "value")
+        print("SET response: OK")
 
-            # GET command
-            s.sendall(b"*2\r\n$3\r\nGET\r\n$3\r\nkey\r\n")
-            response = s.recv(1024)
-            print(f"GET response: {response.decode()}")
+        # GET command
+        value = client.get("key")
+        print(f"GET response: {value}")
+
+        client.close()
 
 
 def password_example():
@@ -41,18 +39,14 @@ def password_example():
 
         print(f"\nValkey with password connection URL: {connection_url}")
 
-        with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as s:
-            s.connect((host, port))
+        # Connect using Glide client with password
+        client = GlideClient([NodeAddress(host, port)], password="mypassword")
 
-            # AUTH command
-            s.sendall(b"*2\r\n$4\r\nAUTH\r\n$10\r\nmypassword\r\n")
-            response = s.recv(1024)
-            print(f"AUTH response: {response.decode()}")
+        # PING after auth
+        pong = client.ping()
+        print(f"PING response: {pong}")
 
-            # PING after auth
-            s.sendall(b"*1\r\n$4\r\nPING\r\n")
-            response = s.recv(1024)
-            print(f"PING response: {response.decode()}")
+        client.close()
 
 
 def version_example():
@@ -70,11 +64,11 @@ def bundle_example():
         host = valkey_container.get_host()
         port = valkey_container.get_exposed_port()
 
-        with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as s:
-            s.connect((host, port))
-            s.sendall(b"*1\r\n$4\r\nPING\r\n")
-            response = s.recv(1024)
-            print(f"PING response: {response.decode()}")
+        # Connect using Glide client
+        client = GlideClient([NodeAddress(host, port)])
+        pong = client.ping()
+        print(f"PING response: {pong}")
+        client.close()
 
 
 if __name__ == "__main__":
