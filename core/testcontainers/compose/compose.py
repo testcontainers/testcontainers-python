@@ -484,7 +484,7 @@ class DockerCompose:
 
         Returns
         -------
-        str:
+        int:
             The mapped port on the host
         """
         normalize: PublishedPortModel = self.get_container(service_name).get_publisher(by_port=port).normalize()
