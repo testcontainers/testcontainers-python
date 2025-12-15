@@ -123,13 +123,13 @@ Reusable Containers (Experimental)
 
 .. warning::
     Reusable Containers is still an experimental feature and the behavior can change.
-    Those containers won't stop after all tests are finished.
+    Those containers won't stop after the Python process finished.
 
-Containers can be reused across consecutive test runs. To reuse a container, the container has to be started manually by calling the `start()` method. Do not call the `stop()` method directly or indirectly via a `with` statement (context manager). To reuse a container, the container configuration must be the same.
+The Reusable feature keeps the containers running and next executions with the same container configuration will reuse it. To use it, start the container manually by calling `start()` method, do not call `stop()` method directly or indirectly via a `with` statement (context manager), and enable it manually through an opt-in mechanism per environment. To reuse a container, the container configuration must be the same.
 
 Containers that are set up for reuse will not be automatically removed. Thus, if they are not needed anymore, those containers must be removed manually.
 
-Containers should not be reused in a CI environment.
+Please note, that containers should not be reused in a CI environment.
 
 How to use?
 ^^^^^^^^^^^
