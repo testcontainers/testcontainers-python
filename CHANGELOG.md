@@ -1,5 +1,34 @@
 # Changelog
 
+## [4.13.3](https://github.com/testcontainers/testcontainers-python/compare/testcontainers-v4.13.2...testcontainers-v4.13.3) (2025-11-14)
+
+
+### Bug Fixes
+
+* do not require consumer of library to state nonsupport for py4 ([#912](https://github.com/testcontainers/testcontainers-python/issues/912)) ([f608df9](https://github.com/testcontainers/testcontainers-python/commit/f608df908f87674484b106831d8e8019fdc1927c))
+* **docs:** Update dependencies for docs ([#900](https://github.com/testcontainers/testcontainers-python/issues/900)) ([3f66784](https://github.com/testcontainers/testcontainers-python/commit/3f667847a0d9a893e4f15481d81d131817382d5c))
+* support python 3.14!!! - ([#917](https://github.com/testcontainers/testcontainers-python/issues/917)) ([f76e982](https://github.com/testcontainers/testcontainers-python/commit/f76e982ca6f40d185d6f430be0a62cd26afbf7e6))
+
+## [4.13.2](https://github.com/testcontainers/testcontainers-python/compare/testcontainers-v4.13.1...testcontainers-v4.13.2) (2025-10-07)
+
+
+### Bug Fixes
+
+* **core:** Fix issues with doctests ([#893](https://github.com/testcontainers/testcontainers-python/issues/893)) ([2e4d80a](https://github.com/testcontainers/testcontainers-python/commit/2e4d80ade5a2048c8bc79d7a2438004b8e0954e4))
+* **core:** waiting improvements + remove decorators in core ([#894](https://github.com/testcontainers/testcontainers-python/issues/894)) ([f93f379](https://github.com/testcontainers/testcontainers-python/commit/f93f379380a9de769fe6a1e1168622865cdf613d))
+* issue [#889](https://github.com/testcontainers/testcontainers-python/issues/889) by changing the annotated return type of `waiting_for` to `Self`. ([#890](https://github.com/testcontainers/testcontainers-python/issues/890)) ([fe941b1](https://github.com/testcontainers/testcontainers-python/commit/fe941b17bb97aad15dc4844996f166c9308f4476))
+* **mongo:** mongo start waiting forever for old mongo versions ([#783](https://github.com/testcontainers/testcontainers-python/issues/783)) ([1388612](https://github.com/testcontainers/testcontainers-python/commit/13886120e9cb72666a40ea3691ea13e584805918))
+* **redpanda:** copy the startup script to a path that can be written … ([#867](https://github.com/testcontainers/testcontainers-python/issues/867)) ([e6b976d](https://github.com/testcontainers/testcontainers-python/commit/e6b976de43fc6fe90d7131fd25983f9c6b08429b))
+* **trino:** Remove deprecated class and decorator from Trino container ([#895](https://github.com/testcontainers/testcontainers-python/issues/895)) ([bb646e9](https://github.com/testcontainers/testcontainers-python/commit/bb646e903236a1df72bc38dbb47d1dba95527198))
+
+## [4.13.1](https://github.com/testcontainers/testcontainers-python/compare/testcontainers-v4.13.0...testcontainers-v4.13.1) (2025-09-24)
+
+
+### Bug Fixes
+
+* **core:** Added 'compose' in compose_command_property ([#879](https://github.com/testcontainers/testcontainers-python/issues/879)) ([769b7b6](https://github.com/testcontainers/testcontainers-python/commit/769b7b688fe254cb8e38e05f453c4e3fe7999ad5))
+* **core:** make sure context manager exits ([#876](https://github.com/testcontainers/testcontainers-python/issues/876)) ([10089f6](https://github.com/testcontainers/testcontainers-python/commit/10089f6e2fe07e53cc47a69521e67a1bf3310065))
+
 ## [4.13.0](https://github.com/testcontainers/testcontainers-python/compare/testcontainers-v4.12.0...testcontainers-v4.13.0) (2025-08-27)
 
 

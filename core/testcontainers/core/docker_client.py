@@ -174,7 +174,7 @@ class DockerClient:
         """
         Get the container with a given identifier.
         """
-        containers = self.client.api.containers(filters={"id": container_id})
+        containers = self.client.api.containers(all=True, filters={"id": container_id})
         if not containers:
             raise RuntimeError(f"Could not get container with id {container_id}")
         return cast("dict[str, Any]", containers[0])
@@ -272,7 +272,7 @@ class DockerClient:
 
 
 def get_docker_host() -> Optional[str]:
-    return c.tc_properties_tc_host or os.getenv("DOCKER_HOST")
+    return c.tc_properties_get_tc_host() or os.getenv("DOCKER_HOST")
 
 
 def get_docker_auth_config() -> Optional[str]:

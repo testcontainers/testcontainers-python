@@ -1,6 +1,6 @@
 [tool.poetry]
 name = "testcontainers"
-version = "4.13.0"  # auto-incremented by release-please
+version = "4.13.3"  # auto-incremented by release-please
 description = "Python library for throwaway instances of anything that can run in a Docker container"
 authors = ["Sergey Pirogov <automationremarks@gmail.com>"]
 maintainers = [
@@ -10,6 +10,7 @@ maintainers = [
 ]
 readme = "README.md"
 keywords = ["testing", "logging", "docker", "test automation"]
+license = "Apache-2.0"
 classifiers = [
     "License :: OSI Approved :: Apache Software License",
     "Intended Audience :: Information Technology",
@@ -19,6 +20,8 @@ classifiers = [
     "Programming Language :: Python :: 3.10",
     "Programming Language :: Python :: 3.11",
     "Programming Language :: Python :: 3.12",
+    "Programming Language :: Python :: 3.13",
+    "Programming Language :: Python :: 3.14",
     "Topic :: Software Development :: Libraries :: Python Modules",
     "Operating System :: Microsoft :: Windows",
     "Operating System :: POSIX",
@@ -79,7 +82,7 @@ packages = [
 "Issue Tracker" = "https://github.com/testcontainers/testcontainers-python/issues"
 
 [tool.poetry.dependencies]
-python = ">=3.9.2,<4.0"
+python = ">=3.9.2"
 docker = "*"            # ">=4.0"
 urllib3 = "*"           # "<2.0"
 wrapt = "*"             # "^1.16.0"
@@ -90,25 +93,25 @@ python-dotenv = "*"
 python-arango = { version = "^7.8", optional = true }
 azure-storage-blob = { version = "^12.19", optional = true }
 cassandra-driver = { version = "3.29.1", optional = true }
-clickhouse-driver = { version = "*", optional = true }
+#clickhouse-driver = { version = "*", optional = true }
 google-cloud-pubsub = { version = ">=2", optional = true }
 google-cloud-datastore = { version = ">=2", optional = true }
 influxdb = { version = "*", optional = true }
 influxdb-client = { version = "*", optional = true }
 kubernetes = { version = "*", optional = true }
-pyyaml = { version = "*", optional = true }
+pyyaml = { version = ">=6.0.3", optional = true }
 python-keycloak = { version = "*", optional = true }
 boto3 = { version = "*", optional = true }
 minio = { version = "*", optional = true }
 nats-py = { version = "*", optional = true }
 pymongo = { version = "*", optional = true }
 sqlalchemy = { version = "*", optional = true }
-pymssql = { version = "*", optional = true, markers = "platform_machine != 'arm64' or python_version >= '3.10'" }
+pymssql = { version = ">=2.3.9", optional = true, markers = "platform_machine != 'arm64' or python_version >= '3.10'" }
 pymysql = { version = "*", extras = ["rsa"], optional = true }
 neo4j = { version = "*", optional = true }
 openfga-sdk = { version = "*", optional = true, markers = "python_version >= '3.10'" }
-opensearch-py = { version = "*", optional = true }
-oracledb = { version = "*", optional = true }
+opensearch-py = { version = "*", optional = true, markers = "python_version < '4.0'" }
+oracledb = { version = ">=3.4.1", optional = true }
 pika = { version = "*", optional = true }
 redis = { version = "*", optional = true }
 selenium = { version = "*", optional = true }
@@ -121,6 +124,26 @@ azure-cosmos = { version = "*", optional = true }
 cryptography = { version = "*", optional = true }
 trino = { version = "*", optional = true }
 ibm_db_sa = { version = "*", optional = true, markers = "platform_machine != 'aarch64' and platform_machine != 'arm64'" }
+pydantic = { version = ">=2.12.4", optional = true } # upgrade for 3.14 compat (uses pyo3)
+rpds-py = { version = ">=0.28.0", optional = true, markers = "python_version >= '3.10'" }
+grpcio = { version = ">=1.75.1", optional = true }
+markupsafe = { version = ">=3.0.3", optional = true }
+ujson = { version = ">=5.11.0", optional = true }
+aiohttp = { version = ">=3.13.2", optional = true }
+grpcio-tools = { version = ">=1.76.0", optional = true }
+msgpack = { version = ">=1.1.2", optional = true }
+pandas = { version = ">=2.3.3", optional = true }
+httpcore = { version = ">=1.0.8", optional = true } # we could fix this for everyone but this is httpx's responsibility
+
+[tool.poetry.group.numpy_old.dependencies]
+numpy = { version = ">=2.0", optional = true, markers = "python_version < '3.11'" }
+[tool.poetry.group.numpy_new.dependencies]
+numpy = { version = ">=2.3.4", optional = true, markers = "python_version >= '3.11'" }
+
+[tool.poetry.group.clickhouse-driver_old.dependencies]
+clickhouse-driver = { version = ">=0.1.5", optional = true, markers = "python_version < '3.11'" }
+[tool.poetry.group.clickhouse-driver_new.dependencies]
+clickhouse-driver = { version = ">=0.2.10", optional = true, markers = "python_version >= '3.11' and python_version < '4'"  }
 
 [tool.poetry.extras]
 arangodb = ["python-arango"]
@@ -181,14 +204,14 @@ sphinx = "7.2.6"
 twine = "6.2.0"
 anyio = "4.3.0"
 # for tests only
-psycopg2-binary = "2.9.10"
+psycopg2-binary = "2.9.11"
 pg8000 = "1.30.5"
 sqlalchemy = "2.0.28"
 psycopg = "3.1.18"
 cassandra-driver = "3.29.1"
 pytest-asyncio = "0.23.5"
 kafka-python-ng = "^2.2.0"
-hvac = "2.1.0"
+hvac = { version = "2.1.0", markers = "python_version < '4.0'" }
 pymilvus = "2.6.1"
 httpx = "0.28.1"
 cryptography = "45.0.7"
@@ -197,6 +220,7 @@ sqlalchemy-cockroachdb = "2.0.2"
 paramiko = "^3.4.0"
 types-paramiko = "^3.4.0.20240423"
 pytest-mock = "^3.14.0"
+ruff = "0.11.5"
 
 [[tool.poetry.source]]
 name = "PyPI-public"

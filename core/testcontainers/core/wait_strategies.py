@@ -6,6 +6,7 @@ Structured wait strategies for containers.
 - HealthcheckWaitStrategy: Wait for Docker health checks to pass
 - PortWaitStrategy: Wait for TCP ports to be available
 - FileExistsWaitStrategy: Wait for files to exist on the filesystem
+- ExecWaitStrategy: Wait for command execution inside container to succeed
 - CompositeWaitStrategy: Combine multiple wait strategies
 
 Example:
@@ -19,6 +20,9 @@ Example:
     # Wait for log message
     container.waiting_for(LogMessageWaitStrategy("Server started"))
 
+    # Wait for command execution
+    container.waiting_for(ExecWaitStrategy(["pg_isready", "-U", "postgres"]))
+
     # Combine multiple strategies
     container.waiting_for(CompositeWaitStrategy(
         LogMessageWaitStrategy("Database ready"),
@@ -31,14 +35,20 @@ import socket
 import time
 from datetime import timedelta
 from pathlib import Path
-from typing import Any, Callable, Optional, Union
+from typing import TYPE_CHECKING, Any, Callable, Optional, Union, cast
 from urllib.error import HTTPError, URLError
 from urllib.request import Request, urlopen
 
+from typing_extensions import Self
+
+from testcontainers.compose import DockerCompose
 from testcontainers.core.utils import setup_logger
 
 # Import base classes from waiting_utils to make them available for tests
-from .waiting_utils import WaitStrategy, WaitStrategyTarget
+from testcontainers.core.waiting_utils import WaitStrategy, WaitStrategyTarget
+
+if TYPE_CHECKING:
+    from testcontainers.core.container import DockerContainer
 
 logger = setup_logger(__name__)
 
@@ -76,22 +86,6 @@ class LogMessageWaitStrategy(WaitStrategy):
         self._message = message if isinstance(message, re.Pattern) else re.compile(message, re.MULTILINE)
         self._times = times
         self._predicate_streams_and = predicate_streams_and
-
-    def with_startup_timeout(self, timeout: Union[int, timedelta]) -> "LogMessageWaitStrategy":
-        """Set the maximum time to wait for the container to be ready."""
-        if isinstance(timeout, timedelta):
-            self._startup_timeout = int(timeout.total_seconds())
-        else:
-            self._startup_timeout = timeout
-        return self
-
-    def with_poll_interval(self, interval: Union[float, timedelta]) -> "LogMessageWaitStrategy":
-        """Set how frequently to check if the container is ready."""
-        if isinstance(interval, timedelta):
-            self._poll_interval = interval.total_seconds()
-        else:
-            self._poll_interval = interval
-        return self
 
     def wait_until_ready(self, container: "WaitStrategyTarget") -> None:
         """
@@ -197,22 +191,6 @@ class HttpWaitStrategy(WaitStrategy):
         self._method = "GET"
         self._body: Optional[str] = None
         self._insecure_tls = False
-
-    def with_startup_timeout(self, timeout: Union[int, timedelta]) -> "HttpWaitStrategy":
-        """Set the maximum time to wait for the container to be ready."""
-        if isinstance(timeout, timedelta):
-            self._startup_timeout = int(timeout.total_seconds())
-        else:
-            self._startup_timeout = timeout
-        return self
-
-    def with_poll_interval(self, interval: Union[float, timedelta]) -> "HttpWaitStrategy":
-        """Set how frequently to check if the container is ready."""
-        if isinstance(interval, timedelta):
-            self._poll_interval = interval.total_seconds()
-        else:
-            self._poll_interval = interval
-        return self
 
     @classmethod
     def from_url(cls, url: str) -> "HttpWaitStrategy":
@@ -483,22 +461,6 @@ class HealthcheckWaitStrategy(WaitStrategy):
     def __init__(self) -> None:
         super().__init__()
 
-    def with_startup_timeout(self, timeout: Union[int, timedelta]) -> "HealthcheckWaitStrategy":
-        """Set the maximum time to wait for the container to be ready."""
-        if isinstance(timeout, timedelta):
-            self._startup_timeout = int(timeout.total_seconds())
-        else:
-            self._startup_timeout = timeout
-        return self
-
-    def with_poll_interval(self, interval: Union[float, timedelta]) -> "HealthcheckWaitStrategy":
-        """Set how frequently to check if the container is ready."""
-        if isinstance(interval, timedelta):
-            self._poll_interval = interval.total_seconds()
-        else:
-            self._poll_interval = interval
-        return self
-
     def wait_until_ready(self, container: WaitStrategyTarget) -> None:
         """
         Wait until the container's health check reports as healthy.
@@ -581,22 +543,6 @@ class PortWaitStrategy(WaitStrategy):
         super().__init__()
         self._port = port
 
-    def with_startup_timeout(self, timeout: Union[int, timedelta]) -> "PortWaitStrategy":
-        """Set the maximum time to wait for the container to be ready."""
-        if isinstance(timeout, timedelta):
-            self._startup_timeout = int(timeout.total_seconds())
-        else:
-            self._startup_timeout = timeout
-        return self
-
-    def with_poll_interval(self, interval: Union[float, timedelta]) -> "PortWaitStrategy":
-        """Set how frequently to check if the container is ready."""
-        if isinstance(interval, timedelta):
-            self._poll_interval = interval.total_seconds()
-        else:
-            self._poll_interval = interval
-        return self
-
     def wait_until_ready(self, container: WaitStrategyTarget) -> None:
         """
         Wait until the specified port is available for connection.
@@ -654,22 +600,6 @@ class FileExistsWaitStrategy(WaitStrategy):
         super().__init__()
         self._file_path = Path(file_path)
 
-    def with_startup_timeout(self, timeout: Union[int, timedelta]) -> "FileExistsWaitStrategy":
-        """Set the maximum time to wait for the container to be ready."""
-        if isinstance(timeout, timedelta):
-            self._startup_timeout = int(timeout.total_seconds())
-        else:
-            self._startup_timeout = timeout
-        return self
-
-    def with_poll_interval(self, interval: Union[float, timedelta]) -> "FileExistsWaitStrategy":
-        """Set how frequently to check if the container is ready."""
-        if isinstance(interval, timedelta):
-            self._poll_interval = interval.total_seconds()
-        else:
-            self._poll_interval = interval
-        return self
-
     def wait_until_ready(self, container: WaitStrategyTarget) -> None:
         """
         Wait until the specified file exists on the host filesystem.
@@ -718,6 +648,65 @@ class FileExistsWaitStrategy(WaitStrategy):
             time.sleep(self._poll_interval)
 
 
+class ContainerStatusWaitStrategy(WaitStrategy):
+    """
+    The possible values for the container status are:
+        created
+        running
+        paused
+        restarting
+        exited
+        removing
+        dead
+    https://docs.docker.com/reference/cli/docker/container/ls/#status
+    """
+
+    CONTINUE_STATUSES = frozenset(("created", "restarting"))
+
+    def __init__(self) -> None:
+        super().__init__()
+
+    def wait_until_ready(self, container: WaitStrategyTarget) -> None:
+        result = self._poll(lambda: self.running(self.get_status(container)))
+        if not result:
+            raise TimeoutError("container did not become running")
+
+    @staticmethod
+    def running(status: str) -> bool:
+        if status == "running":
+            logger.debug("status is now running")
+            return True
+        if status in ContainerStatusWaitStrategy.CONTINUE_STATUSES:
+            logger.debug(
+                "status is %s, which is valid for continuing (%s)",
+                status,
+                ContainerStatusWaitStrategy.CONTINUE_STATUSES,
+            )
+            return False
+        raise StopIteration(f"container status not valid for continuing: {status}")
+
+    def get_status(self, container: Any) -> str:
+        from testcontainers.core.container import DockerContainer
+
+        if isinstance(container, DockerContainer):
+            return self._get_status_tc_container(container)
+        if isinstance(container, DockerCompose):
+            return self._get_status_compose_container(container)
+        raise TypeError(f"not supported operation: 'get_status' for type: {type(container)}")
+
+    @staticmethod
+    def _get_status_tc_container(container: "DockerContainer") -> str:
+        logger.debug("fetching status of container %s", container)
+        wrapped = container.get_wrapped_container()
+        wrapped.reload()
+        return cast("str", wrapped.status)
+
+    @staticmethod
+    def _get_status_compose_container(container: DockerCompose) -> str:
+        logger.debug("fetching status of compose container %s", container)
+        raise NotImplementedError
+
+
 class CompositeWaitStrategy(WaitStrategy):
     """
     Wait for multiple conditions to be satisfied in sequence.
@@ -748,42 +737,22 @@ class CompositeWaitStrategy(WaitStrategy):
         super().__init__()
         self._strategies = list(strategies)
 
-    def with_startup_timeout(self, timeout: Union[int, timedelta]) -> "CompositeWaitStrategy":
-        """
-        Set the startup timeout for all contained strategies.
-
-        Args:
-            timeout: Maximum time to wait in seconds
-
-        Returns:
-            self for method chaining
-        """
-        if isinstance(timeout, timedelta):
-            self._startup_timeout = int(timeout.total_seconds())
-        else:
-            self._startup_timeout = timeout
-
-        for strategy in self._strategies:
-            strategy.with_startup_timeout(timeout)
+    def with_poll_interval(self, interval: Union[float, timedelta]) -> Self:
+        super().with_poll_interval(interval)
+        for _strategy in self._strategies:
+            _strategy.with_poll_interval(interval)
         return self
 
-    def with_poll_interval(self, interval: Union[float, timedelta]) -> "CompositeWaitStrategy":
-        """
-        Set the poll interval for all contained strategies.
+    def with_startup_timeout(self, timeout: Union[int, timedelta]) -> Self:
+        super().with_startup_timeout(timeout)
+        for _strategy in self._strategies:
+            _strategy.with_startup_timeout(timeout)
+        return self
 
-        Args:
-            interval: How frequently to check in seconds
-
-        Returns:
-            self for method chaining
-        """
-        if isinstance(interval, timedelta):
-            self._poll_interval = interval.total_seconds()
-        else:
-            self._poll_interval = interval
-
-        for strategy in self._strategies:
-            strategy.with_poll_interval(interval)
+    def with_transient_exceptions(self, *transient_exceptions: type[Exception]) -> Self:
+        super().with_transient_exceptions(*transient_exceptions)
+        for _strategy in self._strategies:
+            _strategy.with_transient_exceptions(*transient_exceptions)
         return self
 
     def wait_until_ready(self, container: WaitStrategyTarget) -> None:
@@ -814,8 +783,103 @@ class CompositeWaitStrategy(WaitStrategy):
         logger.debug("CompositeWaitStrategy: All strategies completed successfully")
 
 
+class ExecWaitStrategy(WaitStrategy):
+    """
+    Wait for a command execution inside the container to succeed.
+
+    This strategy executes a command inside the container and waits for it to
+    return a successful exit code. It's useful for databases and services
+    that provide CLI tools to check readiness.
+
+    Args:
+        command: Command to execute (list of strings or single string)
+        expected_exit_code: Expected exit code for success (default: 0)
+
+    Example:
+        # Wait for Postgres readiness
+        strategy = ExecWaitStrategy(
+            ["sh", "-c",
+             "PGPASSWORD='password' psql -U user -d db -h 127.0.0.1 -c 'select 1;'"]
+        )
+
+        # Wait for Redis readiness
+        strategy = ExecWaitStrategy(["redis-cli", "ping"])
+
+        # Check for specific exit code
+        strategy = ExecWaitStrategy(["custom-healthcheck.sh"], expected_exit_code=0)
+    """
+
+    def __init__(
+        self,
+        command: Union[str, list[str]],
+        expected_exit_code: int = 0,
+    ) -> None:
+        super().__init__()
+        self._command = command if isinstance(command, list) else [command]
+        self._expected_exit_code = expected_exit_code
+
+    def wait_until_ready(self, container: WaitStrategyTarget) -> None:
+        """
+        Wait until command execution succeeds with the expected exit code.
+
+        Args:
+            container: The container to execute commands in
+
+        Raises:
+            TimeoutError: If the command doesn't succeed within the timeout period
+            RuntimeError: If the container doesn't support exec
+        """
+        # Check if container supports exec (DockerContainer does, ComposeContainer doesn't)
+        if not hasattr(container, "exec"):
+            raise RuntimeError(
+                f"ExecWaitStrategy requires a container with exec support. "
+                f"Container type {type(container).__name__} does not support exec."
+            )
+
+        start_time = time.time()
+        last_exit_code = None
+        last_output = None
+
+        while True:
+            duration = time.time() - start_time
+            if duration > self._startup_timeout:
+                command_str = " ".join(self._command)
+                raise TimeoutError(
+                    f"Command execution did not succeed within {self._startup_timeout:.3f} seconds. "
+                    f"Command: {command_str}. "
+                    f"Expected exit code: {self._expected_exit_code}, "
+                    f"last exit code: {last_exit_code}. "
+                    f"Last output: {last_output}. "
+                    f"Hint: Check if the service is starting correctly, the command is valid, "
+                    f"and all required environment variables or credentials are properly configured."
+                )
+
+            try:
+                result = container.exec(self._command)
+                last_exit_code = result.exit_code
+                last_output = result.output.decode() if hasattr(result.output, "decode") else str(result.output)
+
+                if result.exit_code == self._expected_exit_code:
+                    logger.debug(
+                        f"ExecWaitStrategy: Command succeeded with exit code {result.exit_code} after {duration:.2f}s"
+                    )
+                    return
+
+                logger.debug(
+                    f"ExecWaitStrategy: Command failed with exit code {result.exit_code}, "
+                    f"expected {self._expected_exit_code}. Retrying..."
+                )
+            except Exception as e:
+                logger.debug(f"ExecWaitStrategy: Command execution failed with exception: {e}. Retrying...")
+                last_output = str(e)
+
+            time.sleep(self._poll_interval)
+
+
 __all__ = [
     "CompositeWaitStrategy",
+    "ContainerStatusWaitStrategy",
+    "ExecWaitStrategy",
     "FileExistsWaitStrategy",
     "HealthcheckWaitStrategy",
     "HttpWaitStrategy",
