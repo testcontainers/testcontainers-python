@@ -83,10 +83,7 @@ def read_tc_properties() -> dict[str, str]:
     return settings
 
 
-_WARNINGS = {
-    "DOCKER_AUTH_CONFIG": "DOCKER_AUTH_CONFIG is experimental, see testcontainers/testcontainers-python#566",
-    "tc_properties_get_tc_host": "this method has moved to property 'tc_properties_tc_host'",
-}
+_WARNINGS = {"DOCKER_AUTH_CONFIG": "DOCKER_AUTH_CONFIG is experimental, see testcontainers/testcontainers-python#566"}
 
 
 @dataclass
@@ -131,8 +128,6 @@ class TestcontainersConfiguration:
         self._docker_auth_config = value
 
     def tc_properties_get_tc_host(self) -> Union[str, None]:
-        if "tc_properties_get_tc_host" in _WARNINGS:
-            warning(_WARNINGS.pop("tc_properties_get_tc_host"))
         return self.tc_properties.get("tc.host")
 
     def tc_properties_testcontainers_reuse_enable(self) -> bool:
