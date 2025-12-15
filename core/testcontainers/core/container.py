@@ -1,7 +1,8 @@
 import contextlib
-import hashlib
 import logging
+import pickle
 import sys
+import zlib
 from os import PathLike
 from socket import socket
 from types import TracebackType
@@ -217,7 +218,7 @@ class DockerContainer:
                 self.volumes,
                 str(tuple(sorted(self._kwargs.values()))),
             ]
-            hash_ = hashlib.sha256(bytes(str(args), encoding="utf-8")).hexdigest()
+            hash_ = str(zlib.crc32(pickle.dumps(args)))
             docker_client = self.get_docker_client()
             container = docker_client.find_container_by_hash(hash_)
             if container is not None:
