@@ -114,7 +114,7 @@ def test_docker_container_labels_hash_default():
 def test_docker_container_labels_hash(monkeypatch):
     tc_properties_mock = testcontainers_config.tc_properties | {"testcontainers.reuse.enable": "true"}
     monkeypatch.setattr(testcontainers_config, "tc_properties", tc_properties_mock)
-    expected_hash = "1296172062"
+    expected_hash = "380705419"
     with DockerContainer("hello-world").with_reuse() as container:
         assert container._container is not None
         assert container._container.labels["hash"] == expected_hash

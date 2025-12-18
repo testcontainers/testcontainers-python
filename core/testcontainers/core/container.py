@@ -216,7 +216,7 @@ class DockerContainer:
                 self.ports,
                 self._name,
                 self.volumes,
-                str(tuple(sorted(self._kwargs.values()))),
+                str(tuple(sorted(self._kwargs.values()))) if self._kwargs else None,
             ]
             hash_ = str(zlib.crc32(pickle.dumps(args)))
             docker_client = self.get_docker_client()
