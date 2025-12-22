@@ -61,6 +61,7 @@ class RedisContainer(DockerContainer):
             **kwargs,
         )
 
+
 class AsyncRedisContainer(RedisContainer):
     """
     Redis container.
