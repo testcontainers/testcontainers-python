@@ -216,7 +216,6 @@ def wait_container_is_ready(*transient_exceptions: type[Exception]) -> Callable[
     return cast("Callable[[F], F]", wrapper)
 
 
-@wait_container_is_ready()
 def wait_for(condition: Callable[..., bool]) -> bool:
     warnings.warn(
         "The wait_for function is deprecated and will be removed in a future version. "
@@ -226,7 +225,15 @@ def wait_for(condition: Callable[..., bool]) -> bool:
         DeprecationWarning,
         stacklevel=2,
     )
-    return condition()
+
+    class CallableWaitStrategy(WaitStrategy):
+        def wait_until_ready(self, container: WaitStrategyTarget) -> None:
+            pass  # Required by ABC, but unused
+
+    strategy = CallableWaitStrategy()
+    if not strategy._poll(condition):
+        raise TimeoutError(f"Condition not satisfied within {strategy._startup_timeout}s")
+    return True
 
 
 _NOT_EXITED_STATUSES = {"running", "created"}
