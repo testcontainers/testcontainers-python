@@ -20,7 +20,8 @@ class CassandraContainer(DockerContainer):
 
     Example:
 
-        .. doctest::
+        .. doctest:: cassandra_container
+            :skipif: SKIP_CASSANDRA_EXAMPLE
 
             >>> from testcontainers.cassandra import CassandraContainer
             >>> from cassandra.cluster import Cluster, DCAwareRoundRobinPolicy
