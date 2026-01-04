@@ -11,7 +11,7 @@
 #    License for the specific language governing permissions and limitations
 #    under the License.
 from testcontainers.core.container import DockerContainer
-from testcontainers.core.waiting_utils import wait_for_logs
+from testcontainers.core.wait_strategies import LogMessageWaitStrategy
 
 
 class CassandraContainer(DockerContainer):
@@ -46,14 +46,7 @@ class CassandraContainer(DockerContainer):
         self.with_env("MAX_HEAP_SIZE", "1024M")
         self.with_env("CASSANDRA_ENDPOINT_SNITCH", "GossipingPropertyFileSnitch")
         self.with_env("CASSANDRA_DC", self.DEFAULT_LOCAL_DATACENTER)
-
-    def _connect(self):
-        wait_for_logs(self, "Startup complete")
-
-    def start(self) -> "CassandraContainer":
-        super().start()
-        self._connect()
-        return self
+        self.waiting_for(LogMessageWaitStrategy("Startup complete"))
 
     def get_contact_points(self) -> list[tuple[str, int]]:
         return [(self.get_container_host_ip(), int(self.get_exposed_port(self.CQL_PORT)))]
