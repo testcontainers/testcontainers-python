@@ -136,7 +136,7 @@ class WaitStrategy(ABC):
 
 
 # Keep existing wait_container_is_ready but make it use the new system internally
-def wait_container_is_ready(*transient_exceptions: type[Exception]) -> Callable[[F], F]:
+def wait_container_is_ready(*transient_exceptions: type[Exception]) -> Callable[[F], F]:  # noqa: C901
     """
     Legacy wait decorator that uses the new wait strategy system internally.
     Maintains backwards compatibility with existing code.
