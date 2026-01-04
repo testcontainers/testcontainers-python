@@ -30,7 +30,7 @@ def _ignore_properties(cls: type[_IPT], dict_: Any) -> _IPT:
         raise TypeError(f"Expected a dataclass type, got {cls}")
     class_fields = {f.name for f in fields(cls)}
     filtered = {k: v for k, v in dict_.items() if k in class_fields}
-    return cast("_IPT", cls(**filtered))
+    return cls(**filtered)
 
 
 @dataclass

@@ -18,7 +18,7 @@ jobs:
         with:
           python-version: "3.13"
       - name: Install Python dependencies
-        run: poetry install --no-interaction
+        run: poetry install --with dev --no-interaction
       - name: Execute pre-commit handler
         continue-on-error: true
         run: |

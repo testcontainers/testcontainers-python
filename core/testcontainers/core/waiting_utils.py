@@ -161,7 +161,7 @@ def wait_container_is_ready(*transient_exceptions: type[Exception]) -> Callable[
     )
 
     class LegacyWaitStrategy(WaitStrategy):
-        def __init__(self, func: Callable[..., Any], instance: Any, args: list[Any], kwargs: dict[str, Any]):
+        def __init__(self, func: Callable[..., Any], instance: Any, args: tuple[Any], kwargs: dict[str, Any]):
             super().__init__()
             self.func = func
             self.instance = instance
@@ -197,12 +197,16 @@ def wait_container_is_ready(*transient_exceptions: type[Exception]) -> Callable[
                     logger.debug(f"Connection attempt failed: {e!s}")
                     time.sleep(self._poll_interval)
 
-    @wrapt.decorator  # type: ignore[misc]
-    def wrapper(wrapped: Callable[..., Any], instance: Any, args: list[Any], kwargs: dict[str, Any]) -> Any:
+    @wrapt.decorator
+    def wrapper(wrapped: Callable[..., Any], instance: Any, args: tuple[Any], kwargs: dict[str, Any]) -> Any:
         # Use the LegacyWaitStrategy to handle retries with proper timeout
         strategy = LegacyWaitStrategy(wrapped, instance, args, kwargs)
         # For backwards compatibility, assume the instance is the container
-        container = instance if hasattr(instance, "get_container_host_ip") else args[0] if args else None
+        try:
+            first_arg = args[0]
+        except IndexError:
+            first_arg = None
+        container = instance if hasattr(instance, "get_container_host_ip") else first_arg
         if container:
             return strategy.wait_until_ready(container)
         else:
