@@ -430,7 +430,7 @@ description = "Microsoft Azure Core Library for Python"
 optional = true
 python-versions = ">=3.9"
 groups = ["main"]
-markers = "extra == \"azurite\" or extra == \"cosmosdb\""
+markers = "extra == \"lowkey-vault\" or extra == \"azurite\" or extra == \"cosmosdb\""
 files = [
     {file = "azure_core-1.37.0-py3-none-any.whl", hash = "sha256:b3abe2c59e7d6bb18b38c275a5029ff80f98990e7c90a5e646249a56630fcc19"},
     {file = "azure_core-1.37.0.tar.gz", hash = "sha256:7064f2c11e4b97f340e8e8c6d923b822978be3016e46b7bc4aa4b337cfb48aee"},
@@ -464,6 +464,101 @@ files = [
 
 [package.dependencies]
 azure-core = ">=1.30.0"
+typing-extensions = ">=4.6.0"
+
+[package.source]
+type = "legacy"
+url = "https://pypi.org/simple"
+reference = "PyPI-public"
+
+[[package]]
+name = "azure-identity"
+version = "1.25.1"
+description = "Microsoft Azure Identity Library for Python"
+optional = true
+python-versions = ">=3.9"
+groups = ["main"]
+markers = "extra == \"lowkey-vault\""
+files = [
+    {file = "azure_identity-1.25.1-py3-none-any.whl", hash = "sha256:e9edd720af03dff020223cd269fa3a61e8f345ea75443858273bcb44844ab651"},
+    {file = "azure_identity-1.25.1.tar.gz", hash = "sha256:87ca8328883de6036443e1c37b40e8dc8fb74898240f61071e09d2e369361456"},
+]
+
+[package.dependencies]
+azure-core = ">=1.31.0"
+cryptography = ">=2.5"
+msal = ">=1.30.0"
+msal-extensions = ">=1.2.0"
+typing-extensions = ">=4.0.0"
+
+[package.source]
+type = "legacy"
+url = "https://pypi.org/simple"
+reference = "PyPI-public"
+
+[[package]]
+name = "azure-keyvault-certificates"
+version = "4.10.0"
+description = "Microsoft Corporation Key Vault Certificates Client Library for Python"
+optional = true
+python-versions = ">=3.9"
+groups = ["main"]
+markers = "extra == \"lowkey-vault\""
+files = [
+    {file = "azure_keyvault_certificates-4.10.0-py3-none-any.whl", hash = "sha256:fa76cbc329274cb5f4ab61b0ed7d209d44377df4b4d6be2fd01e741c2fbb83a9"},
+    {file = "azure_keyvault_certificates-4.10.0.tar.gz", hash = "sha256:004ff47a73152f9f40f678e5a07719b753a3ca86f0460bfeaaf6a23304872e05"},
+]
+
+[package.dependencies]
+azure-core = ">=1.31.0"
+isodate = ">=0.6.1"
+typing-extensions = ">=4.6.0"
+
+[package.source]
+type = "legacy"
+url = "https://pypi.org/simple"
+reference = "PyPI-public"
+
+[[package]]
+name = "azure-keyvault-keys"
+version = "4.11.0"
+description = "Microsoft Corporation Key Vault Keys Client Library for Python"
+optional = true
+python-versions = ">=3.9"
+groups = ["main"]
+markers = "extra == \"lowkey-vault\""
+files = [
+    {file = "azure_keyvault_keys-4.11.0-py3-none-any.whl", hash = "sha256:fa5febd5805f0fed4c0a1d13c9096081c72a6fa36ccae1299a137f34280eda53"},
+    {file = "azure_keyvault_keys-4.11.0.tar.gz", hash = "sha256:f257b1917a2c3a88983e3f5675a6419449eb262318888d5b51e1cb3bed79779a"},
+]
+
+[package.dependencies]
+azure-core = ">=1.31.0"
+cryptography = ">=2.1.4"
+isodate = ">=0.6.1"
+typing-extensions = ">=4.6.0"
+
+[package.source]
+type = "legacy"
+url = "https://pypi.org/simple"
+reference = "PyPI-public"
+
+[[package]]
+name = "azure-keyvault-secrets"
+version = "4.10.0"
+description = "Microsoft Corporation Key Vault Secrets Client Library for Python"
+optional = true
+python-versions = ">=3.9"
+groups = ["main"]
+markers = "extra == \"lowkey-vault\""
+files = [
+    {file = "azure_keyvault_secrets-4.10.0-py3-none-any.whl", hash = "sha256:9dbde256077a4ee1a847646671580692e3f9bea36bcfc189c3cf2b9a94eb38b9"},
+    {file = "azure_keyvault_secrets-4.10.0.tar.gz", hash = "sha256:666fa42892f9cee749563e551a90f060435ab878977c95265173a8246d546a36"},
+]
+
+[package.dependencies]
+azure-core = ">=1.31.0"
+isodate = ">=0.6.1"
 typing-extensions = ">=4.6.0"
 
 [package.source]
@@ -910,7 +1005,7 @@ files = [
     {file = "cffi-2.0.0-cp39-cp39-win_amd64.whl", hash = "sha256:b882b3df248017dba09d6b16defe9b5c407fe32fc7c65a9c69798e6175601be9"},
     {file = "cffi-2.0.0.tar.gz", hash = "sha256:44d1b5909021139fe36001ae048dbdde8214afa20200eda0f64c068cac5d5529"},
 ]
-markers = {main = "python_version >= \"3.10\" and python_version <= \"3.13\" and platform_python_implementation != \"PyPy\" and (extra == \"keycloak\" or extra == \"azurite\" or extra == \"mysql\" or extra == \"oracle\" or extra == \"oracle-free\" or extra == \"weaviate\" or extra == \"mailpit\" or extra == \"sftp\") or extra == \"minio\" and python_version >= \"3.10\" or os_name == \"nt\" and implementation_name != \"pypy\" and extra == \"selenium\" and python_version >= \"3.10\" or python_version < \"4.0\" and extra == \"keycloak\" and python_version >= \"3.14\" and platform_python_implementation != \"PyPy\" or (extra == \"azurite\" or extra == \"mysql\" or extra == \"oracle\" or extra == \"oracle-free\" or extra == \"weaviate\" or extra == \"mailpit\" or extra == \"sftp\") and python_version >= \"3.14\" and platform_python_implementation != \"PyPy\"", dev = "platform_python_implementation != \"PyPy\""}
+markers = {main = "python_version >= \"3.10\" and python_version <= \"3.13\" and platform_python_implementation != \"PyPy\" and (extra == \"keycloak\" or extra == \"lowkey-vault\" or extra == \"azurite\" or extra == \"mysql\" or extra == \"oracle\" or extra == \"oracle-free\" or extra == \"weaviate\" or extra == \"mailpit\" or extra == \"sftp\") or extra == \"minio\" and python_version >= \"3.10\" or os_name == \"nt\" and implementation_name != \"pypy\" and extra == \"selenium\" and python_version >= \"3.10\" or python_version < \"4.0\" and extra == \"keycloak\" and python_version >= \"3.14\" and platform_python_implementation != \"PyPy\" or (extra == \"lowkey-vault\" or extra == \"azurite\" or extra == \"mysql\" or extra == \"oracle\" or extra == \"oracle-free\" or extra == \"weaviate\" or extra == \"mailpit\" or extra == \"sftp\") and python_version >= \"3.14\" and platform_python_implementation != \"PyPy\"", dev = "platform_python_implementation != \"PyPy\""}
 
 [package.dependencies]
 pycparser = {version = "*", markers = "implementation_name != \"PyPy\""}
@@ -1435,7 +1530,7 @@ files = [
     {file = "cryptography-46.0.3-pp311-pypy311_pp73-win_amd64.whl", hash = "sha256:6b5063083824e5509fdba180721d55909ffacccc8adbec85268b48439423d78c"},
     {file = "cryptography-46.0.3.tar.gz", hash = "sha256:a8b17438104fed022ce745b362294d9ce35b4c2e45c1d958ad4a4b019285f4a1"},
 ]
-markers = {main = "(python_version < \"4.0\" or extra == \"azurite\" or extra == \"mysql\" or extra == \"oracle\" or extra == \"oracle-free\" or extra == \"weaviate\" or extra == \"mailpit\" or extra == \"sftp\") and (extra == \"keycloak\" or extra == \"azurite\" or extra == \"mysql\" or extra == \"oracle\" or extra == \"oracle-free\" or extra == \"weaviate\" or extra == \"mailpit\" or extra == \"sftp\")"}
+markers = {main = "(python_version < \"4.0\" or extra == \"lowkey-vault\" or extra == \"azurite\" or extra == \"mysql\" or extra == \"oracle\" or extra == \"oracle-free\" or extra == \"weaviate\" or extra == \"mailpit\" or extra == \"sftp\") and (extra == \"keycloak\" or extra == \"lowkey-vault\" or extra == \"azurite\" or extra == \"mysql\" or extra == \"oracle\" or extra == \"oracle-free\" or extra == \"weaviate\" or extra == \"mailpit\" or extra == \"sftp\")"}
 
 [package.dependencies]
 cffi = {version = ">=2.0.0", markers = "python_full_version >= \"3.9.0\" and platform_python_implementation != \"PyPy\""}
@@ -2809,7 +2904,7 @@ description = "An ISO 8601 date/time/duration parser and formatter"
 optional = true
 python-versions = ">=3.7"
 groups = ["main"]
-markers = "extra == \"azurite\""
+markers = "extra == \"lowkey-vault\" or extra == \"azurite\""
 files = [
     {file = "isodate-0.7.2-py3-none-any.whl", hash = "sha256:28009937d8031054830160fce6d409ed342816b543597cece116d966c6d99e15"},
     {file = "isodate-0.7.2.tar.gz", hash = "sha256:4cd1aa0f43ca76f4a6c6c0292a85f40b35ec2e43e315b59f06e6d32171a953e6"},
@@ -3488,6 +3583,56 @@ files = [
     {file = "more_itertools-10.8.0-py3-none-any.whl", hash = "sha256:52d4362373dcf7c52546bc4af9a86ee7c4579df9a8dc268be0a2f949d376cc9b"},
     {file = "more_itertools-10.8.0.tar.gz", hash = "sha256:f638ddf8a1a0d134181275fb5d58b086ead7c6a72429ad725c67503f13ba30bd"},
 ]
+
+[package.source]
+type = "legacy"
+url = "https://pypi.org/simple"
+reference = "PyPI-public"
+
+[[package]]
+name = "msal"
+version = "1.34.0"
+description = "The Microsoft Authentication Library (MSAL) for Python library enables your app to access the Microsoft Cloud by supporting authentication of users with Microsoft Azure Active Directory accounts (AAD) and Microsoft Accounts (MSA) using industry standard OAuth2 and OpenID Connect."
+optional = true
+python-versions = ">=3.8"
+groups = ["main"]
+markers = "extra == \"lowkey-vault\""
+files = [
+    {file = "msal-1.34.0-py3-none-any.whl", hash = "sha256:f669b1644e4950115da7a176441b0e13ec2975c29528d8b9e81316023676d6e1"},
+    {file = "msal-1.34.0.tar.gz", hash = "sha256:76ba83b716ea5a6d75b0279c0ac353a0e05b820ca1f6682c0eb7f45190c43c2f"},
+]
+
+[package.dependencies]
+cryptography = ">=2.5,<49"
+PyJWT = {version = ">=1.0.0,<3", extras = ["crypto"]}
+requests = ">=2.0.0,<3"
+
+[package.extras]
+broker = ["pymsalruntime (>=0.14,<0.19) ; python_version >= \"3.6\" and platform_system == \"Windows\"", "pymsalruntime (>=0.17,<0.19) ; python_version >= \"3.8\" and platform_system == \"Darwin\"", "pymsalruntime (>=0.18,<0.19) ; python_version >= \"3.8\" and platform_system == \"Linux\""]
+
+[package.source]
+type = "legacy"
+url = "https://pypi.org/simple"
+reference = "PyPI-public"
+
+[[package]]
+name = "msal-extensions"
+version = "1.3.1"
+description = "Microsoft Authentication Library extensions (MSAL EX) provides a persistence API that can save your data on disk, encrypted on Windows, macOS and Linux. Concurrent data access will be coordinated by a file lock mechanism."
+optional = true
+python-versions = ">=3.9"
+groups = ["main"]
+markers = "extra == \"lowkey-vault\""
+files = [
+    {file = "msal_extensions-1.3.1-py3-none-any.whl", hash = "sha256:96d3de4d034504e969ac5e85bae8106c8373b5c6568e4c8fa7af2eca9dbe6bca"},
+    {file = "msal_extensions-1.3.1.tar.gz", hash = "sha256:c5b0fd10f65ef62b5f1d62f4251d51cbcaf003fcedae8c91b040a488614be1a4"},
+]
+
+[package.dependencies]
+msal = ">=1.29,<2"
+
+[package.extras]
+portalocker = ["portalocker (>=1.4,<4)"]
 
 [package.source]
 type = "legacy"
@@ -5457,7 +5602,7 @@ files = [
     {file = "pycparser-2.23-py3-none-any.whl", hash = "sha256:e5c6e8d3fbad53479cab09ac03729e0a9faf2bee3db8208a550daf5af81a5934"},
     {file = "pycparser-2.23.tar.gz", hash = "sha256:78816d4f24add8f10a06d6f05b4d424ad9e96cfebf68a4ddc99c65c0720d00c2"},
 ]
-markers = {main = "((python_version < \"4.0\" and extra == \"keycloak\" or extra == \"azurite\" or extra == \"mysql\" or extra == \"oracle\" or extra == \"oracle-free\" or extra == \"weaviate\" or extra == \"mailpit\" or extra == \"sftp\") and platform_python_implementation != \"PyPy\" or extra == \"minio\" and python_version < \"3.14\" or os_name == \"nt\" and implementation_name != \"pypy\" and extra == \"selenium\") and implementation_name != \"PyPy\" and python_version == \"3.10\" or python_version < \"4.0\" and extra == \"keycloak\" and python_version >= \"3.14\" and platform_python_implementation != \"PyPy\" and implementation_name != \"PyPy\" or (extra == \"azurite\" or extra == \"mysql\" or extra == \"oracle\" or extra == \"oracle-free\" or extra == \"weaviate\" or extra == \"mailpit\" or extra == \"sftp\") and python_version >= \"3.14\" and platform_python_implementation != \"PyPy\" and implementation_name != \"PyPy\" or extra == \"minio\" and implementation_name != \"PyPy\" and python_version >= \"3.11\" or os_name == \"nt\" and implementation_name != \"pypy\" and implementation_name != \"PyPy\" and extra == \"selenium\" and python_version >= \"3.11\" or python_version >= \"3.11\" and python_version <= \"3.13\" and platform_python_implementation != \"PyPy\" and implementation_name != \"PyPy\" and (extra == \"keycloak\" or extra == \"azurite\" or extra == \"mysql\" or extra == \"oracle\" or extra == \"oracle-free\" or extra == \"weaviate\" or extra == \"mailpit\" or extra == \"sftp\")", dev = "platform_python_implementation != \"PyPy\" and implementation_name != \"PyPy\""}
+markers = {main = "python_version >= \"3.10\" and python_version <= \"3.13\" and platform_python_implementation != \"PyPy\" and implementation_name != \"PyPy\" and (extra == \"keycloak\" or extra == \"lowkey-vault\" or extra == \"azurite\" or extra == \"mysql\" or extra == \"oracle\" or extra == \"oracle-free\" or extra == \"weaviate\" or extra == \"mailpit\" or extra == \"sftp\") or extra == \"minio\" and implementation_name != \"PyPy\" and python_version >= \"3.10\" or os_name == \"nt\" and implementation_name != \"pypy\" and implementation_name != \"PyPy\" and extra == \"selenium\" and python_version >= \"3.10\" or python_version < \"4.0\" and extra == \"keycloak\" and python_version >= \"3.14\" and platform_python_implementation != \"PyPy\" and implementation_name != \"PyPy\" or (extra == \"lowkey-vault\" or extra == \"azurite\" or extra == \"mysql\" or extra == \"oracle\" or extra == \"oracle-free\" or extra == \"weaviate\" or extra == \"mailpit\" or extra == \"sftp\") and python_version >= \"3.14\" and platform_python_implementation != \"PyPy\" and implementation_name != \"PyPy\"", dev = "platform_python_implementation != \"PyPy\" and implementation_name != \"PyPy\""}
 
 [package.source]
 type = "legacy"
@@ -5714,11 +5859,14 @@ description = "JSON Web Token implementation in Python"
 optional = true
 python-versions = ">=3.9"
 groups = ["main"]
-markers = "extra == \"arangodb\""
+markers = "extra == \"arangodb\" or extra == \"lowkey-vault\""
 files = [
     {file = "PyJWT-2.10.1-py3-none-any.whl", hash = "sha256:dcdd193e30abefd5debf142f9adfcdd2b58004e644f25406ffaebd50bd98dacb"},
     {file = "pyjwt-2.10.1.tar.gz", hash = "sha256:3cc5772eb20009233caf06e9d8a0577824723b44e6648ee0a2aedb6cf9381953"},
 ]
+
+[package.dependencies]
+cryptography = {version = ">=3.4.0", optional = true, markers = "extra == \"crypto\""}
 
 [package.extras]
 crypto = ["cryptography (>=3.4.0)"]
@@ -8400,6 +8548,7 @@ k3s = ["kubernetes", "pyyaml"]
 kafka = []
 keycloak = ["python-keycloak"]
 localstack = ["boto3"]
+lowkey-vault = ["azure-identity", "azure-keyvault-certificates", "azure-keyvault-keys", "azure-keyvault-secrets", "cryptography"]
 mailpit = ["cryptography"]
 memcached = []
 milvus = []
@@ -8432,4 +8581,4 @@ weaviate = ["weaviate-client"]
 [metadata]
 lock-version = "2.1"
 python-versions = ">=3.10"
-content-hash = "b52b8f3b08e45d7d0e41006651ccdf1f88d04db0ec1cc2a25b56438408195fce"
+content-hash = "5eeb6bb97768d6fe6af352bed5f4c772bed5ca2b86d2eaf4b95c4c26b86d7688"
