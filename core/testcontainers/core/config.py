@@ -130,6 +130,10 @@ class TestcontainersConfiguration:
     def tc_properties_get_tc_host(self) -> Union[str, None]:
         return self.tc_properties.get("tc.host")
 
+    def tc_properties_testcontainers_reuse_enable(self) -> bool:
+        enabled = self.tc_properties.get("testcontainers.reuse.enable")
+        return enabled == "true"
+
     @property
     def ryuk_privileged(self) -> bool:
         if self._ryuk_privileged is not None:
