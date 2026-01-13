@@ -177,10 +177,14 @@ class DockerCompose:
             to pass to docker compose.
         services:
             The list of services to use from this DockerCompose.
-        client_args:
-            arguments to pass to docker.from_env()
         docker_command_path:
             The docker compose command to run.
+        profiles:
+            The list of profiles to enable.
+        quiet_pull:
+            Whether to suppress output when pulling images.
+        quiet_build:
+            Whether to suppress output when building images.
 
     Example:
 
@@ -214,6 +218,8 @@ class DockerCompose:
     services: Optional[list[str]] = None
     docker_command_path: Optional[str] = None
     profiles: Optional[list[str]] = None
+    quiet_pull: bool = False
+    quiet_build: bool = False
     _wait_strategies: Optional[dict[str, Any]] = field(default=None, init=False, repr=False)
 
     def __post_init__(self) -> None:
@@ -278,6 +284,8 @@ class DockerCompose:
         # pull means running a separate command before starting
         if self.pull:
             pull_cmd = [*base_cmd, "pull"]
+            if self.quiet_pull:
+                pull_cmd.append("--quiet")
             self._run_command(cmd=pull_cmd)
 
         up_cmd = [*base_cmd, "up"]
@@ -285,6 +293,8 @@ class DockerCompose:
         # build means modifying the up command
         if self.build:
             up_cmd.append("--build")
+            if self.quiet_build:
+                up_cmd.append("--quiet-build")
 
         if self.wait:
             up_cmd.append("--wait")
