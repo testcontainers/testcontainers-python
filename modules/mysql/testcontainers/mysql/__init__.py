@@ -19,7 +19,7 @@ from typing import Optional
 
 from testcontainers.core.generic import DbContainer
 from testcontainers.core.utils import raise_for_deprecated_parameter
-from testcontainers.core.waiting_utils import wait_for_logs
+from testcontainers.core.wait_strategies import LogMessageWaitStrategy
 
 
 class MySqlContainer(DbContainer):
@@ -106,10 +106,10 @@ class MySqlContainer(DbContainer):
             self.with_env("MYSQL_PASSWORD", self.password)
 
     def _connect(self) -> None:
-        wait_for_logs(
-            self,
-            re.compile(".*: ready for connections.*: ready for connections.*", flags=re.DOTALL | re.MULTILINE).search,
+        wait_strategy = LogMessageWaitStrategy(
+            re.compile(r".*: ready for connections.*: ready for connections.*", flags=re.DOTALL | re.MULTILINE),
         )
+        wait_strategy.wait_until_ready(self)
 
     def get_connection_url(self) -> str:
         return super()._create_connection_url(
