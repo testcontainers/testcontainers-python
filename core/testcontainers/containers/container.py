@@ -3,6 +3,7 @@ from typing import Generic, TypeVar, overload
 
 from core.testcontainers.containers.bind_mode import BindMode
 from core.testcontainers.containers.selinux_context import SelinuxContext
+from testcontainers.containers.wait.strategy.wait_strategy import WaitStrategy
 
 T = TypeVar('T', bound="Container")
 
@@ -81,8 +82,8 @@ class Container(Generic[T], ABC):
         :param ports: list of ports to expose
         """
 
-    def waiting_for(self, wait_strategy: ) -> T:
+    def waiting_for(self, wait_strategy: WaitStrategy) -> T:
         """Specify the `WaitStrategy` used to determine if the container is ready.
 
         """
-        ...
+        return self
