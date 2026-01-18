@@ -2,6 +2,10 @@
 
 name: core
 
+env:
+  UV_FROZEN: "1"   # use lock file as is
+  UV_NO_EDITABLE: "1"  # test the build package, not the dev installation
+
 on:
   push:
     branches: [main]
@@ -22,9 +26,9 @@ jobs:
         with:
           python-version: ${{ matrix.python-version }}
       - name: Install Python dependencies
-        run: poetry install --all-extras
+        run: uv sync --all-extras
       - name: Run twine check
-        run: rm -f LICENSE.txt && poetry build && poetry run twine check dist/*.tar.gz
+        run: uv build && uv run twine check dist/*
       - name: Run tests
         run: make core/tests
       - name: Rename coverage file
@@ -47,7 +51,7 @@ jobs:
       - name: Set up Python
         uses: ./.github/actions/setup-env
       - name: Install Python dependencies
-        run: poetry install --all-extras
+        run: uv sync --all-extras
       - name: "Download coverage artifacts"
         uses: actions/download-artifact@v4
         with:

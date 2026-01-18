@@ -47,6 +47,9 @@ def _wait_for_dind_return_ip(client: DockerClient, dind: Container):
 
 
 @pytest.mark.skipif(_should_run_dind(), reason="Docker socket forwarding (socat) is unsupported on Docker Desktop for macOS")
+@pytest.mark.skipif(
+    _should_skip_dind(), reason="Docker socket forwarding (socat) is unsupported on Docker Desktop for macOS"
+)
 def test_wait_for_logs_docker_in_docker():
     # real dind isn't possible (AFAIK) in CI
     # forwarding the socket to a container port is at least somewhat the same
@@ -73,6 +76,21 @@ def test_wait_for_logs_docker_in_docker():
 
     not_really_dind.stop()
     not_really_dind.remove()
+    try:
+        with DockerContainer(
+            image="hello-world",
+            docker_client_kw={
+                "environment": {"DOCKER_HOST": docker_host, "DOCKER_CERT_PATH": "", "DOCKER_TLS_VERIFY": ""}
+            },
+        ) as container:
+            logger.info("started hello-world container")
+            assert container.get_container_host_ip() == docker_host_ip
+            wait_for_logs(container, "Hello from Docker!")
+            stdout, stderr = container.get_logs()
+            assert stdout, "There should be something on stdout"
+    finally:
+        not_really_dind.stop()
+        not_really_dind.remove()
 
 
 @pytest.mark.skipif(
@@ -187,7 +205,7 @@ def test_dood(python_testcontainer_image: str) -> None:
             DockerContainer(
                 image=python_testcontainer_image,
             )
-            .with_command("poetry run pytest -m inside_docker_check")
+            .with_command("uv run pytest -m inside_docker_check")
             .with_volume_mapping(docker_sock, docker_sock, "rw")
             # test also that the correct network was found
             # but only do this if not already inside a container
@@ -236,7 +254,7 @@ def test_dind(python_testcontainer_image: str, tmp_path: Path) -> None:
             try:
                 with (
                     DockerContainer(image=python_testcontainer_image)
-                    .with_command("poetry run pytest -m inside_docker_check")
+                    .with_command("uv run pytest -m inside_docker_check")
                     .with_volume_mapping(str(cert_dir), "/certs")
                     # for some reason the docker client does not respect
                     # DOCKER_TLS_CERTDIR and looks in /root/.docker instead

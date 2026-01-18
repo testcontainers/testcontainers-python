@@ -1,248 +1,287 @@
-[tool.poetry]
+[project]
 name = "testcontainers"
 version = "4.14.1"  # auto-incremented by release-please
 description = "Python library for throwaway instances of anything that can run in a Docker container"
-authors = ["Sergey Pirogov <automationremarks@gmail.com>"]
-maintainers = [
-    "Balint Bartha <totallyzen@users.noreply.github.com>",
-    "David Ankin <daveankin@gmail.com>",
-    "Vemund Santi <vemund@santi.no>",
-]
 readme = "README.md"
-keywords = ["testing", "logging", "docker", "test automation"]
+requires-python = ">=3.10"
 license = "Apache-2.0"
-classifiers = [
-    "License :: OSI Approved :: Apache Software License",
-    "Intended Audience :: Information Technology",
-    "Intended Audience :: Developers",
-    "Programming Language :: Python :: 3",
-    "Programming Language :: Python :: 3.9",
-    "Programming Language :: Python :: 3.10",
-    "Programming Language :: Python :: 3.11",
-    "Programming Language :: Python :: 3.12",
-    "Programming Language :: Python :: 3.13",
-    "Programming Language :: Python :: 3.14",
-    "Topic :: Software Development :: Libraries :: Python Modules",
-    "Operating System :: Microsoft :: Windows",
-    "Operating System :: POSIX",
-    "Operating System :: Unix",
-    "Operating System :: MacOS",
-]
-# testcontainers-core is a proper package dependency - only modules needed here
-packages = [
-    { include = "testcontainers", from = "core" },
-    { include = "testcontainers", from = "modules/arangodb" },
-    { include = "testcontainers", from = "modules/aws" },
-    { include = "testcontainers", from = "modules/azurite" },
-    { include = "testcontainers", from = "modules/cassandra" },
-    { include = "testcontainers", from = "modules/chroma" },
-    { include = "testcontainers", from = "modules/clickhouse" },
-    { include = "testcontainers", from = "modules/cockroachdb" },
-    { include = "testcontainers", from = "modules/cosmosdb" },
-    { include = "testcontainers", from = "modules/db2" },
-    { include = "testcontainers", from = "modules/elasticsearch" },
-    { include = "testcontainers", from = "modules/generic" },
-    { include = "testcontainers", from = "modules/test_module_import" },
-    { include = "testcontainers", from = "modules/google" },
-    { include = "testcontainers", from = "modules/influxdb" },
-    { include = "testcontainers", from = "modules/k3s" },
-    { include = "testcontainers", from = "modules/kafka" },
-    { include = "testcontainers", from = "modules/keycloak" },
-    { include = "testcontainers", from = "modules/localstack" },
-    { include = "testcontainers", from = "modules/mailpit" },
-    { include = "testcontainers", from = "modules/memcached" },
-    { include = "testcontainers", from = "modules/minio" },
-    { include = "testcontainers", from = "modules/milvus" },
-    { include = "testcontainers", from = "modules/mongodb" },
-    { include = "testcontainers", from = "modules/mqtt" },
-    { include = "testcontainers", from = "modules/mssql" },
-    { include = "testcontainers", from = "modules/mysql" },
-    { include = "testcontainers", from = "modules/nats" },
-    { include = "testcontainers", from = "modules/neo4j" },
-    { include = "testcontainers", from = "modules/nginx" },
-    { include = "testcontainers", from = "modules/ollama" },
-    { include = "testcontainers", from = "modules/openfga" },
-    { include = "testcontainers", from = "modules/opensearch" },
-    { include = "testcontainers", from = "modules/oracle-free" },
-    { include = "testcontainers", from = "modules/postgres" },
-    { include = "testcontainers", from = "modules/qdrant" },
-    { include = "testcontainers", from = "modules/rabbitmq" },
-    { include = "testcontainers", from = "modules/redis" },
-    { include = "testcontainers", from = "modules/registry" },
-    { include = "testcontainers", from = "modules/sftp" },
-    { include = "testcontainers", from = "modules/selenium" },
-    { include = "testcontainers", from = "modules/scylla" },
-    { include = "testcontainers", from = "modules/trino" },
-    { include = "testcontainers", from = "modules/vault" },
-    { include = "testcontainers", from = "modules/weaviate" },
+license-file = ["LICENSE.txt"]
+
+authors = [{ name = "Sergey Pirogov", email = "automationremarks@gmail.com" }]
+
+maintainers = [
+  { name = "Balint Bartha", email = "totallyzen@users.noreply.github.com" },
+  { name = "David Ankin", email = "daveankin@gmail.com" },
+  { name = "Vemund Santi", email = "vemund@santi.no" },
 ]
 
-[tool.poetry.urls]
-"GitHub" = "https://github.com/testcontainers/testcontainers-python"
+keywords = ["testing", "logging", "docker", "test automation"]
+
+classifiers = [
+  "License :: OSI Approved :: Apache Software License",
+  "Intended Audience :: Information Technology",
+  "Intended Audience :: Developers",
+  "Programming Language :: Python :: 3",
+  "Programming Language :: Python :: 3.10",
+  "Programming Language :: Python :: 3.11",
+  "Programming Language :: Python :: 3.12",
+  "Programming Language :: Python :: 3.13",
+  "Programming Language :: Python :: 3.14",
+  "Topic :: Software Development :: Libraries :: Python Modules",
+  "Operating System :: Microsoft :: Windows",
+  "Operating System :: POSIX",
+  "Operating System :: Unix",
+  "Operating System :: MacOS",
+]
+dependencies = [
+  "docker",
+  "urllib3",
+  "wrapt",
+  "typing-extensions",
+  "python-dotenv",
+]
+
+[project.urls]
+Homepage = "https://github.com/testcontainers/testcontainers-python"
+Repository = "https://github.com/testcontainers/testcontainers-python"
 "Issue Tracker" = "https://github.com/testcontainers/testcontainers-python/issues"
 
-[tool.poetry.dependencies]
-python = ">=3.10"
-docker = "*"            # ">=4.0"
-urllib3 = "*"           # "<2.0"
-wrapt = "*"             # "^1.16.0"
-typing-extensions = "*"
-python-dotenv = "*"
-
-# community modules
-python-arango = { version = "^8", optional = true }
-azure-storage-blob = { version = "^12", optional = true }
-cassandra-driver = { version = "^3", optional = true }
-#clickhouse-driver = { version = "*", optional = true }
-google-cloud-pubsub = { version = "^2", optional = true }
-google-cloud-datastore = { version = "^2", optional = true }
-influxdb = { version = "^5", optional = true }
-influxdb-client = { version = "^1", optional = true }
-kubernetes = { version = "*", optional = true }
-pyyaml = { version = ">=6.0.3", optional = true }
-python-keycloak = { version = "^6", optional = true, markers = "python_version < '4.0'" }
-boto3 = { version = "^1", optional = true }
-minio = { version = "^7", optional = true }
-nats-py = { version = "^2", optional = true }
-pymongo = { version = "^4", optional = true }
-sqlalchemy = { version = "^2", optional = true }
-pymssql = { version = "^2", optional = true }
-pymysql = { version = "^1", extras = ["rsa"], optional = true }
-neo4j = { version = "^6", optional = true }
-openfga-sdk = { version = "*", optional = true }
-opensearch-py = { version = "^3", optional = true, markers = "python_version < '4.0'" }
-oracledb = { version = "^3", optional = true }
-pika = { version = "^1", optional = true }
-redis = { version = "^7", optional = true }
-selenium = { version = "^4", optional = true }
-weaviate-client = { version = "^4", optional = true }
-chromadb-client = { version = "^1", optional = true }
-qdrant-client = { version = "^1", optional = true }
-bcrypt = { version = "^5", optional = true }
-azure-cosmos = { version = "^4", optional = true }
-cryptography = { version = "*", optional = true }
-trino = { version = "*", optional = true }
-ibm_db_sa = { version = "*", optional = true, markers = "platform_machine != 'aarch64' and platform_machine != 'arm64'" }
-pydantic = { version = "^2", optional = true } # upgrade for 3.14 compat (uses pyo3)
-rpds-py = { version = "*", optional = true }
-grpcio = { version = "^1", optional = true }
-markupsafe = { version = "^3", optional = true }
-ujson = { version = "^5", optional = true }
-aiohttp = { version = "^3", optional = true }
-grpcio-tools = { version = "^1", optional = true }
-msgpack = { version = "^1", optional = true }
-pandas = { version = "^2", optional = true }
-httpx = { version = "*", optional = true }
-httpcore = { version = "^1", optional = true } # we could fix this for everyone but this is httpx's responsibility
-
-[tool.poetry.group.numpy_old.dependencies]
-numpy = { version = ">=2.0", optional = true, markers = "python_version < '3.11'" }
-[tool.poetry.group.numpy_new.dependencies]
-numpy = { version = ">=2.3.4", optional = true, markers = "python_version >= '3.11'" }
-
-[tool.poetry.group.clickhouse-driver_old.dependencies]
-clickhouse-driver = { version = ">=0.1.5", optional = true, markers = "python_version < '3.11'" }
-[tool.poetry.group.clickhouse-driver_new.dependencies]
-clickhouse-driver = { version = ">=0.2.10", optional = true, markers = "python_version >= '3.11' and python_version < '4'"  }
-
-[tool.poetry.extras]
-arangodb = ["python-arango"]
-aws = ["boto3", "httpx"]
-azurite = ["azure-storage-blob"]
+[project.optional-dependencies]
+arangodb = ["python-arango>=8"]
+aws = ["boto3>=1", "httpx"]
+azurite = ["azure-storage-blob>=12"]
 cassandra = []
 clickhouse = ["clickhouse-driver"]
-cosmosdb = ["azure-cosmos"]
+cosmosdb = ["azure-cosmos>=4"]
 cockroachdb = []
-db2 = ["sqlalchemy", "ibm_db_sa"]
+db2 = [
+  "sqlalchemy>=2",
+  "ibm_db_sa; platform_machine != 'aarch64' and platform_machine != 'arm64'",
+]
 elasticsearch = []
 generic = [
-    "httpx",
-    "redis",
-] # The advance doctests for ServerContainer require redis
+  "httpx",
+  "redis>=7",
+]
 test_module_import = ["httpx"]
-google = ["google-cloud-pubsub", "google-cloud-datastore"]
-influxdb = ["influxdb", "influxdb-client"]
-k3s = ["kubernetes", "pyyaml"]
+google = [
+  "google-cloud-pubsub>=2",
+  "google-cloud-datastore>=2",
+]
+influxdb = [
+  "influxdb>=5",
+  "influxdb-client>=1",
+]
+k3s = ["kubernetes", "pyyaml>=6.0.3"]
 kafka = []
-keycloak = ["python-keycloak"]
-localstack = ["boto3"]
+keycloak = ["python-keycloak>=6; python_version < '4.0'"]
+localstack = ["boto3>=1"]
 mailpit = ["cryptography"]
 memcached = []
-minio = ["minio"]
+minio = ["minio>=7"]
 milvus = []
-mongodb = ["pymongo"]
+mongodb = ["pymongo>=4"]
 mqtt = []
-mssql = ["sqlalchemy", "pymssql"]
-mysql = ["sqlalchemy", "pymysql"]
-nats = ["nats-py"]
-neo4j = ["neo4j"]
+mssql = ["sqlalchemy>=2", "pymssql>=2"]
+mysql = ["sqlalchemy>=2", "pymysql[rsa]>=1"]
+nats = ["nats-py>=2"]
+neo4j = ["neo4j>=6"]
 nginx = []
 openfga = ["openfga-sdk"]
-opensearch = ["opensearch-py"]
+opensearch = ["opensearch-py>=3; python_version < '4.0'"]
 ollama = []
-oracle = ["sqlalchemy", "oracledb"]
-oracle-free = ["sqlalchemy", "oracledb"]
+oracle = ["sqlalchemy>=2", "oracledb>=3"]
+oracle-free = ["sqlalchemy>=2", "oracledb>=3"]
 postgres = []
-qdrant = ["qdrant-client"]
-rabbitmq = ["pika"]
-redis = ["redis"]
-registry = ["bcrypt"]
-selenium = ["selenium"]
-scylla = ["cassandra-driver"]
+qdrant = ["qdrant-client>=1"]
+rabbitmq = ["pika>=1"]
+redis = ["redis>=7"]
+registry = ["bcrypt>=5"]
+selenium = ["selenium>=4"]
+scylla = ["cassandra-driver>=3"]
 sftp = ["cryptography"]
 vault = []
-weaviate = ["weaviate-client"]
-chroma = ["chromadb-client"]
+weaviate = ["weaviate-client>=4"]
+chroma = ["chromadb-client>=1"]
 trino = ["trino"]
 
-[tool.poetry.group.dev.dependencies]
-pytest = "^9"
-pytest-asyncio = "^1"
-pytest-cov = "^7"
-pytest-mock = "^3"
-mypy = "^1"
-ruff = "*"
-pre-commit = "^4"
-sphinx = [
-    { version = "^8", markers = "python_version < '3.11'" },
-    { version = "^9", markers = "python_version >= '3.11'" },
+# ---------- Dependency groups (uv-friendly; avoids tool lock-in for dev/test sets) ----------
+# This structure is intentionally PEP-ish (dependency groups). uv supports it.
+[dependency-groups]
+test = [
+  "pytest>=9",
+  "pytest-asyncio>=1",
+  "pytest-cov>=7",
+  "pytest-mock>=3",
+  # TODO: Check what test requirements are really need and for which modules
+  #       Make a group for each module requiring extra deps in order to test
+  #       Each module with minimal extra depencies
+  "sqlalchemy>=2",
+  "psycopg2-binary==2.9.11",
+  "pg8000==1.31.5",
+  "psycopg>=3",
+  "cassandra-driver>=3",
+  "kafka-python-ng>=2",
+  "hvac>=2; python_version < '4.0'",
+  "pymilvus>=2",
+  "paho-mqtt>=2",
+  "sqlalchemy-cockroachdb>=2",
+  "paramiko>=4",
+  "twine>=6.2.0",
+  "anyio>=4",
+  "tomli", # required for pyproject.toml tests, TODO: remove once we drop py3.10 support
 ]
-twine = "6.2.0"
-anyio = "^4"
-# for tests only
-sqlalchemy = "^2"
-psycopg2-binary = "2.9.11"
-pg8000 = "1.31.5"
-psycopg = "^3"
-cassandra-driver = "^3"
-kafka-python-ng = "^2"
-hvac = { version = "^2", markers = "python_version < '4.0'" }
-pymilvus = "^2"
-paho-mqtt = "^2"
-sqlalchemy-cockroachdb = "^2"
-paramiko = "^4"
-types-paramiko = "^4"
+lint = [
+  "mypy>=1",
+  "types-paramiko>=4",
+  "ruff",
+  "pre-commit>=4",
+]
+docs = [
+  "sphinx>=8; python_version < '3.11'",
+  "sphinx>=9; python_version >= '3.11'",
+  # TODO: Remove upper bounds of mkdocs and trust the locking/updating instead
+  "mkdocs>=1.5.3,<2.0.0",
+  "mkdocs-material>=9.5.0,<10.0.0",
+  "mkdocs-markdownextradata-plugin>=0.2.6,<0.3.0",
+  "mkdocs-codeinclude-plugin>=0.2.1,<0.3.0",
+  "mkdocs-include-markdown-plugin>=7.1.8,<8.0.0",
+]
+dev = [
+    {include-group = "test"},
+    {include-group = "lint"},
+    {include-group = "docs"},
+]
 
-[[tool.poetry.source]]
-name = "PyPI-public"
-url = "https://pypi.org/simple/"
-priority = "primary"
 
-[tool.black]
-line-length = 120
+# ---------- Hatchling build configuration ----------
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
 
+[tool.hatch.build]
+# If you build sdists, you probably want to include core/ + modules/ in the sdist.
+# Adjust as needed.
+include = [
+  "core/**",
+  "modules/**",
+  "README.md",
+  "LICENSE*",
+  "pyproject.toml",
+]
+
+# TODO: Remove all this below once the project moved to `src` layout
+[tool.hatch.build.targets.wheel]
+# Mirror Poetry's multi-source package includes. Each path contains a "testcontainers" package.
+packages = [
+  "core/testcontainers",
+  "modules/arangodb/testcontainers",
+  "modules/aws/testcontainers",
+  "modules/azurite/testcontainers",
+  "modules/cassandra/testcontainers",
+  "modules/chroma/testcontainers",
+  "modules/clickhouse/testcontainers",
+  "modules/cockroachdb/testcontainers",
+  "modules/cosmosdb/testcontainers",
+  "modules/db2/testcontainers",
+  "modules/elasticsearch/testcontainers",
+  "modules/generic/testcontainers",
+  "modules/test_module_import/testcontainers",
+  "modules/google/testcontainers",
+  "modules/influxdb/testcontainers",
+  "modules/k3s/testcontainers",
+  "modules/kafka/testcontainers",
+  "modules/keycloak/testcontainers",
+  "modules/localstack/testcontainers",
+  "modules/mailpit/testcontainers",
+  "modules/memcached/testcontainers",
+  "modules/minio/testcontainers",
+  "modules/milvus/testcontainers",
+  "modules/mongodb/testcontainers",
+  "modules/mqtt/testcontainers",
+  "modules/mssql/testcontainers",
+  "modules/mysql/testcontainers",
+  "modules/nats/testcontainers",
+  "modules/neo4j/testcontainers",
+  "modules/nginx/testcontainers",
+  "modules/ollama/testcontainers",
+  "modules/openfga/testcontainers",
+  "modules/opensearch/testcontainers",
+  "modules/oracle-free/testcontainers",
+  "modules/postgres/testcontainers",
+  "modules/qdrant/testcontainers",
+  "modules/rabbitmq/testcontainers",
+  "modules/redis/testcontainers",
+  "modules/registry/testcontainers",
+  "modules/sftp/testcontainers",
+  "modules/selenium/testcontainers",
+  "modules/scylla/testcontainers",
+  "modules/trino/testcontainers",
+  "modules/vault/testcontainers",
+  "modules/weaviate/testcontainers",
+]
+# Yeah we need to duplicate this folders here for hatchling to work, really waiting for src layout
+# There is a test that ensures both list are identical
+dev-mode-dirs = [
+  "core",
+  "modules/arangodb",
+  "modules/aws",
+  "modules/azurite",
+  "modules/cassandra",
+  "modules/chroma",
+  "modules/clickhouse",
+  "modules/cockroachdb",
+  "modules/cosmosdb",
+  "modules/db2",
+  "modules/elasticsearch",
+  "modules/generic",
+  "modules/test_module_import",
+  "modules/google",
+  "modules/influxdb",
+  "modules/k3s",
+  "modules/kafka",
+  "modules/keycloak",
+  "modules/localstack",
+  "modules/mailpit",
+  "modules/memcached",
+  "modules/minio",
+  "modules/milvus",
+  "modules/mongodb",
+  "modules/mqtt",
+  "modules/mssql",
+  "modules/mysql",
+  "modules/nats",
+  "modules/neo4j",
+  "modules/nginx",
+  "modules/ollama",
+  "modules/openfga",
+  "modules/opensearch",
+  "modules/oracle-free",
+  "modules/postgres",
+  "modules/qdrant",
+  "modules/rabbitmq",
+  "modules/redis",
+  "modules/registry",
+  "modules/sftp",
+  "modules/selenium",
+  "modules/scylla",
+  "modules/trino",
+  "modules/vault",
+  "modules/weaviate",
+]
+
+# ---------- Tool configs----------
 [tool.pytest.ini_options]
 addopts = "--tb=short --strict-markers"
 log_cli = true
 log_cli_level = "INFO"
 markers = [
-    "inside_docker_check: mark test to be used to validate DinD/DooD is working as expected",
+  "inside_docker_check: mark test to be used to validate DinD/DooD is working as expected",
 ]
 filterwarnings = [
-    # Suppress expected deprecation warnings for backwards compatibility testing
-    "ignore:The @wait_container_is_ready decorator is deprecated.*:DeprecationWarning",
-    "ignore:The wait_for function is deprecated and will be removed in a future version.*:DeprecationWarning",
-    "ignore:The wait_for_logs function with string or callable predicates is deprecated.*:DeprecationWarning",
+  "ignore:The @wait_container_is_ready decorator is deprecated.*:DeprecationWarning",
+  "ignore:The wait_for function is deprecated and will be removed in a future version.*:DeprecationWarning",
+  "ignore:The wait_for_logs function with string or callable predicates is deprecated.*:DeprecationWarning",
 ]
 
 [tool.coverage.run]
@@ -251,8 +290,8 @@ omit = ["oracle.py"]
 
 [tool.coverage.report]
 exclude_lines = [
-    "pass",
-    "raise NotImplementedError", # TODO: used in core/generic.py, not sure we need DbContainer
+  "pass",
+  "raise NotImplementedError",
 ]
 
 [tool.ruff]
@@ -265,51 +304,29 @@ src = ["core", "modules/*"]
 fixable = ["I"]
 exclude = ["**/tests/**/*.py"]
 select = [
-    # flake8-2020
-    "YTT",
-    # flake8-bugbear
-    "B",
-    # flake8-builtins
-    "A",
-    # flake8-comprehensions
-    "C4",
-    # flake8-debugger
-    "T10",
-    # flake8-print
-    "T20",
-    # flake8-pytest-style
-    "PT",
-    # flake8-simplify
-    "SIM",
-    # flake8-tidy-imports
-    "TID",
-    # flake8-type-checking
-    "TC",
-    # isort
-    "I",
-    # mccabe
-    "C90",
-    # pycodestyle
-    "E",
-    "W",
-    # pyflakes
-    "F",
-    # pygrep-hooks
-    "PGH",
-    # pyupgrade
-    "UP",
-    # ruff
-    "RUF",
-    # TODO: security, enable via line below
-    # "S",
+  "YTT",
+  "B",
+  "A",
+  "C4",
+  "T10",
+  "T20",
+  "PT",
+  "SIM",
+  "TID",
+  "TC",
+  "I",
+  "C90",
+  "E",
+  "W",
+  "F",
+  "PGH",
+  "UP",
+  "RUF",
 ]
 ignore = [
-    # line too long (already checked by black)
-    "E501",
-    # the must-have __init__.py (we are using package namespaces)
-    "INP001",
-    # we do have some imports shadowing builtins
-    "A004",
+  "E501",
+  "INP001",
+  "A004",
 ]
 
 [tool.ruff.lint.per-file-ignores]
@@ -330,66 +347,31 @@ pretty = true
 show_error_codes = true
 warn_return_any = true
 strict = true
-# fast_module_lookup = true
 modules = ["testcontainers.core"]
 mypy_path = [
-    "core",
-    #    "modules/arangodb",
-    #    "modules/azurite",
-    #    "modules/cassandra",
-    #    "modules/clickhouse",
-    #    "modules/elasticsearch",
-    #    "modules/google",
-    #    "modules/k3s",
-    #    "modules/kafka",
-    #    "modules/keycloak",
-    #    "modules/localstack",
-    "modules/mailpit",
-    #    "modules/minio",
-    #    "modules/mongodb",
-    #    "modules/mssql",
-    #    "modules/mysql",
-    #    "modules/neo4j",
-    #    "modules/nginx",
-    #    "modules/ollama",
-    #    "modules/openfga",
-    #    "modules/opensearch",
-    #    "modules/oracle",
-    #    "modules/postgres",
-    #    "modules/rabbitmq",
-    #    "modules/redis",
-    #    "modules/selenium"
-    "modules/sftp",
-    #    "modules/vault"
-    #    "modules/weaviate"
+  "core",
+  "modules/mailpit",
+  "modules/sftp",
 ]
 enable_error_code = ["ignore-without-code", "redundant-expr", "truthy-bool"]
 
 [[tool.mypy.overrides]]
-module = ['tests.*']
-# in pytest we allow fixtures to be more relaxed, though we check the untyped functions
+module = ["tests.*"]
 check_untyped_defs = true
-disable_error_code = ['no-untyped-def']
+disable_error_code = ["no-untyped-def"]
 
 [[tool.mypy.overrides]]
-module = ['docker.*']
-# docker still doesn't have type annotations (not even 7.0)
+module = ["docker.*"]
 ignore_missing_imports = true
 
 [[tool.mypy.overrides]]
-module = ['wrapt.*']
-# wrapt doesn't have type annotations
+module = ["wrapt.*"]
 ignore_missing_imports = true
 
 [[tool.mypy.overrides]]
-module = ['requests.*']
-# requests doesn't have type annotations
+module = ["requests.*"]
 ignore_missing_imports = true
 
 [[tool.mypy.overrides]]
-module = ['testcontainers.registry']
+module = ["testcontainers.registry"]
 ignore_missing_imports = true
-
-[build-system]
-requires = ["poetry-core"]
-build-backend = "poetry.core.masonry.api"
