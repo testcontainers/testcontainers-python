@@ -1,19 +1,21 @@
 # Read the Docs configuration file (see https://docs.readthedocs.io/en/stable/config-file/v2.html
 # for details).
-
+# https://docs.readthedocs.com/platform/stable/build-customization.html#install-dependencies-with-uv
 version: 2
 
 sphinx:
    configuration: conf.py
 
 build:
-  os: ubuntu-22.04
-  tools:
-    python: "3.10"
-
-  # https://github.com/readthedocs/readthedocs.org/issues/4912#issuecomment-1143587902s
-  jobs:
-    post_install:
-      - pip install poetry==2.1.2  # match version from poetry.lock
-      - poetry config virtualenvs.create false
-      - poetry install --all-extras
+   os: ubuntu-24.04
+   tools:
+      python: "3.13"
+   jobs:
+      pre_create_environment:
+         - asdf plugin add uv
+         - asdf install uv latest
+         - asdf global uv latest
+      create_environment:
+         - uv venv "${READTHEDOCS_VIRTUALENV_PATH}"
+      install:
+         - UV_PROJECT_ENVIRONMENT="${READTHEDOCS_VIRTUALENV_PATH}" uv sync --frozen --group docs
