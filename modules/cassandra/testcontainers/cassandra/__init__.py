@@ -39,7 +39,9 @@ class CassandraContainer(DockerContainer):
     CQL_PORT = 9042
     DEFAULT_LOCAL_DATACENTER = "datacenter1"
 
-    def __init__(self, image: str = "cassandra:latest", **kwargs) -> None:
+    def __init__(
+        self, image: str = "cassandra:latest", wait_strategy_check_string: str = "Startup complete", **kwargs
+    ) -> None:
         super().__init__(image=image, **kwargs)
         self.with_exposed_ports(self.CQL_PORT)
         self.with_env("JVM_OPTS", "-Dcassandra.skip_wait_for_gossip_to_settle=0 -Dcassandra.initial_token=0")
@@ -47,7 +49,7 @@ class CassandraContainer(DockerContainer):
         self.with_env("MAX_HEAP_SIZE", "1024M")
         self.with_env("CASSANDRA_ENDPOINT_SNITCH", "GossipingPropertyFileSnitch")
         self.with_env("CASSANDRA_DC", self.DEFAULT_LOCAL_DATACENTER)
-        self.waiting_for(LogMessageWaitStrategy("Startup complete"))
+        self.waiting_for(LogMessageWaitStrategy(wait_strategy_check_string))
 
     def get_contact_points(self) -> list[tuple[str, int]]:
         return [(self.get_container_host_ip(), int(self.get_exposed_port(self.CQL_PORT)))]
