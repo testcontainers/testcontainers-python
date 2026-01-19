@@ -71,6 +71,7 @@ class MySqlContainer(DbContainer):
         dbname: Optional[str] = None,
         port: int = 3306,
         seed: Optional[str] = None,
+        wait_strategy_check_string: str = r".*: ready for connections.*: ready for connections.*",
         **kwargs,
     ) -> None:
         if dialect is not None and dialect.startswith("mysql+"):
@@ -96,6 +97,7 @@ class MySqlContainer(DbContainer):
         if self.username == "root":
             self.root_password = self.password
         self.seed = seed
+        self.wait_strategy_check_string = wait_strategy_check_string
 
     def _configure(self) -> None:
         self.with_env("MYSQL_ROOT_PASSWORD", self.root_password)
@@ -107,7 +109,7 @@ class MySqlContainer(DbContainer):
 
     def _connect(self) -> None:
         wait_strategy = LogMessageWaitStrategy(
-            re.compile(r".*: ready for connections.*: ready for connections.*", flags=re.DOTALL | re.MULTILINE),
+            re.compile(self.wait_strategy_check_string, flags=re.DOTALL | re.MULTILINE),
         )
         wait_strategy.wait_until_ready(self)
 
