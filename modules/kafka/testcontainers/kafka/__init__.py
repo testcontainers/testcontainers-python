@@ -1,3 +1,4 @@
+import re
 import tarfile
 import time
 from dataclasses import dataclass, field
@@ -10,7 +11,7 @@ from typing_extensions import Self
 from testcontainers.core.container import DockerContainer
 from testcontainers.core.utils import raise_for_deprecated_parameter
 from testcontainers.core.version import ComparableVersion
-from testcontainers.core.waiting_utils import wait_for_logs
+from testcontainers.core.wait_strategies import LogMessageWaitStrategy
 from testcontainers.kafka._redpanda import RedpandaContainer
 
 __all__ = [
@@ -54,12 +55,18 @@ class KafkaContainer(DockerContainer):
     TC_START_SCRIPT = "/tc-start.sh"
     MIN_KRAFT_TAG = "7.0.0"
 
-    def __init__(self, image: str = "confluentinc/cp-kafka:7.6.0", port: int = 9093, **kwargs) -> None:
+    def __init__(
+        self,
+        image: str = "confluentinc/cp-kafka:7.6.0",
+        port: int = 9093,
+        wait_strategy_check_string: str = r".*\[KafkaServer id=\d+\] started.*",
+        **kwargs,
+    ) -> None:
         raise_for_deprecated_parameter(kwargs, "port_to_expose", "port")
         super().__init__(image, **kwargs)
         self.port = port
         self.kraft_enabled = False
-        self.wait_for = r".*\[KafkaServer id=\d+\] started.*"
+        self.wait_for: re.Pattern[str] = re.compile(wait_strategy_check_string)
         self.boot_command = ""
         self.cluster_id = "MkU3OEVBNTcwNTJENDM2Qk"
         self.listeners = f"PLAINTEXT://0.0.0.0:{self.port},BROKER://0.0.0.0:9092"
@@ -102,7 +109,7 @@ class KafkaContainer(DockerContainer):
             self._configure_zookeeper()
 
     def _configure_kraft(self) -> None:
-        self.wait_for = r".*Kafka Server started.*"
+        self.wait_for = re.compile(r".*Kafka Server started.*")
 
         self.with_env("CLUSTER_ID", self.cluster_id)
         self.with_env("KAFKA_NODE_ID", 1)
@@ -172,14 +179,16 @@ class KafkaContainer(DockerContainer):
         )
         self.create_file(data, KafkaContainer.TC_START_SCRIPT)
 
-    def start(self, timeout=30) -> "KafkaContainer":
+    def start(self, timeout: int = 30) -> "KafkaContainer":
         script = KafkaContainer.TC_START_SCRIPT
         command = f'sh -c "while [ ! -f {script} ]; do sleep 0.1; done; sh {script}"'
         self.configure()
         self.with_command(command)
         super().start()
         self.tc_start()
-        wait_for_logs(self, self.wait_for, timeout=timeout)
+        wait_strategy = LogMessageWaitStrategy(self.wait_for)
+        wait_strategy.with_startup_timeout(timeout)
+        wait_strategy.wait_until_ready(self)
         return self
 
     def create_file(self, content: bytes, path: str) -> None:

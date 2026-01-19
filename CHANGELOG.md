@@ -1,5 +1,22 @@
 # Changelog
 
+## [4.14.0](https://github.com/testcontainers/testcontainers-python/compare/testcontainers-v4.13.3...testcontainers-v4.14.0) (2026-01-07)
+
+
+### Features
+
+* Add ExecWaitStrategy and migrate Postgres from deprecated decorator ([#935](https://github.com/testcontainers/testcontainers-python/issues/935)) ([2d9eee3](https://github.com/testcontainers/testcontainers-python/commit/2d9eee30442ec8adbf4a42fcd308cd6377b41c06))
+
+
+### Bug Fixes
+
+* add ruff to deps ([#919](https://github.com/testcontainers/testcontainers-python/issues/919)) ([5853d32](https://github.com/testcontainers/testcontainers-python/commit/5853d326bb4e9631b7c58355c53ff7fc3ecab92d))
+* **cassandra,mysqk,kafka:** Use wait strategy instead of deprecated wait_for_logs ([#945](https://github.com/testcontainers/testcontainers-python/issues/945)) ([b7791b9](https://github.com/testcontainers/testcontainers-python/commit/b7791b945134940c3185baa3eab009f06d0338a9))
+* **core:** recreate poetry lockfile with latest versions of libraries ([#946](https://github.com/testcontainers/testcontainers-python/issues/946)) ([9a97385](https://github.com/testcontainers/testcontainers-python/commit/9a9738575ec3f831c78512b10b990e416eacad03))
+* **elasticsearch:** Use wait strategy instead of deprecated decorator ([#915](https://github.com/testcontainers/testcontainers-python/issues/915)) ([c785ecd](https://github.com/testcontainers/testcontainers-python/commit/c785ecdca20b51e077ab23ed61ae123c643a0627))
+* **minio:** minio client requires kwargs now ([#933](https://github.com/testcontainers/testcontainers-python/issues/933)) ([37f5902](https://github.com/testcontainers/testcontainers-python/commit/37f590278f23851c4f8244d4add7aa6f8ed3bc62))
+* **minio:** Use wait strategy instead of deprecated decorator ([#899](https://github.com/testcontainers/testcontainers-python/issues/899)) ([febccb7](https://github.com/testcontainers/testcontainers-python/commit/febccb78b5b4b00d2a3bda27f09e6b4d4c9dfde3))
+
 ## [4.13.3](https://github.com/testcontainers/testcontainers-python/compare/testcontainers-v4.13.2...testcontainers-v4.13.3) (2025-11-14)
 
 
