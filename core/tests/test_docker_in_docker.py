@@ -22,7 +22,7 @@ from testcontainers.core.utils import inside_container
 from testcontainers.core.utils import is_mac
 from testcontainers.core.waiting_utils import wait_for_logs
 
-_DIND_PYTHON_VERSION = (3, 13)
+_DIND_PYTHON_VERSION = (3, 10)
 logger = logging.getLogger(__name__)
 
 
