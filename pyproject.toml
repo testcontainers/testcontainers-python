@@ -49,6 +49,7 @@ packages = [
     { include = "testcontainers", from = "modules/kafka" },
     { include = "testcontainers", from = "modules/keycloak" },
     { include = "testcontainers", from = "modules/localstack" },
+    { include = "testcontainers", from = "modules/lowkey-vault" },
     { include = "testcontainers", from = "modules/mailpit" },
     { include = "testcontainers", from = "modules/memcached" },
     { include = "testcontainers", from = "modules/minio" },
@@ -91,6 +92,10 @@ python-dotenv = "*"
 
 # community modules
 python-arango = { version = "^8", optional = true }
+azure-identity = { version = ">=1.25.1", optional = true }
+azure-keyvault-certificates = { version = ">=4.10.0", optional = true }
+azure-keyvault-keys = { version = ">=4.11.0", optional = true }
+azure-keyvault-secrets = { version = ">=4.10.0", optional = true }
 azure-storage-blob = { version = "^12", optional = true }
 cassandra-driver = { version = "^3", optional = true }
 #clickhouse-driver = { version = "*", optional = true }
@@ -166,6 +171,14 @@ k3s = ["kubernetes", "pyyaml"]
 kafka = []
 keycloak = ["python-keycloak"]
 localstack = ["boto3"]
+lowkey-vault = [
+    "azure-identity",
+    "azure-keyvault-certificates",
+    "azure-keyvault-keys",
+    "azure-keyvault-secrets",
+    "cryptography",
+
+]
 mailpit = ["cryptography"]
 memcached = []
 minio = ["minio"]
@@ -344,6 +357,7 @@ mypy_path = [
     #    "modules/kafka",
     #    "modules/keycloak",
     #    "modules/localstack",
+    #    "modules/lowkeyvault",
     "modules/mailpit",
     #    "modules/minio",
     #    "modules/mongodb",
