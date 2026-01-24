@@ -1,4 +1,5 @@
 from pathlib import Path
+from typing import TypedDict
 
 import pytest
 import sqlalchemy
@@ -70,7 +71,13 @@ def test_quoted_password():
     password = "p@$%25+0&%rd :/!=?"
     quoted_password = "p%40%24%2525+0%26%25rd %3A%2F%21%3D%3F"
     driver = "psycopg2"
-    kwargs = {
+
+    class ConnKwargs(TypedDict, total=False):
+        driver: str
+        username: str
+        password: str
+
+    kwargs: ConnKwargs = {
         "driver": driver,
         "username": user,
         "password": password,
@@ -106,15 +113,20 @@ def test_show_how_to_initialize_db_via_initdb_dir():
         with engine.begin() as connection:
             connection.execute(sqlalchemy.text(insert_query))
             result = connection.execute(sqlalchemy.text(select_query))
-            result = result.fetchall()
-            assert len(result) == 1
-            assert result[0] == (1, "sally", "sells seashells")
+            rows = result.fetchall()
+            assert len(rows) == 1
+            assert rows[0] == (1, "sally", "sells seashells")
 
 
 def test_none_driver_urls():
     user = "root"
     password = "pass"
-    kwargs = {
+
+    class ConnKwargs(TypedDict, total=False):
+        username: str
+        password: str
+
+    kwargs: ConnKwargs = {
         "username": user,
         "password": password,
     }

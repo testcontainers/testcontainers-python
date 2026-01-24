@@ -11,7 +11,7 @@
 #    License for the specific language governing permissions and limitations
 #    under the License.
 import os
-from typing import Optional
+from typing import Any, Optional, Union, cast
 
 from testcontainers.core.generic import DbContainer
 from testcontainers.core.utils import raise_for_deprecated_parameter
@@ -53,13 +53,14 @@ class PostgresContainer(DbContainer):
         password: Optional[str] = None,
         dbname: Optional[str] = None,
         driver: Optional[str] = "psycopg2",
-        **kwargs,
+        **kwargs: Any,
     ) -> None:
         raise_for_deprecated_parameter(kwargs, "user", "username")
         super().__init__(image=image, **kwargs)
-        self.username: str = username or os.environ.get("POSTGRES_USER", "test")
-        self.password: str = password or os.environ.get("POSTGRES_PASSWORD", "test")
-        self.dbname: str = dbname or os.environ.get("POSTGRES_DB", "test")
+        # Ensure concrete str types while preserving "falsy" fallback semantics
+        self.username: str = cast("str", username or os.environ.get("POSTGRES_USER", "test"))
+        self.password: str = cast("str", password or os.environ.get("POSTGRES_PASSWORD", "test"))
+        self.dbname: str = cast("str", dbname or os.environ.get("POSTGRES_DB", "test"))
         self.port = port
         self.driver = f"+{driver}" if driver else ""
 
@@ -70,7 +71,7 @@ class PostgresContainer(DbContainer):
         self.with_env("POSTGRES_PASSWORD", self.password)
         self.with_env("POSTGRES_DB", self.dbname)
 
-    def get_connection_url(self, host: Optional[str] = None, driver: Optional[str] = _UNSET) -> str:
+    def get_connection_url(self, host: Optional[str] = None, driver: Union[str, None, object] = _UNSET) -> str:
         """Get a DB connection URL to connect to the PG DB.
 
         If a driver is set in the constructor (defaults to psycopg2!), the URL will contain the
