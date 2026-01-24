@@ -1,9 +1,11 @@
 import contextlib
 import json
+import logging
 import os
 import time
 import socket
 import sys
+from textwrap import indent
 from pathlib import Path
 from typing import Final, Any, Generator
 
@@ -21,9 +23,12 @@ from testcontainers.core.utils import is_mac
 from testcontainers.core.waiting_utils import wait_for_logs
 
 _DIND_PYTHON_VERSION = (3, 13)
+logger = logging.getLogger(__name__)
 
 
 def _should_skip_dind() -> bool:
+    if os.getenv("DIND"):
+        return False
     # todo refine macos check -> run in ci but not locally
     return is_mac() or tuple([*sys.version_info][:2]) != _DIND_PYTHON_VERSION
 
@@ -50,6 +55,7 @@ def _wait_for_dind_return_ip(client: DockerClient, dind: Container):
 def test_wait_for_logs_docker_in_docker():
     # real dind isn't possible (AFAIK) in CI
     # forwarding the socket to a container port is at least somewhat the same
+    logger.info("starting test_wait_for_logs_docker_in_docker")
     client = DockerClient()
     not_really_dind = client.run(
         image="alpine/socat",
@@ -58,21 +64,26 @@ def test_wait_for_logs_docker_in_docker():
         detach=True,
     )
 
+    logger.info("starting not_really_dind")
     not_really_dind.start()
+    logger.info("started not_really_dind")
     docker_host_ip = _wait_for_dind_return_ip(client, not_really_dind)
+    logger.info("waited for not_really_dind: '_wait_for_dind_return_ip'")
     docker_host = f"tcp://{docker_host_ip}:2375"
 
-    with DockerContainer(
-        image="hello-world",
-        docker_client_kw={"environment": {"DOCKER_HOST": docker_host, "DOCKER_CERT_PATH": "", "DOCKER_TLS_VERIFY": ""}},
-    ) as container:
-        assert container.get_container_host_ip() == docker_host_ip
-        wait_for_logs(container, "Hello from Docker!")
-        stdout, stderr = container.get_logs()
-        assert stdout, "There should be something on stdout"
-
-    not_really_dind.stop()
-    not_really_dind.remove()
+    try:
+        with DockerContainer(
+            image="hello-world",
+            docker_client_kw={"environment": {"DOCKER_HOST": docker_host, "DOCKER_CERT_PATH": "", "DOCKER_TLS_VERIFY": ""}},
+        ) as container:
+            logger.info("started hello-world container")
+            assert container.get_container_host_ip() == docker_host_ip
+            wait_for_logs(container, "Hello from Docker!")
+            stdout, stderr = container.get_logs()
+            assert stdout, "There should be something on stdout"
+    finally:
+        not_really_dind.stop()
+        not_really_dind.remove()
 
 
 @pytest.mark.skipif(
@@ -122,19 +133,19 @@ def print_surround_header(what: str, header_len: int = 80) -> Generator[None, No
     start = f"#   Beginning of {what}"
     end = f"#   End of {what}"
 
-    print("\n")
-    print("#" * header_len)
-    print(start + " " * (header_len - len(start) - 1) + "#")
-    print("#" * header_len)
-    print("\n")
+    logger.info("\n")
+    logger.info("#" * header_len)
+    logger.info(start + " " * (header_len - len(start) - 1) + "#")
+    logger.info("#" * header_len)
+    logger.info("\n")
 
     yield
 
-    print("\n")
-    print("#" * header_len)
-    print(end + " " * (header_len - len(end) - 1) + "#")
-    print("#" * header_len)
-    print("\n")
+    logger.info("\n")
+    logger.info("#" * header_len)
+    logger.info(end + " " * (header_len - len(end) - 1) + "#")
+    logger.info("#" * header_len)
+    logger.info("\n")
 
 
 EXPECTED_NETWORK_VAR: Final[str] = "TCC_EXPECTED_NETWORK"
@@ -165,10 +176,10 @@ def test_find_host_network_in_dood() -> None:
     """
     Check that the correct host network is found for DooD
     """
-    LOGGER.info(f"Running container id={utils.get_running_in_container_id()}")
+    logger.info(f"Running container id={utils.get_running_in_container_id()}")
     # Get some debug information in the hope this helps to find
-    LOGGER.info(f"hostname: {socket.gethostname()}")
-    LOGGER.info(f"docker info: {json.dumps(get_docker_info(), indent=2)}")
+    logger.info(f"hostname: {socket.gethostname()}")
+    logger.info(f"docker info: {json.dumps(get_docker_info(), indent=2)}")
     assert DockerClient().find_host_network() == os.environ[EXPECTED_NETWORK_VAR]
 
 
@@ -183,6 +194,7 @@ def test_dood(python_testcontainer_image: str) -> None:
 
     docker_sock = tcc.ryuk_docker_socket
     with Network() as network:
+        logger.info("test_dood - created network")
         with (
             DockerContainer(
                 image=python_testcontainer_image,
@@ -196,7 +208,9 @@ def test_dood(python_testcontainer_image: str) -> None:
             .with_env("RYUK_RECONNECTION_TIMEOUT", "1s")
             .with_network(network)
         ) as container:
+            logger.info("test_dood - created container")
             status = container.get_wrapped_container().wait()
+            logger.info("test_dood - container returned status %s", status)
             stdout, stderr = container.get_logs()
             # ensure ryuk removed the containers created inside container
             # because they are bound our network the deletion of the network
@@ -205,8 +219,8 @@ def test_dood(python_testcontainer_image: str) -> None:
 
     # Show what was done inside test
     with print_surround_header("test_dood results"):
-        print(stdout.decode("utf-8", errors="replace"))
-        print(stderr.decode("utf-8", errors="replace"))
+        logger.info(indent(stdout.decode("utf-8", errors="replace"), prefix=(" " * 4) + "container log: "))
+        logger.info(indent(stderr.decode("utf-8", errors="replace"), prefix=(" " * 4) + "container log: "))
     assert status["StatusCode"] == 0
 
 
@@ -220,6 +234,7 @@ def test_dind(python_testcontainer_image: str, tmp_path: Path) -> None:
     cert_dir = tmp_path / "certs"
     dind_name = f"docker_{SESSION_ID}"
     with Network() as network:
+        logger.info("test_dind - created network")
         with (
             DockerContainer(image="docker:dind", privileged=True)
             .with_name(dind_name)
@@ -229,7 +244,9 @@ def test_dind(python_testcontainer_image: str, tmp_path: Path) -> None:
             .with_network(network)
             .with_network_aliases("docker")
         ) as dind_container:
+            logger.info("test_dind - created docker:dind container")
             wait_for_logs(dind_container, "API listen on")
+            logger.info("test_dind - waited for ready message in logs")
             client_dir = cert_dir / "docker" / "client"
             ca_file = client_dir / "ca.pem"
             assert ca_file.is_file()
@@ -247,7 +264,9 @@ def test_dind(python_testcontainer_image: str, tmp_path: Path) -> None:
                     .with_env("DOCKER_HOST", "tcp://docker:2376")
                     .with_network(network)
                 ) as test_container:
+                    logger.info("test_dind - created test suite container")
                     status = test_container.get_wrapped_container().wait()
+                    logger.info("test_dind - test suite container returned status %s", status)
                     stdout, stderr = test_container.get_logs()
             finally:
                 # ensure the certs are deleted from inside the container
@@ -258,6 +277,6 @@ def test_dind(python_testcontainer_image: str, tmp_path: Path) -> None:
 
     # Show what was done inside test
     with print_surround_header("test_dood results"):
-        print(stdout.decode("utf-8", errors="replace"))
-        print(stderr.decode("utf-8", errors="replace"))
+        logger.info(indent(stdout.decode("utf-8", errors="replace"), prefix=(" " * 4) + "container log: "))
+        logger.info(indent(stderr.decode("utf-8", errors="replace"), prefix=(" " * 4) + "container log: "))
     assert status["StatusCode"] == 0
