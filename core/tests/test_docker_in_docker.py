@@ -23,9 +23,9 @@ from testcontainers.core.waiting_utils import wait_for_logs
 _DIND_PYTHON_VERSION = (3, 13)
 
 
-def _should_run_dind() -> bool:
+def _should_skip_dind() -> bool:
     # todo refine macos check -> run in ci but not locally
-    return not is_mac() and tuple([*sys.version_info][:2]) == _DIND_PYTHON_VERSION
+    return is_mac() or tuple([*sys.version_info][:2]) != _DIND_PYTHON_VERSION
 
 
 def _wait_for_dind_return_ip(client: DockerClient, dind: Container):
@@ -46,7 +46,7 @@ def _wait_for_dind_return_ip(client: DockerClient, dind: Container):
     return docker_host_ip
 
 
-@pytest.mark.skipif(_should_run_dind(), reason="Docker socket forwarding (socat) is unsupported on Docker Desktop for macOS")
+@pytest.mark.skipif(_should_skip_dind(), reason="Docker socket forwarding (socat) is unsupported on Docker Desktop for macOS")
 def test_wait_for_logs_docker_in_docker():
     # real dind isn't possible (AFAIK) in CI
     # forwarding the socket to a container port is at least somewhat the same
@@ -76,7 +76,7 @@ def test_wait_for_logs_docker_in_docker():
 
 
 @pytest.mark.skipif(
-    _should_run_dind(), reason="Bridge networking and Docker socket forwarding are not supported on Docker Desktop for macOS"
+    _should_skip_dind(), reason="Bridge networking and Docker socket forwarding are not supported on Docker Desktop for macOS"
 )
 def test_dind_inherits_network():
     client = DockerClient()
@@ -160,7 +160,7 @@ def get_docker_info() -> dict[str, Any]:
 # see https://forums.docker.com/t/get-a-containers-full-id-from-inside-of-itself
 @pytest.mark.xfail(reason="Does not work in rootles docker i.e. github actions")
 @pytest.mark.inside_docker_check
-@pytest.mark.skipif(_should_run_dind() or not os.environ.get(EXPECTED_NETWORK_VAR), reason="No expected network given")
+@pytest.mark.skipif(_should_skip_dind() or not os.environ.get(EXPECTED_NETWORK_VAR), reason="No expected network given")
 def test_find_host_network_in_dood() -> None:
     """
     Check that the correct host network is found for DooD
@@ -173,7 +173,7 @@ def test_find_host_network_in_dood() -> None:
 
 
 @pytest.mark.skipif(
-    _should_run_dind(), reason="Docker socket mounting and container networking do not work reliably on Docker Desktop for macOS"
+    _should_skip_dind(), reason="Docker socket mounting and container networking do not work reliably on Docker Desktop for macOS"
 )
 @pytest.mark.skipif(not Path(tcc.ryuk_docker_socket).exists(), reason="No docker socket available")
 def test_dood(python_testcontainer_image: str) -> None:
@@ -211,7 +211,7 @@ def test_dood(python_testcontainer_image: str) -> None:
 
 
 @pytest.mark.skipif(
-    _should_run_dind(), reason="Docker socket mounting and container networking do not work reliably on Docker Desktop for macOS"
+    _should_skip_dind(), reason="Docker socket mounting and container networking do not work reliably on Docker Desktop for macOS"
 )
 def test_dind(python_testcontainer_image: str, tmp_path: Path) -> None:
     """
