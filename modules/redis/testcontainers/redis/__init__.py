@@ -17,7 +17,7 @@ import redis
 from redis.asyncio import Redis as asyncRedis
 from testcontainers.core.container import DockerContainer
 from testcontainers.core.utils import raise_for_deprecated_parameter
-from testcontainers.core.waiting_utils import wait_container_is_ready
+from testcontainers.core.wait_strategies import ExecWaitStrategy
 
 
 class RedisContainer(DockerContainer):
@@ -36,18 +36,13 @@ class RedisContainer(DockerContainer):
 
     def __init__(self, image: str = "redis:latest", port: int = 6379, password: Optional[str] = None, **kwargs) -> None:
         raise_for_deprecated_parameter(kwargs, "port_to_expose", "port")
-        super().__init__(image, **kwargs)
+        wait_strategy = ExecWaitStrategy(["redis-cli", "-a", password, "ping"] if password else ["redis-cli", "ping"])
+        super().__init__(image, _wait_strategy=wait_strategy, **kwargs)
         self.port = port
         self.password = password
         self.with_exposed_ports(self.port)
         if self.password:
             self.with_command(f"redis-server --requirepass {self.password}")
-
-    @wait_container_is_ready(redis.exceptions.ConnectionError)
-    def _connect(self) -> None:
-        client = self.get_client()
-        if not client.ping():
-            raise redis.exceptions.ConnectionError("Could not connect to Redis")
 
     def get_client(self, **kwargs) -> redis.Redis:
         """
@@ -65,11 +60,6 @@ class RedisContainer(DockerContainer):
             password=self.password,
             **kwargs,
         )
-
-    def start(self) -> "RedisContainer":
-        super().start()
-        self._connect()
-        return self
 
 
 class AsyncRedisContainer(RedisContainer):
