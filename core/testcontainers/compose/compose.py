@@ -11,10 +11,10 @@ from subprocess import run as subprocess_run
 from types import TracebackType
 from typing import Any, Callable, Literal, Optional, TypeVar, Union, cast
 
+from testcontainers.core.docker_client import ContainerInspectInfo, DockerClient, _ignore_properties
 from testcontainers.core.exceptions import ContainerIsNotRunning, NoSuchPortExposed
 from testcontainers.core.waiting_utils import WaitStrategy
 
-_IPT = TypeVar("_IPT")
 _WARNINGS = {"DOCKER_COMPOSE_GET_CONFIG": "get_config is experimental, see testcontainers/testcontainers-python#669"}
 
 logger = getLogger(__name__)
@@ -31,6 +31,122 @@ def _ignore_properties(cls: type[_IPT], dict_: Any) -> _IPT:
     class_fields = {f.name for f in fields(cls)}
     filtered = {k: v for k, v in dict_.items() if k in class_fields}
     return cls(**filtered)
+
+
+@dataclass
+class ContainerState:
+    """Container state from docker inspect."""
+
+    Status: Optional[str] = None
+    Running: Optional[bool] = None
+    Paused: Optional[bool] = None
+    Restarting: Optional[bool] = None
+    OOMKilled: Optional[bool] = None
+    Dead: Optional[bool] = None
+    Pid: Optional[int] = None
+    ExitCode: Optional[int] = None
+    Error: Optional[str] = None
+    StartedAt: Optional[str] = None
+    FinishedAt: Optional[str] = None
+
+
+@dataclass
+class ContainerConfig:
+    """Container config from docker inspect."""
+
+    Hostname: Optional[str] = None
+    User: Optional[str] = None
+    Env: Optional[list[str]] = None
+    Cmd: Optional[list[str]] = None
+    Image: Optional[str] = None
+    WorkingDir: Optional[str] = None
+    Entrypoint: Optional[list[str]] = None
+    ExposedPorts: Optional[dict[str, Any]] = None
+    Labels: Optional[dict[str, str]] = None
+
+
+@dataclass
+class Network:
+    """Individual network from docker inspect."""
+
+    IPAddress: Optional[str] = None
+    Gateway: Optional[str] = None
+    NetworkID: Optional[str] = None
+    EndpointID: Optional[str] = None
+    MacAddress: Optional[str] = None
+    Aliases: Optional[list[str]] = None
+
+
+@dataclass
+class NetworkSettings:
+    """Network settings from docker inspect."""
+
+    Bridge: Optional[str] = None
+    IPAddress: Optional[str] = None
+    Gateway: Optional[str] = None
+    Ports: Optional[dict[str, Any]] = None
+    Networks: Optional[dict[str, Network]] = None
+
+    def get_networks(self) -> Optional[dict[str, Network]]:
+        """Get networks for the container."""
+        return self.Networks
+
+
+@dataclass
+class ContainerInspectInfo:
+    """Container information from docker inspect."""
+
+    Id: Optional[str] = None
+    Name: Optional[str] = None
+    Created: Optional[str] = None
+    Path: Optional[str] = None
+    Args: Optional[list[str]] = None
+    Image: Optional[str] = None
+    State: Optional[ContainerState] = None
+    Config: Optional[ContainerConfig] = None
+    network_settings: Optional[NetworkSettings] = None
+    Mounts: Optional[list[dict[str, Any]]] = None
+
+    @classmethod
+    def from_dict(cls, data: dict[str, Any]) -> "ContainerInspectInfo":
+        """Create from docker inspect JSON."""
+        return cls(
+            Id=data.get("Id"),
+            Name=data.get("Name"),
+            Created=data.get("Created"),
+            Path=data.get("Path"),
+            Args=data.get("Args"),
+            Image=data.get("Image"),
+            State=_ignore_properties(ContainerState, data.get("State", {})) if data.get("State") else None,
+            Config=_ignore_properties(ContainerConfig, data.get("Config", {})) if data.get("Config") else None,
+            network_settings=cls._parse_network_settings(data.get("NetworkSettings", {}))
+            if data.get("NetworkSettings")
+            else None,
+            Mounts=data.get("Mounts"),
+        )
+
+    @classmethod
+    def _parse_network_settings(cls, data: dict[str, Any]) -> Optional[NetworkSettings]:
+        """Parse NetworkSettings with Networks as Network objects."""
+        if not data:
+            return None
+
+        networks_data = data.get("Networks", {})
+        networks = {}
+        for name, net_data in networks_data.items():
+            networks[name] = _ignore_properties(Network, net_data)
+
+        return NetworkSettings(
+            Bridge=data.get("Bridge"),
+            IPAddress=data.get("IPAddress"),
+            Gateway=data.get("Gateway"),
+            Ports=data.get("Ports"),
+            Networks=networks,
+        )
+
+    def get_network_settings(self) -> Optional[NetworkSettings]:
+        """Get network settings for the container."""
+        return self.network_settings
 
 
 @dataclass
@@ -81,6 +197,7 @@ class ComposeContainer:
     ExitCode: Optional[int] = None
     Publishers: list[PublishedPortModel] = field(default_factory=list)
     _docker_compose: Optional["DockerCompose"] = field(default=None, init=False, repr=False)
+    _cached_container_info: Optional[ContainerInspectInfo] = field(default=None, init=False, repr=False)
 
     def __post_init__(self) -> None:
         if self.Publishers:
@@ -146,6 +263,28 @@ class ComposeContainer:
         # ComposeContainer doesn't need explicit reloading as it's fetched fresh
         # each time through get_container(), but we need this method for compatibility
         pass
+
+    def get_container_info(self) -> Optional[ContainerInspectInfo]:
+        """Get container information via docker inspect (lazy loaded).
+
+        Returns:
+            Container inspect information or None if container is not started.
+        """
+        if self._cached_container_info is not None:
+            return self._cached_container_info
+
+        if not self._docker_compose or not self.ID:
+            return None
+
+        try:
+            docker_client = self._docker_compose._get_docker_client()
+            self._cached_container_info = docker_client.get_container_inspect_info(self.ID)
+
+        except Exception as e:
+            logger.warning(f"Failed to get container info for {self.ID}: {e}")
+            self._cached_container_info = None
+
+        return self._cached_container_info
 
     @property
     def status(self) -> str:
@@ -221,6 +360,7 @@ class DockerCompose:
     quiet_pull: bool = False
     quiet_build: bool = False
     _wait_strategies: Optional[dict[str, Any]] = field(default=None, init=False, repr=False)
+    _docker_client: Optional[DockerClient] = field(default=None, init=False, repr=False)
 
     def __post_init__(self) -> None:
         if isinstance(self.compose_file_name, str):
@@ -585,3 +725,9 @@ class DockerCompose:
         with urlopen(url) as response:
             response.read()
         return self
+
+    def _get_docker_client(self) -> DockerClient:
+        """Get Docker client instance."""
+        if self._docker_client is None:
+            self._docker_client = DockerClient()
+        return self._docker_client
