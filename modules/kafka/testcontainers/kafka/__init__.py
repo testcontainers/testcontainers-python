@@ -55,12 +55,18 @@ class KafkaContainer(DockerContainer):
     TC_START_SCRIPT = "/tc-start.sh"
     MIN_KRAFT_TAG = "7.0.0"
 
-    def __init__(self, image: str = "confluentinc/cp-kafka:7.6.0", port: int = 9093, **kwargs) -> None:
+    def __init__(
+        self,
+        image: str = "confluentinc/cp-kafka:7.6.0",
+        port: int = 9093,
+        wait_strategy_check_string: str = r".*\[KafkaServer id=\d+\] started.*",
+        **kwargs,
+    ) -> None:
         raise_for_deprecated_parameter(kwargs, "port_to_expose", "port")
         super().__init__(image, **kwargs)
         self.port = port
         self.kraft_enabled = False
-        self.wait_for: re.Pattern[str] = re.compile(r".*\[KafkaServer id=\d+\] started.*")
+        self.wait_for: re.Pattern[str] = re.compile(wait_strategy_check_string)
         self.boot_command = ""
         self.cluster_id = "MkU3OEVBNTcwNTJENDM2Qk"
         self.listeners = f"PLAINTEXT://0.0.0.0:{self.port},BROKER://0.0.0.0:9092"
