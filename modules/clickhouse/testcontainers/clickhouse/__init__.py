@@ -12,12 +12,10 @@
 #    under the License.
 import os
 from typing import Optional
-from urllib.error import HTTPError, URLError
-from urllib.request import urlopen
 
 from testcontainers.core.generic import DbContainer
 from testcontainers.core.utils import raise_for_deprecated_parameter
-from testcontainers.core.waiting_utils import wait_container_is_ready
+from testcontainers.core.wait_strategies import HttpWaitStrategy
 
 
 class ClickHouseContainer(DbContainer):
@@ -58,12 +56,9 @@ class ClickHouseContainer(DbContainer):
         self.with_exposed_ports(self.port)
         self.with_exposed_ports(8123)
 
-    @wait_container_is_ready(HTTPError, URLError)
     def _connect(self) -> None:
-        # noinspection HttpUrlsUsage
-        url = f"http://{self.get_container_host_ip()}:{self.get_exposed_port(8123)}"
-        with urlopen(url) as r:
-            assert b"Ok" in r.read()
+        strategy = HttpWaitStrategy(8123).for_response_predicate(lambda response: "Ok" in response)
+        strategy.wait_until_ready(self)
 
     def _configure(self) -> None:
         self.with_env("CLICKHOUSE_USER", self.username)
