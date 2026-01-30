@@ -38,7 +38,7 @@ class QdrantContainer(DockerContainer):
 
     def __init__(
         self,
-        image: str = "qdrant/qdrant:v1.13.5",
+        image: str = "qdrant/qdrant:v1.16.2",
         rest_port: int = 6333,
         grpc_port: int = 6334,
         api_key: Optional[str] = None,
