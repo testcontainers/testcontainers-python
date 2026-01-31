@@ -1,5 +1,17 @@
 # Changelog
 
+## [4.14.1](https://github.com/testcontainers/testcontainers-python/compare/testcontainers-v4.14.0...testcontainers-v4.14.1) (2026-01-31)
+
+
+### Bug Fixes
+
+* Allow passing in a custom wait strategy string in MySQL, Cassandra, Kafka and Trino ([#953](https://github.com/testcontainers/testcontainers-python/issues/953)) ([be4d09e](https://github.com/testcontainers/testcontainers-python/commit/be4d09ecb3f65089d06fbd1ab9d4f12e9009ed8b))
+* **compose:** expose useful compose options ([#951](https://github.com/testcontainers/testcontainers-python/issues/951)) ([183e1aa](https://github.com/testcontainers/testcontainers-python/commit/183e1aa1bcd684d36d3f5b52b28965c851f5436f))
+* **core:** bring back dind tests ([7337266](https://github.com/testcontainers/testcontainers-python/commit/7337266c73f05f003378ff483a5e3b565a1e86c5))
+* **core:** Use WaitStrategy internally for wait_for function ([#942](https://github.com/testcontainers/testcontainers-python/issues/942)) ([e323317](https://github.com/testcontainers/testcontainers-python/commit/e323317838552a9f8046b2a8e24a03c07ff8890e))
+* **nats:** add support for jetstream ([#938](https://github.com/testcontainers/testcontainers-python/issues/938)) ([49c9af8](https://github.com/testcontainers/testcontainers-python/commit/49c9af8cf542feb5df9ec389d554edd7645a4dc4))
+* Support Elasticsearch 9.x ([#881](https://github.com/testcontainers/testcontainers-python/issues/881)) ([f690e88](https://github.com/testcontainers/testcontainers-python/commit/f690e88e866ef3ff30ba2cd18958fc1fc07f89c8)), closes [#860](https://github.com/testcontainers/testcontainers-python/issues/860)
+
 ## [4.14.0](https://github.com/testcontainers/testcontainers-python/compare/testcontainers-v4.13.3...testcontainers-v4.14.0) (2026-01-07)
 
 
