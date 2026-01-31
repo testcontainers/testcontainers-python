@@ -1,5 +1,8 @@
 import contextlib
+import logging
+import pickle
 import sys
+import zlib
 from os import PathLike
 from socket import socket
 from types import TracebackType
@@ -91,9 +94,9 @@ class DockerContainer:
             self.with_network(network)
 
         self._network_aliases: Optional[list[str]] = None
+        self._reuse: bool = False
         if network_aliases:
             self.with_network_aliases(*network_aliases)
-
         self._kwargs = kwargs
         self._wait_strategy: Optional[WaitStrategy] = _wait_strategy
 
@@ -160,6 +163,10 @@ class DockerContainer:
         self._kwargs = kwargs
         return self
 
+    def with_reuse(self, reuse: bool = True) -> Self:
+        self._reuse = reuse
+        return self
+
     def maybe_emulate_amd64(self) -> Self:
         if is_arm():
             return self.with_kwargs(platform="linux/amd64")
@@ -171,11 +178,14 @@ class DockerContainer:
         return self
 
     def start(self) -> Self:
-        if not c.ryuk_disabled and self.image != c.ryuk_image:
+        if (
+            not c.ryuk_disabled
+            and self.image != c.ryuk_image
+            and not (self._reuse and c.tc_properties_testcontainers_reuse_enable())
+        ):
             logger.debug("Creating Ryuk container")
             Reaper.get_instance()
         logger.info("Pulling image %s", self.image)
-        docker_client = self.get_docker_client()
         self._configure()
 
         network_kwargs = (
@@ -189,6 +199,45 @@ class DockerContainer:
             else {}
         )
 
+        if self._reuse and not c.tc_properties_testcontainers_reuse_enable():
+            logging.warning(
+                "Reuse was requested (`with_reuse`) but the environment does not "
+                + "support the reuse of containers. To enable container reuse, add "
+                + "'testcontainers.reuse.enable=true' to '~/.testcontainers.properties'."
+            )
+
+        if self._reuse and c.tc_properties_testcontainers_reuse_enable():
+            # NOTE: ideally the docker client would return the full container create
+            # request which could be used to generate the hash.
+            args = [  # Docker run arguments
+                self.image,
+                self._command,
+                self.env,
+                self.ports,
+                self._name,
+                self.volumes,
+                str(tuple(sorted(self._kwargs.values()))) if self._kwargs else None,
+            ]
+            hash_ = str(zlib.crc32(pickle.dumps(args)))
+            docker_client = self.get_docker_client()
+            container = docker_client.find_container_by_hash(hash_)
+            if container is not None:
+                if container.status != "running":
+                    container.start()
+                    logger.info("Existing container started: %s", container.id)
+                self._container = container
+                logger.info("Container is already running: %s", container.id)
+            else:
+                self._start(network_kwargs, hash_)
+        else:
+            self._start(network_kwargs)
+
+        if self._network and self._container:
+            self._network.connect(self._container.id, self._network_aliases)
+        return self
+
+    def _start(self, network_kwargs: dict[Any, Any], hash_: Optional[str] = None) -> Self:
+        docker_client = self.get_docker_client()
         self._container = docker_client.run(
             self.image,
             command=self._command,
@@ -197,6 +246,7 @@ class DockerContainer:
             ports=cast("dict[int, Optional[int]]", self.ports),
             name=self._name,
             volumes=self.volumes,
+            labels={"hash": hash_} if hash_ is not None else {},
             **{**network_kwargs, **self._kwargs},
         )
 
