@@ -16,6 +16,8 @@ Testcontainers Core
 
 .. autoclass:: testcontainers.core.wait_strategies.WaitStrategy
 
+.. autoclass:: testcontainers.core.transferable.Transferable
+
 .. raw:: html
 
     <hr>
