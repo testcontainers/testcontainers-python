@@ -2,6 +2,10 @@
 
 name: modules
 
+env:
+  UV_FROZEN: "1"  # use lock file as is
+  UV_NO_EDITABLE: "1"  # test the build package, not the dev installation
+
 on:
   push:
     branches: [ main ]
@@ -54,7 +58,7 @@ jobs:
         with:
           python-version: ${{ matrix.python-version }}
       - name: Install Python dependencies
-        run: poetry install -E ${{ matrix.module }}
+        run: uv sync --extra ${{ matrix.module }}
       - name: Run tests
         run: make modules/${{ matrix.module }}/tests
       - name: Run doctests

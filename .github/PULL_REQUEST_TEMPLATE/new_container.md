@@ -29,8 +29,8 @@ It helps reduce unnecessary work for you and the maintainers!
   - Your module has a `README.rst` and hooks in the `.. auto-class` and `.. title` of your container
   - Implement the new feature (typically in `__init__.py`) and corresponding tests.
 - [ ] Your module is added in `pyproject.toml`
-  - it is declared under `tool.poetry.packages` - see other community modules
-  - it is declared under `tool.poetry.extras` with the same name as your module name,
+  - it is declared under `tool.hatch.build.targets.wheel` - see other community modules
+  - it is declared under `project.optional-dependencies` with the same name as your module name,
     we still prefer adding _NO EXTRA DEPENDENCIES_, meaning `mymodule = []` is the preferred addition
     (see the notes at the bottom)
 - [ ] Your branch is up-to-date (or your branch will be rebased with `git rebase`)
