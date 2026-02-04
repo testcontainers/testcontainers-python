@@ -285,6 +285,8 @@ filterwarnings = [
 ]
 
 [tool.coverage.run]
+relative_files = true
+source = ["testcontainers.core"]  # we only check coverage for core atm
 branch = true
 omit = ["oracle.py"]
 
@@ -292,6 +294,13 @@ omit = ["oracle.py"]
 exclude_lines = [
   "pass",
   "raise NotImplementedError",
+]
+
+[tool.coverage.paths]
+source = [
+    "core/testcontainers",
+    "*/site-packages/testcontainers",
+    "*/dist-packages/testcontainers",
 ]
 
 [tool.ruff]

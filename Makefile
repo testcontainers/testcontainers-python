@@ -20,7 +20,7 @@ build:  ## Build the python package
 
 tests: ${TESTS}  ## Run tests for each package
 ${TESTS}: %/tests:
-	uv run pytest -v --cov=testcontainers.$* $*/tests
+	uv run coverage run --parallel -m pytest -v  $*/tests
 
 coverage:  ## Target to combine and report coverage.
 	uv run coverage combine
