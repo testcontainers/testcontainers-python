@@ -1,5 +1,8 @@
 import contextlib
+import io
+import pathlib
 import sys
+import tarfile
 from os import PathLike
 from socket import socket
 from types import TracebackType
@@ -18,6 +21,7 @@ from testcontainers.core.docker_client import DockerClient
 from testcontainers.core.exceptions import ContainerConnectException, ContainerStartException
 from testcontainers.core.labels import LABEL_SESSION_ID, SESSION_ID
 from testcontainers.core.network import Network
+from testcontainers.core.transferable import Transferable, TransferSpec
 from testcontainers.core.utils import is_arm, setup_logger
 from testcontainers.core.wait_strategies import LogMessageWaitStrategy
 from testcontainers.core.waiting_utils import WaitStrategy
@@ -69,6 +73,7 @@ class DockerContainer:
         network: Optional[Network] = None,
         network_aliases: Optional[list[str]] = None,
         _wait_strategy: Optional[WaitStrategy] = None,
+        transferables: Optional[list[TransferSpec]] = None,
         **kwargs: Any,
     ) -> None:
         self.env = env or {}
@@ -97,6 +102,11 @@ class DockerContainer:
 
         self._kwargs = kwargs
         self._wait_strategy: Optional[WaitStrategy] = _wait_strategy
+
+        self._transferable_specs: list[TransferSpec] = []
+        if transferables:
+            for t in transferables:
+                self.with_copy_into_container(*t)
 
     def with_env(self, key: str, value: str) -> Self:
         self.env[key] = value
@@ -205,6 +215,10 @@ class DockerContainer:
             self._wait_strategy.wait_until_ready(self)
 
         logger.info("Container started: %s", self._container.short_id)
+
+        for t in self._transferable_specs:
+            self._transfer_into_container(*t)
+
         return self
 
     def stop(self, force: bool = True, delete_volume: bool = True) -> None:
@@ -304,6 +318,68 @@ class DockerContainer:
     def _configure(self) -> None:
         # placeholder if subclasses want to define this and use the default start method
         pass
+
+    def with_copy_into_container(
+        self, transferable: Transferable, destination_in_container: str, mode: int = 0o644
+    ) -> Self:
+        self._transferable_specs.append((transferable, destination_in_container, mode))
+        return self
+
+    def copy_into_container(self, transferable: Transferable, destination_in_container: str, mode: int = 0o644) -> None:
+        return self._transfer_into_container(transferable, destination_in_container, mode)
+
+    def _transfer_into_container(self, transferable: Transferable, destination_in_container: str, mode: int) -> None:
+        if isinstance(transferable, bytes):
+            self._transfer_file_content_into_container(transferable, destination_in_container, mode)
+        elif isinstance(transferable, pathlib.Path):
+            if transferable.is_file():
+                self._transfer_file_content_into_container(transferable.read_bytes(), destination_in_container, mode)
+            elif transferable.is_dir():
+                self._transfer_directory_into_container(transferable, destination_in_container, mode)
+            else:
+                raise TypeError(f"Path {transferable} is neither a file nor directory")
+        else:
+            raise TypeError("source must be bytes or PathLike")
+
+    def _transfer_file_content_into_container(
+        self, file_content: bytes, destination_in_container: str, mode: int
+    ) -> None:
+        fileobj = io.BytesIO()
+        with tarfile.open(fileobj=fileobj, mode="w") as tar:
+            tarinfo = tarfile.TarInfo(name=destination_in_container)
+            tarinfo.size = len(file_content)
+            tarinfo.mode = mode
+            tar.addfile(tarinfo, io.BytesIO(file_content))
+        fileobj.seek(0)
+        assert self._container is not None
+        rv = self._container.put_archive(path="/", data=fileobj.getvalue())
+        assert rv is True
+
+    def _transfer_directory_into_container(
+        self, source_directory: pathlib.Path, destination_in_container: str, mode: int
+    ) -> None:
+        assert self._container is not None
+        result = self._container.exec_run(["mkdir", "-p", destination_in_container])
+        assert result.exit_code == 0
+
+        fileobj = io.BytesIO()
+        with tarfile.open(fileobj=fileobj, mode="w") as tar:
+            tar.add(source_directory, arcname=source_directory.name)
+        fileobj.seek(0)
+        rv = self._container.put_archive(path=destination_in_container, data=fileobj.getvalue())
+        assert rv is True
+
+    def copy_from_container(self, source_in_container: str, destination_on_host: pathlib.Path) -> None:
+        assert self._container is not None
+        tar_stream, _ = self._container.get_archive(source_in_container)
+
+        for chunk in tar_stream:
+            with tarfile.open(fileobj=io.BytesIO(chunk)) as tar:
+                for member in tar.getmembers():
+                    with open(destination_on_host, "wb") as f:
+                        fileobj = tar.extractfile(member)
+                        assert fileobj is not None
+                        f.write(fileobj.read())
 
 
 class Reaper:
