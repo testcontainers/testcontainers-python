@@ -18,7 +18,7 @@ from pymongo import MongoClient
 
 from testcontainers.core.generic import DbContainer
 from testcontainers.core.utils import raise_for_deprecated_parameter
-from testcontainers.core.waiting_utils import wait_for_logs
+from testcontainers.core.wait_strategies import LogMessageWaitStrategy
 
 
 class MongoDbContainer(DbContainer):
@@ -57,7 +57,13 @@ class MongoDbContainer(DbContainer):
         **kwargs,
     ) -> None:
         raise_for_deprecated_parameter(kwargs, "port_to_expose", "port")
-        super().__init__(image=image, **kwargs)
+        super().__init__(
+            image=image,
+            _wait_strategy=LogMessageWaitStrategy(
+                re.compile(r"waiting for connections", re.IGNORECASE)
+            ),
+            **kwargs,
+        )
         self.username = username if username else os.environ.get("MONGO_INITDB_ROOT_USERNAME", "test")
         self.password = password if password else os.environ.get("MONGO_INITDB_ROOT_PASSWORD", "test")
         self.dbname = dbname if dbname else os.environ.get("MONGO_DB", "test")
@@ -78,12 +84,8 @@ class MongoDbContainer(DbContainer):
         )
 
     def _connect(self) -> None:
-        regex = re.compile(r"waiting for connections", re.MULTILINE | re.IGNORECASE)
-
-        def predicate(text: str) -> bool:
-            return regex.search(text) is not None
-
-        wait_for_logs(self, predicate)
+        # LogMessageWaitStrategy handles waiting for container readiness
+        pass
 
     def get_connection_client(self) -> MongoClient:
         return MongoClient(self.get_connection_url())
