@@ -264,6 +264,12 @@ class DockerClient:
         labels = create_labels("", param.get("labels"))
         return self.client.networks.create(name, **{**param, "labels": labels})
 
+    def find_container_by_hash(self, hash_: str) -> Union[Container, None]:
+        for container in self.client.containers.list(all=True):
+            if container.labels.get("hash", None) == hash_:
+                return container
+        return None
+
 
 def get_docker_host() -> Optional[str]:
     return c.tc_properties_get_tc_host() or os.getenv("DOCKER_HOST")
