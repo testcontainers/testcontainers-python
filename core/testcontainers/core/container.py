@@ -296,10 +296,10 @@ class DockerContainer:
             return "not_started"
         return cast("str", self._container.status)
 
-    def exec(self, command: Union[str, list[str]]) -> ExecResult:
+    def exec(self, command: Union[str, list[str]], *args: Any, **kwargs: Any) -> ExecResult:
         if not self._container:
             raise ContainerStartException("Container should be started before executing a command")
-        return self._container.exec_run(command)
+        return self._container.exec_run(command, *args, **kwargs)
 
     def _configure(self) -> None:
         # placeholder if subclasses want to define this and use the default start method
