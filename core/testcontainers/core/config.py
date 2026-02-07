@@ -108,11 +108,12 @@ class TestcontainersConfiguration:
     _docker_auth_config: Optional[str] = field(default_factory=lambda: environ.get("DOCKER_AUTH_CONFIG"))
     tc_host_override: Optional[str] = environ.get("TC_HOST", environ.get("TESTCONTAINERS_HOST_OVERRIDE"))
     connection_mode_override: Optional[ConnectionMode] = field(default_factory=get_user_overwritten_connection_mode)
-
     """
     https://github.com/testcontainers/testcontainers-go/blob/dd76d1e39c654433a3d80429690d07abcec04424/docker.go#L644
     if os env TC_HOST is set, use it
     """
+    hub_image_name_prefix: str = environ.get("TESTCONTAINERS_HUB_IMAGE_NAME_PREFIX", "")
+    """ Prefix to use for hub image names, e.g. for private registries. """
 
     @property
     def docker_auth_config(self) -> Optional[str]:

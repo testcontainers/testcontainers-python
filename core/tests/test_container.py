@@ -3,6 +3,7 @@ import pytest
 from testcontainers.core.container import DockerContainer
 from testcontainers.core.docker_client import DockerClient
 from testcontainers.core.config import ConnectionMode
+from testcontainers.core.config import testcontainers_config
 
 FAKE_ID = "ABC123"
 
@@ -96,3 +97,25 @@ def test_attribute(init_attr, init_value, class_attr, stored_value):
     """Test that the attributes set through the __init__ function are properly stored."""
     with DockerContainer("ubuntu", **{init_attr: init_value}) as container:
         assert getattr(container, class_attr) == stored_value
+
+
+def test_image_prefix_applied(monkeypatch: pytest.MonkeyPatch) -> None:
+    """Test that the hub_image_name_prefix is properly applied to the image name."""
+
+    # Set a prefix
+    test_prefix = "myregistry.example.com/"
+    monkeypatch.setattr(testcontainers_config, "hub_image_name_prefix", test_prefix)
+
+    # Create a container and verify the prefix is applied
+    container = DockerContainer("nginx:latest")
+    assert container.image == "myregistry.example.com/nginx:latest"
+
+
+def test_image_no_prefix_applied_when_empty(monkeypatch: pytest.MonkeyPatch) -> None:
+    """Test that when hub_image_name_prefix is empty, no prefix is applied."""
+    # Set an empty prefix
+    monkeypatch.setattr(testcontainers_config, "hub_image_name_prefix", "")
+
+    # Create a container and verify no prefix is applied
+    container = DockerContainer("nginx:latest")
+    assert container.image == "nginx:latest"

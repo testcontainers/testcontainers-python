@@ -1,6 +1,6 @@
 import contextlib
 import sys
-from os import PathLike
+from os import PathLike, getenv
 from socket import socket
 from types import TracebackType
 from typing import TYPE_CHECKING, Any, Optional, TypedDict, Union, cast
@@ -82,7 +82,7 @@ class DockerContainer:
             for vol in volumes:
                 self.with_volume_mapping(*vol)
 
-        self.image = image
+        self.image = c.hub_image_name_prefix + image
         self._docker = DockerClient(**(docker_client_kw or {}))
         self._container: Optional[Container] = None
         self._command: Optional[Union[str, list[str]]] = command
