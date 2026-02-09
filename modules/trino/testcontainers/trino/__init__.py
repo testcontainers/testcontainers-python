@@ -24,6 +24,7 @@ class TrinoContainer(DockerContainer):
         user: str = "test",
         port: int = 8080,
         container_start_timeout: int = 30,
+        wait_strategy_check_string: str = ".*======== SERVER STARTED ========.*",
         **kwargs,
     ):
         super().__init__(image=image, **kwargs)
@@ -31,7 +32,7 @@ class TrinoContainer(DockerContainer):
         self.port = port
         self.with_exposed_ports(self.port)
         self.waiting_for(
-            LogMessageWaitStrategy(re.compile(".*======== SERVER STARTED ========.*", re.MULTILINE))
+            LogMessageWaitStrategy(re.compile(wait_strategy_check_string, re.MULTILINE))
             .with_poll_interval(c.sleep_time)
             .with_startup_timeout(container_start_timeout)
         )
