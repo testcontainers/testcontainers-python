@@ -4,7 +4,7 @@
 
 The Testcontainers module for [Temporal](https://temporal.io/) — a durable execution platform for running reliable, long-running workflows.
 
-This module spins up the Temporal dev server (`temporalio/auto-setup`) which includes the Temporal server, a preconfigured `default` namespace, and the Web UI.
+This module spins up the Temporal dev server (`temporalio/temporal`) which includes the Temporal server, a preconfigured `default` namespace, and the Web UI.
 
 ## Adding this module to your project dependencies
 
