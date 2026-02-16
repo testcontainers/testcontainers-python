@@ -5142,7 +5142,7 @@ requires-dist = [
     { name = "weaviate-client", marker = "extra == 'weaviate'", specifier = ">=4" },
     { name = "wrapt" },
 ]
-provides-extras = ["arangodb", "aws", "azurite", "cassandra", "clickhouse", "cosmosdb", "cockroachdb", "db2", "elasticsearch", "generic", "test-module-import", "google", "influxdb", "k3s", "kafka", "keycloak", "localstack", "mailpit", "memcached", "minio", "milvus", "mongodb", "mqtt", "mssql", "mysql", "nats", "neo4j", "nginx", "openfga", "opensearch", "ollama", "oracle", "oracle-free", "postgres", "qdrant", "rabbitmq", "redis", "registry", "selenium", "scylla", "sftp", "vault", "weaviate", "chroma", "trino"]
+provides-extras = ["arangodb", "aws", "azurite", "cassandra", "clickhouse", "cosmosdb", "cockroachdb", "db2", "elasticsearch", "generic", "test-module-import", "google", "influxdb", "k3s", "kafka", "keycloak", "localstack", "mailpit", "memcached", "minio", "milvus", "mongodb", "mqtt", "mssql", "mysql", "nats", "neo4j", "nginx", "openfga", "opensearch", "ollama", "oracle", "oracle-free", "postgres", "qdrant", "rabbitmq", "redis", "registry", "selenium", "scylla", "sftp", "temporal", "vault", "weaviate", "chroma", "trino"]
 
 [package.metadata.requires-dev]
 dev = [
