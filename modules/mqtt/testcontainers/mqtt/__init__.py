@@ -121,6 +121,10 @@ class MosquittoContainer(DockerContainer):
             # default config file
             configfile = Path(__file__).parent / MosquittoContainer.CONFIG_FILE
         self.with_volume_mapping(configfile, "/mosquitto/config/mosquitto.conf")
+        # since version 2.1.1 - 2026-02-04, which fixed a PUID/PGID issue, the container needs to write to the data directory, 
+        # so we need to map it to a volume
+        self.with_volume_mapping("mosquitto_data", "/data", mode="rw")
+
         # if self.password:
         #     # TODO: add authentication
         #     pass
