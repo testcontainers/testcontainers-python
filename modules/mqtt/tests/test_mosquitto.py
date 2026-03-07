@@ -2,7 +2,7 @@ import pytest
 
 from testcontainers.mqtt import MosquittoContainer
 
-VERSIONS = ["1.6.15", "2.0.18", "2.1.2"]
+VERSIONS = ["1.6.15", "2.0.18", "2.1.2-alpine"]
 
 
 @pytest.mark.parametrize("version", VERSIONS)
