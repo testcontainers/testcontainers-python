@@ -318,6 +318,14 @@ class DockerClient:
         container = self.client.containers.get(container_id)
         return ContainerInspectInfo.from_dict(container.attrs)
 
+    def is_podman(self) -> bool:
+        """Detect if the Docker daemon is actually Podman."""
+        try:
+            components = self.client.version().get("Components", [])
+            return any("Podman" in c.get("Name", "") for c in components)
+        except Exception:
+            return False
+
 
 def get_docker_host() -> Optional[str]:
     host = c.tc_properties_get_tc_host() or os.getenv("DOCKER_HOST")
