@@ -88,6 +88,8 @@ _WARNINGS = {"DOCKER_AUTH_CONFIG": "DOCKER_AUTH_CONFIG is experimental, see test
 
 @dataclass
 class TestcontainersConfiguration:
+    __test__ = False
+
     def _render_bool(self, env_name: str, prop_name: str) -> bool:
         env_val = environ.get(env_name, None)
         if env_val is not None:
