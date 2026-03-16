@@ -11,6 +11,7 @@ from subprocess import run as subprocess_run
 from types import TracebackType
 from typing import Any, Callable, Literal, Optional, TypeVar, Union, cast
 
+from testcontainers.core.docker_client import get_docker_host_hostname
 from testcontainers.core.exceptions import ContainerIsNotRunning, NoSuchPortExposed
 from testcontainers.core.waiting_utils import WaitStrategy
 
@@ -45,10 +46,21 @@ class PublishedPortModel:
     Protocol: Optional[str] = None
 
     def normalize(self) -> "PublishedPortModel":
-        url_not_usable = system() == "Windows" and self.URL == "0.0.0.0"
-        if url_not_usable:
+        url = self.URL
+
+        # For SSH-based DOCKER_HOST, local addresses (0.0.0.0, 127.0.0.1, localhost, ::, ::1)
+        # refer to the remote machine, not the local one.
+        # Replace them with the actual remote hostname.
+        ssh_host = get_docker_host_hostname()
+        if ssh_host and url in ("0.0.0.0", "127.0.0.1", "localhost", "::", "::1"):
+            url = ssh_host
+        # On Windows, 0.0.0.0 is not usable — replace with 127.0.0.1
+        elif system() == "Windows" and url == "0.0.0.0":
+            url = "127.0.0.1"
+
+        if url != self.URL:
             self_dict = asdict(self)
-            self_dict.update({"URL": "127.0.0.1"})
+            self_dict.update({"URL": url})
             return PublishedPortModel(**self_dict)
         return self
 
