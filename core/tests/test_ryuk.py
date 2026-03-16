@@ -3,7 +3,7 @@ import pytest
 from pytest import MonkeyPatch
 
 from docker import DockerClient
-from docker.errors import NotFound, APIError
+from docker.errors import NotFound
 
 from testcontainers.core.config import testcontainers_config
 from testcontainers.core.container import Reaper
