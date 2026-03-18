@@ -1,5 +1,12 @@
 # Changelog
 
+## [4.14.2](https://github.com/testcontainers/testcontainers-python/compare/testcontainers-v4.14.1...testcontainers-v4.14.2) (2026-03-18)
+
+
+### Features
+
+* **kafka:** allow configurable listener name and security protocol ([#966](https://github.com/testcontainers/testcontainers-python/issues/966)) ([44dd40b](https://github.com/testcontainers/testcontainers-python/commit/44dd40b48c3a5020b487bae5d460124d9e594ac3))
+
 ## [4.14.1](https://github.com/testcontainers/testcontainers-python/compare/testcontainers-v4.14.0...testcontainers-v4.14.1) (2026-01-31)
 
 
