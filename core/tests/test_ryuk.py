@@ -1,4 +1,4 @@
-from time import sleep
+from time import sleep, perf_counter
 import pytest
 from pytest import MonkeyPatch
 
@@ -10,6 +10,27 @@ from testcontainers.core.container import Reaper
 from testcontainers.core.container import DockerContainer
 from testcontainers.core.utils import is_mac
 from testcontainers.core.waiting_utils import wait_for_logs
+
+
+def _wait_for_container_removed(client: DockerClient, container_id: str, timeout: float = 30) -> None:
+    """Poll until a container is fully removed (raises NotFound)."""
+    start = perf_counter()
+    while perf_counter() - start < timeout:
+        try:
+            client.containers.get(container_id)
+        except NotFound:
+            return
+        sleep(0.5)
+
+    try:
+        c = client.containers.get(container_id)
+        name = c.name
+        status = c.status
+        started_at = c.attrs.get("State", {}).get("StartedAt", "unknown")
+        detail = f"name={name}, status={status}, started_at={started_at}"
+    except NotFound:
+        detail = "container disappeared just after timeout"
+    raise TimeoutError(f"Container {container_id} was not removed within {timeout}s ({detail})")
 
 
 @pytest.mark.skipif(
@@ -39,8 +60,11 @@ def test_wait_for_reaper(monkeypatch: MonkeyPatch):
     assert rs
     rs.close()
 
-    sleep(0.6)  # Sleep until Ryuk reaps all dangling containers. 0.5 extra seconds for good measure.
+    # Ryuk will reap containers then auto-remove itself.
+    # Wait for the reaper container to disappear and once it's gone, all labeled containers are guaranteed reaped.
+    _wait_for_container_removed(docker_client, reaper_id)
 
+    # Verify both containers were reaped
     with pytest.raises(NotFound):
         docker_client.containers.get(container_id)
     with pytest.raises(NotFound):

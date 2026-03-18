@@ -179,6 +179,7 @@ def test_find_host_network_in_dood() -> None:
     assert DockerClient().find_host_network() == os.environ[EXPECTED_NETWORK_VAR]
 
 
+@pytest.mark.long_running
 @pytest.mark.skipif(
     is_mac(),
     reason="Docker socket mounting and container networking do not work reliably on Docker Desktop for macOS",
@@ -219,6 +220,7 @@ def test_dood(python_testcontainer_image: str) -> None:
     assert status["StatusCode"] == 0
 
 
+@pytest.mark.long_running
 @pytest.mark.skipif(
     is_mac(),
     reason="Docker socket mounting and container networking do not work reliably on Docker Desktop for macOS",
