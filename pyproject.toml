@@ -1,6 +1,6 @@
 [project]
 name = "testcontainers"
-version = "4.14.1"  # auto-incremented by release-please
+version = "4.14.2"  # auto-incremented by release-please
 description = "Python library for throwaway instances of anything that can run in a Docker container"
 readme = "README.md"
 requires-python = ">=3.10"
@@ -98,7 +98,7 @@ rabbitmq = ["pika>=1"]
 redis = ["redis>=7"]
 registry = ["bcrypt>=5"]
 selenium = ["selenium>=4"]
-scylla = ["cassandra-driver>=3"]
+scylla = ["cassandra-driver>=3; python_version < '3.14'"]
 sftp = ["cryptography"]
 vault = []
 weaviate = ["weaviate-client>=4"]
@@ -120,7 +120,7 @@ test = [
   "psycopg2-binary==2.9.11",
   "pg8000==1.31.5",
   "psycopg>=3",
-  "cassandra-driver>=3",
+  "cassandra-driver>=3; python_version < '3.14'",
   "kafka-python-ng>=2",
   "hvac>=2; python_version < '4.0'",
   "pymilvus>=2",
@@ -277,6 +277,7 @@ log_cli = true
 log_cli_level = "INFO"
 markers = [
   "inside_docker_check: mark test to be used to validate DinD/DooD is working as expected",
+  "long_running: mark test as very long running",
 ]
 filterwarnings = [
   "ignore:The @wait_container_is_ready decorator is deprecated.*:DeprecationWarning",
