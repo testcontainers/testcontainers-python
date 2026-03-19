@@ -26,6 +26,14 @@ ADMIN_USERNAME_ENVIRONMENT_VARIABLE = "KC_BOOTSTRAP_ADMIN_USERNAME"
 ADMIN_PASSWORD_ENVIRONMENT_VARIABLE = "KC_BOOTSTRAP_ADMIN_PASSWORD"
 
 
+def _health_path(relative_path: Optional[str]) -> str:
+    """Build health endpoint path, prepending KC_HTTP_RELATIVE_PATH if set."""
+    path = (relative_path or "").strip()
+    if path and not path.startswith("/"):
+        path = "/" + path
+    return f"{path}/health/ready" if path else "/health/ready"
+
+
 class KeycloakContainer(DockerContainer):
     has_realm_imports = False
 
@@ -51,12 +59,14 @@ class KeycloakContainer(DockerContainer):
         port: int = 8080,
         management_port: int = 9000,
         cmd: Optional[str] = _DEFAULT_DEV_COMMAND,
+        http_relative_path: Optional[str] = None,
     ) -> None:
         super().__init__(image=image)
         self.username = username or os.environ.get("KEYCLOAK_ADMIN", "test")
         self.password = password or os.environ.get("KEYCLOAK_ADMIN_PASSWORD", "test")
         self.port = port
         self.management_port = management_port
+        self.http_relative_path = http_relative_path
         self.with_exposed_ports(self.port, self.management_port)
         self.cmd = cmd
 
@@ -69,6 +79,8 @@ class KeycloakContainer(DockerContainer):
         # Enable health checks
         # see: https://www.keycloak.org/server/health#_relevant_options
         self.with_env("KC_HEALTH_ENABLED", "true")
+        if self.http_relative_path:
+            self.with_env("KC_HTTP_RELATIVE_PATH", self.http_relative_path)
         # Start Keycloak in development mode
         # see: https://www.keycloak.org/server/configuration#_starting_keycloak_in_development_mode
         if self.has_realm_imports:
@@ -78,12 +90,24 @@ class KeycloakContainer(DockerContainer):
     def get_url(self) -> str:
         host = self.get_container_host_ip()
         port = self.get_exposed_port(self.port)
-        return f"http://{host}:{port}"
+        base = f"http://{host}:{port}"
+        path = (self.http_relative_path or "").strip()
+        if path and not path.startswith("/"):
+            path = "/" + path
+        return f"{base}{path}" if path else base
 
     def get_management_url(self) -> str:
         host = self.get_container_host_ip()
         port = self.get_exposed_port(self.management_port)
-        return f"http://{host}:{port}"
+        base = f"http://{host}:{port}"
+        path = (self.http_relative_path or "").strip()
+        if path and not path.startswith("/"):
+            path = "/" + path
+        return f"{base}{path}" if path else base
+
+    def _get_health_url(self, use_management: bool) -> str:
+        base = self.get_management_url() if use_management else self.get_url()
+        return f"{base}{_health_path(self.http_relative_path)}"
 
     @wait_container_is_ready(requests.exceptions.ConnectionError, requests.exceptions.ReadTimeout)
     def _readiness_probe(self) -> None:
@@ -91,9 +115,9 @@ class KeycloakContainer(DockerContainer):
         try:
             # Try the new health endpoint for keycloak 25.0.0 and above
             # See https://www.keycloak.org/docs/25.0.0/release_notes/#management-port-for-metrics-and-health-endpoints
-            response = requests.get(f"{self.get_management_url()}/health/ready", timeout=1)
+            response = requests.get(self._get_health_url(use_management=True), timeout=1)
         except requests.exceptions.ConnectionError:
-            response = requests.get(f"{self.get_url()}/health/ready", timeout=1)
+            response = requests.get(self._get_health_url(use_management=False), timeout=1)
         response.raise_for_status()
         if _DEFAULT_DEV_COMMAND in self._command:
             wait_for_logs(self, "started in \\d+\\.\\d+s")
@@ -102,6 +126,11 @@ class KeycloakContainer(DockerContainer):
     def start(self) -> "KeycloakContainer":
         super().start()
         self._readiness_probe()
+        return self
+
+    def with_http_relative_path(self, path: str) -> "KeycloakContainer":
+        """Set KC_HTTP_RELATIVE_PATH (e.g. '/auth') so health check uses {path}/health/ready."""
+        self.http_relative_path = path
         return self
 
     def with_realm_import_file(self, realm_import_file: str) -> "KeycloakContainer":
