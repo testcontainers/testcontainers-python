@@ -84,6 +84,7 @@ mongodb = ["pymongo>=4"]
 mqtt = []
 mssql = ["sqlalchemy>=2", "pymssql>=2"]
 mysql = ["sqlalchemy>=2", "pymysql[rsa]>=1"]
+n8n = []
 nats = ["nats-py>=2"]
 neo4j = ["neo4j>=6"]
 nginx = []
@@ -201,6 +202,7 @@ packages = [
   "modules/mqtt/testcontainers",
   "modules/mssql/testcontainers",
   "modules/mysql/testcontainers",
+  "modules/n8n/testcontainers",
   "modules/nats/testcontainers",
   "modules/neo4j/testcontainers",
   "modules/nginx/testcontainers",
@@ -250,6 +252,7 @@ dev-mode-dirs = [
   "modules/mqtt",
   "modules/mssql",
   "modules/mysql",
+  "modules/n8n",
   "modules/nats",
   "modules/neo4j",
   "modules/nginx",
