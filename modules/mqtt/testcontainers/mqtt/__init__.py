@@ -121,6 +121,10 @@ class MosquittoContainer(DockerContainer):
             # default config file
             configfile = Path(__file__).parent / MosquittoContainer.CONFIG_FILE
         self.with_volume_mapping(configfile, "/mosquitto/config/mosquitto.conf")
+        # since version 2.1.1 - 2026-02-04, which fixed a PUID/PGID issue, the container needs to write to the data directory, 
+        # so we mount it as tmpfs for better performance in tests
+        self.with_tmpfs_mount("/data")
+
         # if self.password:
         #     # TODO: add authentication
         #     pass
