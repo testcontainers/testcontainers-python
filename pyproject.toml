@@ -304,9 +304,6 @@ source = [
     "*/site-packages/testcontainers",
     "*/dist-packages/testcontainers",
 ]
-omit = [
-    "core/testcontainers/core/generic.py", # Marked for deprecation
-]
 
 [tool.ruff]
 target-version = "py39"
