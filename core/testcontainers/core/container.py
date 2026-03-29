@@ -35,6 +35,7 @@ class Mount(TypedDict):
 
 class DockerContainer:
     """
+
     Basic container object to spin up Docker instances.
 
     Args:
@@ -80,6 +81,8 @@ class DockerContainer:
         if volumes:
             for vol in volumes:
                 self.with_volume_mapping(*vol)
+
+        self.tmpfs: dict[str, str] = {}
 
         self.image = image
         self._docker = DockerClient(**(docker_client_kw or {}))
@@ -197,6 +200,7 @@ class DockerContainer:
             ports=cast("dict[int, Optional[int]]", self.ports),
             name=self._name,
             volumes=self.volumes,
+            tmpfs=self.tmpfs,
             **{**network_kwargs, **self._kwargs},
         )
 
@@ -267,6 +271,16 @@ class DockerContainer:
     def with_volume_mapping(self, host: Union[str, PathLike[str]], container: str, mode: str = "ro") -> Self:
         mapping: Mount = {"bind": container, "mode": mode}
         self.volumes[str(host)] = mapping
+        return self
+
+    def with_tmpfs_mount(self, container_path: str, size: Optional[str] = None) -> Self:
+        """Mount a tmpfs volume on the container.
+        
+        :param container_path: Container path to mount tmpfs on (e.g., '/data')
+        :param size: Optional size limit (e.g., '256m', '1g'). If None, unbounded.
+        :return: Self for chaining
+        """
+        self.tmpfs[container_path] = size or ""
         return self
 
     def get_wrapped_container(self) -> "Container":
