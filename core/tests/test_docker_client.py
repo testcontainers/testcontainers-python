@@ -343,3 +343,15 @@ def test_get_docker_host_hostname(monkeypatch: pytest.MonkeyPatch, docker_host: 
     else:
         monkeypatch.delenv("DOCKER_HOST", raising=False)
     assert get_docker_host_hostname() == expected_hostname
+
+
+def test_ssh_docker_host(monkeypatch: pytest.MonkeyPatch) -> None:
+    """Verify SSH DOCKER_HOST sets use_ssh_client and host() returns the remote hostname."""
+    monkeypatch.setenv("DOCKER_HOST", "ssh://user@10.0.0.1")
+    monkeypatch.setattr(c, "tc_properties_get_tc_host", lambda: None)
+    monkeypatch.setattr(c, "tc_host_override", None)
+    mock_docker = MagicMock(spec=docker)
+    with patch("testcontainers.core.docker_client.docker", mock_docker):
+        client = DockerClient()
+    mock_docker.from_env.assert_called_once_with(use_ssh_client=True)
+    assert client.host() == "10.0.0.1"
