@@ -31,9 +31,9 @@ uname -a
 echo "------"
 docker info
 echo "------"
-poetry run python --version
+uv run python --version
 echo "------"
-poetry show --tree
+uv tree
 ```
 
 ```bash

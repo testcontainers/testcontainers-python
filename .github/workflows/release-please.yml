@@ -1,5 +1,9 @@
 name: Release Please
 
+env:
+  UV_FROZEN: "1"   # use lock file as is
+  UV_NO_EDITABLE: "1"  # test the build package, not the dev installation
+
 on:
   push:
     branches: [ main ]
@@ -28,8 +32,8 @@ jobs:
       - name: Set up Python
         uses: ./.github/actions/setup-env
       - name: build package
-        run: poetry build
-      # this action uploads packages from the `dist/` directory, which poetry has built in the previous step
+        run: uv build
+      # this action uploads packages from the `dist/` directory, which uv has built in the previous step
       # usable once we set up trusted publishing, see https://docs.pypi.org/trusted-publishers/using-a-publisher/
       - name: push package
         uses: pypa/gh-action-pypi-publish@release/v1
