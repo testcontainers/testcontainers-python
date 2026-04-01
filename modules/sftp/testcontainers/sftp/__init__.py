@@ -20,7 +20,7 @@ from cryptography.hazmat.primitives import serialization
 from cryptography.hazmat.primitives.asymmetric import rsa
 
 from testcontainers.core.container import DockerContainer
-from testcontainers.core.waiting_utils import wait_for_logs
+from testcontainers.core.wait_strategies import LogMessageWaitStrategy
 
 if TYPE_CHECKING:
     from typing_extensions import Self
@@ -266,7 +266,8 @@ class SFTPContainer(DockerContainer):
 
     def start(self) -> Self:
         super().start()
-        wait_for_logs(self, f".*Server listening on 0.0.0.0 port {self.port}.*")
+        strategy = LogMessageWaitStrategy(f".*Server listening on 0.0.0.0 port {self.port}.*")
+        self.waiting_for(strategy)
         return self
 
     def get_exposed_sftp_port(self) -> int:
