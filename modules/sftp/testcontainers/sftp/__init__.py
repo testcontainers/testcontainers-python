@@ -265,9 +265,9 @@ class SFTPContainer(DockerContainer):
         self.with_exposed_ports(self.port)
 
     def start(self) -> Self:
-        super().start()
         strategy = LogMessageWaitStrategy(f".*Server listening on 0.0.0.0 port {self.port}.*")
         self.waiting_for(strategy)
+        super().start()
         return self
 
     def get_exposed_sftp_port(self) -> int:
