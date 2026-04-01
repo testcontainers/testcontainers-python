@@ -7,8 +7,6 @@ from testcontainers.core.exceptions import ContainerStartException
 from testcontainers.core.image import DockerImage
 from testcontainers.core.wait_strategies import HttpWaitStrategy
 
-# This comment can be removed (Used for testing)
-
 
 class ServerContainer(DockerContainer):
     """
