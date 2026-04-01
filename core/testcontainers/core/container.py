@@ -21,7 +21,7 @@ from testcontainers.core.docker_client import DockerClient
 from testcontainers.core.exceptions import ContainerConnectException, ContainerStartException
 from testcontainers.core.labels import LABEL_SESSION_ID, SESSION_ID
 from testcontainers.core.network import Network
-from testcontainers.core.transferable import Transferable, TransferSpec
+from testcontainers.core.transferable import Transferable, TransferSpec, build_transfer_tar
 from testcontainers.core.utils import is_arm, setup_logger
 from testcontainers.core.wait_strategies import LogMessageWaitStrategy
 from testcontainers.core.waiting_utils import WaitStrategy
@@ -289,7 +289,7 @@ class DockerContainer:
 
     def with_tmpfs_mount(self, container_path: str, size: Optional[str] = None) -> Self:
         """Mount a tmpfs volume on the container.
-        
+
         :param container_path: Container path to mount tmpfs on (e.g., '/data')
         :param size: Optional size limit (e.g., '256m', '1g'). If None, unbounded.
         :return: Self for chaining
@@ -342,57 +342,24 @@ class DockerContainer:
         return self._transfer_into_container(transferable, destination_in_container, mode)
 
     def _transfer_into_container(self, transferable: Transferable, destination_in_container: str, mode: int) -> None:
-        if isinstance(transferable, bytes):
-            self._transfer_file_content_into_container(transferable, destination_in_container, mode)
-        elif isinstance(transferable, pathlib.Path):
-            if transferable.is_file():
-                self._transfer_file_content_into_container(transferable.read_bytes(), destination_in_container, mode)
-            elif transferable.is_dir():
-                self._transfer_directory_into_container(transferable, destination_in_container, mode)
-            else:
-                raise TypeError(f"Path {transferable} is neither a file nor directory")
-        else:
-            raise TypeError("source must be bytes or PathLike")
+        if not self._container:
+            raise ContainerStartException("Container must be started before transferring files")
 
-    def _transfer_file_content_into_container(
-        self, file_content: bytes, destination_in_container: str, mode: int
-    ) -> None:
-        fileobj = io.BytesIO()
-        with tarfile.open(fileobj=fileobj, mode="w") as tar:
-            tarinfo = tarfile.TarInfo(name=destination_in_container)
-            tarinfo.size = len(file_content)
-            tarinfo.mode = mode
-            tar.addfile(tarinfo, io.BytesIO(file_content))
-        fileobj.seek(0)
-        assert self._container is not None
-        rv = self._container.put_archive(path="/", data=fileobj.getvalue())
-        assert rv is True
-
-    def _transfer_directory_into_container(
-        self, source_directory: pathlib.Path, destination_in_container: str, mode: int
-    ) -> None:
-        assert self._container is not None
-        result = self._container.exec_run(["mkdir", "-p", destination_in_container])
-        assert result.exit_code == 0
-
-        fileobj = io.BytesIO()
-        with tarfile.open(fileobj=fileobj, mode="w") as tar:
-            tar.add(source_directory, arcname=source_directory.name)
-        fileobj.seek(0)
-        rv = self._container.put_archive(path=destination_in_container, data=fileobj.getvalue())
-        assert rv is True
+        data = build_transfer_tar(transferable, destination_in_container, mode)
+        if not self._container.put_archive(path="/", data=data):
+            raise OSError(f"Failed to put archive into container at {destination_in_container}")
 
     def copy_from_container(self, source_in_container: str, destination_on_host: pathlib.Path) -> None:
-        assert self._container is not None
+        if not self._container:
+            raise ContainerStartException("Container must be started before copying files")
+
         tar_stream, _ = self._container.get_archive(source_in_container)
 
-        for chunk in tar_stream:
-            with tarfile.open(fileobj=io.BytesIO(chunk)) as tar:
-                for member in tar.getmembers():
-                    with open(destination_on_host, "wb") as f:
-                        fileobj = tar.extractfile(member)
-                        assert fileobj is not None
-                        f.write(fileobj.read())
+        with tarfile.open(fileobj=io.BytesIO(b"".join(tar_stream))) as tar:
+            for member in tar.getmembers():
+                extracted = tar.extractfile(member)
+                if extracted is not None:
+                    destination_on_host.write_bytes(extracted.read())
 
 
 class Reaper:
