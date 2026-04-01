@@ -9,6 +9,7 @@ FastAPI container that is using :code:`ServerContainer`
 
     >>> from testcontainers.generic import ServerContainer
     >>> from testcontainers.core.waiting_utils import wait_for_logs
+    >>> from testcontainers.core.image import DockerImage
 
     >>> with DockerImage(path="./modules/generic/tests/samples/fastapi", tag="fastapi-test:latest") as image:
     ...     with ServerContainer(port=80, image=image) as fastapi_server:
@@ -50,3 +51,39 @@ A more advance use-case, where we are using a FastAPI container that is using Re
     ...             response = client.get(f"/get/{test_data['key']}")
     ...             assert response.status_code == 200, "Failed to get data"
     ...             assert response.json() == {"key": test_data["key"], "value": test_data["value"]}
+
+.. autoclass:: testcontainers.generic.SqlContainer
+.. title:: testcontainers.generic.SqlContainer
+
+Postgres container that is using :code:`SqlContainer`
+
+.. doctest::
+
+    >>> from testcontainers.generic import SqlContainer
+    >>> from testcontainers.generic.providers.sql_connection_wait_strategy import SqlAlchemyConnectWaitStrategy
+    >>> from sqlalchemy import text
+    >>> import sqlalchemy
+
+    >>> class CustomPostgresContainer(SqlContainer):
+    ...     def __init__(self, image="postgres:15-alpine",
+    ...                  port=5432, username="test", password="test", dbname="test"):
+    ...         super().__init__(image=image, wait_strategy=SqlAlchemyConnectWaitStrategy())
+    ...         self.port_to_expose = port
+    ...         self.username = username
+    ...         self.password = password
+    ...         self.dbname = dbname
+    ...     def get_connection_url(self) -> str:
+    ...         host = self.get_container_host_ip()
+    ...         port = self.get_exposed_port(self.port_to_expose)
+    ...         return f"postgresql://{self.username}:{self.password}@{host}:{port}/{self.dbname}"
+    ...     def _configure(self) -> None:
+    ...         self.with_exposed_ports(self.port_to_expose)
+    ...         self.with_env("POSTGRES_USER", self.username)
+    ...         self.with_env("POSTGRES_PASSWORD", self.password)
+    ...         self.with_env("POSTGRES_DB", self.dbname)
+
+    >>> with CustomPostgresContainer() as postgres:
+    ...     engine = sqlalchemy.create_engine(postgres.get_connection_url())
+    ...     with engine.connect() as conn:
+    ...         result = conn.execute(text("SELECT 1"))
+    ...         assert result.scalar() == 1

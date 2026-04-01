@@ -483,7 +483,7 @@ name = "cassandra-driver"
 version = "3.29.3"
 source = { registry = "https://pypi.org/simple" }
 dependencies = [
-    { name = "geomet" },
+    { name = "geomet", marker = "python_full_version < '3.14'" },
 ]
 sdist = { url = "https://files.pythonhosted.org/packages/06/47/4e0fbdf02a7a418997f16f59feba26937d9973b979d3f23d79fbd8f6186f/cassandra_driver-3.29.3.tar.gz", hash = "sha256:ff6b82ee4533f6fd4474d833e693b44b984f58337173ee98ed76bce08721a636", size = 294612, upload-time = "2025-10-22T15:15:01.335Z" }
 wheels = [
@@ -1243,7 +1243,7 @@ name = "geomet"
 version = "1.1.0"
 source = { registry = "https://pypi.org/simple" }
 dependencies = [
-    { name = "click" },
+    { name = "click", marker = "python_full_version < '3.14'" },
 ]
 sdist = { url = "https://files.pythonhosted.org/packages/2a/8c/dde022aa6747b114f6b14a7392871275dea8867e2bd26cddb80cc6d66620/geomet-1.1.0.tar.gz", hash = "sha256:51e92231a0ef6aaa63ac20c443377ba78a303fd2ecd179dc3567de79f3c11605", size = 28732, upload-time = "2023-11-14T15:43:36.764Z" }
 wheels = [
@@ -4896,7 +4896,7 @@ wheels = [
 
 [[package]]
 name = "testcontainers"
-version = "4.14.1"
+version = "4.14.2"
 source = { editable = "." }
 dependencies = [
     { name = "docker" },
@@ -4933,6 +4933,7 @@ db2 = [
 generic = [
     { name = "httpx" },
     { name = "redis" },
+    { name = "sqlalchemy" },
 ]
 google = [
     { name = "google-cloud-datastore" },
@@ -5002,7 +5003,7 @@ registry = [
     { name = "bcrypt" },
 ]
 scylla = [
-    { name = "cassandra-driver" },
+    { name = "cassandra-driver", marker = "python_full_version < '3.14'" },
 ]
 selenium = [
     { name = "selenium" },
@@ -5023,7 +5024,7 @@ weaviate = [
 [package.dev-dependencies]
 dev = [
     { name = "anyio" },
-    { name = "cassandra-driver" },
+    { name = "cassandra-driver", marker = "python_full_version < '3.14'" },
     { name = "hvac", marker = "python_full_version < '4'" },
     { name = "kafka-python-ng" },
     { name = "mkdocs" },
@@ -5071,7 +5072,7 @@ lint = [
 ]
 test = [
     { name = "anyio" },
-    { name = "cassandra-driver" },
+    { name = "cassandra-driver", marker = "python_full_version < '3.14'" },
     { name = "hvac", marker = "python_full_version < '4'" },
     { name = "kafka-python-ng" },
     { name = "paho-mqtt" },
@@ -5097,7 +5098,7 @@ requires-dist = [
     { name = "bcrypt", marker = "extra == 'registry'", specifier = ">=5" },
     { name = "boto3", marker = "extra == 'aws'", specifier = ">=1" },
     { name = "boto3", marker = "extra == 'localstack'", specifier = ">=1" },
-    { name = "cassandra-driver", marker = "extra == 'scylla'", specifier = ">=3" },
+    { name = "cassandra-driver", marker = "python_full_version < '3.14' and extra == 'scylla'", specifier = ">=3" },
     { name = "chromadb-client", marker = "extra == 'chroma'", specifier = ">=1" },
     { name = "clickhouse-driver", marker = "extra == 'clickhouse'" },
     { name = "cryptography", marker = "extra == 'mailpit'" },
@@ -5132,6 +5133,7 @@ requires-dist = [
     { name = "redis", marker = "extra == 'redis'", specifier = ">=7" },
     { name = "selenium", marker = "extra == 'selenium'", specifier = ">=4" },
     { name = "sqlalchemy", marker = "extra == 'db2'", specifier = ">=2" },
+    { name = "sqlalchemy", marker = "extra == 'generic'" },
     { name = "sqlalchemy", marker = "extra == 'mssql'", specifier = ">=2" },
     { name = "sqlalchemy", marker = "extra == 'mysql'", specifier = ">=2" },
     { name = "sqlalchemy", marker = "extra == 'oracle'", specifier = ">=2" },
@@ -5147,7 +5149,7 @@ provides-extras = ["arangodb", "aws", "azurite", "cassandra", "clickhouse", "cos
 [package.metadata.requires-dev]
 dev = [
     { name = "anyio", specifier = ">=4" },
-    { name = "cassandra-driver", specifier = ">=3" },
+    { name = "cassandra-driver", marker = "python_full_version < '3.14'", specifier = ">=3" },
     { name = "hvac", marker = "python_full_version < '4'", specifier = ">=2" },
     { name = "kafka-python-ng", specifier = ">=2" },
     { name = "mkdocs", specifier = ">=1.5.3,<2.0.0" },
@@ -5193,7 +5195,7 @@ lint = [
 ]
 test = [
     { name = "anyio", specifier = ">=4" },
-    { name = "cassandra-driver", specifier = ">=3" },
+    { name = "cassandra-driver", marker = "python_full_version < '3.14'", specifier = ">=3" },
     { name = "hvac", marker = "python_full_version < '4'", specifier = ">=2" },
     { name = "kafka-python-ng", specifier = ">=2" },
     { name = "paho-mqtt", specifier = ">=2" },
