@@ -17,8 +17,9 @@ from typing_extensions import Self, assert_never
 
 from testcontainers.core.config import ConnectionMode
 from testcontainers.core.config import testcontainers_config as c
-from testcontainers.core.docker_client import ContainerInspectInfo, DockerClient
+from testcontainers.core.docker_client import DockerClient
 from testcontainers.core.exceptions import ContainerConnectException, ContainerStartException
+from testcontainers.core.inspect import ContainerInspectInfo
 from testcontainers.core.labels import LABEL_SESSION_ID, SESSION_ID
 from testcontainers.core.network import Network
 from testcontainers.core.transferable import Transferable, TransferSpec, build_transfer_tar
