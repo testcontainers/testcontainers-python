@@ -114,6 +114,43 @@ class DockerClient:
         )
         return container
 
+    @_wrapped_container_collection
+    def create(
+        self,
+        image: str,
+        command: Optional[Union[str, list[str]]] = None,
+        environment: Optional[dict[str, str]] = None,
+        ports: Optional[dict[int, Optional[int]]] = None,
+        labels: Optional[dict[str, str]] = None,
+        **kwargs: Any,
+    ) -> Container:
+        """Create a container without starting it, pulling the image first if not present locally."""
+        if "network" not in kwargs and not get_docker_host():
+            host_network = self.find_host_network()
+            if host_network:
+                kwargs["network"] = host_network
+
+        try:
+            # This is more or less a replication of what the self.client.containers.start does internally
+            self.client.images.get(image)
+        except docker.errors.ImageNotFound:
+            self.client.images.pull(image)
+
+        container = self.client.containers.create(
+            image,
+            command=command,
+            environment=environment,
+            ports=ports,
+            labels=create_labels(image, labels),
+            **kwargs,
+        )
+        return container
+
+    @_wrapped_container_collection
+    def start(self, container: Container) -> None:
+        """Start a previously created container."""
+        container.start()
+
     @_wrapped_image_collection
     def build(
         self, path: str, tag: Optional[str], rm: bool = True, **kwargs: Any
