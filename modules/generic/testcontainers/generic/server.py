@@ -1,13 +1,11 @@
 from typing import Union
-from urllib.error import HTTPError, URLError
-from urllib.request import urlopen
 
 import httpx
 
 from testcontainers.core.container import DockerContainer
 from testcontainers.core.exceptions import ContainerStartException
 from testcontainers.core.image import DockerImage
-from testcontainers.core.waiting_utils import wait_container_is_ready
+from testcontainers.core.wait_strategies import HttpWaitStrategy
 
 
 class ServerContainer(DockerContainer):
@@ -40,19 +38,9 @@ class ServerContainer(DockerContainer):
         self.internal_port = port
         self.with_exposed_ports(self.internal_port)
 
-    @wait_container_is_ready(HTTPError, URLError)
     def _connect(self) -> None:
-        # noinspection HttpUrlsUsage
-        url = self._create_connection_url()
-        try:
-            with urlopen(url) as r:
-                assert b"" in r.read()
-        except HTTPError as e:
-            # 404 is expected, as the server may not have the specific endpoint we are looking for
-            if e.code == 404:
-                pass
-            else:
-                raise
+        strategy = HttpWaitStrategy(self.internal_port).for_status_code(404)
+        strategy.wait_until_ready(self)
 
     def get_api_url(self) -> str:
         raise NotImplementedError
