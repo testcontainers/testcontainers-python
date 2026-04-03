@@ -11,6 +11,7 @@ from subprocess import run as subprocess_run
 from types import TracebackType
 from typing import Any, Callable, Literal, Optional, TypeVar, Union, cast
 
+from testcontainers.core.docker_client import get_docker_host_hostname
 from testcontainers.core.exceptions import ContainerIsNotRunning, NoSuchPortExposed
 from testcontainers.core.waiting_utils import WaitStrategy
 
@@ -30,7 +31,7 @@ def _ignore_properties(cls: type[_IPT], dict_: Any) -> _IPT:
         raise TypeError(f"Expected a dataclass type, got {cls}")
     class_fields = {f.name for f in fields(cls)}
     filtered = {k: v for k, v in dict_.items() if k in class_fields}
-    return cast("_IPT", cls(**filtered))
+    return cls(**filtered)
 
 
 @dataclass
@@ -45,10 +46,21 @@ class PublishedPortModel:
     Protocol: Optional[str] = None
 
     def normalize(self) -> "PublishedPortModel":
-        url_not_usable = system() == "Windows" and self.URL == "0.0.0.0"
-        if url_not_usable:
+        url = self.URL
+
+        # For SSH-based DOCKER_HOST, local addresses (0.0.0.0, 127.0.0.1, localhost, ::, ::1)
+        # refer to the remote machine, not the local one.
+        # Replace them with the actual remote hostname.
+        ssh_host = get_docker_host_hostname()
+        if ssh_host and url in ("0.0.0.0", "127.0.0.1", "localhost", "::", "::1"):
+            url = ssh_host
+        # On Windows, 0.0.0.0 is not usable — replace with 127.0.0.1
+        elif system() == "Windows" and url == "0.0.0.0":
+            url = "127.0.0.1"
+
+        if url != self.URL:
             self_dict = asdict(self)
-            self_dict.update({"URL": "127.0.0.1"})
+            self_dict.update({"URL": url})
             return PublishedPortModel(**self_dict)
         return self
 
@@ -177,10 +189,14 @@ class DockerCompose:
             to pass to docker compose.
         services:
             The list of services to use from this DockerCompose.
-        client_args:
-            arguments to pass to docker.from_env()
         docker_command_path:
             The docker compose command to run.
+        profiles:
+            The list of profiles to enable.
+        quiet_pull:
+            Whether to suppress output when pulling images.
+        quiet_build:
+            Whether to suppress output when building images.
 
     Example:
 
@@ -214,6 +230,8 @@ class DockerCompose:
     services: Optional[list[str]] = None
     docker_command_path: Optional[str] = None
     profiles: Optional[list[str]] = None
+    quiet_pull: bool = False
+    quiet_build: bool = False
     _wait_strategies: Optional[dict[str, Any]] = field(default=None, init=False, repr=False)
 
     def __post_init__(self) -> None:
@@ -278,6 +296,8 @@ class DockerCompose:
         # pull means running a separate command before starting
         if self.pull:
             pull_cmd = [*base_cmd, "pull"]
+            if self.quiet_pull:
+                pull_cmd.append("--quiet")
             self._run_command(cmd=pull_cmd)
 
         up_cmd = [*base_cmd, "up"]
@@ -285,6 +305,8 @@ class DockerCompose:
         # build means modifying the up command
         if self.build:
             up_cmd.append("--build")
+            if self.quiet_build:
+                up_cmd.append("--quiet-build")
 
         if self.wait:
             up_cmd.append("--wait")
