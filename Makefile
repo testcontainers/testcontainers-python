@@ -25,6 +25,9 @@ ${TESTS}: %/tests:
 quick-core-tests:  ## Run core tests excluding long_running
 	uv run coverage run --parallel -m pytest -v -m "not long_running" core/tests
 
+core-tests:  ## Run tests for the core package
+	uv run coverage run --parallel -m pytest -v core/tests
+
 coverage:  ## Target to combine and report coverage.
 	uv run coverage combine
 	uv run coverage report

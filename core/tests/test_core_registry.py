@@ -3,6 +3,9 @@
 Note: Using the testcontainers-python library to test the Docker registry.
 This could be considered a bad practice as it is not recommended to use the same library to test itself.
 However, it is a very good use case for DockerRegistryContainer and allows us to test it thoroughly.
+
+Note2: These tests are skipped on macOS and SSH-based Docker hosts because they rely on insecure HTTP registries,
+which are not supported in those environments without additional configuration.
 """
 
 import json
@@ -14,7 +17,7 @@ from docker.errors import NotFound
 
 from testcontainers.core.config import testcontainers_config
 from testcontainers.core.container import DockerContainer
-from testcontainers.core.docker_client import DockerClient
+from testcontainers.core.docker_client import DockerClient, is_ssh_docker_host
 from testcontainers.core.waiting_utils import wait_for_logs
 
 from testcontainers.registry import DockerRegistryContainer
@@ -24,6 +27,10 @@ from testcontainers.core.utils import is_mac
 @pytest.mark.skipif(
     is_mac(),
     reason="Docker Desktop on macOS does not support insecure private registries without daemon reconfiguration",
+)
+@pytest.mark.skipif(
+    is_ssh_docker_host(),
+    reason="Remote Docker via SSH requires HTTPS for non-localhost registries; insecure HTTP registries are not accessible",
 )
 def test_missing_on_private_registry(monkeypatch):
     username = "user"
@@ -49,6 +56,10 @@ def test_missing_on_private_registry(monkeypatch):
 @pytest.mark.skipif(
     is_mac(),
     reason="Docker Desktop on macOS does not support local insecure registries over HTTP without modifying daemon settings",
+)
+@pytest.mark.skipif(
+    is_ssh_docker_host(),
+    reason="Remote Docker via SSH requires HTTPS for non-localhost registries; insecure HTTP registries are not accessible",
 )
 @pytest.mark.parametrize(
     "image,tag,username,password,expected_output",
