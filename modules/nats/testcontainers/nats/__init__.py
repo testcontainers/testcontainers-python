@@ -47,6 +47,7 @@ class NatsContainer(DockerContainer):
         management_port: int = 8222,
         expected_ready_log: str = "Server is ready",
         ready_timeout_secs: int = 120,
+        jetstream: bool = False,
         **kwargs,
     ) -> None:
         super().__init__(image, **kwargs)
@@ -55,6 +56,8 @@ class NatsContainer(DockerContainer):
         self._expected_ready_log = expected_ready_log
         self._ready_timeout_secs = max(ready_timeout_secs, 0)
         self.with_exposed_ports(self.client_port, self.management_port)
+        if jetstream:
+            self.with_command("-js")
 
     @wait_container_is_ready()
     def _healthcheck(self) -> None:
