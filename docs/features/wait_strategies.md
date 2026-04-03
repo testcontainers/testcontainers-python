@@ -4,19 +4,17 @@ Testcontainers-Python provides several strategies to wait for containers to be r
 
 ## Basic Wait Strategy
 
-The simplest way to wait for a container is using the `wait_container_is_ready` decorator:
+The simplest way to wait for a container is using a structured wait strategy:
 
 ```python
-from testcontainers.core.waiting_utils import wait_container_is_ready
+from testcontainers.core.wait_strategies import HttpWaitStrategy
 
 class MyContainer(DockerContainer):
-    @wait_container_is_ready()
     def _connect(self):
-        # Your connection logic here
-        pass
+        HttpWaitStrategy(8080).wait_until_ready(self)
 ```
 
-This decorator will retry the method until it succeeds or times out. By default, it will retry for 120 seconds with a 1-second interval between attempts.
+The strategy will retry until it succeeds or times out. By default, it will retry for 120 seconds with a 1-second interval between attempts.
 
 ## Log-based Waiting
 
