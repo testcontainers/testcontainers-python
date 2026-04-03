@@ -69,9 +69,12 @@ class DockerClient:
         if docker_host:
             LOGGER.info(f"using host {docker_host}")
             os.environ["DOCKER_HOST"] = docker_host
-            self.client = docker.from_env(**kwargs)
-        else:
-            self.client = docker.from_env(**kwargs)
+            # Use shell-based SSH client instead of paramiko to avoid conflicts with pytest stdin capture
+            # (paramiko's invoke library fails when reading from captured stdin).
+            if docker_host.startswith("ssh://"):
+                kwargs.setdefault("use_ssh_client", True)
+
+        self.client = docker.from_env(**kwargs)
         self.client.api.headers["x-tc-sid"] = SESSION_ID
         self.client.api.headers["User-Agent"] = "tc-python/" + importlib.metadata.version("testcontainers")
 
@@ -235,6 +238,14 @@ class DockerClient:
         host = c.tc_host_override
         if host:
             return host
+
+        # For SSH-based connections, the Docker SDK rewrites base_url to
+        # "http+docker://ssh" which loses the original hostname.
+        # Extract it from the original DOCKER_HOST instead.
+        ssh_host = get_docker_host_hostname()
+        if ssh_host:
+            return ssh_host
+
         try:
             url = urllib.parse.urlparse(self.client.api.base_url)
         except ValueError:
@@ -272,7 +283,52 @@ class DockerClient:
 
 
 def get_docker_host() -> Optional[str]:
-    return c.tc_properties_get_tc_host() or os.getenv("DOCKER_HOST")
+    host = c.tc_properties_get_tc_host() or os.getenv("DOCKER_HOST")
+    if host:
+        return _sanitize_docker_host(host)
+    return None
+
+
+def get_docker_host_hostname() -> Optional[str]:
+    """Extract the remote hostname from an SSH-based DOCKER_HOST.
+
+    Returns the hostname (e.g. '192.168.1.42') when DOCKER_HOST is an ssh:// URL, or None otherwise.
+    """
+    docker_host = get_docker_host()
+    if docker_host and docker_host.startswith("ssh://"):
+        parsed = urllib.parse.urlparse(docker_host)
+        if parsed.hostname:
+            return parsed.hostname
+    return None
+
+
+def is_ssh_docker_host() -> bool:
+    """Check if the current DOCKER_HOST is an SSH-based connection."""
+    return get_docker_host_hostname() is not None
+
+
+def _sanitize_docker_host(docker_host: str) -> str:
+    """
+    Sanitize the DOCKER_HOST value for compatibility with the Docker SDK.
+
+    Strips path components from ``ssh://`` URLs because the Docker SDK
+    does not support them.  A lone trailing ``/`` is treated as
+    equivalent to no path and silently normalised without a warning.
+    """
+    if docker_host.startswith("ssh://"):
+        parsed = urllib.parse.urlparse(docker_host)
+        if parsed.path and parsed.path != "/":
+            sanitized = urllib.parse.urlunparse(parsed._replace(path=""))
+            LOGGER.warning(
+                "Stripped path from SSH DOCKER_HOST (unsupported by Docker SDK): %s -> %s",
+                docker_host,
+                sanitized,
+            )
+            return sanitized
+        if parsed.path == "/":
+            # Trailing slash is harmless — strip quietly.
+            return urllib.parse.urlunparse(parsed._replace(path=""))
+    return docker_host
 
 
 def get_docker_auth_config() -> Optional[str]:

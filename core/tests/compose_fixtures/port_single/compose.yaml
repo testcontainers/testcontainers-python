@@ -4,7 +4,6 @@ services:
     init: true
     ports:
       - target: 80
-        host_ip: 127.0.0.1
         protocol: tcp
     command:
       - sh
