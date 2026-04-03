@@ -382,3 +382,29 @@ def test_compose_profile_support(profiles: Optional[list[str]], running: list[st
         for service in not_running:
             with pytest.raises(ContainerIsNotRunning):
                 compose.get_container(service)
+
+
+@pytest.mark.parametrize(
+    "docker_host_env, url, expected_url",
+    [
+        pytest.param("ssh://user@10.0.0.5", "0.0.0.0", "10.0.0.5", id="ssh_replaces_wildcard"),
+        pytest.param("ssh://user@10.0.0.5", "127.0.0.1", "10.0.0.5", id="ssh_replaces_loopback"),
+        pytest.param("ssh://user@10.0.0.5", "::", "10.0.0.5", id="ssh_replaces_ipv6_any"),
+        pytest.param("tcp://localhost:2375", "0.0.0.0", "0.0.0.0", id="non_ssh_keeps_original"),
+    ],
+)
+def test_compose_normalize_rewrites_local_url_for_ssh_docker_host(
+    monkeypatch: pytest.MonkeyPatch, docker_host_env: str, url: str, expected_url: str
+) -> None:
+    """When DOCKER_HOST is an SSH URL, normalize() should replace local addresses
+    with the remote hostname — exercising the real get_docker_host_hostname() path."""
+    from testcontainers.compose.compose import PublishedPortModel
+    from testcontainers.core.config import testcontainers_config as tc_config
+
+    monkeypatch.setenv("DOCKER_HOST", docker_host_env)
+    monkeypatch.setattr(tc_config, "tc_properties_get_tc_host", lambda: None)
+
+    model = PublishedPortModel(URL=url, TargetPort=80, PublishedPort=9999, Protocol="tcp")
+    result = model.normalize()
+    assert result.URL == expected_url
+    assert result.PublishedPort == 9999
