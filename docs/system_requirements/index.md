@@ -1,6 +1,6 @@
 # Python versions
 
-The library supports Python >= 3.9, < 4.0.
+The library supports Python >= 3.9
 
 ## Updating your Python version
 

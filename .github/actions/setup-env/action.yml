@@ -10,11 +10,7 @@ inputs:
 runs:
   using: composite
   steps:
-    - name: Setup Poetry
-      run: pipx install poetry
-      shell: bash
-    - name: Setup python ${{ inputs.python-version }}
-      uses: actions/setup-python@v5
+    - name: Install uv
+      uses: astral-sh/setup-uv@v7
       with:
         python-version: ${{ inputs.python-version }}
-        cache: poetry

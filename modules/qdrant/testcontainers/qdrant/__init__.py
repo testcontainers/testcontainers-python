@@ -15,12 +15,11 @@ from functools import cached_property
 from pathlib import Path
 from typing import Optional
 
-from testcontainers.core.config import testcontainers_config as c
-from testcontainers.core.generic import DbContainer
-from testcontainers.core.waiting_utils import wait_container_is_ready, wait_for_logs
+from testcontainers.core.container import DockerContainer
+from testcontainers.core.wait_strategies import LogMessageWaitStrategy
 
 
-class QdrantContainer(DbContainer):
+class QdrantContainer(DockerContainer):
     """
     Qdrant vector database container.
 
@@ -39,7 +38,7 @@ class QdrantContainer(DbContainer):
 
     def __init__(
         self,
-        image: str = "qdrant/qdrant:v1.13.5",
+        image: str = "qdrant/qdrant:v1.16.2",
         rest_port: int = 6333,
         grpc_port: int = 6334,
         api_key: Optional[str] = None,
@@ -59,9 +58,8 @@ class QdrantContainer(DbContainer):
     def _configure(self) -> None:
         self.with_env("QDRANT__SERVICE__API_KEY", self._api_key)
 
-    @wait_container_is_ready()
     def _connect(self) -> None:
-        wait_for_logs(self, ".*Actix runtime found; starting in Actix runtime.*", c.timeout)
+        LogMessageWaitStrategy(".*Actix runtime found; starting in Actix runtime.*").wait_until_ready(self)
 
     def get_client(self, **kwargs):
         """
