@@ -15,7 +15,7 @@ from testcontainers.core.config import testcontainers_config as tcc
 from testcontainers.core.labels import SESSION_ID
 from testcontainers.core.network import Network
 from testcontainers.core.container import DockerContainer
-from testcontainers.core.docker_client import DockerClient, LOGGER
+from testcontainers.core.docker_client import DockerClient, LOGGER, is_ssh_docker_host
 from testcontainers.core.utils import inside_container
 from testcontainers.core.utils import is_mac
 from testcontainers.core.waiting_utils import wait_for_logs
@@ -23,9 +23,18 @@ from testcontainers.core.waiting_utils import wait_for_logs
 _DIND_PYTHON_VERSION = (3, 13)
 
 
-def _should_run_dind() -> bool:
-    # todo refine macos check -> run in ci but not locally
-    return not is_mac() and tuple([*sys.version_info][:2]) == _DIND_PYTHON_VERSION
+SKIP_SSH_DOCKER = pytest.mark.skipif(
+    is_ssh_docker_host(),
+    reason="DinD/DooD tests require local Docker socket access, incompatible with SSH DOCKER_HOST",
+)
+
+RUN_ONCE_IN_CI = pytest.mark.skipif(
+    bool(os.environ.get("CI")) and tuple([*sys.version_info][:2]) != _DIND_PYTHON_VERSION,
+    reason=(
+        f"To reduce load the DinD test are only executed "
+        f"in Python {'.'.join(map(str, _DIND_PYTHON_VERSION))} in the Pipeline."
+    ),
+)
 
 
 def _wait_for_dind_return_ip(client: DockerClient, dind: Container):
@@ -46,7 +55,9 @@ def _wait_for_dind_return_ip(client: DockerClient, dind: Container):
     return docker_host_ip
 
 
-@pytest.mark.skipif(_should_run_dind(), reason="Docker socket forwarding (socat) is unsupported on Docker Desktop for macOS")
+@pytest.mark.skipif(is_mac(), reason="Docker socket forwarding (socat) is unsupported on Docker Desktop for macOS")
+@SKIP_SSH_DOCKER
+@RUN_ONCE_IN_CI
 def test_wait_for_logs_docker_in_docker():
     # real dind isn't possible (AFAIK) in CI
     # forwarding the socket to a container port is at least somewhat the same
@@ -76,8 +87,11 @@ def test_wait_for_logs_docker_in_docker():
 
 
 @pytest.mark.skipif(
-    _should_run_dind(), reason="Bridge networking and Docker socket forwarding are not supported on Docker Desktop for macOS"
+    is_mac(),
+    reason="Bridge networking and Docker socket forwarding are not supported on Docker Desktop for macOS",
 )
+@SKIP_SSH_DOCKER
+@RUN_ONCE_IN_CI
 def test_dind_inherits_network():
     client = DockerClient()
     try:
@@ -158,9 +172,10 @@ def get_docker_info() -> dict[str, Any]:
 
 
 # see https://forums.docker.com/t/get-a-containers-full-id-from-inside-of-itself
-@pytest.mark.xfail(reason="Does not work in rootles docker i.e. github actions")
+@pytest.mark.xfail(reason="Does not work in rootless docker i.e. github actions")
 @pytest.mark.inside_docker_check
-@pytest.mark.skipif(_should_run_dind() or not os.environ.get(EXPECTED_NETWORK_VAR), reason="No expected network given")
+@pytest.mark.skipif(not os.environ.get(EXPECTED_NETWORK_VAR), reason="No expected network given")
+@SKIP_SSH_DOCKER
 def test_find_host_network_in_dood() -> None:
     """
     Check that the correct host network is found for DooD
@@ -172,10 +187,14 @@ def test_find_host_network_in_dood() -> None:
     assert DockerClient().find_host_network() == os.environ[EXPECTED_NETWORK_VAR]
 
 
+@pytest.mark.long_running
 @pytest.mark.skipif(
-    _should_run_dind(), reason="Docker socket mounting and container networking do not work reliably on Docker Desktop for macOS"
+    is_mac(),
+    reason="Docker socket mounting and container networking do not work reliably on Docker Desktop for macOS",
 )
 @pytest.mark.skipif(not Path(tcc.ryuk_docker_socket).exists(), reason="No docker socket available")
+@SKIP_SSH_DOCKER
+@RUN_ONCE_IN_CI
 def test_dood(python_testcontainer_image: str) -> None:
     """
     Run tests marked as inside_docker_check inside docker out of docker
@@ -187,7 +206,7 @@ def test_dood(python_testcontainer_image: str) -> None:
             DockerContainer(
                 image=python_testcontainer_image,
             )
-            .with_command("poetry run pytest -m inside_docker_check")
+            .with_command("uv run pytest -m inside_docker_check")
             .with_volume_mapping(docker_sock, docker_sock, "rw")
             # test also that the correct network was found
             # but only do this if not already inside a container
@@ -210,9 +229,13 @@ def test_dood(python_testcontainer_image: str) -> None:
     assert status["StatusCode"] == 0
 
 
+@pytest.mark.long_running
 @pytest.mark.skipif(
-    _should_run_dind(), reason="Docker socket mounting and container networking do not work reliably on Docker Desktop for macOS"
+    is_mac(),
+    reason="Docker socket mounting and container networking do not work reliably on Docker Desktop for macOS",
 )
+@SKIP_SSH_DOCKER
+@RUN_ONCE_IN_CI
 def test_dind(python_testcontainer_image: str, tmp_path: Path) -> None:
     """
     Run selected tests in Docker in Docker
@@ -236,7 +259,7 @@ def test_dind(python_testcontainer_image: str, tmp_path: Path) -> None:
             try:
                 with (
                     DockerContainer(image=python_testcontainer_image)
-                    .with_command("poetry run pytest -m inside_docker_check")
+                    .with_command("uv run pytest -m inside_docker_check")
                     .with_volume_mapping(str(cert_dir), "/certs")
                     # for some reason the docker client does not respect
                     # DOCKER_TLS_CERTDIR and looks in /root/.docker instead
