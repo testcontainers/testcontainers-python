@@ -1,3 +1,4 @@
+import logging
 import subprocess
 from pathlib import Path
 from re import split
@@ -150,7 +151,7 @@ def test_compose_logs():
         assert not line or container.Service in next(iter(line.split("|")))
 
 
-def test_compose_volumes():
+def test_compose_volumes(caplog):
     _file_in_volume = "/var/lib/example/data/hello"
     volumes = DockerCompose(context=FIXTURES / "basic_volume", keep_volumes=True)
     with volumes:
@@ -167,8 +168,11 @@ def test_compose_volumes():
     assert "hello" in stdout
 
     # third time we expect the file to be missing
-    with volumes, pytest.raises(subprocess.CalledProcessError):
-        volumes.exec_in_container(["cat", _file_in_volume], "alpine")
+    with caplog.at_level(
+        logging.CRITICAL, logger="testcontainers.compose.compose"
+    ):  # suppress expected error logs about missing volume
+        with volumes, pytest.raises(subprocess.CalledProcessError):
+            volumes.exec_in_container(["cat", _file_in_volume], "alpine")
 
 
 # noinspection HttpUrlsUsage
