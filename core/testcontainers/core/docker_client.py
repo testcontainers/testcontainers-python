@@ -30,6 +30,7 @@ from testcontainers.core import utils
 from testcontainers.core.auth import DockerAuthInfo, parse_docker_auth_config
 from testcontainers.core.config import ConnectionMode
 from testcontainers.core.config import testcontainers_config as c
+from testcontainers.core.inspect import ContainerInspectInfo
 from testcontainers.core.labels import SESSION_ID, create_labels
 
 if TYPE_CHECKING:
@@ -274,6 +275,11 @@ class DockerClient:
     def client_networks_create(self, name: str, param: dict[str, Any]) -> "DockerNetwork":
         labels = create_labels("", param.get("labels"))
         return self.client.networks.create(name, **{**param, "labels": labels})
+
+    def get_container_inspect_info(self, container_id: str) -> "ContainerInspectInfo":
+        """Get container inspect information with fresh data."""
+        container = self.client.containers.get(container_id)
+        return ContainerInspectInfo.from_dict(container.attrs)
 
 
 def get_docker_host() -> Optional[str]:
