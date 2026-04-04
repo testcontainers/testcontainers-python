@@ -6,6 +6,7 @@ Structured wait strategies for containers.
 - HealthcheckWaitStrategy: Wait for Docker health checks to pass
 - PortWaitStrategy: Wait for TCP ports to be available
 - FileExistsWaitStrategy: Wait for files to exist on the filesystem
+- ExecWaitStrategy: Wait for command execution inside container to succeed
 - CompositeWaitStrategy: Combine multiple wait strategies
 
 Example:
@@ -18,6 +19,9 @@ Example:
 
     # Wait for log message
     container.waiting_for(LogMessageWaitStrategy("Server started"))
+
+    # Wait for command execution
+    container.waiting_for(ExecWaitStrategy(["pg_isready", "-U", "postgres"]))
 
     # Combine multiple strategies
     container.waiting_for(CompositeWaitStrategy(
@@ -779,9 +783,103 @@ class CompositeWaitStrategy(WaitStrategy):
         logger.debug("CompositeWaitStrategy: All strategies completed successfully")
 
 
+class ExecWaitStrategy(WaitStrategy):
+    """
+    Wait for a command execution inside the container to succeed.
+
+    This strategy executes a command inside the container and waits for it to
+    return a successful exit code. It's useful for databases and services
+    that provide CLI tools to check readiness.
+
+    Args:
+        command: Command to execute (list of strings or single string)
+        expected_exit_code: Expected exit code for success (default: 0)
+
+    Example:
+        # Wait for Postgres readiness
+        strategy = ExecWaitStrategy(
+            ["sh", "-c",
+             "PGPASSWORD='password' psql -U user -d db -h 127.0.0.1 -c 'select 1;'"]
+        )
+
+        # Wait for Redis readiness
+        strategy = ExecWaitStrategy(["redis-cli", "ping"])
+
+        # Check for specific exit code
+        strategy = ExecWaitStrategy(["custom-healthcheck.sh"], expected_exit_code=0)
+    """
+
+    def __init__(
+        self,
+        command: Union[str, list[str]],
+        expected_exit_code: int = 0,
+    ) -> None:
+        super().__init__()
+        self._command = command if isinstance(command, list) else [command]
+        self._expected_exit_code = expected_exit_code
+
+    def wait_until_ready(self, container: WaitStrategyTarget) -> None:
+        """
+        Wait until command execution succeeds with the expected exit code.
+
+        Args:
+            container: The container to execute commands in
+
+        Raises:
+            TimeoutError: If the command doesn't succeed within the timeout period
+            RuntimeError: If the container doesn't support exec
+        """
+        # Check if container supports exec (DockerContainer does, ComposeContainer doesn't)
+        if not hasattr(container, "exec"):
+            raise RuntimeError(
+                f"ExecWaitStrategy requires a container with exec support. "
+                f"Container type {type(container).__name__} does not support exec."
+            )
+
+        start_time = time.time()
+        last_exit_code = None
+        last_output = None
+
+        while True:
+            duration = time.time() - start_time
+            if duration > self._startup_timeout:
+                command_str = " ".join(self._command)
+                raise TimeoutError(
+                    f"Command execution did not succeed within {self._startup_timeout:.3f} seconds. "
+                    f"Command: {command_str}. "
+                    f"Expected exit code: {self._expected_exit_code}, "
+                    f"last exit code: {last_exit_code}. "
+                    f"Last output: {last_output}. "
+                    f"Hint: Check if the service is starting correctly, the command is valid, "
+                    f"and all required environment variables or credentials are properly configured."
+                )
+
+            try:
+                result = container.exec(self._command)
+                last_exit_code = result.exit_code
+                last_output = result.output.decode() if hasattr(result.output, "decode") else str(result.output)
+
+                if result.exit_code == self._expected_exit_code:
+                    logger.debug(
+                        f"ExecWaitStrategy: Command succeeded with exit code {result.exit_code} after {duration:.2f}s"
+                    )
+                    return
+
+                logger.debug(
+                    f"ExecWaitStrategy: Command failed with exit code {result.exit_code}, "
+                    f"expected {self._expected_exit_code}. Retrying..."
+                )
+            except Exception as e:
+                logger.debug(f"ExecWaitStrategy: Command execution failed with exception: {e}. Retrying...")
+                last_output = str(e)
+
+            time.sleep(self._poll_interval)
+
+
 __all__ = [
     "CompositeWaitStrategy",
     "ContainerStatusWaitStrategy",
+    "ExecWaitStrategy",
     "FileExistsWaitStrategy",
     "HealthcheckWaitStrategy",
     "HttpWaitStrategy",

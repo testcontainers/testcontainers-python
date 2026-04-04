@@ -141,8 +141,8 @@ Development and Contributing
 ----------------------------
 
 
-We recommend you use a `Poetry <https://python-poetry.org/docs/>`_ for development.
-After having installed `poetry`, you can run the following snippet to set up your local dev environment.
+We recommend you use a `uv <https://docs.astral.sh/uv/>`_ for development.
+After having installed `uv`, you can run the following snippet to set up your local dev environment.
 
 .. code-block:: bash
 

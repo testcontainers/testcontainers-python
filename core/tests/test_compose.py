@@ -1,3 +1,4 @@
+import logging
 import subprocess
 from pathlib import Path
 from re import split
@@ -8,7 +9,7 @@ from urllib.request import urlopen, Request
 import pytest
 from pytest_mock import MockerFixture
 
-from testcontainers.compose import DockerCompose
+from testcontainers.compose import DockerCompose, ComposeContainer
 from testcontainers.core.exceptions import ContainerIsNotRunning, NoSuchPortExposed
 
 FIXTURES = Path(__file__).parent.joinpath("compose_fixtures")
@@ -150,7 +151,7 @@ def test_compose_logs():
         assert not line or container.Service in next(iter(line.split("|")))
 
 
-def test_compose_volumes():
+def test_compose_volumes(caplog):
     _file_in_volume = "/var/lib/example/data/hello"
     volumes = DockerCompose(context=FIXTURES / "basic_volume", keep_volumes=True)
     with volumes:
@@ -167,8 +168,11 @@ def test_compose_volumes():
     assert "hello" in stdout
 
     # third time we expect the file to be missing
-    with volumes, pytest.raises(subprocess.CalledProcessError):
-        volumes.exec_in_container(["cat", _file_in_volume], "alpine")
+    with caplog.at_level(
+        logging.CRITICAL, logger="testcontainers.compose.compose"
+    ):  # suppress expected error logs about missing volume
+        with volumes, pytest.raises(subprocess.CalledProcessError):
+            volumes.exec_in_container(["cat", _file_in_volume], "alpine")
 
 
 # noinspection HttpUrlsUsage
@@ -378,3 +382,85 @@ def test_compose_profile_support(profiles: Optional[list[str]], running: list[st
         for service in not_running:
             with pytest.raises(ContainerIsNotRunning):
                 compose.get_container(service)
+
+
+@pytest.mark.parametrize(
+    "docker_host_env, url, expected_url",
+    [
+        pytest.param("ssh://user@10.0.0.5", "0.0.0.0", "10.0.0.5", id="ssh_replaces_wildcard"),
+        pytest.param("ssh://user@10.0.0.5", "127.0.0.1", "10.0.0.5", id="ssh_replaces_loopback"),
+        pytest.param("ssh://user@10.0.0.5", "::", "10.0.0.5", id="ssh_replaces_ipv6_any"),
+        pytest.param("tcp://localhost:2375", "0.0.0.0", "0.0.0.0", id="non_ssh_keeps_original"),
+    ],
+)
+def test_compose_normalize_rewrites_local_url_for_ssh_docker_host(
+    monkeypatch: pytest.MonkeyPatch, docker_host_env: str, url: str, expected_url: str
+) -> None:
+    """When DOCKER_HOST is an SSH URL, normalize() should replace local addresses
+    with the remote hostname — exercising the real get_docker_host_hostname() path."""
+    from testcontainers.compose.compose import PublishedPortModel
+    from testcontainers.core.config import testcontainers_config as tc_config
+
+    monkeypatch.setenv("DOCKER_HOST", docker_host_env)
+    monkeypatch.setattr(tc_config, "tc_properties_get_tc_host", lambda: None)
+
+    model = PublishedPortModel(URL=url, TargetPort=80, PublishedPort=9999, Protocol="tcp")
+    result = model.normalize()
+    assert result.URL == expected_url
+    assert result.PublishedPort == 9999
+    
+
+def test_container_info():
+    """Test get_container_info functionality"""
+    basic = DockerCompose(context=FIXTURES / "basic")
+    with basic:
+        container = basic.get_container("alpine")
+
+        info = container.get_container_info()
+        assert info is not None
+        assert info.Id is not None
+        assert info.Name is not None
+        assert info.Image is not None
+
+        assert info.State is not None
+        assert info.State.Status == "running"
+        assert info.State.Running is True
+        assert info.State.Pid is not None
+
+        assert info.Config is not None
+        assert info.Config.Image is not None
+        assert info.Config.Hostname is not None
+
+        network_settings = info.get_network_settings()
+        assert network_settings is not None
+        assert network_settings.Networks is not None
+
+        info2 = container.get_container_info()
+        assert info is info2
+
+
+def test_container_info_network_details():
+    """Test network details in container info"""
+    single = DockerCompose(context=FIXTURES / "port_single")
+    with single:
+        container = single.get_container()
+        info = container.get_container_info()
+        assert info is not None
+
+        network_settings = info.get_network_settings()
+        assert network_settings is not None
+
+        if network_settings.Networks:
+            # Test first network
+            network_name, network = next(iter(network_settings.Networks.items()))
+            assert network.IPAddress is not None
+            assert network.Gateway is not None
+            assert network.NetworkID is not None
+
+
+def test_container_info_none_when_no_docker_compose():
+    """Test get_container_info returns None when docker_compose reference is missing"""
+
+    container = ComposeContainer()
+    info = container.get_container_info()
+    assert info is None

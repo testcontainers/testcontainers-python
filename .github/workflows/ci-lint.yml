@@ -1,6 +1,10 @@
-# Contrinuous Integration for the core package
+# Continuous Integration for the core package
 
 name: lint
+
+env:
+  UV_FROZEN: "1"   # use lock file as is
+  UV_NO_EDITABLE: "1"  # test the build package, not the dev installation
 
 on:
   push:
@@ -15,18 +19,14 @@ jobs:
       - uses: actions/checkout@v4
       - name: Setup Env
         uses: ./.github/actions/setup-env
-        with:
-          python-version: "3.9"  # the pre-commit is hooked in as 3.9
-      - name: Install Python dependencies
-        run: poetry install --no-interaction
       - name: Execute pre-commit handler
         continue-on-error: true
         run: |
-          poetry run pre-commit run check-toml
-          poetry run pre-commit run trailing-whitespace
-          poetry run pre-commit run end-of-file-fixer
-          poetry run pre-commit run ruff
-          poetry run pre-commit run ruff-format
+          uv run pre-commit run check-toml
+          uv run pre-commit run trailing-whitespace
+          uv run pre-commit run end-of-file-fixer
+          uv run pre-commit run ruff
+          uv run pre-commit run ruff-format
       - name: Execute mypy
         run: |
           make mypy-core-report

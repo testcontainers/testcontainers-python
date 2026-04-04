@@ -90,6 +90,6 @@ def test_network_has_labels():
     try:
         network.create()
         network = network._docker.client.networks.get(network_id=network.id)
-        assert LABEL_SESSION_ID in network.attrs.get("Labels")  # type: ignore[attr-defined]
+        assert LABEL_SESSION_ID in network.attrs.get("Labels")
     finally:
         network.remove()
