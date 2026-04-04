@@ -15,13 +15,18 @@ from testcontainers.core.config import testcontainers_config as tcc
 from testcontainers.core.labels import SESSION_ID
 from testcontainers.core.network import Network
 from testcontainers.core.container import DockerContainer
-from testcontainers.core.docker_client import DockerClient, LOGGER
+from testcontainers.core.docker_client import DockerClient, LOGGER, is_ssh_docker_host
 from testcontainers.core.utils import inside_container
 from testcontainers.core.utils import is_mac
 from testcontainers.core.waiting_utils import wait_for_logs
 
 _DIND_PYTHON_VERSION = (3, 13)
 
+
+SKIP_SSH_DOCKER = pytest.mark.skipif(
+    is_ssh_docker_host(),
+    reason="DinD/DooD tests require local Docker socket access, incompatible with SSH DOCKER_HOST",
+)
 
 RUN_ONCE_IN_CI = pytest.mark.skipif(
     bool(os.environ.get("CI")) and tuple([*sys.version_info][:2]) != _DIND_PYTHON_VERSION,
@@ -51,6 +56,7 @@ def _wait_for_dind_return_ip(client: DockerClient, dind: Container):
 
 
 @pytest.mark.skipif(is_mac(), reason="Docker socket forwarding (socat) is unsupported on Docker Desktop for macOS")
+@SKIP_SSH_DOCKER
 @RUN_ONCE_IN_CI
 def test_wait_for_logs_docker_in_docker():
     # real dind isn't possible (AFAIK) in CI
@@ -84,6 +90,7 @@ def test_wait_for_logs_docker_in_docker():
     is_mac(),
     reason="Bridge networking and Docker socket forwarding are not supported on Docker Desktop for macOS",
 )
+@SKIP_SSH_DOCKER
 @RUN_ONCE_IN_CI
 def test_dind_inherits_network():
     client = DockerClient()
@@ -168,6 +175,7 @@ def get_docker_info() -> dict[str, Any]:
 @pytest.mark.xfail(reason="Does not work in rootless docker i.e. github actions")
 @pytest.mark.inside_docker_check
 @pytest.mark.skipif(not os.environ.get(EXPECTED_NETWORK_VAR), reason="No expected network given")
+@SKIP_SSH_DOCKER
 def test_find_host_network_in_dood() -> None:
     """
     Check that the correct host network is found for DooD
@@ -185,6 +193,7 @@ def test_find_host_network_in_dood() -> None:
     reason="Docker socket mounting and container networking do not work reliably on Docker Desktop for macOS",
 )
 @pytest.mark.skipif(not Path(tcc.ryuk_docker_socket).exists(), reason="No docker socket available")
+@SKIP_SSH_DOCKER
 @RUN_ONCE_IN_CI
 def test_dood(python_testcontainer_image: str) -> None:
     """
@@ -225,6 +234,7 @@ def test_dood(python_testcontainer_image: str) -> None:
     is_mac(),
     reason="Docker socket mounting and container networking do not work reliably on Docker Desktop for macOS",
 )
+@SKIP_SSH_DOCKER
 @RUN_ONCE_IN_CI
 def test_dind(python_testcontainer_image: str, tmp_path: Path) -> None:
     """

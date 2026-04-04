@@ -1,5 +1,5 @@
 import sys
-from dataclasses import asdict, dataclass, field, fields, is_dataclass
+from dataclasses import asdict, dataclass, field
 from functools import cached_property
 from json import loads
 from logging import getLogger, warning
@@ -11,26 +11,14 @@ from subprocess import run as subprocess_run
 from types import TracebackType
 from typing import Any, Callable, Literal, Optional, TypeVar, Union, cast
 
+from testcontainers.core.docker_client import DockerClient, get_docker_host_hostname
 from testcontainers.core.exceptions import ContainerIsNotRunning, NoSuchPortExposed
+from testcontainers.core.inspect import ContainerInspectInfo, _ignore_properties
 from testcontainers.core.waiting_utils import WaitStrategy
 
-_IPT = TypeVar("_IPT")
 _WARNINGS = {"DOCKER_COMPOSE_GET_CONFIG": "get_config is experimental, see testcontainers/testcontainers-python#669"}
 
 logger = getLogger(__name__)
-
-
-def _ignore_properties(cls: type[_IPT], dict_: Any) -> _IPT:
-    """omits extra fields like @JsonIgnoreProperties(ignoreUnknown = true)
-
-    https://gist.github.com/alexanderankin/2a4549ac03554a31bef6eaaf2eaf7fd5"""
-    if isinstance(dict_, cls):
-        return dict_
-    if not is_dataclass(cls):
-        raise TypeError(f"Expected a dataclass type, got {cls}")
-    class_fields = {f.name for f in fields(cls)}
-    filtered = {k: v for k, v in dict_.items() if k in class_fields}
-    return cls(**filtered)
 
 
 @dataclass
@@ -45,10 +33,21 @@ class PublishedPortModel:
     Protocol: Optional[str] = None
 
     def normalize(self) -> "PublishedPortModel":
-        url_not_usable = system() == "Windows" and self.URL == "0.0.0.0"
-        if url_not_usable:
+        url = self.URL
+
+        # For SSH-based DOCKER_HOST, local addresses (0.0.0.0, 127.0.0.1, localhost, ::, ::1)
+        # refer to the remote machine, not the local one.
+        # Replace them with the actual remote hostname.
+        ssh_host = get_docker_host_hostname()
+        if ssh_host and url in ("0.0.0.0", "127.0.0.1", "localhost", "::", "::1"):
+            url = ssh_host
+        # On Windows, 0.0.0.0 is not usable — replace with 127.0.0.1
+        elif system() == "Windows" and url == "0.0.0.0":
+            url = "127.0.0.1"
+
+        if url != self.URL:
             self_dict = asdict(self)
-            self_dict.update({"URL": "127.0.0.1"})
+            self_dict.update({"URL": url})
             return PublishedPortModel(**self_dict)
         return self
 
@@ -81,6 +80,7 @@ class ComposeContainer:
     ExitCode: Optional[int] = None
     Publishers: list[PublishedPortModel] = field(default_factory=list)
     _docker_compose: Optional["DockerCompose"] = field(default=None, init=False, repr=False)
+    _cached_container_info: Optional[ContainerInspectInfo] = field(default=None, init=False, repr=False)
 
     def __post_init__(self) -> None:
         if self.Publishers:
@@ -146,6 +146,28 @@ class ComposeContainer:
         # ComposeContainer doesn't need explicit reloading as it's fetched fresh
         # each time through get_container(), but we need this method for compatibility
         pass
+
+    def get_container_info(self) -> Optional[ContainerInspectInfo]:
+        """Get container information via docker inspect (lazy loaded).
+
+        Returns:
+            Container inspect information or None if container is not started.
+        """
+        if self._cached_container_info is not None:
+            return self._cached_container_info
+
+        if not self._docker_compose or not self.ID:
+            return None
+
+        try:
+            docker_client = self._docker_compose._get_docker_client()
+            self._cached_container_info = docker_client.get_container_inspect_info(self.ID)
+
+        except Exception as e:
+            logger.warning(f"Failed to get container info for {self.ID}: {e}")
+            self._cached_container_info = None
+
+        return self._cached_container_info
 
     @property
     def status(self) -> str:
@@ -221,6 +243,7 @@ class DockerCompose:
     quiet_pull: bool = False
     quiet_build: bool = False
     _wait_strategies: Optional[dict[str, Any]] = field(default=None, init=False, repr=False)
+    _docker_client: Optional[DockerClient] = field(default=None, init=False, repr=False)
 
     def __post_init__(self) -> None:
         if isinstance(self.compose_file_name, str):
@@ -494,7 +517,7 @@ class DockerCompose:
 
         Returns
         -------
-        str:
+        int:
             The mapped port on the host
         """
         normalize: PublishedPortModel = self.get_container(service_name).get_publisher(by_port=port).normalize()
@@ -585,3 +608,9 @@ class DockerCompose:
         with urlopen(url) as response:
             response.read()
         return self
+
+    def _get_docker_client(self) -> DockerClient:
+        """Get Docker client instance."""
+        if self._docker_client is None:
+            self._docker_client = DockerClient()
+        return self._docker_client

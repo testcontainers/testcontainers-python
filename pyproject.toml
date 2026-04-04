@@ -62,6 +62,7 @@ elasticsearch = []
 generic = [
   "httpx",
   "redis>=7",
+  "sqlalchemy",
 ]
 test_module_import = ["httpx"]
 google = [
