@@ -101,4 +101,3 @@ class ValkeyContainer(DockerContainer):
             port: Exposed port number.
         """
         return int(super().get_exposed_port(self.port))
-
