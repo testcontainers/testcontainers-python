@@ -93,6 +93,7 @@ nav:
       - modules/registry.md
       - modules/selenium.md
       - modules/sftp.md
+      - modules/temporal.md
       - modules/test_module_import.md
       - modules/vault.md
   - System Requirements:

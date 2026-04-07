@@ -101,6 +101,7 @@ registry = ["bcrypt>=5"]
 selenium = ["selenium>=4"]
 scylla = ["cassandra-driver>=3; python_version < '3.14'"]
 sftp = ["cryptography"]
+temporal = []
 vault = []
 weaviate = ["weaviate-client>=4"]
 chroma = ["chromadb-client>=1"]
@@ -216,6 +217,7 @@ packages = [
   "modules/registry/testcontainers",
   "modules/sftp/testcontainers",
   "modules/selenium/testcontainers",
+  "modules/temporal/testcontainers",
   "modules/scylla/testcontainers",
   "modules/trino/testcontainers",
   "modules/vault/testcontainers",
@@ -265,6 +267,7 @@ dev-mode-dirs = [
   "modules/registry",
   "modules/sftp",
   "modules/selenium",
+  "modules/temporal",
   "modules/scylla",
   "modules/trino",
   "modules/vault",
