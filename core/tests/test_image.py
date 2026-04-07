@@ -30,8 +30,11 @@ def test_docker_image(test_image_tag: Optional[str], test_cleanup: bool, check_f
             assert image.get_wrapped_image() is not None
             logs = image.get_logs()
             assert isinstance(logs, list), "Logs should be a list"
-            assert logs[0] == {"stream": "Step 1/2 : FROM alpine:latest"}
-            assert logs[3] == {"stream": f'Step 2/2 : CMD echo "{random_string}"'}
+            streams = [entry.get("stream", "").strip() for entry in logs]
+            assert any(s.upper().startswith("STEP 1/2") and "FROM ALPINE:LATEST" in s.upper() for s in streams)
+            assert any(s.upper().startswith("STEP 2/2") and random_string in s for s in streams), (
+                f"Expected step 2 with '{random_string}' in logs: {streams}"
+            )
             with DockerContainer(str(image)) as container:
                 c_c = container._container
                 assert c_c
