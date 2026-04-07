@@ -11,10 +11,11 @@
 #    License for the specific language governing permissions and limitations
 #    under the License.
 
-from typing import Optional
-
 from testcontainers.core.container import DockerContainer
 from testcontainers.core.wait_strategies import ExecWaitStrategy
+
+_BASE_IMAGE = "valkey/valkey"
+_BUNDLE_IMAGE = "valkey/valkey-bundle"
 
 
 class ValkeyContainer(DockerContainer):
@@ -23,11 +24,12 @@ class ValkeyContainer(DockerContainer):
 
     """
 
-    def __init__(self, image: str = "valkey/valkey:latest", port: int = 6379, **kwargs) -> None:
+    def __init__(self, image: str = f"{_BASE_IMAGE}:latest", port: int = 6379, **kwargs) -> None:
         super().__init__(image, **kwargs)
         self.port = port
-        self.password: Optional[str] = None
+        self.password: str | None = None
         self.with_exposed_ports(self.port)
+        self.waiting_for(ExecWaitStrategy(["valkey-cli", "ping"]))
 
     def with_password(self, password: str) -> "ValkeyContainer":
         """
@@ -41,6 +43,7 @@ class ValkeyContainer(DockerContainer):
         """
         self.password = password
         self.with_command(["valkey-server", "--requirepass", password])
+        self.waiting_for(ExecWaitStrategy(["valkey-cli", "-a", password, "ping"]))
         return self
 
     def with_image_tag(self, tag: str) -> "ValkeyContainer":
@@ -48,12 +51,12 @@ class ValkeyContainer(DockerContainer):
         Specify Valkey version.
 
         Args:
-            tag: Image tag (e.g., '8.0', 'latest', 'bundle:latest').
+            tag: Image tag (e.g., '8.0', 'latest').
 
         Returns:
             self: Container instance for method chaining.
         """
-        base_image = self.image.split(":")[0]
+        base_image = self.image.rsplit(":", 1)[0]
         self.image = f"{base_image}:{tag}"
         return self
 
@@ -64,7 +67,8 @@ class ValkeyContainer(DockerContainer):
         Returns:
             self: Container instance for method chaining.
         """
-        self.image = self.image.replace("valkey/valkey", "valkey/valkey-bundle")
+        tag = self.image.rsplit(":", 1)[-1]
+        self.image = f"{_BUNDLE_IMAGE}:{tag}"
         return self
 
     def get_connection_url(self) -> str:
@@ -98,17 +102,3 @@ class ValkeyContainer(DockerContainer):
         """
         return int(super().get_exposed_port(self.port))
 
-    def start(self) -> "ValkeyContainer":
-        """
-        Start the container and wait for it to be ready.
-
-        Returns:
-            self: Started container instance.
-        """
-        if self.password:
-            self.waiting_for(ExecWaitStrategy(["valkey-cli", "-a", self.password, "ping"]))
-        else:
-            self.waiting_for(ExecWaitStrategy(["valkey-cli", "ping"]))
-
-        super().start()
-        return self

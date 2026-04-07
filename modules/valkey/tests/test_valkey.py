@@ -54,7 +54,7 @@ def test_get_connection_url_with_password():
 
 def test_with_image_tag():
     container = ValkeyContainer().with_image_tag("8.0")
-    assert "valkey/valkey:8.0" in container.image
+    assert container.image == "valkey/valkey:8.0"
 
 
 def test_with_bundle():
@@ -65,6 +65,11 @@ def test_with_bundle():
 def test_with_bundle_and_tag():
     container = ValkeyContainer().with_bundle().with_image_tag("9.0")
     assert container.image == "valkey/valkey-bundle:9.0"
+
+
+def test_with_tag_and_bundle():
+    container = ValkeyContainer().with_image_tag("8.0").with_bundle()
+    assert container.image == "valkey/valkey-bundle:8.0"
 
 
 def test_bundle_starts():

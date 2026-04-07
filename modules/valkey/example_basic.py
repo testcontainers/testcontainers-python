@@ -1,11 +1,16 @@
-from glide import GlideClient, NodeAddress
+"""
+Valkey container usage examples with valkey-glide sync client.
+
+Requires: pip install valkey-glide-sync
+"""
+
+from glide_sync import GlideClient, GlideClientConfiguration, NodeAddress, ServerCredentials
 
 from testcontainers.valkey import ValkeyContainer
 
 
 def basic_example():
     with ValkeyContainer() as valkey_container:
-        # Get connection parameters
         host = valkey_container.get_host()
         port = valkey_container.get_exposed_port()
         connection_url = valkey_container.get_connection_url()
@@ -13,18 +18,15 @@ def basic_example():
         print(f"Valkey connection URL: {connection_url}")
         print(f"Host: {host}, Port: {port}")
 
-        # Connect using Glide client
-        client = GlideClient([NodeAddress(host, port)])
+        config = GlideClientConfiguration([NodeAddress(host, port)])
+        client = GlideClient.create(config)
 
-        # PING command
         pong = client.ping()
         print(f"PING response: {pong}")
 
-        # SET command
         client.set("key", "value")
         print("SET response: OK")
 
-        # GET command
         value = client.get("key")
         print(f"GET response: {value}")
 
@@ -39,10 +41,12 @@ def password_example():
 
         print(f"\nValkey with password connection URL: {connection_url}")
 
-        # Connect using Glide client with password
-        client = GlideClient([NodeAddress(host, port)], password="mypassword")
+        config = GlideClientConfiguration(
+            [NodeAddress(host, port)],
+            credentials=ServerCredentials(password="mypassword"),
+        )
+        client = GlideClient.create(config)
 
-        # PING after auth
         pong = client.ping()
         print(f"PING response: {pong}")
 
@@ -50,7 +54,6 @@ def password_example():
 
 
 def version_example():
-    # Using specific version
     with ValkeyContainer().with_image_tag("8.0") as valkey_container:
         print(f"\nUsing image: {valkey_container.image}")
         connection_url = valkey_container.get_connection_url()
@@ -58,16 +61,17 @@ def version_example():
 
 
 def bundle_example():
-    # Using bundle with all modules (JSON, Bloom, Search, etc.)
     with ValkeyContainer().with_bundle() as valkey_container:
         print(f"\nUsing bundle image: {valkey_container.image}")
         host = valkey_container.get_host()
         port = valkey_container.get_exposed_port()
 
-        # Connect using Glide client
-        client = GlideClient([NodeAddress(host, port)])
+        config = GlideClientConfiguration([NodeAddress(host, port)])
+        client = GlideClient.create(config)
+
         pong = client.ping()
         print(f"PING response: {pong}")
+
         client.close()
 
 

@@ -1,6 +1,6 @@
 # Valkey
 
-Since testcontainers-python <a href="https://github.com/testcontainers/testcontainers-python/releases/tag/v4.14.0"><span class="tc-version">:material-tag: v4.14.0</span></a>
+Since testcontainers-python <a href="https://github.com/testcontainers/testcontainers-python/releases/tag/v4.14.3"><span class="tc-version">:material-tag: v4.14.3</span></a>
 
 ## Introduction
 
