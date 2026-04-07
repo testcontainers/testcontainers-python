@@ -4,14 +4,7 @@ from testcontainers.core.container import DockerContainer
 
 from docker.errors import APIError
 
-from testcontainers.core.docker_client import DockerClient
-
-
-def _is_podman() -> bool:
-    try:
-        return DockerClient().is_podman()
-    except Exception:
-        return False
+from testcontainers.core.docker_client import is_podman
 
 
 @pytest.mark.parametrize(
@@ -21,20 +14,20 @@ def _is_podman() -> bool:
         pytest.param(
             "8125/udp",
             "8125/udp",
-            marks=pytest.mark.skipif(_is_podman(), reason="Podman rejects protocol in host_port"),
+            marks=pytest.mark.skipif(is_podman(), reason="Podman rejects protocol in host_port"),
         ),
         pytest.param(
             "8092/udp",
             "8092/udp",
-            marks=pytest.mark.skipif(_is_podman(), reason="Podman rejects protocol in host_port"),
+            marks=pytest.mark.skipif(is_podman(), reason="Podman rejects protocol in host_port"),
         ),
         pytest.param(
             "9000/tcp",
             "9000/tcp",
-            marks=pytest.mark.skipif(_is_podman(), reason="Podman rejects protocol in host_port"),
+            marks=pytest.mark.skipif(is_podman(), reason="Podman rejects protocol in host_port"),
         ),
         pytest.param(
-            "8080", "8080/udp", marks=pytest.mark.skipif(_is_podman(), reason="Podman rejects protocol in host_port")
+            "8080", "8080/udp", marks=pytest.mark.skipif(is_podman(), reason="Podman rejects protocol in host_port")
         ),
         (8080, 8080),
         (9000, None),

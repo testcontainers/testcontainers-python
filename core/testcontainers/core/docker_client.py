@@ -318,14 +318,6 @@ class DockerClient:
         container = self.client.containers.get(container_id)
         return ContainerInspectInfo.from_dict(container.attrs)
 
-    def is_podman(self) -> bool:
-        """Detect if the Docker daemon is actually Podman."""
-        try:
-            components = self.client.version().get("Components", [])
-            return any("Podman" in c.get("Name", "") for c in components)
-        except Exception:
-            return False
-
 
 def get_docker_host() -> Optional[str]:
     host = c.tc_properties_get_tc_host() or os.getenv("DOCKER_HOST")
@@ -350,6 +342,15 @@ def get_docker_host_hostname() -> Optional[str]:
 def is_ssh_docker_host() -> bool:
     """Check if the current DOCKER_HOST is an SSH-based connection."""
     return get_docker_host_hostname() is not None
+
+
+def is_podman() -> bool:
+    """Detect if the Docker daemon is actually Podman."""
+    try:
+        components = DockerClient().client.version().get("Components", [])
+        return any("Podman" in comp.get("Name", "") for comp in components)
+    except Exception:
+        return False
 
 
 def _sanitize_docker_host(docker_host: str) -> str:

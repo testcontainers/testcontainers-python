@@ -22,18 +22,11 @@ from testcontainers.core.waiting_utils import wait_for_logs
 
 from testcontainers.registry import DockerRegistryContainer
 from testcontainers.core.utils import is_mac
-from testcontainers.core.docker_client import DockerClient
-
-
-def _is_podman() -> bool:
-    try:
-        return DockerClient().is_podman()
-    except Exception:
-        return False
+from testcontainers.core.docker_client import is_podman
 
 
 _skip_insecure_registry = pytest.mark.skipif(
-    is_mac() or _is_podman() or is_ssh_docker_host(),
+    is_mac() or is_podman() or is_ssh_docker_host(),
     reason="Insecure HTTP registries are not supported without daemon reconfiguration on macOS, Podman, or SSH-based Docker hosts",
 )
 
