@@ -38,8 +38,9 @@ class PublishedPortModel:
         # For SSH-based DOCKER_HOST, local addresses (0.0.0.0, 127.0.0.1, localhost, ::, ::1)
         # refer to the remote machine, not the local one.
         # Replace them with the actual remote hostname.
+        # Podman may also return empty string or None for the URL.
         ssh_host = get_docker_host_hostname()
-        if ssh_host and url in ("0.0.0.0", "127.0.0.1", "localhost", "::", "::1"):
+        if ssh_host and (not url or url in ("0.0.0.0", "127.0.0.1", "localhost", "::", "::1")):
             url = ssh_host
         # On Windows, 0.0.0.0 is not usable — replace with 127.0.0.1
         elif system() == "Windows" and url == "0.0.0.0":

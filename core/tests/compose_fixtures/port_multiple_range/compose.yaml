@@ -6,6 +6,7 @@ services:
       - '81'
       - '82'
       - target: 80
+        published: "5000-5999"
         protocol: tcp
     command:
       - sh
@@ -17,6 +18,7 @@ services:
     init: true
     ports:
       - target: 80
+        published: "5000-5999"
         protocol: tcp
     command:
       - sh
