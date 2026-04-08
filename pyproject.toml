@@ -219,6 +219,7 @@ packages = [
   "modules/selenium/testcontainers",
   "modules/scylla/testcontainers",
   "modules/trino/testcontainers",
+  "modules/valkey/testcontainers",
   "modules/vault/testcontainers",
   "modules/weaviate/testcontainers",
 ]
