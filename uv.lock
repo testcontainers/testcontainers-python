@@ -4902,7 +4902,7 @@ wheels = [
 
 [[package]]
 name = "testcontainers"
-version = "4.14.2"
+version = "4.15.0rc1"
 source = { editable = "." }
 dependencies = [
     { name = "docker" },
