@@ -12,12 +12,11 @@
 #    under the License.
 import enum
 import os
-import socket
 from typing import Optional
 
 from testcontainers.core.container import DockerContainer
 from testcontainers.core.utils import raise_for_deprecated_parameter
-from testcontainers.core.waiting_utils import wait_container_is_ready
+from testcontainers.core.wait_strategies import PortWaitStrategy
 
 
 class ConnectionStringType(enum.Enum):
@@ -223,7 +222,6 @@ class AzuriteContainer(DockerContainer):
         self._connect()
         return self
 
-    @wait_container_is_ready(OSError)
     def _connect(self) -> None:
-        with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as s:
-            s.connect((self.get_container_host_ip(), int(self.get_exposed_port(next(iter(self.ports))))))
+        strategy = PortWaitStrategy(int(next(iter(self.ports))))
+        strategy.wait_until_ready(self)
