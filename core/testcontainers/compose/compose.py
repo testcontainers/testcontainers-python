@@ -605,10 +605,6 @@ class DockerCompose:
 
             time.sleep(1)
 
-        with urlopen(url) as response:
-            response.read()
-        return self
-
     def _get_docker_client(self) -> DockerClient:
         """Get Docker client instance."""
         if self._docker_client is None:
