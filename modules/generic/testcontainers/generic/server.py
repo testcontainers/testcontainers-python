@@ -1,4 +1,4 @@
-from typing import Union
+from typing import Union, Self
 
 import httpx
 
@@ -53,7 +53,7 @@ class ServerContainer(DockerContainer):
         url = f"http://{host}:{exposed_port}"
         return url
 
-    def start(self) -> "ServerContainer":
+    def start(self) -> Self:
         super().start()
         self._connect()
         return self

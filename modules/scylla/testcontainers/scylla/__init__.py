@@ -1,3 +1,5 @@
+from typing import Self
+
 from testcontainers.core.generic import DockerContainer
 from testcontainers.core.waiting_utils import wait_container_is_ready, wait_for_logs
 
@@ -32,7 +34,7 @@ class ScyllaContainer(DockerContainer):
         cluster = self.get_cluster()
         cluster.connect()
 
-    def start(self):
+    def start(self) -> Self:
         super().start()
         self._connect()
         return self

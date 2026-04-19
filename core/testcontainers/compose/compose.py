@@ -10,7 +10,7 @@ from re import split
 from subprocess import CalledProcessError, CompletedProcess
 from subprocess import run as subprocess_run
 from types import TracebackType
-from typing import Any, Callable, Literal, Optional, TypeVar, Union, cast
+from typing import Any, Callable, Literal, Optional, Self, TypeVar, Union, cast
 
 from testcontainers.core.docker_client import DockerClient, get_docker_host_hostname, is_podman
 from testcontainers.core.exceptions import ContainerIsNotRunning, NoSuchPortExposed
@@ -47,7 +47,7 @@ class PublishedPortModel:
     PublishedPort: Optional[int] = None
     Protocol: Optional[str] = None
 
-    def normalize(self) -> "PublishedPortModel":
+    def normalize(self) -> Self:
         url = self.URL
 
         # For SSH-based DOCKER_HOST, local addresses (0.0.0.0, 127.0.0.1, localhost, ::, ::1)
@@ -153,7 +153,7 @@ class ComposeContainer:
         stdout, stderr = self._docker_compose.get_logs(self.Service)
         return stdout.encode(), stderr.encode()
 
-    def get_wrapped_container(self) -> "ComposeContainer":
+    def get_wrapped_container(self) -> Self:
         """Get the underlying container object for compatibility."""
         return self
 
@@ -267,7 +267,7 @@ class DockerCompose:
         if isinstance(self.env_file, str):
             self.env_file = [self.env_file]
 
-    def __enter__(self) -> "DockerCompose":
+    def __enter__(self) -> Self:
         try:
             self.start()
             return self
@@ -303,7 +303,7 @@ class DockerCompose:
                 docker_compose_cmd += ["--env-file", env_file]
         return docker_compose_cmd
 
-    def waiting_for(self, strategies: dict[str, WaitStrategy]) -> "DockerCompose":
+    def waiting_for(self, strategies: dict[str, WaitStrategy]) -> Self:
         """
         Set wait strategies for specific services.
 
@@ -572,7 +572,7 @@ class DockerCompose:
         publisher = self.get_container(service_name).get_publisher(by_port=port).normalize()
         return publisher.URL, publisher.PublishedPort
 
-    def wait_for(self, url: str) -> "DockerCompose":
+    def wait_for(self, url: str) -> Self:
         """
         Waits for a response from a given URL. This is typically used to block until a service in
         the environment has started and is responding. Note that it does not assert any sort of

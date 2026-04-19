@@ -12,6 +12,7 @@
 #    under the License.
 
 import logging
+from typing import Self
 
 from testcontainers.core.config import testcontainers_config
 from testcontainers.core.container import DockerContainer
@@ -53,7 +54,7 @@ class K3SContainer(DockerContainer):
     def _connect(self) -> None:
         wait_for_logs(self, predicate="Node controller sync successful", timeout=testcontainers_config.timeout)
 
-    def start(self) -> "K3SContainer":
+    def start(self) -> Self:
         super().start()
         self._connect()
         return self

@@ -12,6 +12,7 @@
 #    under the License.
 
 import requests
+from typing import Self
 
 from testcontainers.core.config import testcontainers_config as c
 from testcontainers.core.generic import DockerContainer
@@ -75,7 +76,7 @@ class MilvusContainer(DockerContainer):
         response = requests.get(f"{healthcheck_url}/healthz", timeout=1)
         response.raise_for_status()
 
-    def start(self) -> "MilvusContainer":
+    def start(self) -> Self:
         """This method starts the Milvus container and runs the healthcheck
         to verify that the container is ready to use."""
         self.with_command(self.cmd)

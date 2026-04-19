@@ -11,6 +11,7 @@
 #    License for the specific language governing permissions and limitations
 #    under the License.
 
+from typing import Self
 
 from testcontainers.core.container import DockerContainer
 from testcontainers.core.waiting_utils import wait_container_is_ready, wait_for_logs
@@ -72,7 +73,7 @@ class NatsContainer(DockerContainer):
     def nats_management_uri(self) -> str:
         return f"nats://{self.get_container_host_ip()}:{self.get_exposed_port(self.management_port)}"
 
-    def start(self) -> "NatsContainer":
+    def start(self) -> Self:
         super().start()
         self._healthcheck()
         return self

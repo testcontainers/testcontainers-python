@@ -10,7 +10,7 @@
 #    WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the
 #    License for the specific language governing permissions and limitations
 #    under the License.
-from typing import Optional
+from typing import Optional, Self
 
 from testcontainers.core.container import DockerContainer
 
@@ -26,14 +26,14 @@ class SeleniumVideoContainer(DockerContainer):
         self.image = image or VIDEO_DEFAULT_IMAGE
         super().__init__(image=self.image, **kwargs)
 
-    def set_video_name(self, video_name: str) -> "DockerContainer":
+    def set_video_name(self, video_name: str) -> Self:
         self.with_env("FILE_NAME", video_name)
         return self
 
-    def set_videos_host_path(self, host_path: str) -> "DockerContainer":
+    def set_videos_host_path(self, host_path: str) -> Self:
         self.with_volume_mapping(host_path, "/videos", "rw")
         return self
 
-    def set_selenium_container_host(self, host: str) -> "DockerContainer":
+    def set_selenium_container_host(self, host: str) -> Self:
         self.with_env("DISPLAY_CONTAINER_NAME", host)
         return self

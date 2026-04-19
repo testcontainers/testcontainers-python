@@ -5,8 +5,7 @@ from dataclasses import dataclass, field
 from io import BytesIO
 from os import environ
 from textwrap import dedent
-
-from typing_extensions import Self
+from typing import Self
 
 from testcontainers.core.container import DockerContainer
 from testcontainers.core.utils import raise_for_deprecated_parameter
@@ -183,7 +182,7 @@ class KafkaContainer(DockerContainer):
         )
         self.create_file(data, KafkaContainer.TC_START_SCRIPT)
 
-    def start(self, timeout: int = 30) -> "KafkaContainer":
+    def start(self, timeout: int = 30) -> Self:
         script = KafkaContainer.TC_START_SCRIPT
         command = f'sh -c "while [ ! -f {script} ]; do sleep 0.1; done; sh {script}"'
         self.configure()
