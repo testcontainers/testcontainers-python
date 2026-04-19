@@ -1,5 +1,5 @@
 import os
-from typing import Optional
+from typing import Optional, Self
 
 import pika
 
@@ -78,7 +78,7 @@ class RabbitMqContainer(DockerContainer):
             credentials=credentials,
         )
 
-    def start(self) -> "RabbitMqContainer":
+    def start(self) -> Self:
         """Start the test container."""
         super().start()
         self.readiness_probe()

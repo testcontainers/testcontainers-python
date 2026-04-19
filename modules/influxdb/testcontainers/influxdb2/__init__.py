@@ -12,7 +12,7 @@
 #    under the License.
 
 from os import getenv
-from typing import Optional
+from typing import Optional, Self
 
 from influxdb_client import InfluxDBClient, Organization
 
@@ -70,7 +70,7 @@ class InfluxDb2Container(InfluxDbContainer):
             if env_value:
                 self.with_env(env_key, env_value)
 
-    def start(self) -> "InfluxDb2Container":
+    def start(self) -> Self:
         """
         Overridden for better typing reason
         """

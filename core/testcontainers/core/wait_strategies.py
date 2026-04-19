@@ -35,11 +35,9 @@ import socket
 import time
 from datetime import timedelta
 from pathlib import Path
-from typing import TYPE_CHECKING, Any, Callable, Optional, Union, cast
+from typing import TYPE_CHECKING, Any, Callable, Optional, Self, Union, cast
 from urllib.error import HTTPError, URLError
 from urllib.request import Request, urlopen
-
-from typing_extensions import Self
 
 from testcontainers.compose import DockerCompose
 from testcontainers.core.utils import setup_logger
@@ -193,7 +191,7 @@ class HttpWaitStrategy(WaitStrategy):
         self._insecure_tls = False
 
     @classmethod
-    def from_url(cls, url: str) -> "HttpWaitStrategy":
+    def from_url(cls, url: str) -> Self:
         """
         Create an HttpWaitStrategy from a URL string.
 
@@ -219,7 +217,7 @@ class HttpWaitStrategy(WaitStrategy):
 
         return strategy
 
-    def for_status_code(self, code: int) -> "HttpWaitStrategy":
+    def for_status_code(self, code: int) -> Self:
         """
         Add an acceptable status code.
 
@@ -232,7 +230,7 @@ class HttpWaitStrategy(WaitStrategy):
         self._status_codes.add(code)
         return self
 
-    def for_status_code_matching(self, predicate: Callable[[int], bool]) -> "HttpWaitStrategy":
+    def for_status_code_matching(self, predicate: Callable[[int], bool]) -> Self:
         """
         Set a predicate to match status codes against.
 
@@ -245,7 +243,7 @@ class HttpWaitStrategy(WaitStrategy):
         self._status_code_predicate = predicate
         return self
 
-    def for_response_predicate(self, predicate: Callable[[str], bool]) -> "HttpWaitStrategy":
+    def for_response_predicate(self, predicate: Callable[[str], bool]) -> Self:
         """
         Set a predicate to match response body against.
 
@@ -258,7 +256,7 @@ class HttpWaitStrategy(WaitStrategy):
         self._response_predicate = predicate
         return self
 
-    def using_tls(self, insecure: bool = False) -> "HttpWaitStrategy":
+    def using_tls(self, insecure: bool = False) -> Self:
         """
         Use HTTPS instead of HTTP.
 
@@ -272,7 +270,7 @@ class HttpWaitStrategy(WaitStrategy):
         self._insecure_tls = insecure
         return self
 
-    def with_header(self, name: str, value: str) -> "HttpWaitStrategy":
+    def with_header(self, name: str, value: str) -> Self:
         """
         Add a header to the request.
 
@@ -286,7 +284,7 @@ class HttpWaitStrategy(WaitStrategy):
         self._headers[name] = value
         return self
 
-    def with_basic_credentials(self, username: str, password: str) -> "HttpWaitStrategy":
+    def with_basic_credentials(self, username: str, password: str) -> Self:
         """
         Add basic auth credentials.
 
@@ -300,7 +298,7 @@ class HttpWaitStrategy(WaitStrategy):
         self._basic_auth = (username, password)
         return self
 
-    def with_method(self, method: str) -> "HttpWaitStrategy":
+    def with_method(self, method: str) -> Self:
         """
         Set the HTTP method to use.
 
@@ -313,7 +311,7 @@ class HttpWaitStrategy(WaitStrategy):
         self._method = method.upper()
         return self
 
-    def with_body(self, body: str) -> "HttpWaitStrategy":
+    def with_body(self, body: str) -> Self:
         """
         Set the request body.
 

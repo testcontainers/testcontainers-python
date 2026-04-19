@@ -11,6 +11,8 @@
 #    License for the specific language governing permissions and limitations
 #    under the License.
 
+from typing import Self
+
 from http.client import HTTPException
 from urllib.error import URLError
 from urllib.request import urlopen
@@ -69,7 +71,7 @@ class VaultContainer(DockerContainer):
             if res.status > 299:
                 raise HTTPException()
 
-    def start(self) -> "VaultContainer":
+    def start(self) -> Self:
         super().start()
         self._healthcheck()
         return self

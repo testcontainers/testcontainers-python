@@ -11,7 +11,7 @@
 #    License for the specific language governing permissions and limitations
 #    under the License.
 
-from typing import Optional
+from typing import Optional, Self
 
 from influxdb import InfluxDBClient
 
@@ -58,7 +58,7 @@ class InfluxDb1Container(InfluxDbContainer):
 
         return InfluxDBClient(self.get_container_host_ip(), self.get_exposed_port(self.container_port), **client_kwargs)
 
-    def start(self) -> "InfluxDb1Container":
+    def start(self) -> Self:
         """
         Overridden for better typing reason
         """

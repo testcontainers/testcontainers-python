@@ -11,6 +11,8 @@
 #    License for the specific language governing permissions and limitations
 #    under the License.
 
+from typing import Self
+
 from testcontainers.core.container import DockerContainer
 from testcontainers.core.wait_strategies import ExecWaitStrategy
 
@@ -31,7 +33,7 @@ class ValkeyContainer(DockerContainer):
         self.with_exposed_ports(self.port)
         self.waiting_for(ExecWaitStrategy(["valkey-cli", "ping"]))
 
-    def with_password(self, password: str) -> "ValkeyContainer":
+    def with_password(self, password: str) -> Self:
         """
         Configure authentication for Valkey.
 
@@ -46,7 +48,7 @@ class ValkeyContainer(DockerContainer):
         self.waiting_for(ExecWaitStrategy(["valkey-cli", "-a", password, "ping"]))
         return self
 
-    def with_image_tag(self, tag: str) -> "ValkeyContainer":
+    def with_image_tag(self, tag: str) -> Self:
         """
         Specify Valkey version.
 
@@ -60,7 +62,7 @@ class ValkeyContainer(DockerContainer):
         self.image = f"{base_image}:{tag}"
         return self
 
-    def with_bundle(self) -> "ValkeyContainer":
+    def with_bundle(self) -> Self:
         """
         Enable all modules by switching to valkey-bundle image.
 

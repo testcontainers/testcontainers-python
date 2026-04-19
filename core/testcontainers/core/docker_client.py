@@ -276,7 +276,7 @@ class DockerClient:
         labels = create_labels("", param.get("labels"))
         return self.client.networks.create(name, **{**param, "labels": labels})
 
-    def get_container_inspect_info(self, container_id: str) -> "ContainerInspectInfo":
+    def get_container_inspect_info(self, container_id: str) -> ContainerInspectInfo:
         """Get container inspect information with fresh data."""
         container = self.client.containers.get(container_id)
         return ContainerInspectInfo.from_dict(container.attrs)

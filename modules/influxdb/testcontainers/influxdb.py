@@ -27,7 +27,7 @@ The 2 containers are separated in different modules for 2 reasons:
   so you won't have to install dependencies that you do not need
 """
 
-from typing import Optional
+from typing import Optional, Self
 
 from requests import get
 from requests.exceptions import ConnectionError, ReadTimeout
@@ -90,7 +90,7 @@ class InfluxDbContainer(DockerContainer):
 
         return self._health_check().get("version")
 
-    def start(self) -> "InfluxDbContainer":
+    def start(self) -> Self:
         """
         Spawns a container of the InfluxDB Docker image, ready to be used.
         """
