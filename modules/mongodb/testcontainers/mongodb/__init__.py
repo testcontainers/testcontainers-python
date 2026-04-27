@@ -16,8 +16,10 @@ from typing import Optional
 
 from pymongo import MongoClient
 
+from testcontainers.core.container import DockerContainer
 from testcontainers.core.generic import DbContainer
 from testcontainers.core.utils import raise_for_deprecated_parameter
+from testcontainers.core.wait_strategies import ExecWaitStrategy
 from testcontainers.core.waiting_utils import wait_for_logs
 
 
@@ -87,3 +89,60 @@ class MongoDbContainer(DbContainer):
 
     def get_connection_client(self) -> MongoClient:
         return MongoClient(self.get_connection_url())
+
+
+class MongoDBAtlasLocalContainer(DockerContainer):
+    """
+    MongoDB Atlas Local container for testing Atlas-specific features
+    such as Atlas Search and Vector Search.
+
+    This container uses the ``mongodb/mongodb-atlas-local`` Docker image which
+    provides a fully functional local MongoDB Atlas deployment including a
+    single-node replica set and the MongoT search indexing service.
+
+    Example:
+
+        .. doctest::
+
+            >>> from testcontainers.mongodb import MongoDBAtlasLocalContainer
+
+            >>> with MongoDBAtlasLocalContainer("mongodb/mongodb-atlas-local:8.0.4") as atlas:
+            ...    client = atlas.get_connection_client()
+            ...    db = client.test
+            ...    result = db.my_collection.insert_one({"key": "value"})
+            ...    found = db.my_collection.find_one({"key": "value"})
+            ...    found["key"]
+            'value'
+    """
+
+    def __init__(
+        self,
+        image: str = "mongodb/mongodb-atlas-local:latest",
+        port: int = 27017,
+        **kwargs,
+    ) -> None:
+        super().__init__(
+            image=image,
+            _wait_strategy=ExecWaitStrategy(["runner", "healthcheck"]).with_startup_timeout(120),
+            **kwargs,
+        )
+        self.port = port
+        self.with_exposed_ports(self.port)
+
+    def get_connection_string(self) -> str:
+        """Get a MongoDB connection string with ``directConnection=true``.
+
+        Returns:
+            A connection string of the form ``mongodb://host:port/?directConnection=true``.
+        """
+        host = self.get_container_host_ip()
+        port = self.get_exposed_port(self.port)
+        return f"mongodb://{host}:{port}/?directConnection=true"
+
+    def get_connection_client(self) -> MongoClient:
+        """Get a :class:`pymongo.MongoClient` connected to the container.
+
+        Returns:
+            A ``MongoClient`` instance.
+        """
+        return MongoClient(self.get_connection_string())

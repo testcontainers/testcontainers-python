@@ -2,7 +2,7 @@ import pytest
 from pymongo import MongoClient
 from pymongo.errors import OperationFailure
 
-from testcontainers.mongodb import MongoDbContainer
+from testcontainers.mongodb import MongoDbContainer, MongoDBAtlasLocalContainer
 
 
 @pytest.mark.parametrize("version", ["7.0.7", "6.0.14", "5.0.26"])
@@ -51,3 +51,22 @@ def test_quoted_password():
         expected_url = f"mongodb://{user}:{quoted_password}@{host}:{port}"
         url = container.get_connection_url()
         assert url == expected_url
+
+
+def test_docker_run_mongodb_atlas_local():
+    with MongoDBAtlasLocalContainer("mongodb/mongodb-atlas-local:8.0.4") as atlas:
+        client = atlas.get_connection_client()
+        db = client.test
+        doc = {"name": "Atlas Test", "value": 42}
+        result = db.test_collection.insert_one(doc)
+        assert result.inserted_id
+        found = db.test_collection.find_one({"name": "Atlas Test"})
+        assert found is not None
+        assert found["value"] == 42
+
+
+def test_mongodb_atlas_local_connection_string():
+    with MongoDBAtlasLocalContainer("mongodb/mongodb-atlas-local:8.0.4") as atlas:
+        conn_str = atlas.get_connection_string()
+        assert conn_str.startswith("mongodb://")
+        assert "directConnection=true" in conn_str
