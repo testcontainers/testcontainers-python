@@ -3,7 +3,7 @@ import io
 import pathlib
 import sys
 import tarfile
-from os import PathLike, getenv
+from os import PathLike
 from socket import socket
 from types import TracebackType
 from typing import TYPE_CHECKING, Any, Optional, TypedDict, Union, cast

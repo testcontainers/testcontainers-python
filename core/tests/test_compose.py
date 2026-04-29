@@ -408,7 +408,7 @@ def test_compose_normalize_rewrites_local_url_for_ssh_docker_host(
     result = model.normalize()
     assert result.URL == expected_url
     assert result.PublishedPort == 9999
-    
+
 
 def test_container_info():
     """Test get_container_info functionality"""
