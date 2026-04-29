@@ -1,11 +1,12 @@
 import os.path
+import re
 import tarfile
 import time
 from io import BytesIO
 from textwrap import dedent
 
 from testcontainers.core.container import DockerContainer
-from testcontainers.core.waiting_utils import wait_for_logs
+from testcontainers.core.wait_strategies import LogMessageWaitStrategy
 
 
 class RedpandaContainer(DockerContainer):
@@ -34,6 +35,7 @@ class RedpandaContainer(DockerContainer):
         self.redpanda_port = 9092
         self.schema_registry_port = 8081
         self.with_exposed_ports(self.redpanda_port, self.schema_registry_port)
+        self.wait_for: re.Pattern[str] = re.compile(r".*Started Kafka API server.*")
 
     def get_bootstrap_server(self) -> str:
         host = self.get_container_host_ip()
@@ -70,7 +72,9 @@ class RedpandaContainer(DockerContainer):
         self.with_command(command)
         super().start()
         self.tc_start()
-        wait_for_logs(self, r".*Started Kafka API server.*", timeout=timeout)
+        wait_strategy = LogMessageWaitStrategy(self.wait_for)
+        wait_strategy.with_startup_timeout(timeout)
+        wait_strategy.wait_until_ready(self)
         return self
 
     def create_file(self, content: bytes, path: str) -> None:

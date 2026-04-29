@@ -1,3 +1,5 @@
+from typing import Any
+
 import pytest
 
 from testcontainers.core.container import DockerContainer
@@ -9,6 +11,9 @@ FAKE_ID = "ABC123"
 
 
 class FakeContainer:
+    def __init__(self) -> None:
+        self.attrs: dict[str, Any] = {}
+
     @property
     def id(self) -> str:
         return FAKE_ID
@@ -119,3 +124,45 @@ def test_image_no_prefix_applied_when_empty(monkeypatch: pytest.MonkeyPatch) -> 
     # Create a container and verify no prefix is applied
     container = DockerContainer("nginx:latest")
     assert container.image == "nginx:latest"
+
+
+def test_container_info():
+    """Test get_container_info functionality with a real container."""
+    with DockerContainer("alpine:latest").with_command("sleep 30") as container:
+        info = container.get_container_info()
+        assert info is not None
+        assert info.Id is not None
+        assert info.Name is not None
+        assert info.Image is not None
+
+        assert info.State is not None
+        assert info.State.Status == "running"
+        assert info.State.Running is True
+        assert info.State.Pid is not None
+
+        assert info.Config is not None
+        assert info.Config.Image is not None
+        assert info.Config.Hostname is not None
+
+        network_settings = info.get_network_settings()
+        assert network_settings is not None
+        assert network_settings.Networks is not None
+
+        info2 = container.get_container_info()
+        assert info is info2
+
+
+def test_container_info_network_details():
+    """Test network details in container info."""
+    with DockerContainer("nginx:alpine") as container:
+        info = container.get_container_info()
+        assert info is not None
+
+        network_settings = info.get_network_settings()
+        assert network_settings is not None
+
+        if network_settings.Networks:
+            network_name, network = next(iter(network_settings.Networks.items()))
+            assert network.IPAddress is not None
+            assert network.Gateway is not None
+            assert network.NetworkID is not None

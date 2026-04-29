@@ -20,7 +20,13 @@ build:  ## Build the python package
 
 tests: ${TESTS}  ## Run tests for each package
 ${TESTS}: %/tests:
-	uv run coverage run --parallel -m pytest -v  $*/tests
+	uv run coverage run --parallel -m pytest -v $*/tests
+
+quick-core-tests:  ## Run core tests excluding long_running
+	uv run coverage run --parallel -m pytest -v -m "not long_running" core/tests
+
+core-tests:  ## Run tests for the core package
+	uv run coverage run --parallel -m pytest -v core/tests
 
 coverage:  ## Target to combine and report coverage.
 	uv run coverage combine
@@ -61,7 +67,7 @@ clean-all: clean ## Remove all generated files and reset the local virtual envir
 	rm -rf .venv
 
 # Targets that do not generate file-level artifacts.
-.PHONY: clean docs doctests image tests ${TESTS}
+.PHONY: clean docs doctests image tests quick-core-tests ${TESTS}
 
 
 # Implements this pattern for autodocumenting Makefiles:
