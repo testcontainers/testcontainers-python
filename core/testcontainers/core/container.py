@@ -204,10 +204,9 @@ class DockerContainer:
             else {}
         )
 
-        self._container = docker_client.run(
+        self._container = docker_client.create(
             self.image,
             command=self._command,
-            detach=True,
             environment=self.env,
             ports=cast("dict[int, Optional[int]]", self.ports),
             name=self._name,
@@ -216,13 +215,15 @@ class DockerContainer:
             **{**network_kwargs, **self._kwargs},
         )
 
+        for t in self._transferable_specs:
+            self._transfer_into_container(*t)
+
+        docker_client.start(self._container)
+
         if self._wait_strategy is not None:
             self._wait_strategy.wait_until_ready(self)
 
         logger.info("Container started: %s", self._container.short_id)
-
-        for t in self._transferable_specs:
-            self._transfer_into_container(*t)
 
         return self
 
@@ -329,6 +330,13 @@ class DockerContainer:
         if not self._container:
             raise ContainerStartException("Container should be started before executing a command")
         return self._container.exec_run(command)
+
+    def wait(self) -> int:
+        """Wait for the container to stop and return its exit code."""
+        if not self._container:
+            raise ContainerStartException("Container should be started before waiting")
+        result = self._container.wait()
+        return int(result["StatusCode"])
 
     def get_container_info(self) -> Optional[ContainerInspectInfo]:
         """Get container information via docker inspect (lazy loaded).
