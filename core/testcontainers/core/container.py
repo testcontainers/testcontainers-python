@@ -221,7 +221,11 @@ class DockerContainer:
         docker_client.start(self._container)
 
         if self._wait_strategy is not None:
-            self._wait_strategy.wait_until_ready(self)
+            try:
+                self._wait_strategy.wait_until_ready(self)
+            except TimeoutError as ex:
+                ex.add_note(self._container.logs().decode())
+                raise ex
 
         logger.info("Container started: %s", self._container.short_id)
 
