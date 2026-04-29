@@ -557,7 +557,7 @@ class DockerCompose:
         publisher = self.get_container(service_name).get_publisher(by_port=port).normalize()
         return publisher.URL, publisher.PublishedPort
 
-    def wait_for(self, url: str) -> "DockerCompose":
+    def wait_for(self, url: str, timeout: int = 120) -> "DockerCompose":
         """
         Waits for a response from a given URL. This is typically used to block until a service in
         the environment has started and is responding. Note that it does not assert any sort of
@@ -568,6 +568,7 @@ class DockerCompose:
 
         Args:
             url: URL from one of the services in the environment to use to wait on.
+            timeout: Timeout in seconds to wait for the the services. Defaults to 120 seconds.
 
         Example:
             # Simple URL wait (legacy style)
@@ -588,7 +589,6 @@ class DockerCompose:
         # For simple URL waiting when we have multiple containers,
         # we'll do a direct HTTP check instead of using the container-based strategy
         start_time = time.time()
-        timeout = 120  # Default timeout
 
         while True:
             if time.time() - start_time > timeout:
