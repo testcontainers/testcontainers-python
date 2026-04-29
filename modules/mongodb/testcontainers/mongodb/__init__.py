@@ -113,7 +113,7 @@ class MongoDBAtlasLocalContainer(DbContainer):
             ...        }
             ...    )
             ...    # add an index
-            ...    db.restaurants.create_search_index(
+            ...    _ = db.restaurants.create_search_index(
             ...        {
             ...            "definition": {
             ...                "mappings": {
