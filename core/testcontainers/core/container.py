@@ -326,10 +326,10 @@ class DockerContainer:
             return "not_started"
         return cast("str", self._container.status)
 
-    def exec(self, command: Union[str, list[str]]) -> ExecResult:
+    def exec(self, command: Union[str, list[str]], *args: Any, **kwargs: Any) -> ExecResult:
         if not self._container:
             raise ContainerStartException("Container should be started before executing a command")
-        return self._container.exec_run(command)
+        return self._container.exec_run(command, *args, **kwargs)
 
     def wait(self) -> int:
         """Wait for the container to stop and return its exit code."""
