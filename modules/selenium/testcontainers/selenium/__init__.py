@@ -11,10 +11,9 @@
 #    License for the specific language governing permissions and limitations
 #    under the License.
 from pathlib import Path
-from typing import Any, Optional
+from typing import Any, Optional, Self
 
 import urllib3
-from typing_extensions import Self
 
 from selenium import webdriver
 from selenium.webdriver.common.options import ArgOptions
@@ -102,7 +101,7 @@ class BrowserWebDriverContainer(DockerContainer):
 
         return self
 
-    def start(self) -> "DockerContainer":
+    def start(self) -> Self:
         if not self.video:
             super().start()
             return self

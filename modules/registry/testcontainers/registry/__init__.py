@@ -1,7 +1,7 @@
 import time
 from io import BytesIO
 from tarfile import TarFile, TarInfo
-from typing import TYPE_CHECKING, Any, Optional
+from typing import Any, Optional, Self, TYPE_CHECKING
 
 import bcrypt
 from requests import get
@@ -62,7 +62,7 @@ class DockerRegistryContainer(DockerContainer):
             response: Response = get(url, timeout=1)
             response.raise_for_status()
 
-    def start(self) -> "DockerRegistryContainer":
+    def start(self) -> Self:
         if self.username and self.password:
             self.with_env("REGISTRY_AUTH_HTPASSWD_REALM", "local-registry")
             self.with_env("REGISTRY_AUTH_HTPASSWD_PATH", self.credentials_path)

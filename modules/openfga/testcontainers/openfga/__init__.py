@@ -11,7 +11,7 @@
 #    License for the specific language governing permissions and limitations
 #    under the License.
 
-from typing import Optional
+from typing import Optional, Self
 
 import requests
 
@@ -82,7 +82,7 @@ class OpenFGAContainer(DockerContainer):
     def _readiness_probe(self) -> None:
         self.exec(["grpc_health_probe", "-addr=0.0.0.0:8081"])  # from chart
 
-    def start(self) -> "OpenFGAContainer":
+    def start(self) -> Self:
         super().start()
         self._readiness_probe()
         return self

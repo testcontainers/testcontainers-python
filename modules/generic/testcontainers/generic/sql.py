@@ -1,5 +1,5 @@
 import logging
-from typing import Any, Optional
+from typing import Any, Optional, Self
 from urllib.parse import quote, urlencode
 
 from testcontainers.core.container import DockerContainer
@@ -83,7 +83,7 @@ class SqlContainer(DockerContainer):
 
         return url
 
-    def start(self) -> "SqlContainer":
+    def start(self) -> Self:
         """
         Start the database container and perform initialization.
 

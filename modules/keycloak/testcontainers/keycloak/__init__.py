@@ -11,7 +11,7 @@
 #    License for the specific language governing permissions and limitations
 #    under the License.
 import os
-from typing import Optional
+from typing import Optional, Self
 
 import requests
 
@@ -109,12 +109,12 @@ class KeycloakContainer(DockerContainer):
             wait_for_logs(self, "started in \\d+\\.\\d+s")
             wait_for_logs(self, "Created temporary admin user|Added user '")
 
-    def start(self) -> "KeycloakContainer":
+    def start(self) -> Self:
         super().start()
         self._readiness_probe()
         return self
 
-    def with_realm_import_file(self, realm_import_file: str) -> "KeycloakContainer":
+    def with_realm_import_file(self, realm_import_file: str) -> Self:
         file = os.path.abspath(realm_import_file)
         if not os.path.exists(file):
             raise FileNotFoundError(f"Realm file {file} does not exist")
@@ -122,7 +122,7 @@ class KeycloakContainer(DockerContainer):
         self.has_realm_imports = True
         return self
 
-    def with_realm_import_folder(self, realm_import_folder: str) -> "KeycloakContainer":
+    def with_realm_import_folder(self, realm_import_folder: str) -> Self:
         folder = os.path.abspath(realm_import_folder)
         if not os.path.exists(folder):
             raise FileNotFoundError(f"Realm folder {folder} does not exist")

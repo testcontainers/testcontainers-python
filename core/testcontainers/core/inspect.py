@@ -14,7 +14,7 @@
 """Docker Engine API data structures for container inspect responses."""
 
 from dataclasses import dataclass, fields, is_dataclass
-from typing import Any, Optional, TypeVar
+from typing import Any, Optional, Self, TypeVar
 
 _IPT = TypeVar("_IPT")
 
@@ -523,7 +523,7 @@ class ContainerInspectInfo:
     NetworkSettings: Optional[ContainerNetworkSettings] = None
 
     @classmethod
-    def from_dict(cls, data: dict[str, Any]) -> "ContainerInspectInfo":
+    def from_dict(cls, data: dict[str, Any]) -> Self:
         """Create from docker inspect JSON."""
         return cls(
             Id=data.get("Id"),

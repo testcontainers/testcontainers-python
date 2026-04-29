@@ -12,7 +12,7 @@
 #    under the License.
 
 from os import PathLike
-from typing import Any, Optional, TypedDict, Union
+from typing import Any, Optional, Self, TypedDict, Union
 
 from docker.types.containers import DeviceRequest
 from requests import get
@@ -103,7 +103,7 @@ class OllamaContainer(DockerContainer):
         if "nvidia" in info["Runtimes"]:
             self._kwargs = {**self._kwargs, "device_requests": [DeviceRequest(count=-1, capabilities=[["gpu"]])]}
 
-    def start(self) -> "OllamaContainer":
+    def start(self) -> Self:
         """
         Start the Ollama server
         """

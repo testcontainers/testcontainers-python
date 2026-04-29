@@ -11,6 +11,7 @@
 #    License for the specific language governing permissions and limitations
 #    under the License.
 import socket
+from typing import Self
 
 from testcontainers.core.container import DockerContainer
 from testcontainers.core.waiting_utils import wait_container_is_ready
@@ -50,7 +51,7 @@ class MemcachedContainer(DockerContainer):
             if len(data) == 0:
                 raise MemcachedNotReady("Memcached not ready yet")
 
-    def start(self):
+    def start(self) -> Self:
         super().start()
         self._connect()
         return self

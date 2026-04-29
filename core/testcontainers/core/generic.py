@@ -10,7 +10,7 @@
 #    WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the
 #    License for the specific language governing permissions and limitations
 #    under the License.
-from typing import Any, Optional
+from typing import Any, Optional, Self
 from urllib.parse import quote
 
 from testcontainers.core.container import DockerContainer
@@ -74,7 +74,7 @@ class DbContainer(DockerContainer):
             url = f"{url}/{dbname}"
         return url
 
-    def start(self) -> "DbContainer":
+    def start(self) -> Self:
         self._configure()
         super().start()
         self._transfer_seed()

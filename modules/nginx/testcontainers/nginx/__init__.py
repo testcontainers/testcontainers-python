@@ -10,6 +10,8 @@
 #    WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the
 #    License for the specific language governing permissions and limitations
 #    under the License.
+from typing import Self
+
 import urllib.error
 import urllib.parse
 import urllib.request
@@ -26,7 +28,7 @@ class NginxContainer(DockerContainer):
         self.port = port
         self.with_exposed_ports(self.port)
 
-    def start(self) -> "NginxContainer":
+    def start(self) -> Self:
         super().start()
 
         host = self.get_container_host_ip()

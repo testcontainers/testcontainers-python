@@ -6,14 +6,14 @@ import tarfile
 from os import PathLike
 from socket import socket
 from types import TracebackType
-from typing import TYPE_CHECKING, Any, Optional, TypedDict, Union, cast
+from typing import TYPE_CHECKING, Any, Optional, Self, TypedDict, Union, cast
 
 import docker.errors
 from docker import version
 from docker.models.containers import ExecResult
 from docker.types import EndpointConfig
 from dotenv import dotenv_values
-from typing_extensions import Self, assert_never
+from typing_extensions import assert_never
 
 from testcontainers.core.config import ConnectionMode
 from testcontainers.core.config import testcontainers_config as c
@@ -398,14 +398,14 @@ class Reaper:
     :meta private:
     """
 
-    _instance: "Optional[Reaper]" = None
+    _instance: Optional[Self] = None
     _container: Optional[DockerContainer] = None
     _socket: Optional[socket] = None
 
     @classmethod
-    def get_instance(cls) -> "Reaper":
+    def get_instance(cls) -> Self:
         if not Reaper._instance:
-            Reaper._instance = Reaper._create_instance()
+            Reaper._create_instance()
 
         return Reaper._instance
 
@@ -424,7 +424,7 @@ class Reaper:
             Reaper._instance = None
 
     @classmethod
-    def _create_instance(cls) -> "Reaper":
+    def _create_instance(cls) -> Self:
         logger.debug(f"Creating new Reaper for session: {SESSION_ID}")
 
         Reaper._container = (
