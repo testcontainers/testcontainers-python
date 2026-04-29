@@ -27,6 +27,7 @@ def test_read_tc_properties(monkeypatch: MonkeyPatch) -> None:
         config = TCC()
         assert config.tc_properties == {"tc.host": "some_value"}
 
+
 def test_hub_image_name_prefix(monkeypatch: MonkeyPatch) -> None:
     """
     Ensure that the hub_image_name_prefix configuration variable can be read from the environment
@@ -34,7 +35,8 @@ def test_hub_image_name_prefix(monkeypatch: MonkeyPatch) -> None:
     monkeypatch.setenv("TESTCONTAINERS_HUB_IMAGE_NAME_PREFIX", "myregistry.local/")
     config = TCC()
     assert config.hub_image_name_prefix == "myregistry.local/"
-    
+
+
 def test_set_tc_properties(monkeypatch: MonkeyPatch) -> None:
     """
     Ensure the configuration file variables can be read if no environment variable is set

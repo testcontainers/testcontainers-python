@@ -114,7 +114,7 @@ class TestcontainersConfiguration:
     https://github.com/testcontainers/testcontainers-go/blob/dd76d1e39c654433a3d80429690d07abcec04424/docker.go#L644
     if os env TC_HOST is set, use it
     """
-    hub_image_name_prefix: str = environ.get("TESTCONTAINERS_HUB_IMAGE_NAME_PREFIX", "")
+    hub_image_name_prefix: str = field(default_factory=lambda: environ.get("TESTCONTAINERS_HUB_IMAGE_NAME_PREFIX", ""))
     """ Prefix to use for hub image names, e.g. for private registries. """
 
     @property
