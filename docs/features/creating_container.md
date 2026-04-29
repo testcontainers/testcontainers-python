@@ -128,6 +128,62 @@ def test_with_nginx(nginx_container):
 
 For details on waiting for containers to be ready, see [Wait strategies](wait_strategies.md).
 
+## Container Information
+
+You can get detailed information about containers using the `get_container_info()` method. This works with both `DockerContainer` and `ComposeContainer`:
+
+```python
+from testcontainers.generic import GenericContainer
+
+def test_container_info():
+    with GenericContainer("nginx:alpine") as container:
+        # Get detailed container information
+        info = container.get_container_info()
+
+        if info:
+            # Basic container information
+            print(f"Container ID: {info.Id}")
+            print(f"Name: {info.Name}")
+            print(f"Image: {info.Image}")
+
+            # Container state
+            if info.State:
+                print(f"Status: {info.State.Status}")
+                print(f"Running: {info.State.Running}")
+                print(f"PID: {info.State.Pid}")
+                print(f"Exit Code: {info.State.ExitCode}")
+
+            # Container configuration
+            if info.Config:
+                print(f"Hostname: {info.Config.Hostname}")
+                print(f"Environment: {info.Config.Env}")
+                print(f"Command: {info.Config.Cmd}")
+
+            # Network information
+            network_settings = info.get_network_settings()
+            if network_settings and network_settings.Networks:
+                for network_name, network in network_settings.Networks.items():
+                    print(f"Network: {network_name}")
+                    print(f"  IP Address: {network.IPAddress}")
+                    print(f"  Gateway: {network.Gateway}")
+                    print(f"  MAC Address: {network.MacAddress}")
+```
+
+The container information is lazy-loaded and cached, so subsequent calls to `get_container_info()` will return the same data without making additional Docker API calls.
+
+### Available Information
+
+The `ContainerInspectInfo` object provides structured access to all Docker Engine API fields:
+
+- **Basic Info**: Container ID, name, image, creation time, platform
+- **State**: Running status, PID, exit code, start/finish times, health status
+- **Config**: Environment variables, command, working directory, labels, exposed ports
+- **Network**: IP addresses, port bindings, network configurations, aliases
+- **Host Config**: Memory limits, CPU settings, device mappings, restart policies
+- **Mounts**: Volume and bind mount information with detailed options
+- **Health**: Health check status and logs (if configured)
+- **Platform**: Architecture and OS information
+
 ## Best Practices
 
 1. Always use context managers or ensure proper cleanup
