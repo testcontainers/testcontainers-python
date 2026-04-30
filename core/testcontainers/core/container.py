@@ -1,5 +1,8 @@
 import contextlib
+import io
+import pathlib
 import sys
+import tarfile
 from os import PathLike
 from socket import socket
 from types import TracebackType
@@ -16,8 +19,10 @@ from testcontainers.core.config import ConnectionMode
 from testcontainers.core.config import testcontainers_config as c
 from testcontainers.core.docker_client import DockerClient
 from testcontainers.core.exceptions import ContainerConnectException, ContainerStartException
+from testcontainers.core.inspect import ContainerInspectInfo
 from testcontainers.core.labels import LABEL_SESSION_ID, SESSION_ID
 from testcontainers.core.network import Network
+from testcontainers.core.transferable import Transferable, TransferSpec, build_transfer_tar
 from testcontainers.core.utils import is_arm, setup_logger
 from testcontainers.core.wait_strategies import LogMessageWaitStrategy
 from testcontainers.core.waiting_utils import WaitStrategy
@@ -35,6 +40,7 @@ class Mount(TypedDict):
 
 class DockerContainer:
     """
+
     Basic container object to spin up Docker instances.
 
     Args:
@@ -68,6 +74,7 @@ class DockerContainer:
         network: Optional[Network] = None,
         network_aliases: Optional[list[str]] = None,
         _wait_strategy: Optional[WaitStrategy] = None,
+        transferables: Optional[list[TransferSpec]] = None,
         **kwargs: Any,
     ) -> None:
         self.env = env or {}
@@ -81,7 +88,8 @@ class DockerContainer:
             for vol in volumes:
                 self.with_volume_mapping(*vol)
 
-        self.image = image
+        self.tmpfs: dict[str, str] = {}
+        self.image = c.hub_image_name_prefix + image
         self._docker = DockerClient(**(docker_client_kw or {}))
         self._container: Optional[Container] = None
         self._command: Optional[Union[str, list[str]]] = command
@@ -96,6 +104,12 @@ class DockerContainer:
 
         self._kwargs = kwargs
         self._wait_strategy: Optional[WaitStrategy] = _wait_strategy
+        self._cached_container_info: Optional[ContainerInspectInfo] = None
+
+        self._transferable_specs: list[TransferSpec] = []
+        if transferables:
+            for t in transferables:
+                self.with_copy_into_container(*t)
 
     def with_env(self, key: str, value: str) -> Self:
         self.env[key] = value
@@ -189,21 +203,27 @@ class DockerContainer:
             else {}
         )
 
-        self._container = docker_client.run(
+        self._container = docker_client.create(
             self.image,
             command=self._command,
-            detach=True,
             environment=self.env,
             ports=cast("dict[int, Optional[int]]", self.ports),
             name=self._name,
             volumes=self.volumes,
+            tmpfs=self.tmpfs,
             **{**network_kwargs, **self._kwargs},
         )
+
+        for t in self._transferable_specs:
+            self._transfer_into_container(*t)
+
+        docker_client.start(self._container)
 
         if self._wait_strategy is not None:
             self._wait_strategy.wait_until_ready(self)
 
         logger.info("Container started: %s", self._container.short_id)
+
         return self
 
     def stop(self, force: bool = True, delete_volume: bool = True) -> None:
@@ -269,6 +289,16 @@ class DockerContainer:
         self.volumes[str(host)] = mapping
         return self
 
+    def with_tmpfs_mount(self, container_path: str, size: Optional[str] = None) -> Self:
+        """Mount a tmpfs volume on the container.
+
+        :param container_path: Container path to mount tmpfs on (e.g., '/data')
+        :param size: Optional size limit (e.g., '256m', '1g'). If None, unbounded.
+        :return: Self for chaining
+        """
+        self.tmpfs[container_path] = size or ""
+        return self
+
     def get_wrapped_container(self) -> "Container":
         return self._container
 
@@ -300,9 +330,66 @@ class DockerContainer:
             raise ContainerStartException("Container should be started before executing a command")
         return self._container.exec_run(command)
 
+    def wait(self) -> int:
+        """Wait for the container to stop and return its exit code."""
+        if not self._container:
+            raise ContainerStartException("Container should be started before waiting")
+        result = self._container.wait()
+        return int(result["StatusCode"])
+
+    def get_container_info(self) -> Optional[ContainerInspectInfo]:
+        """Get container information via docker inspect (lazy loaded).
+
+        Returns:
+            Container inspect information or None if container is not started.
+        """
+        if self._cached_container_info is not None:
+            return self._cached_container_info
+
+        if not self._container:
+            return None
+
+        try:
+            self._cached_container_info = self.get_docker_client().get_container_inspect_info(self._container.id)
+
+        except Exception as e:
+            logger.warning(f"Failed to get container info for {self._container.id}: {e}")
+            self._cached_container_info = None
+
+        return self._cached_container_info
+
     def _configure(self) -> None:
         # placeholder if subclasses want to define this and use the default start method
         pass
+
+    def with_copy_into_container(
+        self, transferable: Transferable, destination_in_container: str, mode: int = 0o644
+    ) -> Self:
+        self._transferable_specs.append((transferable, destination_in_container, mode))
+        return self
+
+    def copy_into_container(self, transferable: Transferable, destination_in_container: str, mode: int = 0o644) -> None:
+        return self._transfer_into_container(transferable, destination_in_container, mode)
+
+    def _transfer_into_container(self, transferable: Transferable, destination_in_container: str, mode: int) -> None:
+        if not self._container:
+            raise ContainerStartException("Container must be started before transferring files")
+
+        data = build_transfer_tar(transferable, destination_in_container, mode)
+        if not self._container.put_archive(path="/", data=data):
+            raise OSError(f"Failed to put archive into container at {destination_in_container}")
+
+    def copy_from_container(self, source_in_container: str, destination_on_host: pathlib.Path) -> None:
+        if not self._container:
+            raise ContainerStartException("Container must be started before copying files")
+
+        tar_stream, _ = self._container.get_archive(source_in_container)
+
+        with tarfile.open(fileobj=io.BytesIO(b"".join(tar_stream))) as tar:
+            for member in tar.getmembers():
+                extracted = tar.extractfile(member)
+                if extracted is not None:
+                    destination_on_host.write_bytes(extracted.read())
 
 
 class Reaper:

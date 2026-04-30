@@ -1,5 +1,83 @@
 # Changelog
 
+## [4.15.0-rc2](https://github.com/testcontainers/testcontainers-python/compare/testcontainers-v4.15.0-rc.1...testcontainers-v4.15.0-rc2) (2026-04-30)
+
+
+### Features
+
+* **core:** support TESTCONTAINERS_HUB_IMAGE_NAME_PREFIX ([#961](https://github.com/testcontainers/testcontainers-python/issues/961)) ([be9a0a6](https://github.com/testcontainers/testcontainers-python/commit/be9a0a612d934c77bdde20defd4d9f7d5228fb0c))
+* **mongodb:** Add Atlas Local for MongoDb ([#873](https://github.com/testcontainers/testcontainers-python/issues/873)) ([73aeb43](https://github.com/testcontainers/testcontainers-python/commit/73aeb43c18d56993d7c2626fb598a01842a91c35))
+* support with_copy_to ([#976](https://github.com/testcontainers/testcontainers-python/issues/976)) ([59ec1ce](https://github.com/testcontainers/testcontainers-python/commit/59ec1ce6dc7d54fa7f4b3c69f5bf674dfd19bfc0))
+* **valkey:** add Valkey module ([#947](https://github.com/testcontainers/testcontainers-python/issues/947)) ([fc09dc1](https://github.com/testcontainers/testcontainers-python/commit/fc09dc17bccd45d57d92f12c0de26b99ab1ccecf))
+
+
+### Bug Fixes
+
+* **azurite:** use `HttpWaitStrategy` instead of deprecated `wait_container_is_ready` ([#1003](https://github.com/testcontainers/testcontainers-python/issues/1003)) ([9fe6b07](https://github.com/testcontainers/testcontainers-python/commit/9fe6b074852e5d6f1df2942bda52ee0557e5cb32)), closes [#874](https://github.com/testcontainers/testcontainers-python/issues/874)
+* fix pr [#961](https://github.com/testcontainers/testcontainers-python/issues/961) ([#1011](https://github.com/testcontainers/testcontainers-python/issues/1011)) ([8eff908](https://github.com/testcontainers/testcontainers-python/commit/8eff90851eecaf5720021d63e852a927c47f978c))
+
+## [4.15.0-rc.1](https://github.com/testcontainers/testcontainers-python/compare/testcontainers-v4.14.2...testcontainers-v4.15.0-rc.1) (2026-04-07)
+
+
+### Features
+
+* **compose:** add structured container inspect information ([#897](https://github.com/testcontainers/testcontainers-python/issues/897)) ([58459a1](https://github.com/testcontainers/testcontainers-python/commit/58459a13a1523c5dec8b21b0e16ae1afdce48156))
+* **core:** support SSH-based DOCKER_HOST ([#993](https://github.com/testcontainers/testcontainers-python/issues/993)) ([d48115d](https://github.com/testcontainers/testcontainers-python/commit/d48115def127644964d4d2b09a38e3f4492cc43c))
+* **generic:** Reintroducing the generic SQL module ([#892](https://github.com/testcontainers/testcontainers-python/issues/892)) ([2ca2321](https://github.com/testcontainers/testcontainers-python/commit/2ca2321ada12e09d491280c8ec855bf8511de7c2))
+* **keycloak:** support for relative path and management relative path ([#982](https://github.com/testcontainers/testcontainers-python/issues/982)) ([898faf6](https://github.com/testcontainers/testcontainers-python/commit/898faf6a5955698958be6e8cfd32b87323d62a44))
+* **mqtt:** MosquittoContainer: Add version 2.1.2 ([#978](https://github.com/testcontainers/testcontainers-python/issues/978)) ([af382f7](https://github.com/testcontainers/testcontainers-python/commit/af382f74e82bdcb14eac3f4e04a83432ae9beeba))
+
+
+### Bug Fixes
+
+* **azurite:** make visible to type checkers ([#927](https://github.com/testcontainers/testcontainers-python/issues/927)) ([baa5668](https://github.com/testcontainers/testcontainers-python/commit/baa566814b22fa922094a625ff92037cbe8bd93f))
+* **clickhouse:** add `HttpWaitStrategy` instead of deprecated `wait_container_is_ready` ([#962](https://github.com/testcontainers/testcontainers-python/issues/962)) ([8034541](https://github.com/testcontainers/testcontainers-python/commit/803454147c03418b7b06601d251eb491a2cd79cf))
+* **compose:** return type in get_service_port docstring ([#939](https://github.com/testcontainers/testcontainers-python/issues/939)) ([fed65fe](https://github.com/testcontainers/testcontainers-python/commit/fed65fe14507020007c115c535364c90d4bbdde9))
+* **core:** Refactor copy file ([#996](https://github.com/testcontainers/testcontainers-python/issues/996)) ([0e0bb24](https://github.com/testcontainers/testcontainers-python/commit/0e0bb24a2bddfd8a03bebdfc3b9ff8cf8c78092b))
+* **core:** wait for ryuk more reliably, improve tests: long_running, filter logs ([#984](https://github.com/testcontainers/testcontainers-python/issues/984)) ([b12ae13](https://github.com/testcontainers/testcontainers-python/commit/b12ae13e589a4ffe326c162a38df56eb30521d69))
+* **generic:** Migrate ServerContainer from deprecated decorator to HttpWaitStrategy ([#971](https://github.com/testcontainers/testcontainers-python/issues/971)) ([460b0d8](https://github.com/testcontainers/testcontainers-python/commit/460b0d8a09635068815ea8c5c5a4e4cc1e3dfea7))
+* **kafka:** Use wait strategy instead of deprecated wait_for_logs ([#903](https://github.com/testcontainers/testcontainers-python/issues/903)) ([87332c1](https://github.com/testcontainers/testcontainers-python/commit/87332c1332a30b673aac919b48e296e21f2c1baf))
+* **postgres:** add py.typed marker to postgres module ([#849](https://github.com/testcontainers/testcontainers-python/issues/849)) ([c8a5bbd](https://github.com/testcontainers/testcontainers-python/commit/c8a5bbdbab137e6dc5af9a7224e65972665ec84d))
+* **qdrant:** migrate Qdrant from deprecated decorator. ([#963](https://github.com/testcontainers/testcontainers-python/issues/963)) ([407f798](https://github.com/testcontainers/testcontainers-python/commit/407f79825be97865010dc0119cdfe3498a609a08))
+* **redis:** Use wait strategy instead of deprecated decorator ([#914](https://github.com/testcontainers/testcontainers-python/issues/914)) ([e25713a](https://github.com/testcontainers/testcontainers-python/commit/e25713a300eda6a14973d2465590d2318dcc375d))
+* **sftp:** Avoid using wait_for_logs in module. ([#995](https://github.com/testcontainers/testcontainers-python/issues/995)) ([83157eb](https://github.com/testcontainers/testcontainers-python/commit/83157eb4acd931949cfec3d2a84db0a61685e739))
+
+## [4.14.2](https://github.com/testcontainers/testcontainers-python/compare/testcontainers-v4.14.1...testcontainers-v4.14.2) (2026-03-18)
+
+
+### Features
+
+* **kafka:** allow configurable listener name and security protocol ([#966](https://github.com/testcontainers/testcontainers-python/issues/966)) ([44dd40b](https://github.com/testcontainers/testcontainers-python/commit/44dd40b48c3a5020b487bae5d460124d9e594ac3))
+
+## [4.14.1](https://github.com/testcontainers/testcontainers-python/compare/testcontainers-v4.14.0...testcontainers-v4.14.1) (2026-01-31)
+
+
+### Bug Fixes
+
+* Allow passing in a custom wait strategy string in MySQL, Cassandra, Kafka and Trino ([#953](https://github.com/testcontainers/testcontainers-python/issues/953)) ([be4d09e](https://github.com/testcontainers/testcontainers-python/commit/be4d09ecb3f65089d06fbd1ab9d4f12e9009ed8b))
+* **compose:** expose useful compose options ([#951](https://github.com/testcontainers/testcontainers-python/issues/951)) ([183e1aa](https://github.com/testcontainers/testcontainers-python/commit/183e1aa1bcd684d36d3f5b52b28965c851f5436f))
+* **core:** bring back dind tests ([7337266](https://github.com/testcontainers/testcontainers-python/commit/7337266c73f05f003378ff483a5e3b565a1e86c5))
+* **core:** Use WaitStrategy internally for wait_for function ([#942](https://github.com/testcontainers/testcontainers-python/issues/942)) ([e323317](https://github.com/testcontainers/testcontainers-python/commit/e323317838552a9f8046b2a8e24a03c07ff8890e))
+* **nats:** add support for jetstream ([#938](https://github.com/testcontainers/testcontainers-python/issues/938)) ([49c9af8](https://github.com/testcontainers/testcontainers-python/commit/49c9af8cf542feb5df9ec389d554edd7645a4dc4))
+* Support Elasticsearch 9.x ([#881](https://github.com/testcontainers/testcontainers-python/issues/881)) ([f690e88](https://github.com/testcontainers/testcontainers-python/commit/f690e88e866ef3ff30ba2cd18958fc1fc07f89c8)), closes [#860](https://github.com/testcontainers/testcontainers-python/issues/860)
+
+## [4.14.0](https://github.com/testcontainers/testcontainers-python/compare/testcontainers-v4.13.3...testcontainers-v4.14.0) (2026-01-07)
+
+
+### Features
+
+* Add ExecWaitStrategy and migrate Postgres from deprecated decorator ([#935](https://github.com/testcontainers/testcontainers-python/issues/935)) ([2d9eee3](https://github.com/testcontainers/testcontainers-python/commit/2d9eee30442ec8adbf4a42fcd308cd6377b41c06))
+
+
+### Bug Fixes
+
+* add ruff to deps ([#919](https://github.com/testcontainers/testcontainers-python/issues/919)) ([5853d32](https://github.com/testcontainers/testcontainers-python/commit/5853d326bb4e9631b7c58355c53ff7fc3ecab92d))
+* **cassandra,mysqk,kafka:** Use wait strategy instead of deprecated wait_for_logs ([#945](https://github.com/testcontainers/testcontainers-python/issues/945)) ([b7791b9](https://github.com/testcontainers/testcontainers-python/commit/b7791b945134940c3185baa3eab009f06d0338a9))
+* **core:** recreate poetry lockfile with latest versions of libraries ([#946](https://github.com/testcontainers/testcontainers-python/issues/946)) ([9a97385](https://github.com/testcontainers/testcontainers-python/commit/9a9738575ec3f831c78512b10b990e416eacad03))
+* **elasticsearch:** Use wait strategy instead of deprecated decorator ([#915](https://github.com/testcontainers/testcontainers-python/issues/915)) ([c785ecd](https://github.com/testcontainers/testcontainers-python/commit/c785ecdca20b51e077ab23ed61ae123c643a0627))
+* **minio:** minio client requires kwargs now ([#933](https://github.com/testcontainers/testcontainers-python/issues/933)) ([37f5902](https://github.com/testcontainers/testcontainers-python/commit/37f590278f23851c4f8244d4add7aa6f8ed3bc62))
+* **minio:** Use wait strategy instead of deprecated decorator ([#899](https://github.com/testcontainers/testcontainers-python/issues/899)) ([febccb7](https://github.com/testcontainers/testcontainers-python/commit/febccb78b5b4b00d2a3bda27f09e6b4d4c9dfde3))
+
 ## [4.13.3](https://github.com/testcontainers/testcontainers-python/compare/testcontainers-v4.13.2...testcontainers-v4.13.3) (2025-11-14)
 
 

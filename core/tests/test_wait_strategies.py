@@ -1,3 +1,4 @@
+import logging
 import re
 import time
 from datetime import timedelta
@@ -528,7 +529,7 @@ class TestFileExistsWaitStrategy:
     @patch("pathlib.Path.is_file")
     @patch("time.time")
     @patch("time.sleep")
-    def test_wait_until_ready(self, mock_sleep, mock_time, mock_is_file, file_exists, expected_behavior):
+    def test_wait_until_ready(self, mock_sleep, mock_time, mock_is_file, file_exists, expected_behavior, caplog):
         strategy = FileExistsWaitStrategy("/tmp/test.txt").with_startup_timeout(1)
         mock_container = Mock()
 
@@ -547,7 +548,8 @@ class TestFileExistsWaitStrategy:
             mock_is_file.assert_called()
         else:
             with pytest.raises(TimeoutError, match="File.*did not exist within.*seconds"):
-                strategy.wait_until_ready(mock_container)
+                with caplog.at_level(logging.CRITICAL, logger="testcontainers.core.wait_strategies"):
+                    strategy.wait_until_ready(mock_container)
 
 
 class TestCompositeWaitStrategy:
@@ -615,7 +617,7 @@ class TestCompositeWaitStrategy:
         strategy2.wait_until_ready.assert_called_once_with(mock_container)
         strategy3.wait_until_ready.assert_called_once_with(mock_container)
 
-    def test_wait_until_ready_first_strategy_fails(self):
+    def test_wait_until_ready_first_strategy_fails(self, caplog):
         """Test that execution stops when first strategy fails."""
         strategy1 = Mock()
         strategy2 = Mock()
@@ -628,7 +630,8 @@ class TestCompositeWaitStrategy:
         strategy1.wait_until_ready.side_effect = TimeoutError("First strategy failed")
 
         with pytest.raises(TimeoutError, match="First strategy failed"):
-            composite.wait_until_ready(mock_container)
+            with caplog.at_level(logging.CRITICAL, logger="testcontainers.core.wait_strategies"):
+                composite.wait_until_ready(mock_container)
 
         # Only first strategy should be called
         strategy1.wait_until_ready.assert_called_once_with(mock_container)
