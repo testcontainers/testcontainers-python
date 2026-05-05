@@ -18,8 +18,7 @@ from neo4j import Driver, GraphDatabase
 from testcontainers.core.config import testcontainers_config as c
 from testcontainers.core.generic import DbContainer
 from testcontainers.core.utils import raise_for_deprecated_parameter
-from testcontainers.core.waiting_utils import wait_container_is_ready, wait_for_logs
-
+from testcontainers.core.wait_strategies import LogMessageWaitStrategy
 
 class Neo4jContainer(DbContainer):
     """
@@ -60,9 +59,10 @@ class Neo4jContainer(DbContainer):
     def get_connection_url(self) -> str:
         return f"bolt://{self.get_container_host_ip()}:{self.get_exposed_port(self.port)}"
 
-    @wait_container_is_ready()
     def _connect(self) -> None:
-        wait_for_logs(self, "Remote interface available at", c.timeout)
+        wait_strategy = LogMessageWaitStrategy("Remote interface available at")
+        wait_strategy.with_startup_timeout(c.timeout)
+        wait_strategy.wait_until_ready(self)
 
         # Then we actually check that the container really is listening
         with self.get_driver() as driver:
