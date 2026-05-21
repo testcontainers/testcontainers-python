@@ -1,3 +1,4 @@
+import atexit
 import contextlib
 import io
 import pathlib
@@ -476,5 +477,6 @@ class Reaper:
         rs.send(f"label={LABEL_SESSION_ID}={SESSION_ID}\r\n".encode())
 
         Reaper._instance = Reaper()
+        atexit.register(Reaper.delete_instance)
 
         return Reaper._instance
