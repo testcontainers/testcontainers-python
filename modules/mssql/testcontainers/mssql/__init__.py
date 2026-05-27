@@ -3,7 +3,7 @@ from typing import Optional
 
 from testcontainers.core.generic import DbContainer
 from testcontainers.core.utils import raise_for_deprecated_parameter
-from testcontainers.core.waiting_utils import wait_container_is_ready
+from testcontainers.core.wait_strategies import ExecWaitStrategy
 
 
 class SqlServerContainer(DbContainer):
@@ -50,12 +50,15 @@ class SqlServerContainer(DbContainer):
         self.with_env("SQLSERVER_DBNAME", self.dbname)
         self.with_env("ACCEPT_EULA", "Y")
 
-    @wait_container_is_ready(AssertionError)
     def _connect(self) -> None:
-        status, _ = self.exec(
-            ["bash", "-c", '/opt/mssql-tools*/bin/sqlcmd -U "$SQLSERVER_USER" -P "$SA_PASSWORD" -Q \'SELECT 1\' -C']
+        strategy = ExecWaitStrategy(
+            [
+                "bash",
+                "-c",
+                '/opt/mssql-tools*/bin/sqlcmd -U "$SQLSERVER_USER" -P "$SA_PASSWORD" -Q \'SELECT 1\' -C',
+            ]
         )
-        assert status == 0, "Cannot run 'SELECT 1': container is not ready"
+        strategy.wait_until_ready(self)
 
     def get_connection_url(self) -> str:
         return super()._create_connection_url(
