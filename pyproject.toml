@@ -54,6 +54,7 @@ cassandra = []
 clickhouse = ["clickhouse-driver"]
 cosmosdb = ["azure-cosmos>=4"]
 cockroachdb = []
+couchbase = ['couchbase']
 db2 = [
   "sqlalchemy>=2",
   "ibm_db_sa; platform_machine != 'aarch64' and platform_machine != 'arm64'",
@@ -185,6 +186,7 @@ packages = [
   "modules/clickhouse/testcontainers",
   "modules/cockroachdb/testcontainers",
   "modules/cosmosdb/testcontainers",
+  "modules/couchbase/testcontainers",
   "modules/db2/testcontainers",
   "modules/elasticsearch/testcontainers",
   "modules/generic/testcontainers",
@@ -235,6 +237,7 @@ dev-mode-dirs = [
   "modules/clickhouse",
   "modules/cockroachdb",
   "modules/cosmosdb",
+  "modules/couchbase",
   "modules/db2",
   "modules/elasticsearch",
   "modules/generic",

@@ -58,6 +58,7 @@ nav:
           - modules/clickhouse.md
           - modules/cockroachdb.md
           - modules/cosmosdb.md
+          - modules/couchbase.md
           - modules/db2.md
           - modules/elasticsearch.md
           - modules/influxdb.md
