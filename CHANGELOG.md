@@ -1,5 +1,21 @@
 # Changelog
 
+## [4.15.0-rc2](https://github.com/testcontainers/testcontainers-python/compare/testcontainers-v4.15.0-rc.1...testcontainers-v4.15.0-rc2) (2026-04-30)
+
+
+### Features
+
+* **core:** support TESTCONTAINERS_HUB_IMAGE_NAME_PREFIX ([#961](https://github.com/testcontainers/testcontainers-python/issues/961)) ([be9a0a6](https://github.com/testcontainers/testcontainers-python/commit/be9a0a612d934c77bdde20defd4d9f7d5228fb0c))
+* **mongodb:** Add Atlas Local for MongoDb ([#873](https://github.com/testcontainers/testcontainers-python/issues/873)) ([73aeb43](https://github.com/testcontainers/testcontainers-python/commit/73aeb43c18d56993d7c2626fb598a01842a91c35))
+* support with_copy_to ([#976](https://github.com/testcontainers/testcontainers-python/issues/976)) ([59ec1ce](https://github.com/testcontainers/testcontainers-python/commit/59ec1ce6dc7d54fa7f4b3c69f5bf674dfd19bfc0))
+* **valkey:** add Valkey module ([#947](https://github.com/testcontainers/testcontainers-python/issues/947)) ([fc09dc1](https://github.com/testcontainers/testcontainers-python/commit/fc09dc17bccd45d57d92f12c0de26b99ab1ccecf))
+
+
+### Bug Fixes
+
+* **azurite:** use `HttpWaitStrategy` instead of deprecated `wait_container_is_ready` ([#1003](https://github.com/testcontainers/testcontainers-python/issues/1003)) ([9fe6b07](https://github.com/testcontainers/testcontainers-python/commit/9fe6b074852e5d6f1df2942bda52ee0557e5cb32)), closes [#874](https://github.com/testcontainers/testcontainers-python/issues/874)
+* fix pr [#961](https://github.com/testcontainers/testcontainers-python/issues/961) ([#1011](https://github.com/testcontainers/testcontainers-python/issues/1011)) ([8eff908](https://github.com/testcontainers/testcontainers-python/commit/8eff90851eecaf5720021d63e852a927c47f978c))
+
 ## [4.15.0-rc.1](https://github.com/testcontainers/testcontainers-python/compare/testcontainers-v4.14.2...testcontainers-v4.15.0-rc.1) (2026-04-07)
 
 

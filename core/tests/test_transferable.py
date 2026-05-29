@@ -104,6 +104,19 @@ def test_copy_into_container_at_startup(transferable: Transferable):
     assert result.output == b"hello world"
 
 
+def test_copy_into_startup_file(transferable: Transferable):
+    destination_in_container = "/tmp/my_file"
+
+    container = DockerContainer("bash", command=f"cat {destination_in_container}")
+    container.with_copy_into_container(transferable, destination_in_container)
+
+    with container:
+        exit_code = container.wait()
+        stdout, _ = container.get_logs()
+        assert exit_code == 0
+        assert stdout.decode() == "hello world"
+
+
 def test_copy_into_container_via_initializer(transferable: Transferable):
     destination_in_container = "/tmp/my_file"
     transferables: list[TransferSpec] = [(transferable, destination_in_container, 0o644)]
