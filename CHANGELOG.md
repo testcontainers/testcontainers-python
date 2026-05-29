@@ -1,5 +1,15 @@
 # Changelog
 
+## [4.15.1-rc2](https://github.com/testcontainers/testcontainers-python/compare/testcontainers-v4.15.0-rc2...testcontainers-v4.15.1-rc2) (2026-05-29)
+
+
+### Bug Fixes
+
+* **core:** add container logs to TimeoutError when wait strategy times out ([#1007](https://github.com/testcontainers/testcontainers-python/issues/1007)) ([1fadb40](https://github.com/testcontainers/testcontainers-python/commit/1fadb40c456c3ccd4f13b1b82cd19c3ab22c2687))
+* **core:** close Reaper socket at interpreter exit to prevent ResourceWarning ([#1017](https://github.com/testcontainers/testcontainers-python/issues/1017)) ([d3a1517](https://github.com/testcontainers/testcontainers-python/commit/d3a1517f2c5c2e2a48a4c051b2203b80d9141759))
+* **mssql:** use `ExecWaitStrategy` instead of deprecated `wait_container_is_ready` ([#1016](https://github.com/testcontainers/testcontainers-python/issues/1016)) ([4c53b89](https://github.com/testcontainers/testcontainers-python/commit/4c53b89a1faad9a592d2bb49123ef3e6bf33fdb9)), closes [#874](https://github.com/testcontainers/testcontainers-python/issues/874)
+* **neo4j:** Swap out use of depricated wait utils for wait_strategies ([#1012](https://github.com/testcontainers/testcontainers-python/issues/1012)) ([6deaf3b](https://github.com/testcontainers/testcontainers-python/commit/6deaf3b27e5f8d54ff9ae404dbd092e8014df079))
+
 ## [4.15.0-rc2](https://github.com/testcontainers/testcontainers-python/compare/testcontainers-v4.15.0-rc.1...testcontainers-v4.15.0-rc2) (2026-04-30)
 
 
