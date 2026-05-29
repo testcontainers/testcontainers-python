@@ -4,6 +4,10 @@ import pytest
 from pytest import MonkeyPatch, raises, mark
 
 from testcontainers.core import utils
+from testcontainers.core.container import DockerContainer
+from testcontainers.core.utils import run_containers
+
+import docker
 
 
 def test_setup_logger() -> None:
@@ -76,3 +80,19 @@ def test_get_running_container_id(fake_cgroup: Path) -> None:
     container_id = "b78eebb08f89158ed6e2ed2fe"
     fake_cgroup.write_text(f"13:cpuset:/docker/{container_id}")
     assert utils.get_running_in_container_id() == container_id
+
+
+def test_run_container():
+    client = docker.from_env()
+    running_containers = len(client.containers.list())
+
+    with run_containers(DockerContainer("hello-world"), DockerContainer("hello-world")) as containers:
+        assert len(client.containers.list()) == running_containers + 2
+
+        for container in containers:
+            stdout, stderr = container.get_logs()
+            assert isinstance(stdout, bytes)
+            assert isinstance(stderr, bytes)
+            assert "Hello from Docker".encode() in stdout, "There should be something on stdout"
+
+    assert len(client.containers.list()) == running_containers + 1  # account for ryuk
