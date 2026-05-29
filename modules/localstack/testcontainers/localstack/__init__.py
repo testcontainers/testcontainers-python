@@ -12,7 +12,7 @@
 #    under the License.
 import functools as ft
 import os
-from typing import Any, Optional
+from typing import Any, Optional, Self
 
 import boto3
 
@@ -52,7 +52,7 @@ class LocalStackContainer(DockerContainer):
         self.with_env("AWS_ACCESS_KEY_ID", "testcontainers-localstack")
         self.with_env("AWS_SECRET_ACCESS_KEY", "testcontainers-localstack")
 
-    def with_services(self, *services) -> "LocalStackContainer":
+    def with_services(self, *services) -> Self:
         """
         Restrict what services to run. By default all localstack services are launched.
 
@@ -85,7 +85,7 @@ class LocalStackContainer(DockerContainer):
         kwargs_.update(kwargs)
         return boto3.client(name, **kwargs_)
 
-    def start(self, timeout: float = 60) -> "LocalStackContainer":
+    def start(self, timeout: float = 60) -> Self:
         super().start()
         wait_for_logs(self, r"Ready\.\n", timeout=timeout)
         return self

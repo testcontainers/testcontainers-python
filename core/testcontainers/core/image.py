@@ -1,8 +1,6 @@
 from os import PathLike
 from types import TracebackType
-from typing import TYPE_CHECKING, Any, Optional, Union
-
-from typing_extensions import Self
+from typing import TYPE_CHECKING, Any, Optional, Self, Union
 
 from testcontainers.core.docker_client import DockerClient
 from testcontainers.core.utils import setup_logger

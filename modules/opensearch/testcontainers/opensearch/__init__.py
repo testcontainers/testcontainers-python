@@ -1,4 +1,5 @@
 from contextlib import suppress
+from typing import Self
 
 from opensearchpy import OpenSearch
 from opensearchpy.exceptions import ConnectionError, TransportError
@@ -113,7 +114,7 @@ class OpenSearchContainer(DockerContainer):
         client: OpenSearchContainer = self.get_client()
         client.cluster.health(wait_for_status="green")
 
-    def start(self) -> "OpenSearchContainer":
+    def start(self) -> Self:
         """This method starts the OpenSearch container and runs the healthcheck
         to verify that the container is ready to use."""
         super().start()

@@ -1,4 +1,4 @@
-from typing import TYPE_CHECKING
+from typing import TYPE_CHECKING, Self
 
 from requests import ConnectionError, get
 
@@ -73,7 +73,7 @@ class ChromaContainer(DockerContainer):
         response: Response = get(url)
         response.raise_for_status()
 
-    def start(self) -> "ChromaContainer":
+    def start(self) -> Self:
         """This method starts the Chroma container and runs the healthcheck
         to verify that the container is ready to use."""
         super().start()
