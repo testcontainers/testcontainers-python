@@ -1,6 +1,6 @@
 [project]
 name = "testcontainers"
-version = "4.14.2"  # auto-incremented by release-please
+version = "4.15.0-rc2"  # auto-incremented by release-please
 description = "Python library for throwaway instances of anything that can run in a Docker container"
 readme = "README.md"
 requires-python = ">=3.10"
@@ -102,6 +102,7 @@ registry = ["bcrypt>=5"]
 selenium = ["selenium>=4"]
 scylla = ["cassandra-driver>=3; python_version < '3.14'"]
 sftp = ["cryptography"]
+valkey = []
 vault = []
 weaviate = ["weaviate-client>=4"]
 chroma = ["chromadb-client>=1"]
@@ -219,6 +220,7 @@ packages = [
   "modules/selenium/testcontainers",
   "modules/scylla/testcontainers",
   "modules/trino/testcontainers",
+  "modules/valkey/testcontainers",
   "modules/vault/testcontainers",
   "modules/weaviate/testcontainers",
 ]
@@ -268,6 +270,7 @@ dev-mode-dirs = [
   "modules/selenium",
   "modules/scylla",
   "modules/trino",
+  "modules/valkey",
   "modules/vault",
   "modules/weaviate",
 ]

@@ -2,6 +2,7 @@ import time
 
 from testcontainers.redis import RedisContainer, AsyncRedisContainer
 import pytest
+import redis
 
 
 def test_docker_run_redis():
@@ -22,6 +23,16 @@ def test_docker_run_redis_with_password():
         client = redis.get_client(decode_responses=True)
         client.set("hello", "world")
         assert client.get("hello") == "world"
+
+
+def test_docker_run_start_fails(monkeypatch: pytest.MonkeyPatch):
+    # Patch config to speed up the test.
+    monkeypatch.setattr("testcontainers.core.config.testcontainers_config.max_tries", 0.3)
+    monkeypatch.setattr("testcontainers.core.config.testcontainers_config.sleep_time", 0.02)
+    # Use a bogus image to make the startup check fail.
+    config = RedisContainer(image="hello-world")
+    with pytest.raises(redis.exceptions.ConnectionError, match="Could not connect"):
+        config.start()
 
 
 pytest.mark.usefixtures("anyio_backend")
