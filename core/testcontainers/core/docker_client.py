@@ -22,6 +22,7 @@ from collections.abc import Iterable
 from typing import TYPE_CHECKING, Any, Callable, Optional, TypeVar, Union, cast
 
 import docker
+from docker.context import ContextAPI
 from docker.models.containers import Container, ContainerCollection
 from docker.models.images import Image, ImageCollection
 from typing_extensions import ParamSpec
@@ -320,10 +321,31 @@ class DockerClient:
 
 
 def get_docker_host() -> Optional[str]:
-    host = c.tc_properties_get_tc_host() or os.getenv("DOCKER_HOST")
+    host = c.tc_properties_get_tc_host() or os.getenv("DOCKER_HOST") or _get_docker_host_from_context()
     if host:
         return _sanitize_docker_host(host)
     return None
+
+
+def _get_docker_host_from_context() -> Optional[str]:
+    """
+    Look up the docker host from the current docker context (e.g. as set by``docker context use``).
+    This allows users with a remote docker host configured via docker contexts to use testcontainers
+    without having to additionally export ``DOCKER_HOST``.
+    """
+    try:
+        context = ContextAPI.get_current_context()
+    except Exception as e:
+        LOGGER.debug(f"failed to read current docker context: {e}")
+        return None
+    if context is None:
+        return None
+    host = context.Host
+    # The default context points at the local unix socket / named pipe; let
+    # docker-py fall back to its own defaults in that case.
+    if not host or context.Name == "default":
+        return None
+    return cast("str", host)
 
 
 def get_docker_host_hostname() -> Optional[str]:

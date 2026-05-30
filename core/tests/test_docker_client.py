@@ -338,6 +338,7 @@ def test_get_docker_host_hostname(monkeypatch: pytest.MonkeyPatch, docker_host: 
     from testcontainers.core.docker_client import get_docker_host_hostname
 
     monkeypatch.setattr(c, "tc_properties_get_tc_host", lambda: None)
+    monkeypatch.setattr("testcontainers.core.docker_client._get_docker_host_from_context", lambda: None)
     if docker_host:
         monkeypatch.setenv("DOCKER_HOST", docker_host)
     else:
