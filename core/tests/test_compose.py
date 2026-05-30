@@ -398,6 +398,8 @@ def test_compose_profile_support(profiles: Optional[list[str]], running: list[st
         pytest.param("ssh://user@10.0.0.5", "0.0.0.0", "10.0.0.5", id="ssh_replaces_wildcard"),
         pytest.param("ssh://user@10.0.0.5", "127.0.0.1", "10.0.0.5", id="ssh_replaces_loopback"),
         pytest.param("ssh://user@10.0.0.5", "::", "10.0.0.5", id="ssh_replaces_ipv6_any"),
+        pytest.param("ssh://user@10.0.0.5", "", "10.0.0.5", id="ssh_replaces_empty"),
+        pytest.param("ssh://user@10.0.0.5", None, "10.0.0.5", id="ssh_replaces_none"),
         pytest.param("tcp://localhost:2375", "0.0.0.0", "0.0.0.0", id="non_ssh_keeps_original"),
     ],
 )
@@ -416,6 +418,33 @@ def test_compose_normalize_rewrites_local_url_for_ssh_docker_host(
     result = model.normalize()
     assert result.URL == expected_url
     assert result.PublishedPort == 9999
+
+
+@pytest.mark.parametrize(
+    "docker_on_path, podman_on_path, podman_detected, expected",
+    [
+        pytest.param(True, True, True, "docker", id="docker_wins_over_podman"),
+        pytest.param(False, True, True, "podman", id="podman_when_no_docker_and_podman_daemon"),
+        pytest.param(False, False, True, "docker", id="fallback_to_docker_when_no_podman_binary"),
+    ],
+)
+def test_default_compose_binary(
+    monkeypatch: pytest.MonkeyPatch,
+    docker_on_path: bool,
+    podman_on_path: bool,
+    podman_detected: bool,
+    expected: str,
+) -> None:
+    from testcontainers.compose import compose as compose_module
+
+    paths = {
+        "docker": "/usr/bin/docker" if docker_on_path else None,
+        "podman": "/usr/bin/podman" if podman_on_path else None,
+    }
+    monkeypatch.setattr("testcontainers.compose.compose.shutil.which", lambda name: paths.get(name))
+    monkeypatch.setattr(compose_module, "is_podman", lambda: podman_detected)
+
+    assert compose_module._default_compose_binary() == expected
 
 
 def test_container_info():
