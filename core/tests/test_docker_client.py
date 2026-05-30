@@ -373,6 +373,7 @@ def _mock_docker_context(name: str, host: str) -> MagicMock:
             _mock_docker_context("default", "unix:///var/run/docker.sock"), None, id="default_context_skipped"
         ),
         pytest.param(_mock_docker_context("remote", ""), None, id="empty_host_returns_none"),
+        pytest.param(None, None, id="no_current_context"),
     ],
 )
 def test_get_docker_host_from_context(monkeypatch: pytest.MonkeyPatch, context, expected) -> None:
