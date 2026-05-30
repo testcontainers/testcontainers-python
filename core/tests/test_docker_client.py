@@ -356,3 +356,54 @@ def test_ssh_docker_host(monkeypatch: pytest.MonkeyPatch) -> None:
         client = DockerClient()
     mock_docker.from_env.assert_called_once_with(use_ssh_client=True)
     assert client.host() == "10.0.0.1"
+
+
+def _mock_docker_context(name: str, host: str) -> MagicMock:
+    context = MagicMock()
+    context.Name = name
+    context.Host = host
+    return context
+
+
+@pytest.mark.parametrize(
+    "context, expected",
+    [
+        pytest.param(_mock_docker_context("remote", "ssh://user@10.0.0.1"), "ssh://user@10.0.0.1", id="returns_host"),
+        pytest.param(
+            _mock_docker_context("default", "unix:///var/run/docker.sock"), None, id="default_context_skipped"
+        ),
+        pytest.param(_mock_docker_context("remote", ""), None, id="empty_host_returns_none"),
+    ],
+)
+def test_get_docker_host_from_context(monkeypatch: pytest.MonkeyPatch, context, expected) -> None:
+    from testcontainers.core.docker_client import _get_docker_host_from_context
+
+    monkeypatch.setattr(
+        "testcontainers.core.docker_client.ContextAPI.get_current_context",
+        lambda: context,
+    )
+    assert _get_docker_host_from_context() == expected
+
+
+def test_get_docker_host_from_context_swallows_errors(monkeypatch: pytest.MonkeyPatch) -> None:
+    """A malformed docker config should not crash; we fall through to None."""
+    from testcontainers.core.docker_client import _get_docker_host_from_context
+
+    def _raise() -> None:
+        raise RuntimeError("broken docker config")
+
+    monkeypatch.setattr("testcontainers.core.docker_client.ContextAPI.get_current_context", _raise)
+    assert _get_docker_host_from_context() is None
+
+
+def test_get_docker_host_falls_back_to_context(monkeypatch: pytest.MonkeyPatch) -> None:
+    """When tc.host and DOCKER_HOST are unset, the current docker context wins."""
+    from testcontainers.core.docker_client import get_docker_host
+
+    monkeypatch.setattr(c, "tc_properties_get_tc_host", lambda: None)
+    monkeypatch.delenv("DOCKER_HOST", raising=False)
+    monkeypatch.setattr(
+        "testcontainers.core.docker_client.ContextAPI.get_current_context",
+        lambda: _mock_docker_context("remote", "ssh://user@10.0.0.1"),
+    )
+    assert get_docker_host() == "ssh://user@10.0.0.1"
