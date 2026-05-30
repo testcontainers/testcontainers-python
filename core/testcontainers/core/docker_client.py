@@ -344,6 +344,30 @@ def is_ssh_docker_host() -> bool:
     return get_docker_host_hostname() is not None
 
 
+@ft.lru_cache(maxsize=1)
+def is_podman() -> bool:
+    """Detect whether the configured Docker daemon is actually Podman.
+
+    The result is cached for the lifetime of the process: detection requires a
+    daemon round-trip, and this helper is invoked at test-collection time via
+    ``pytest.mark.skipif`` decorators.
+    """
+    try:
+        # Use docker.from_env() directly rather than DockerClient() so we avoid
+        # the constructor's side effects (DOCKER_HOST mutation, registry login).
+        version = docker.from_env().version()
+    except Exception as e:
+        LOGGER.debug(f"is_podman: failed to query daemon version: {e}")
+        return False
+
+    # Prefer the top-level Platform.Name field (matches testcontainers-go).
+    platform_name = (version.get("Platform") or {}).get("Name", "")
+    if "podman" in platform_name.lower():
+        return True
+    # Fall back to scanning the Components array for older podman versions.
+    return any("podman" in comp.get("Name", "").lower() for comp in version.get("Components") or [])
+
+
 def _sanitize_docker_host(docker_host: str) -> str:
     """
     Sanitize the DOCKER_HOST value for compatibility with the Docker SDK.

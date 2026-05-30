@@ -40,7 +40,7 @@ def test_network_create_errors():
         network.create()
 
     assert excinfo.value.response.status_code == HTTPStatus.CONFLICT
-    excinfo.match(f"network with name {network.name} already exists")
+    excinfo.match(f"network.*{network.name}.*already exists")
     network.remove()
 
 
