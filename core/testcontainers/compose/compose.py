@@ -1,3 +1,4 @@
+import shutil
 import sys
 from dataclasses import asdict, dataclass, field
 from functools import cached_property
@@ -11,7 +12,7 @@ from subprocess import run as subprocess_run
 from types import TracebackType
 from typing import Any, Callable, Literal, Optional, TypeVar, Union, cast
 
-from testcontainers.core.docker_client import DockerClient, get_docker_host_hostname
+from testcontainers.core.docker_client import DockerClient, get_docker_host_hostname, is_podman
 from testcontainers.core.exceptions import ContainerIsNotRunning, NoSuchPortExposed
 from testcontainers.core.inspect import ContainerInspectInfo, _ignore_properties
 from testcontainers.core.waiting_utils import WaitStrategy
@@ -19,6 +20,20 @@ from testcontainers.core.waiting_utils import WaitStrategy
 _WARNINGS = {"DOCKER_COMPOSE_GET_CONFIG": "get_config is experimental, see testcontainers/testcontainers-python#669"}
 
 logger = getLogger(__name__)
+
+
+def _default_compose_binary() -> str:
+    """Return the binary used to drive ``compose`` subcommands.
+
+    Prefers ``docker`` when available; otherwise falls back to ``podman``
+    when the daemon is detected as podman. This means a pure-podman host
+    without the ``podman-docker`` shim works out of the box.
+    """
+    if shutil.which("docker"):
+        return "docker"
+    if is_podman() and shutil.which("podman"):
+        return "podman"
+    return "docker"
 
 
 @dataclass
@@ -276,9 +291,8 @@ class DockerCompose:
 
     @cached_property
     def compose_command_property(self) -> list[str]:
-        docker_compose_cmd = (
-            [self.docker_command_path, "compose"] if self.docker_command_path else ["docker", "compose"]
-        )
+        binary = self.docker_command_path or _default_compose_binary()
+        docker_compose_cmd = [binary, "compose"]
         if self.compose_file_name:
             for file in self.compose_file_name:
                 docker_compose_cmd += ["-f", file]

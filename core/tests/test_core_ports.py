@@ -59,15 +59,16 @@ def test_docker_container_with_bind_ports(container_port: Union[str, int], host_
 
     # compare PortBindings to expected output
     actual = client.containers.get(container_id).attrs["HostConfig"]["PortBindings"]
-    # Normalize Podman differences:
-    # - HostIp '0.0.0.0' vs '' (both mean all interfaces)
-    # - Empty host_port: Podman stores the assigned port, Docker stores ''
-    for bindings in actual.values():
-        for binding in bindings:
-            if binding.get("HostIp") == "0.0.0.0":
-                binding["HostIp"] = ""
-            if not host_port and binding.get("HostPort", "").isdigit():
-                binding["HostPort"] = ""
+    if is_podman():
+        # Normalize Podman differences:
+        # - HostIp '0.0.0.0' vs '' (both mean all interfaces)
+        # - Empty host_port: Podman stores the assigned port, Docker stores ''
+        for bindings in actual.values():
+            for binding in bindings:
+                if binding.get("HostIp") == "0.0.0.0":
+                    binding["HostIp"] = ""
+                if not host_port and binding.get("HostPort", "").isdigit():
+                    binding["HostPort"] = ""
     assert actual == expected
     container.stop()
 

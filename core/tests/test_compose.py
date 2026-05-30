@@ -15,16 +15,10 @@ from testcontainers.core.exceptions import ContainerIsNotRunning, NoSuchPortExpo
 
 FIXTURES = Path(__file__).parent.joinpath("compose_fixtures")
 
-
-def _port_multiple_fixture() -> Path:
-    """Return the appropriate port_multiple fixture path.
-
-    Podman does not support published port ranges (e.g. '5000-5999'),
-    so we use a fixture without ranges when running on Podman.
-    """
-    if is_podman():
-        return FIXTURES / "port_multiple"
-    return FIXTURES / "port_multiple_range"
+_skip_if_podman_port_range = pytest.mark.skipif(
+    is_podman(),
+    reason="Podman does not support published port ranges (e.g. '5000-5999')",
+)
 
 
 def test_compose_no_file_name():
@@ -201,12 +195,13 @@ def test_compose_ports():
 
 
 # noinspection HttpUrlsUsage
+@_skip_if_podman_port_range
 def test_compose_multiple_containers_and_ports():
     """test for the logic encapsulated in 'one' function
 
     assert correctness of multiple logic
     """
-    multiple = DockerCompose(context=_port_multiple_fixture())
+    multiple = DockerCompose(context=FIXTURES / "port_multiple")
     with multiple:
         with pytest.raises(ContainerIsNotRunning) as e:
             multiple.get_container()
@@ -298,9 +293,10 @@ def test_exec_in_container():
 
 
 # noinspection HttpUrlsUsage
+@_skip_if_podman_port_range
 def test_exec_in_container_multiple():
     """same as above, except we exec into a particular service"""
-    multiple = DockerCompose(context=_port_multiple_fixture())
+    multiple = DockerCompose(context=FIXTURES / "port_multiple")
     with multiple:
         sn = "alpine2"  # service name
         host, port = multiple.get_service_host_and_port(service_name=sn)
