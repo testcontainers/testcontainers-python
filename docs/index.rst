@@ -14,6 +14,7 @@ testcontainers-python facilitates the use of Docker containers for functional an
 
 .. toctree::
     :maxdepth: 1
+    :glob:
 
     core/README
     compose
@@ -78,7 +79,7 @@ Crafting containers that are based on custom images is supported by the `core` m
 
 This allows you to create containers from images that are not part of the modules provided by testcontainers-python.
 
-For common use cases, you can also use the generic containers provided by the `testcontainers-generic` module. Please check the `generic documentation <modules/generic/README.html>`_ for more information.
+For common use cases, you can also use the generic containers provided by the `testcontainers-generic` module. Please check the `generic documentation <community/generic.html>`_ for more information.
 (example: `ServerContainer` for running a FastAPI server)
 
 
