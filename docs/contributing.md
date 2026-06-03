@@ -40,14 +40,14 @@ Once you've talked to the maintainers (we do our best to reply!) then you can pr
 
 !!!WARNING
 
-    Please raise an issue before you try to contribute a new container! It helps maintainersunderstand your use-case and motivation.
+    Please raise an issue before you try to contribute a new container! It helps maintainers understand your use-case and motivation.
     This way we can keep pull requests forced on the "how", not the "why"! :pray:
-    It also gives maintainers a chance to give you last-minute guidance on caveats orexpectations, particularly with
+    It also gives maintainers a chance to give you last-minute guidance on caveats or expectations, particularly with
     new extra dependencies and how to manage them.
 
 ### Module documentation
 
-Leave examples for others with your mew module such as `modules/<new_module>/basic_example.py`. You can create as many examples as you want.
+Leave examples for others with your new module such as `modules/<new_module>/basic_example.py`. You can create as many examples as you want.
 
 Create a new `docs/modules/<new_module>.md` describing the basic use of the new container. There is a [starter template provided here](https://raw.githubusercontent.com/testcontainers/testcontainers-python/blob/main/docs/modules/template.md){:target="\_blank"}.
 
@@ -81,7 +81,7 @@ This takes care of:
 
 ## Documentation contributions
 
-The _Testcontainers for Go_ documentation is a static site built with [MkDocs](https://www.mkdocs.org/){:target="\_blank"}.
+The _Testcontainers for Python_ documentation is a static site built with [MkDocs](https://www.mkdocs.org/){:target="\_blank"}.
 We use the [Material for MkDocs](https://squidfunk.github.io/mkdocs-material/){:target="\_blank"} theme, which offers a number of useful extensions to MkDocs.
 
 We publish our documentation using Netlify.
