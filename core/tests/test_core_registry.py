@@ -1,29 +1,25 @@
-"""Integration test using login to a private registry.
+"""
+Integration tests for private-registry support in ``DockerClient``.
 
-Note: Using the testcontainers-python library to test the Docker registry.
-This could be considered a bad practice as it is not recommended to use the same library to test itself.
-However, it is a very good use case for DockerRegistryContainer and allows us to test it thoroughly.
+These tests spin up a real ``registry:2`` container and exercise the wiring that turns ``DOCKER_AUTH_CONFIG`` into a successful login + image pull.
+The registry is provided by the local ``_LocalRegistryContainer`` helper, kept as a private copy in ``core/tests`` so ``core`` does not import from a sibling module.
 
-Note2: These tests are skipped on macOS and SSH-based Docker hosts because they rely on insecure HTTP registries,
-which are not supported in those environments without additional configuration.
+Skipped where insecure HTTP registries cannot be reached without daemon reconfiguration.
+That includes macOS, Podman, and SSH-based Docker hosts.
 """
 
-import json
-import os
 import base64
-import pytest
+import json
 
+import pytest
+from _local_registry_container import _LocalRegistryContainer  # type: ignore[import-not-found]
 from docker.errors import NotFound
 
 from testcontainers.core.config import testcontainers_config
 from testcontainers.core.container import DockerContainer
-from testcontainers.core.docker_client import DockerClient, is_ssh_docker_host
-from testcontainers.core.waiting_utils import wait_for_logs
-
-from testcontainers.registry import DockerRegistryContainer
+from testcontainers.core.docker_client import DockerClient, is_podman, is_ssh_docker_host
 from testcontainers.core.utils import is_mac
-from testcontainers.core.docker_client import is_podman
-
+from testcontainers.core.waiting_utils import wait_for_logs
 
 _skip_insecure_registry = pytest.mark.skipif(
     is_mac() or is_podman() or is_ssh_docker_host(),
@@ -38,7 +34,7 @@ def test_missing_on_private_registry(monkeypatch):
     image = "hello-world"
     tag = "test"
 
-    with DockerRegistryContainer(username=username, password=password) as registry:
+    with _LocalRegistryContainer(username=username, password=password) as registry:
         registry_url = registry.get_registry()
 
         # prepare auth config
@@ -65,7 +61,7 @@ def test_missing_on_private_registry(monkeypatch):
 def test_with_private_registry(image, tag, username, password, expected_output, monkeypatch):
     client = DockerClient().client
 
-    with DockerRegistryContainer(username=username, password=password) as registry:
+    with _LocalRegistryContainer(username=username, password=password) as registry:
         registry_url = registry.get_registry()
 
         # prepare image
