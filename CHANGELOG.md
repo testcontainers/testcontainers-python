@@ -1,5 +1,23 @@
 # Changelog
 
+## [4.15.0-rc3](https://github.com/testcontainers/testcontainers-python/compare/testcontainers-v4.15.0-rc2...testcontainers-v4.15.0-rc3) (2026-06-03)
+
+
+### Features
+
+* **core:** add Podman compatibility ([#1028](https://github.com/testcontainers/testcontainers-python/issues/1028)) ([37093ab](https://github.com/testcontainers/testcontainers-python/commit/37093ab8e1a86d1aecbad915f1af20934861ac35))
+* **core:** auto-detect DOCKER_HOST from current docker context ([#1026](https://github.com/testcontainers/testcontainers-python/issues/1026)) ([d4b8ff6](https://github.com/testcontainers/testcontainers-python/commit/d4b8ff66197e7eb57708c9579fa1fb41d6988f5e)), closes [#1025](https://github.com/testcontainers/testcontainers-python/issues/1025)
+
+
+### Bug Fixes
+
+* **core:** add container logs to TimeoutError when wait strategy times out ([#1007](https://github.com/testcontainers/testcontainers-python/issues/1007)) ([1fadb40](https://github.com/testcontainers/testcontainers-python/commit/1fadb40c456c3ccd4f13b1b82cd19c3ab22c2687))
+* **core:** close Reaper socket at interpreter exit to prevent ResourceWarning ([#1017](https://github.com/testcontainers/testcontainers-python/issues/1017)) ([d3a1517](https://github.com/testcontainers/testcontainers-python/commit/d3a1517f2c5c2e2a48a4c051b2203b80d9141759))
+* **cosmosdb:** replace distutils.strtobool removed in Python 3.12 ([#1018](https://github.com/testcontainers/testcontainers-python/issues/1018)) ([3e487f4](https://github.com/testcontainers/testcontainers-python/commit/3e487f4bab679204820826cfcbc282cb8fc60008))
+* **mongodb:** Use wait strategy instead of deprecated wait_for_logs ([#943](https://github.com/testcontainers/testcontainers-python/issues/943)) ([c8118e7](https://github.com/testcontainers/testcontainers-python/commit/c8118e7c9832743486115221fd8253bdc8c2a5ec))
+* **mssql:** use `ExecWaitStrategy` instead of deprecated `wait_container_is_ready` ([#1016](https://github.com/testcontainers/testcontainers-python/issues/1016)) ([4c53b89](https://github.com/testcontainers/testcontainers-python/commit/4c53b89a1faad9a592d2bb49123ef3e6bf33fdb9)), closes [#874](https://github.com/testcontainers/testcontainers-python/issues/874)
+* **neo4j:** Swap out use of depricated wait utils for wait_strategies ([#1012](https://github.com/testcontainers/testcontainers-python/issues/1012)) ([6deaf3b](https://github.com/testcontainers/testcontainers-python/commit/6deaf3b27e5f8d54ff9ae404dbd092e8014df079))
+
 ## [4.15.0-rc2](https://github.com/testcontainers/testcontainers-python/compare/testcontainers-v4.15.0-rc.1...testcontainers-v4.15.0-rc2) (2026-04-30)
 
 
