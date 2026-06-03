@@ -358,6 +358,39 @@ def test_ssh_docker_host(monkeypatch: pytest.MonkeyPatch) -> None:
     assert client.host() == "10.0.0.1"
 
 
+_PODMAN_DAEMON_ERROR = RuntimeError("daemon unreachable")
+
+
+@pytest.mark.parametrize(
+    "version, expected",
+    [
+        pytest.param({"Platform": {"Name": "Docker Engine - Community"}}, False, id="docker_platform"),
+        pytest.param({"Platform": {"Name": "Podman Engine"}}, True, id="podman_platform"),
+        pytest.param({"Platform": {}, "Components": [{"Name": "podman"}]}, True, id="podman_components_fallback"),
+        pytest.param({}, False, id="empty_version_no_match"),
+        pytest.param(_PODMAN_DAEMON_ERROR, False, id="daemon_error_swallowed"),
+    ],
+)
+def test_is_podman(monkeypatch: pytest.MonkeyPatch, version: object, expected: bool) -> None:
+    from testcontainers.core import docker_client as dc
+
+    dc.is_podman.cache_clear()
+    mock_client = MagicMock()
+    if isinstance(version, Exception):
+        monkeypatch.setattr("testcontainers.core.docker_client.docker.from_env", MagicMock(side_effect=version))
+    else:
+        mock_client.version.return_value = version
+        monkeypatch.setattr("testcontainers.core.docker_client.docker.from_env", lambda: mock_client)
+    try:
+        # Call twice to also assert the lru_cache only hits the daemon once.
+        assert dc.is_podman() is expected
+        assert dc.is_podman() is expected
+        if not isinstance(version, Exception):
+            assert mock_client.version.call_count == 1
+    finally:
+        dc.is_podman.cache_clear()
+
+
 def _mock_docker_context(name: str, host: str) -> MagicMock:
     context = MagicMock()
     context.Name = name

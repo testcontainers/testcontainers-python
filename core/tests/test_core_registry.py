@@ -22,16 +22,16 @@ from testcontainers.core.waiting_utils import wait_for_logs
 
 from testcontainers.registry import DockerRegistryContainer
 from testcontainers.core.utils import is_mac
+from testcontainers.core.docker_client import is_podman
 
 
-@pytest.mark.skipif(
-    is_mac(),
-    reason="Docker Desktop on macOS does not support insecure private registries without daemon reconfiguration",
+_skip_insecure_registry = pytest.mark.skipif(
+    is_mac() or is_podman() or is_ssh_docker_host(),
+    reason="Insecure HTTP registries are not supported without daemon reconfiguration on macOS, Podman, or SSH-based Docker hosts",
 )
-@pytest.mark.skipif(
-    is_ssh_docker_host(),
-    reason="Remote Docker via SSH requires HTTPS for non-localhost registries; insecure HTTP registries are not accessible",
-)
+
+
+@_skip_insecure_registry
 def test_missing_on_private_registry(monkeypatch):
     username = "user"
     password = "pass"
@@ -53,14 +53,7 @@ def test_missing_on_private_registry(monkeypatch):
                 wait_for_logs(test_container, "Hello from Docker!")
 
 
-@pytest.mark.skipif(
-    is_mac(),
-    reason="Docker Desktop on macOS does not support local insecure registries over HTTP without modifying daemon settings",
-)
-@pytest.mark.skipif(
-    is_ssh_docker_host(),
-    reason="Remote Docker via SSH requires HTTPS for non-localhost registries; insecure HTTP registries are not accessible",
-)
+@_skip_insecure_registry
 @pytest.mark.parametrize(
     "image,tag,username,password,expected_output",
     [

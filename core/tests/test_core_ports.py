@@ -4,15 +4,31 @@ from testcontainers.core.container import DockerContainer
 
 from docker.errors import APIError
 
+from testcontainers.core.docker_client import is_podman
+
 
 @pytest.mark.parametrize(
     "container_port, host_port",
     [
         ("8080", "8080"),
-        ("8125/udp", "8125/udp"),
-        ("8092/udp", "8092/udp"),
-        ("9000/tcp", "9000/tcp"),
-        ("8080", "8080/udp"),
+        pytest.param(
+            "8125/udp",
+            "8125/udp",
+            marks=pytest.mark.skipif(is_podman(), reason="Podman rejects protocol in host_port"),
+        ),
+        pytest.param(
+            "8092/udp",
+            "8092/udp",
+            marks=pytest.mark.skipif(is_podman(), reason="Podman rejects protocol in host_port"),
+        ),
+        pytest.param(
+            "9000/tcp",
+            "9000/tcp",
+            marks=pytest.mark.skipif(is_podman(), reason="Podman rejects protocol in host_port"),
+        ),
+        pytest.param(
+            "8080", "8080/udp", marks=pytest.mark.skipif(is_podman(), reason="Podman rejects protocol in host_port")
+        ),
         (8080, 8080),
         (9000, None),
         ("9009", None),
@@ -42,7 +58,18 @@ def test_docker_container_with_bind_ports(container_port: Union[str, int], host_
     expected = {container_port: [{"HostIp": "", "HostPort": host_port}]}
 
     # compare PortBindings to expected output
-    assert client.containers.get(container_id).attrs["HostConfig"]["PortBindings"] == expected
+    actual = client.containers.get(container_id).attrs["HostConfig"]["PortBindings"]
+    if is_podman():
+        # Normalize Podman differences:
+        # - HostIp '0.0.0.0' vs '' (both mean all interfaces)
+        # - Empty host_port: Podman stores the assigned port, Docker stores ''
+        for bindings in actual.values():
+            for binding in bindings:
+                if binding.get("HostIp") == "0.0.0.0":
+                    binding["HostIp"] = ""
+                if not host_port and binding.get("HostPort", "").isdigit():
+                    binding["HostPort"] = ""
+    assert actual == expected
     container.stop()
 
 
