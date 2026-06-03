@@ -6,7 +6,7 @@ import pytest
 import sqlalchemy
 
 from testcontainers.core.utils import is_arm
-from testcontainers.mysql import MySqlContainer
+from testcontainers.community.mysql import MySqlContainer
 
 
 @pytest.mark.inside_docker_check

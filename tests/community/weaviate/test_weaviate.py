@@ -1,4 +1,4 @@
-from testcontainers.weaviate import WeaviateContainer
+from testcontainers.community.weaviate import WeaviateContainer
 import weaviate
 
 

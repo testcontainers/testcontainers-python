@@ -3,7 +3,7 @@ from pathlib import Path
 import pytest
 import sqlalchemy
 
-from testcontainers.postgres import PostgresContainer
+from testcontainers.community.postgres import PostgresContainer
 
 
 # https://www.postgresql.org/support/versioning/

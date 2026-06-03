@@ -4,7 +4,7 @@ from pathlib import Path
 
 from azure.storage.blob import BlobServiceClient
 
-from testcontainers.azurite import AzuriteContainer, ConnectionStringType
+from testcontainers.community.azurite import AzuriteContainer, ConnectionStringType
 
 from testcontainers.core.image import DockerImage
 from testcontainers.core.container import DockerContainer

@@ -1,6 +1,6 @@
 import clickhouse_driver
 
-from testcontainers.clickhouse import ClickHouseContainer
+from testcontainers.community.clickhouse import ClickHouseContainer
 
 
 def test_docker_run_clickhouse():

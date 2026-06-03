@@ -1,4 +1,4 @@
-from testcontainers.chroma import ChromaContainer
+from testcontainers.community.chroma import ChromaContainer
 import chromadb
 
 

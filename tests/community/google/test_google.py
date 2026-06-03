@@ -2,7 +2,7 @@ from queue import Queue
 from google.cloud.datastore import Entity
 
 from testcontainers.core.waiting_utils import wait_for_logs
-from testcontainers.google import PubSubContainer, DatastoreContainer
+from testcontainers.community.google import PubSubContainer, DatastoreContainer
 
 
 def test_pubsub_container():

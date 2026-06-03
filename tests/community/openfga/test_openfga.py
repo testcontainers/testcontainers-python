@@ -1,5 +1,5 @@
 import pytest
-from testcontainers.openfga import OpenFGAContainer
+from testcontainers.community.openfga import OpenFGAContainer
 from sys import version_info
 
 

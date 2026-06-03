@@ -4,7 +4,7 @@ from typing import Optional
 import pika
 import pytest
 
-from testcontainers.rabbitmq import RabbitMqContainer
+from testcontainers.community.rabbitmq import RabbitMqContainer
 
 QUEUE = "test-q"
 EXCHANGE = "test-exchange"

@@ -2,7 +2,7 @@ import pytest
 import sqlalchemy
 
 from testcontainers.core.utils import is_arm
-from testcontainers.oracle import OracleDbContainer
+from testcontainers.community.oracle import OracleDbContainer
 
 
 @pytest.mark.skipif(is_arm(), reason="oracle-free container not available for ARM")

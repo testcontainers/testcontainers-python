@@ -1,6 +1,6 @@
 import sqlalchemy
 
-from testcontainers.cockroachdb import CockroachDBContainer
+from testcontainers.community.cockroachdb import CockroachDBContainer
 
 
 def test_docker_run_mysql():

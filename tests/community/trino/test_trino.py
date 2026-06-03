@@ -1,4 +1,4 @@
-from testcontainers.trino import TrinoContainer
+from testcontainers.community.trino import TrinoContainer
 from trino.dbapi import connect
 
 

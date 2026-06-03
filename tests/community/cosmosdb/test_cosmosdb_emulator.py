@@ -1,5 +1,5 @@
 import pytest
-from testcontainers.cosmosdb._emulator import CosmosDBEmulatorContainer
+from testcontainers.community.cosmosdb._emulator import CosmosDBEmulatorContainer
 
 
 def test_runs():

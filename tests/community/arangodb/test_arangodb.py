@@ -6,7 +6,7 @@ import pytest
 from arango import ArangoClient
 from arango.exceptions import DatabaseCreateError, ServerVersionError
 
-from testcontainers.arangodb import ArangoDbContainer
+from testcontainers.community.arangodb import ArangoDbContainer
 import platform
 
 ARANGODB_IMAGE_NAME = "arangodb"

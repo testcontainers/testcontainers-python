@@ -2,7 +2,7 @@
 import yaml
 from kubernetes import client, config
 
-from testcontainers.k3s import K3SContainer
+from testcontainers.community.k3s import K3SContainer
 
 
 def test_docker_run_k3s():

@@ -1,5 +1,5 @@
 import pytest
-from testcontainers.keycloak import KeycloakContainer
+from testcontainers.community.keycloak import KeycloakContainer
 
 
 @pytest.mark.parametrize("image_version", ["26.4.0", "26.0.0", "25.0", "24.0.1", "18.0"])

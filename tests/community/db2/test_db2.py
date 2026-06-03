@@ -4,7 +4,7 @@ import pytest
 import sqlalchemy
 
 from testcontainers.core.utils import is_arm
-from testcontainers.db2 import Db2Container
+from testcontainers.community.db2 import Db2Container
 
 
 @pytest.mark.skipif(is_arm(), reason="db2 container not available for ARM")

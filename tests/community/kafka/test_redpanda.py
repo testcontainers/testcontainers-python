@@ -5,7 +5,7 @@ from json import dumps
 from kafka import KafkaConsumer, KafkaProducer, TopicPartition, KafkaAdminClient
 from kafka.admin import NewTopic
 
-from testcontainers.kafka import RedpandaContainer
+from testcontainers.community.kafka import RedpandaContainer
 
 
 def test_redpanda_producer_consumer():

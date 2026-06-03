@@ -5,8 +5,8 @@ import pytest
 from unittest.mock import patch
 
 from testcontainers.core.image import DockerImage
-from testcontainers.aws import AWSLambdaContainer
-from testcontainers.aws.aws_lambda import RIE_PATH
+from testcontainers.community.aws import AWSLambdaContainer
+from testcontainers.community.aws.aws_lambda import RIE_PATH
 
 DOCKER_FILE_PATH = "./modules/aws/tests/lambda_sample"
 IMAGE_TAG = "lambda:test"

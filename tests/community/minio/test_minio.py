@@ -1,6 +1,6 @@
 import io
 
-from testcontainers.minio import MinioContainer
+from testcontainers.community.minio import MinioContainer
 
 
 def test_docker_run_minio():

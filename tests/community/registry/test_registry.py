@@ -1,6 +1,6 @@
 from requests import Response, get
 from requests.auth import HTTPBasicAuth
-from testcontainers.registry import DockerRegistryContainer
+from testcontainers.community.registry import DockerRegistryContainer
 
 
 REGISTRY_USERNAME: str = "foo"

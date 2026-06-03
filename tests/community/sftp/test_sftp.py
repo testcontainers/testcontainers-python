@@ -4,7 +4,7 @@ from pathlib import Path
 import paramiko
 import pytest
 
-from testcontainers.sftp import SFTPContainer, SFTPUser
+from testcontainers.community.sftp import SFTPContainer, SFTPUser
 
 
 def test_sftp_login_with_default_basic_auth():

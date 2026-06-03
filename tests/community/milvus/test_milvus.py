@@ -1,7 +1,7 @@
 import pytest
 from pymilvus import MilvusClient
 
-from testcontainers.milvus import MilvusContainer
+from testcontainers.community.milvus import MilvusContainer
 
 VERSIONS = ["v2.4.0", "v2.4.4"]
 

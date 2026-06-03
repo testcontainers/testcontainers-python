@@ -1,5 +1,5 @@
 import hvac
-from testcontainers.vault import VaultContainer
+from testcontainers.community.vault import VaultContainer
 
 
 def test_docker_run_vault():

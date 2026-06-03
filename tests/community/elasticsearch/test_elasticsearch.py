@@ -3,7 +3,7 @@ import urllib.request
 
 import pytest
 
-from testcontainers.elasticsearch import ElasticSearchContainer
+from testcontainers.community.elasticsearch import ElasticSearchContainer
 
 
 # The versions below should reflect the latest stable releases
