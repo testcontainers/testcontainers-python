@@ -119,7 +119,7 @@ test = [
   #       Make a group for each module requiring extra deps in order to test
   #       Each module with minimal extra depencies
   "sqlalchemy>=2",
-  "psycopg2-binary==2.9.11",
+  "psycopg2-binary==2.9.12",
   "pg8000==1.31.5",
   "psycopg>=3",
   "cassandra-driver>=3; python_version < '3.14'",
