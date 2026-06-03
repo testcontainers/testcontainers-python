@@ -11,7 +11,7 @@ FastAPI container that is using :code:`ServerContainer`
     >>> from testcontainers.core.waiting_utils import wait_for_logs
     >>> from testcontainers.core.image import DockerImage
 
-    >>> with DockerImage(path="./modules/generic/tests/samples/fastapi", tag="fastapi-test:latest") as image:
+    >>> with DockerImage(path="./tests/community/generic/samples/fastapi", tag="fastapi-test:latest") as image:
     ...     with ServerContainer(port=80, image=image) as fastapi_server:
     ...         delay = wait_for_logs(fastapi_server, "Uvicorn running on http://0.0.0.0:80")
     ...         fastapi_server.get_api_url = lambda: fastapi_server._create_connection_url() + "/api/v1/"
@@ -31,7 +31,7 @@ A more advance use-case, where we are using a FastAPI container that is using Re
     ...     redis_container_port = redis.port
     ...     redis_container_ip_address = redis.get_docker_client().bridge_ip(redis._container.id)
 
-    ...     with DockerImage(path="./modules/generic/tests/samples/advance_1", tag="advance-1:latest") as image:
+    ...     with DockerImage(path="./tests/community/generic/samples/advance_1", tag="advance-1:latest") as image:
     ...         web_server = ServerContainer(port=80, image=image)
     ...         web_server.with_env(key="REDIS_HOST", value=redis_container_ip_address)
     ...         web_server.with_env(key="REDIS_PORT", value=redis_container_port)
