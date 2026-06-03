@@ -4,7 +4,7 @@ from threading import Thread
 
 import pika
 
-from testcontainers.rabbitmq import RabbitMQContainer
+from testcontainers.community.rabbitmq import RabbitMQContainer
 
 
 def basic_example():

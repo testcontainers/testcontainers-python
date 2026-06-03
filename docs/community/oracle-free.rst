@@ -1,2 +1,2 @@
-.. autoclass:: testcontainers.oracle.OracleDbContainer
-.. title:: testcontainers.oracle.OracleDbContainer
+.. autoclass:: testcontainers.community.oracle.OracleDbContainer
+.. title:: testcontainers.community.oracle.OracleDbContainer

@@ -3,7 +3,7 @@ import json
 from azure.storage.blob import BlobServiceClient
 from azure.storage.queue import QueueServiceClient
 
-from testcontainers.azurite import AzuriteContainer
+from testcontainers.community.azurite import AzuriteContainer
 
 
 def basic_example():

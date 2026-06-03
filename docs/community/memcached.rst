@@ -1,1 +1,1 @@
-.. autoclass:: testcontainers.memcached.MemcachedContainer
+.. autoclass:: testcontainers.community.memcached.MemcachedContainer

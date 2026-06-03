@@ -64,7 +64,7 @@ class ElasticSearchContainer(DockerContainer):
 
             >>> import json
             >>> import urllib
-            >>> from testcontainers.elasticsearch import ElasticSearchContainer
+            >>> from testcontainers.community.elasticsearch import ElasticSearchContainer
 
             >>> with ElasticSearchContainer(f'elasticsearch:8.3.3', mem_limit='3G') as es:
             ...    resp = urllib.request.urlopen(f'http://{es.get_container_host_ip()}:{es.get_exposed_port(es.port)}')

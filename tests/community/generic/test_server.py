@@ -7,7 +7,7 @@ from httpx import get
 
 from testcontainers.core.waiting_utils import wait_for_logs
 from testcontainers.core.image import DockerImage
-from testcontainers.generic import ServerContainer
+from testcontainers.community.generic import ServerContainer
 
 TEST_DIR = Path(__file__).parent
 

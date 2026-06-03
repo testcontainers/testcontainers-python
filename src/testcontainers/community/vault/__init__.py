@@ -27,7 +27,7 @@ class VaultContainer(DockerContainer):
 
         .. doctest::
 
-            >>> from testcontainers.vault import VaultContainer
+            >>> from testcontainers.community.vault import VaultContainer
             >>> import hvac
 
             >>> with VaultContainer("hashicorp/vault:1.16.1") as vault_container:

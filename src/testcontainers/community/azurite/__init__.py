@@ -44,7 +44,7 @@ class AzuriteContainer(DockerContainer):
 
         .. doctest::
 
-            >>> from testcontainers.azurite import AzuriteContainer
+            >>> from testcontainers.community.azurite import AzuriteContainer
             >>> from azure.storage.blob import BlobServiceClient
 
             >>> with AzuriteContainer() as azurite_container:

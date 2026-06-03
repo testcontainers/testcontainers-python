@@ -3,7 +3,7 @@ from datetime import datetime, timedelta
 import pandas as pd
 from clickhouse_driver import Client
 
-from testcontainers.clickhouse import ClickHouseContainer
+from testcontainers.community.clickhouse import ClickHouseContainer
 
 
 def basic_example():

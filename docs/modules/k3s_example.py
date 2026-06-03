@@ -5,7 +5,7 @@ import yaml
 from kubernetes import client, config
 from kubernetes.client.rest import ApiException
 
-from testcontainers.k3s import K3sContainer
+from testcontainers.community.k3s import K3sContainer
 
 
 def basic_example():

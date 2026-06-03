@@ -24,7 +24,6 @@ from cryptography.hazmat.primitives.serialization import (
     NoEncryption,
 )
 from cryptography.x509.oid import NameOID
-
 from testcontainers.core.container import DockerContainer
 from testcontainers.core.waiting_utils import wait_for_logs
 
@@ -44,7 +43,7 @@ class MailpitUser(NamedTuple):
 
         .. doctest::
 
-            >>> from testcontainers.mailpit import MailpitUser
+            >>> from testcontainers.community.mailpit import MailpitUser
 
             >>> users = [
             ...     MailpitUser("jane", "secret"),
@@ -86,7 +85,7 @@ class MailpitContainer(DockerContainer):
 
             >>> import smtplib
 
-            >>> from testcontainers.mailpit import MailpitContainer
+            >>> from testcontainers.community.mailpit import MailpitContainer
 
             >>> with MailpitContainer() as mailpit_container:
             ...     host_ip = mailpit_container.get_container_host_ip()
@@ -105,7 +104,7 @@ class MailpitContainer(DockerContainer):
 
             >>> import smtplib
 
-            >>> from testcontainers.mailpit import MailpitContainer, MailpitUser
+            >>> from testcontainers.community.mailpit import MailpitContainer, MailpitUser
 
             >>> users = [MailpitUser("jane", "secret"), MailpitUser("ron", "pass2")]
 

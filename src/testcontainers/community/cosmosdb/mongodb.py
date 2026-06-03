@@ -15,7 +15,7 @@ class CosmosDBMongoEndpointContainer(CosmosDBEmulatorContainer):
 
         .. code-block:: python
 
-            >>> from testcontainers.cosmosdb import CosmosDBMongoEndpointContainer
+            >>> from testcontainers.community.cosmosdb import CosmosDBMongoEndpointContainer
 
             >>> with CosmosDBMongoEndpointContainer(mongodb_version="4.0") as emulator:
             ...   print(f"Point your MongoDB client at {emulator.host}:{emulator.port} using key {emulator.key}")

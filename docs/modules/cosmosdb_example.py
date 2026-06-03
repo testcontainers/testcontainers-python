@@ -2,7 +2,7 @@ import json
 
 from azure.cosmos import CosmosClient, PartitionKey
 
-from testcontainers.cosmosdb import CosmosDbContainer
+from testcontainers.community.cosmosdb import CosmosDbContainer
 
 
 def basic_example():

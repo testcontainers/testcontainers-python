@@ -1,2 +1,2 @@
-.. autoclass:: testcontainers.milvus.MilvusContainer
-.. title:: testcontainers.milvus.MilvusContainer
+.. autoclass:: testcontainers.community.milvus.MilvusContainer
+.. title:: testcontainers.community.milvus.MilvusContainer

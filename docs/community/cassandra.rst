@@ -1,2 +1,2 @@
-.. autoclass:: testcontainers.cassandra.CassandraContainer
-.. title:: testcontainers.cassandra.CassandraContainer
+.. autoclass:: testcontainers.community.cassandra.CassandraContainer
+.. title:: testcontainers.community.cassandra.CassandraContainer

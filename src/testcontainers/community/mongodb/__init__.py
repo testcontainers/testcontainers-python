@@ -15,10 +15,10 @@ import re
 from typing import Optional
 
 from pymongo import MongoClient
-
 from testcontainers.core.generic import DbContainer
 from testcontainers.core.utils import raise_for_deprecated_parameter
 from testcontainers.core.wait_strategies import HealthcheckWaitStrategy, LogMessageWaitStrategy
+
 
 class MongoDbContainer(DbContainer):
     """
@@ -28,7 +28,7 @@ class MongoDbContainer(DbContainer):
 
         .. doctest::
 
-            >>> from testcontainers.mongodb import MongoDbContainer
+            >>> from testcontainers.community.mongodb import MongoDbContainer
 
             >>> with MongoDbContainer("mongo:7.0.7") as mongo:
             ...    db = mongo.get_connection_client().test
@@ -58,9 +58,7 @@ class MongoDbContainer(DbContainer):
         raise_for_deprecated_parameter(kwargs, "port_to_expose", "port")
         super().__init__(
             image=image,
-            _wait_strategy=LogMessageWaitStrategy(
-                re.compile(r"waiting for connections", re.IGNORECASE)
-            ),
+            _wait_strategy=LogMessageWaitStrategy(re.compile(r"waiting for connections", re.IGNORECASE)),
             **kwargs,
         )
         self.username = username if username else os.environ.get("MONGO_INITDB_ROOT_USERNAME", "test")
@@ -100,7 +98,7 @@ class MongoDBAtlasLocalContainer(DbContainer):
 
         .. doctest::
 
-            >>> from testcontainers.mongodb import MongoDBAtlasLocalContainer
+            >>> from testcontainers.community.mongodb import MongoDBAtlasLocalContainer
             >>> import time
             >>> with MongoDBAtlasLocalContainer("mongodb/mongodb-atlas-local:8.0.13") as mongo:
             ...    db = mongo.get_connection_client().test

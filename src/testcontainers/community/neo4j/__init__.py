@@ -14,11 +14,13 @@
 import os
 from typing import Optional
 
-from neo4j import Driver, GraphDatabase
 from testcontainers.core.config import testcontainers_config as c
 from testcontainers.core.generic import DbContainer
 from testcontainers.core.utils import raise_for_deprecated_parameter
 from testcontainers.core.wait_strategies import LogMessageWaitStrategy
+
+from neo4j import Driver, GraphDatabase
+
 
 class Neo4jContainer(DbContainer):
     """
@@ -28,7 +30,7 @@ class Neo4jContainer(DbContainer):
 
         .. doctest::
 
-            >>> from testcontainers.neo4j import Neo4jContainer
+            >>> from testcontainers.community.neo4j import Neo4jContainer
 
             >>> with Neo4jContainer() as neo4j, \\
             ...         neo4j.get_driver() as driver, \\

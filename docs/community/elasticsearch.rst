@@ -1,2 +1,2 @@
-.. autoclass:: testcontainers.elasticsearch.ElasticSearchContainer
-.. title:: testcontainers.elasticsearch.ElasticSearchContainer
+.. autoclass:: testcontainers.community.elasticsearch.ElasticSearchContainer
+.. title:: testcontainers.community.elasticsearch.ElasticSearchContainer

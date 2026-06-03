@@ -6,7 +6,7 @@ Requires: pip install valkey-glide-sync
 
 from glide_sync import GlideClient, GlideClientConfiguration, NodeAddress, ServerCredentials
 
-from testcontainers.valkey import ValkeyContainer
+from testcontainers.community.valkey import ValkeyContainer
 
 
 def basic_example():

@@ -18,7 +18,6 @@ from typing import TYPE_CHECKING, Any, NamedTuple
 
 from cryptography.hazmat.primitives import serialization
 from cryptography.hazmat.primitives.asymmetric import rsa
-
 from testcontainers.core.container import DockerContainer
 from testcontainers.core.wait_strategies import LogMessageWaitStrategy
 
@@ -59,7 +58,7 @@ class SFTPUser:
 
         .. doctest::
 
-            >>> from testcontainers.sftp import SFTPUser
+            >>> from testcontainers.community.sftp import SFTPUser
 
             >>> users = [
             ...     SFTPUser("jane", password="secret"),
@@ -192,7 +191,7 @@ class SFTPContainer(DockerContainer):
 
             >>> import paramiko
 
-            >>> from testcontainers.sftp import SFTPContainer
+            >>> from testcontainers.community.sftp import SFTPContainer
 
             >>> with SFTPContainer() as sftp_container:
             ...     host_ip = sftp_container.get_container_host_ip()
@@ -211,7 +210,7 @@ class SFTPContainer(DockerContainer):
 
             >>> import paramiko
 
-            >>> from testcontainers.sftp import SFTPContainer
+            >>> from testcontainers.community.sftp import SFTPContainer
 
             >>> with SFTPContainer() as sftp_container:
             ...     host_ip = sftp_container.get_container_host_ip()

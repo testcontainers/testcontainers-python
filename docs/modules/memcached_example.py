@@ -3,7 +3,7 @@ import pickle
 
 import memcache
 
-from testcontainers.memcached import MemcachedContainer
+from testcontainers.community.memcached import MemcachedContainer
 
 
 def basic_example():

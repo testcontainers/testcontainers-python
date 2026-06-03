@@ -19,7 +19,7 @@ class OracleDbContainer(DbContainer):
             ...     pytest.skip("linux only test")
 
             >>> import sqlalchemy
-            >>> from testcontainers.oracle import OracleDbContainer
+            >>> from testcontainers.community.oracle import OracleDbContainer
 
             >>> with OracleDbContainer() as oracle:
             ...     engine = sqlalchemy.create_engine(oracle.get_connection_url())

@@ -2,7 +2,7 @@ import pandas as pd
 import sqlalchemy
 from sqlalchemy import text
 
-from testcontainers.postgres import PostgresContainer
+from testcontainers.community.postgres import PostgresContainer
 
 
 def basic_example():

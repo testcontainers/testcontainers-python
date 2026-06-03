@@ -30,7 +30,7 @@ class ClickHouseContainer(DbContainer):
         .. doctest::
 
             >>> import clickhouse_driver
-            >>> from testcontainers.clickhouse import ClickHouseContainer
+            >>> from testcontainers.community.clickhouse import ClickHouseContainer
 
             >>> with ClickHouseContainer("clickhouse/clickhouse-server:21.8") as clickhouse:
             ...     client = clickhouse_driver.Client.from_url(clickhouse.get_connection_url())

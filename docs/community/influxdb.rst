@@ -1,2 +1,2 @@
-.. autoclass:: testcontainers.influxdb.InfluxDbContainer
-.. title:: testcontainers.influxdb.InfluxDbContainer
+.. autoclass:: testcontainers.community.influxdb.InfluxDbContainer
+.. title:: testcontainers.community.influxdb.InfluxDbContainer

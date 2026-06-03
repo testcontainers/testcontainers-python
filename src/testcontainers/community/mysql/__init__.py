@@ -36,7 +36,7 @@ class MySqlContainer(DbContainer):
         .. doctest::
 
             >>> import sqlalchemy
-            >>> from testcontainers.mysql import MySqlContainer
+            >>> from testcontainers.community.mysql import MySqlContainer
 
             >>> with MySqlContainer("mysql:5.7.17", dialect="pymysql") as mysql:
             ...     engine = sqlalchemy.create_engine(mysql.get_connection_url())
@@ -51,7 +51,7 @@ class MySqlContainer(DbContainer):
 
         .. doctest::
             >>> import sqlalchemy
-            >>> from testcontainers.mysql import MySqlContainer
+            >>> from testcontainers.community.mysql import MySqlContainer
             >>> with MySqlContainer(seed="../../tests/seeds/") as mysql:
             ...     engine = sqlalchemy.create_engine(mysql.get_connection_url())
             ...     with engine.begin() as connection:

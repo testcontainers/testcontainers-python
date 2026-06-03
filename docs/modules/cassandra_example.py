@@ -4,7 +4,7 @@ from datetime import datetime
 from cassandra.auth import PlainTextAuthProvider
 from cassandra.cluster import Cluster
 
-from testcontainers.cassandra import CassandraContainer
+from testcontainers.community.cassandra import CassandraContainer
 
 
 def basic_example():

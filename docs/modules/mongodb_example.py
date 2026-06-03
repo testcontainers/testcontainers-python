@@ -3,7 +3,7 @@ from datetime import datetime
 
 from pymongo import MongoClient
 
-from testcontainers.mongodb import MongoDbContainer
+from testcontainers.community.mongodb import MongoDbContainer
 
 
 def basic_example():

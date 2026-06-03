@@ -4,7 +4,7 @@ from datetime import datetime, timedelta
 from influxdb_client import InfluxDBClient, Point
 from influxdb_client.client.write_api import SYNCHRONOUS
 
-from testcontainers.influxdb import InfluxDBContainer
+from testcontainers.community.influxdb import InfluxDBContainer
 
 
 def basic_example():

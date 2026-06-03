@@ -1,2 +1,2 @@
-.. autoclass:: testcontainers.k3s.K3SContainer
-.. title:: testcontainers.k3s.K3SContainer
+.. autoclass:: testcontainers.community.k3s.K3SContainer
+.. title:: testcontainers.community.k3s.K3SContainer

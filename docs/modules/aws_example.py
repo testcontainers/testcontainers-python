@@ -3,11 +3,11 @@ from datetime import datetime
 
 import boto3
 
-from testcontainers.aws import AwsContainer
+from testcontainers.community.aws import AWSLambdaContainer
 
 
 def basic_example():
-    with AwsContainer() as aws:
+    with AWSLambdaContainer() as aws:
         # Get connection parameters
         host = aws.get_container_host_ip()
         port = aws.get_exposed_port(aws.port)

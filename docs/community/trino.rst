@@ -1,2 +1,2 @@
-.. autoclass:: testcontainers.trino.TrinoContainer
-.. title:: testcontainers.trino.TrinoContainer
+.. autoclass:: testcontainers.community.trino.TrinoContainer
+.. title:: testcontainers.community.trino.TrinoContainer

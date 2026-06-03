@@ -4,7 +4,7 @@ from datetime import datetime
 
 import paramiko
 
-from testcontainers.sftp import SftpContainer
+from testcontainers.community.sftp import SftpContainer
 
 
 def basic_example():

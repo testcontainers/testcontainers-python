@@ -5,7 +5,7 @@ from email.mime.text import MIMEText
 
 import requests
 
-from testcontainers.mailpit import MailpitContainer
+from testcontainers.community.mailpit import MailpitContainer
 
 
 def basic_example():

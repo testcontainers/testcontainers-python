@@ -14,10 +14,9 @@
 from pathlib import Path
 from typing import TYPE_CHECKING, Optional
 
-from typing_extensions import Self
-
 from testcontainers.core.container import DockerContainer
 from testcontainers.core.waiting_utils import wait_container_is_ready, wait_for_logs
+from typing_extensions import Self
 
 if TYPE_CHECKING:
     from paho.mqtt.client import Client
@@ -31,7 +30,7 @@ class MosquittoContainer(DockerContainer):
 
         .. doctest::
 
-            >>> from testcontainers.mqtt import MosquittoContainer
+            >>> from testcontainers.community.mqtt import MosquittoContainer
 
             >>> with MosquittoContainer() as mosquitto_broker:
             ...     mqtt_client = mosquitto_broker.get_client()

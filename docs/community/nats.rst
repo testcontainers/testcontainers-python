@@ -1,2 +1,2 @@
-.. autoclass:: testcontainers.nats.NatsContainer
-.. title:: testcontainers.nats.NatsContainer
+.. autoclass:: testcontainers.community.nats.NatsContainer
+.. title:: testcontainers.community.nats.NatsContainer

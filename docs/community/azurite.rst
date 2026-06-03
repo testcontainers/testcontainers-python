@@ -1,2 +1,2 @@
-.. autoclass:: testcontainers.azurite.AzuriteContainer
-.. title:: testcontainers.azurite.AzuriteContainer
+.. autoclass:: testcontainers.community.azurite.AzuriteContainer
+.. title:: testcontainers.community.azurite.AzuriteContainer

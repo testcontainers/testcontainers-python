@@ -1,2 +1,2 @@
-.. autoclass:: testcontainers.mysql.MySqlContainer
-.. title:: testcontainers.mysql.MySqlContainer
+.. autoclass:: testcontainers.community.mysql.MySqlContainer
+.. title:: testcontainers.community.mysql.MySqlContainer

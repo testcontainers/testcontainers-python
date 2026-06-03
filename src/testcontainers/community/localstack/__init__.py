@@ -15,7 +15,6 @@ import os
 from typing import Any, Optional
 
 import boto3
-
 from testcontainers.core.container import DockerContainer
 from testcontainers.core.waiting_utils import wait_for_logs
 
@@ -28,7 +27,7 @@ class LocalStackContainer(DockerContainer):
 
         .. doctest::
 
-            >>> from testcontainers.localstack import LocalStackContainer
+            >>> from testcontainers.community.localstack import LocalStackContainer
 
             >>> with LocalStackContainer(image="localstack/localstack:2.0.1") as localstack:
             ...     dynamo_client = localstack.get_client("dynamodb")

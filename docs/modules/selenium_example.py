@@ -2,7 +2,7 @@ from selenium.webdriver.common.by import By
 from selenium.webdriver.support import expected_conditions as EC
 from selenium.webdriver.support.ui import WebDriverWait
 
-from testcontainers.selenium import SeleniumContainer
+from testcontainers.community.selenium import SeleniumContainer
 
 
 def basic_example():

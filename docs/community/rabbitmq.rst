@@ -1,2 +1,2 @@
-.. autoclass:: testcontainers.rabbitmq.RabbitMqContainer
-.. title:: testcontainers.rabbitmq.RabbitMqContainer
+.. autoclass:: testcontainers.community.rabbitmq.RabbitMqContainer
+.. title:: testcontainers.community.rabbitmq.RabbitMqContainer

@@ -1,5 +1,5 @@
-.. autoclass:: testcontainers.cosmosdb.CosmosDBMongoEndpointContainer
-.. title:: testcontainers.cosmosdb.CosmosDBMongoEndpointContainer
+.. autoclass:: testcontainers.community.cosmosdb.CosmosDBMongoEndpointContainer
+.. title:: testcontainers.community.cosmosdb.CosmosDBMongoEndpointContainer
 
-.. autoclass:: testcontainers.cosmosdb.CosmosDBNoSQLEndpointContainer
-.. title:: testcontainers.cosmosdb.CosmosDBNoSQLEndpointContainer
+.. autoclass:: testcontainers.community.cosmosdb.CosmosDBNoSQLEndpointContainer
+.. title:: testcontainers.community.cosmosdb.CosmosDBNoSQLEndpointContainer

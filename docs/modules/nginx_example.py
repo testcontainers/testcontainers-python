@@ -4,7 +4,7 @@ from pathlib import Path
 
 import requests
 
-from testcontainers.nginx import NginxContainer
+from testcontainers.community.nginx import NginxContainer
 
 
 def basic_example():

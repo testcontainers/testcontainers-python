@@ -2,7 +2,7 @@ import time
 
 import paho.mqtt.client as mqtt
 
-from testcontainers.mqtt import MqttContainer
+from testcontainers.community.mqtt import MqttContainer
 
 
 def basic_example():

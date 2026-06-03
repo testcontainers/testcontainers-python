@@ -1,2 +1,2 @@
-.. autoclass:: testcontainers.selenium.BrowserWebDriverContainer
-.. title:: testcontainers.selenium.BrowserWebDriverContainer
+.. autoclass:: testcontainers.community.selenium.BrowserWebDriverContainer
+.. title:: testcontainers.community.selenium.BrowserWebDriverContainer

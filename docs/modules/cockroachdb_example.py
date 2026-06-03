@@ -2,7 +2,7 @@ import pandas as pd
 import sqlalchemy
 from sqlalchemy import text
 
-from testcontainers.cockroachdb import CockroachContainer
+from testcontainers.community.cockroachdb import CockroachContainer
 
 
 def basic_example():

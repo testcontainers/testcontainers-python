@@ -17,7 +17,7 @@ class RedpandaContainer(DockerContainer):
 
         .. doctest::
 
-            >>> from testcontainers.kafka import RedpandaContainer
+            >>> from testcontainers.community.kafka import RedpandaContainer
 
             >>> with RedpandaContainer() as redpanda:
             ...    connection = redpanda.get_bootstrap_server()

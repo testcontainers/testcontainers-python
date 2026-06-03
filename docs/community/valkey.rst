@@ -1,2 +1,2 @@
-.. autoclass:: testcontainers.valkey.ValkeyContainer
-.. title:: testcontainers.valkey.ValkeyContainer
+.. autoclass:: testcontainers.community.valkey.ValkeyContainer
+.. title:: testcontainers.community.valkey.ValkeyContainer

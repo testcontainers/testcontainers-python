@@ -2,7 +2,7 @@ import json
 
 from neo4j import GraphDatabase
 
-from testcontainers.neo4j import Neo4jContainer
+from testcontainers.community.neo4j import Neo4jContainer
 
 
 def basic_example():

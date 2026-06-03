@@ -1,2 +1,2 @@
-.. autoclass:: testcontainers.postgres.PostgresContainer
-.. title:: testcontainers.postgres.PostgresContainer
+.. autoclass:: testcontainers.community.postgres.PostgresContainer
+.. title:: testcontainers.community.postgres.PostgresContainer

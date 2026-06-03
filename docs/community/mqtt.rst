@@ -1,2 +1,2 @@
-.. autoclass:: testcontainers.mqtt.MosquittoContainer
-.. title:: testcontainers.mqtt.MosquittoContainer
+.. autoclass:: testcontainers.community.mqtt.MosquittoContainer
+.. title:: testcontainers.community.mqtt.MosquittoContainer

@@ -5,7 +5,7 @@ import numpy as np
 from qdrant_client import QdrantClient
 from qdrant_client.http import models
 
-from testcontainers.qdrant import QdrantContainer
+from testcontainers.community.qdrant import QdrantContainer
 
 
 def basic_example():

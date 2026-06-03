@@ -2,7 +2,6 @@ import os
 from typing import Optional
 
 import pika
-
 from testcontainers.core.container import DockerContainer
 from testcontainers.core.waiting_utils import wait_container_is_ready
 
@@ -18,7 +17,7 @@ class RabbitMqContainer(DockerContainer):
         .. doctest::
 
             >>> import pika
-            >>> from testcontainers.rabbitmq import RabbitMqContainer
+            >>> from testcontainers.community.rabbitmq import RabbitMqContainer
 
             >>> with RabbitMqContainer("rabbitmq:3.9.10") as rabbitmq:
             ...    connection = pika.BlockingConnection(rabbitmq.get_connection_params())

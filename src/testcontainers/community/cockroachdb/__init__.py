@@ -33,7 +33,7 @@ class CockroachDBContainer(DbContainer):
         .. doctest::
 
             >>> import sqlalchemy
-            >>> from testcontainers.cockroachdb import CockroachDBContainer
+            >>> from testcontainers.community.cockroachdb import CockroachDBContainer
 
             >>> with CockroachDBContainer('cockroachdb/cockroach:v24.1.1') as crdb:
             ...     engine = sqlalchemy.create_engine(crdb.get_connection_url())

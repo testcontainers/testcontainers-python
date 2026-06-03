@@ -10,7 +10,7 @@ class ScyllaContainer(DockerContainer):
     -------
     .. doctest::
 
-        >>> from testcontainers.scylla import ScyllaContainer
+        >>> from testcontainers.community.scylla import ScyllaContainer
 
         >>> with ScyllaContainer() as scylla:
         ...    cluster = scylla.get_cluster()

@@ -5,7 +5,7 @@ from threading import Thread
 
 from kafka import KafkaConsumer, KafkaProducer
 
-from testcontainers.kafka import KafkaContainer
+from testcontainers.community.kafka import KafkaContainer
 
 
 def basic_example():

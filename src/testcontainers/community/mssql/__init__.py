@@ -15,7 +15,7 @@ class SqlServerContainer(DbContainer):
         .. doctest::
 
             >>> import sqlalchemy
-            >>> from testcontainers.mssql import SqlServerContainer
+            >>> from testcontainers.community.mssql import SqlServerContainer
 
             >>> with SqlServerContainer("mcr.microsoft.com/mssql/server:2022-CU12-ubuntu-22.04") as mssql:
             ...    engine = sqlalchemy.create_engine(mssql.get_connection_url())

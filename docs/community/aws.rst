@@ -1,7 +1,7 @@
 :code:`testcontainers-aws` is a set of AWS containers modules that can be used to create AWS containers.
 
-.. autoclass:: testcontainers.aws.AWSLambdaContainer
-.. title:: testcontainers.aws.AWSLambdaContainer
+.. autoclass:: testcontainers.community.aws.AWSLambdaContainer
+.. title:: testcontainers.community.aws.AWSLambdaContainer
 
 The following environment variables are used by the AWS Lambda container:
 

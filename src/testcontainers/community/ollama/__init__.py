@@ -16,7 +16,6 @@ from typing import Any, Optional, TypedDict, Union
 
 from docker.types.containers import DeviceRequest
 from requests import get
-
 from testcontainers.core.container import DockerContainer
 from testcontainers.core.waiting_utils import wait_for_logs
 
@@ -44,7 +43,7 @@ class OllamaContainer(DockerContainer):
 
         .. doctest::
 
-            >>> from testcontainers.ollama import OllamaContainer
+            >>> from testcontainers.community.ollama import OllamaContainer
             >>> with OllamaContainer() as ollama:
             ...     ollama.list_models()
             []
@@ -54,7 +53,7 @@ class OllamaContainer(DockerContainer):
             >>> from json import loads
             >>> from pathlib import Path
             >>> from requests import post
-            >>> from testcontainers.ollama import OllamaContainer
+            >>> from testcontainers.community.ollama import OllamaContainer
             >>> def split_by_line(generator):
             ...     data = b''
             ...     for each_item in generator:

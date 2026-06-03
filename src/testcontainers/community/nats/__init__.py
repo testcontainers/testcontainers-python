@@ -26,7 +26,7 @@ class NatsContainer(DockerContainer):
 
             >>> import asyncio
             >>> from nats import connect as nats_connect
-            >>> from testcontainers.nats import NatsContainer
+            >>> from testcontainers.community.nats import NatsContainer
 
             >>> async def test_doctest_usage():
             ...     with NatsContainer() as nats_container:

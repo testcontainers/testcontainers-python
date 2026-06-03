@@ -2,9 +2,8 @@ import os
 from typing import Union
 
 import httpx
-
+from testcontainers.community.generic.server import ServerContainer
 from testcontainers.core.image import DockerImage
-from testcontainers.generic.server import ServerContainer
 
 RIE_PATH = "/2015-03-31/functions/function/invocations"
 # AWS OS-only base images contain an Amazon Linux distribution and the runtime interface emulator (RIE) for Lambda.
@@ -20,7 +19,7 @@ class AWSLambdaContainer(ServerContainer):
 
         .. doctest::
 
-            >>> from testcontainers.aws import AWSLambdaContainer
+            >>> from testcontainers.community.aws import AWSLambdaContainer
             >>> from testcontainers.core.waiting_utils import wait_for_logs
             >>> from testcontainers.core.image import DockerImage
 

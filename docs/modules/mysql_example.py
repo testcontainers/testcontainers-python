@@ -1,6 +1,6 @@
 import sqlalchemy
 
-from testcontainers.mysql import MySqlContainer
+from testcontainers.community.mysql import MySqlContainer
 
 
 def basic_example():

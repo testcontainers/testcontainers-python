@@ -2,7 +2,7 @@ from datetime import timedelta
 
 import redis
 
-from testcontainers.redis import RedisContainer
+from testcontainers.community.redis import RedisContainer
 
 
 def basic_example():
