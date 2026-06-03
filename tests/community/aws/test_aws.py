@@ -7,8 +7,9 @@ from unittest.mock import patch
 from testcontainers.core.image import DockerImage
 from testcontainers.community.aws import AWSLambdaContainer
 from testcontainers.community.aws.aws_lambda import RIE_PATH
+from pathlib import Path
 
-DOCKER_FILE_PATH = "./modules/aws/tests/lambda_sample"
+DOCKER_FILE_PATH = Path(__file__).parent / "lambda_sample"
 IMAGE_TAG = "lambda:test"
 
 
