@@ -13,7 +13,7 @@ def test_redpanda_producer_consumer():
         produce_and_consume_message(container)
 
 
-@pytest.mark.parametrize("version", ["v23.1.13", "v23.3.10"])
+@pytest.mark.parametrize("version", ["v23.1.13", "v25.3.6"])
 def test_redpanda_confluent_version(version):
     with RedpandaContainer(image=f"docker.redpanda.com/redpandadata/redpanda:{version}") as container:
         produce_and_consume_message(container)

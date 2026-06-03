@@ -23,13 +23,11 @@ We recommend following these steps:
 You need to have the following tools available to you:
 
 - `make` - You'll need a GNU Make for common developer activities
-- `poetry` - This is the primary package manager for the project
-- `pyenv` **Recommended**: For installing python versions for your system.
-  Poetry infers the current latest version from what it can find on the `PATH` so you are still fine if you don't use `pyenv`.
+- `uv` - This is the primary package manager for the project
 
 ### Build and test
 
-- Run `make install` to get `poetry` to install all dependencies and set up `pre-commit`
+- Run `make install` to get `uv` to install all dependencies and set up `pre-commit`
   - **Recommended**: Run `make` or `make help` to see other commands available to you.
 - After this, you should have a working virtual environment and proceed with writing code with your favorite IDE
 - **TIP**: You can run `make core/tests` or `make modules/<my-module>/tests` to run the tests specifically for that to speed up feedback cycles

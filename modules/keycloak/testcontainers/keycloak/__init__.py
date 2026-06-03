@@ -78,12 +78,22 @@ class KeycloakContainer(DockerContainer):
     def get_url(self) -> str:
         host = self.get_container_host_ip()
         port = self.get_exposed_port(self.port)
-        return f"http://{host}:{port}"
+
+        if "KC_HTTP_RELATIVE_PATH" in self.env:
+            path = self.env.get("KC_HTTP_RELATIVE_PATH", "").strip("/")
+            return f"http://{host}:{port}/{path}/"
+        else:
+            return f"http://{host}:{port}"
 
     def get_management_url(self) -> str:
         host = self.get_container_host_ip()
         port = self.get_exposed_port(self.management_port)
-        return f"http://{host}:{port}"
+
+        if "KC_HTTP_MANAGEMENT_RELATIVE_PATH" in self.env:
+            path = self.env.get("KC_HTTP_MANAGEMENT_RELATIVE_PATH", "").strip("/")
+            return f"http://{host}:{port}/{path}/"
+        else:
+            return f"http://{host}:{port}"
 
     @wait_container_is_ready(requests.exceptions.ConnectionError, requests.exceptions.ReadTimeout)
     def _readiness_probe(self) -> None:

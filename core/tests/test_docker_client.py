@@ -10,7 +10,7 @@ import pytest
 
 from testcontainers.core.config import testcontainers_config as c, ConnectionMode
 from testcontainers.core.container import DockerContainer
-from testcontainers.core.docker_client import DockerClient
+from testcontainers.core.docker_client import DockerClient, is_ssh_docker_host
 from testcontainers.core.auth import parse_docker_auth_config
 from testcontainers.core.image import DockerImage
 from testcontainers.core import utils
@@ -20,13 +20,23 @@ from pytest import mark
 from docker.models.networks import Network
 
 
+def _expected_from_env_kwargs(**kwargs: Any) -> dict[str, Any]:
+    """Build the kwargs we expect ``docker.from_env`` to be called with.
+
+    When DOCKER_HOST is SSH-based, ``use_ssh_client=True`` is added automatically.
+    """
+    if is_ssh_docker_host():
+        kwargs.setdefault("use_ssh_client", True)
+    return kwargs
+
+
 def test_docker_client_from_env():
     test_kwargs = {"test_kw": "test_value"}
     mock_docker = MagicMock(spec=docker)
     with patch("testcontainers.core.docker_client.docker", mock_docker):
         DockerClient(**test_kwargs)
 
-    mock_docker.from_env.assert_called_with(**test_kwargs)
+    mock_docker.from_env.assert_called_with(**_expected_from_env_kwargs(**test_kwargs))
 
 
 def test_docker_client_login_no_login():
@@ -111,7 +121,7 @@ def test_container_docker_client_kw():
     with patch("testcontainers.core.docker_client.docker", mock_docker):
         DockerContainer(image="", docker_client_kw=test_kwargs)
 
-    mock_docker.from_env.assert_called_with(**test_kwargs)
+    mock_docker.from_env.assert_called_with(**_expected_from_env_kwargs(**test_kwargs))
 
 
 def test_image_docker_client_kw():
@@ -120,7 +130,7 @@ def test_image_docker_client_kw():
     with patch("testcontainers.core.docker_client.docker", mock_docker):
         DockerImage(name="", path="", docker_client_kw=test_kwargs)
 
-    mock_docker.from_env.assert_called_with(**test_kwargs)
+    mock_docker.from_env.assert_called_with(**_expected_from_env_kwargs(**test_kwargs))
 
 
 def test_host_prefer_host_override(monkeypatch: pytest.MonkeyPatch) -> None:
@@ -139,6 +149,8 @@ def test_host_prefer_host_override(monkeypatch: pytest.MonkeyPatch) -> None:
     ],
 )
 def test_host(monkeypatch: pytest.MonkeyPatch, base_url: str, expected: str) -> None:
+    if is_ssh_docker_host():
+        pytest.skip("base_url parsing is not exercised under SSH (host() returns SSH hostname)")
     client = DockerClient()
     monkeypatch.setattr(client.client.api, "base_url", base_url)
     monkeypatch.setattr(c, "tc_host_override", None)
@@ -270,6 +282,8 @@ def test_run_uses_found_network(monkeypatch: pytest.MonkeyPatch) -> None:
     """
     If a host network is found, use it
     """
+    if is_ssh_docker_host():
+        pytest.skip("Host network discovery is skipped when DOCKER_HOST is set")
 
     client = DockerClient()
 
@@ -293,3 +307,137 @@ def test_run_uses_found_network(monkeypatch: pytest.MonkeyPatch) -> None:
     assert client.run("test") == "CONTAINER"
 
     assert fake_client.containers.calls[0]["network"] == "new_bridge_network"
+
+
+@pytest.mark.parametrize(
+    "docker_host, expected",
+    [
+        pytest.param("ssh://user@192.168.1.42", "ssh://user@192.168.1.42", id="no_path"),
+        pytest.param("ssh://user@host/", "ssh://user@host", id="trailing_slash"),
+        pytest.param("ssh://user@host/some/path", "ssh://user@host", id="strips_path"),
+        pytest.param("tcp://localhost:2375", "tcp://localhost:2375", id="tcp_unchanged"),
+        pytest.param("unix:///var/run/docker.sock", "unix:///var/run/docker.sock", id="unix_unchanged"),
+    ],
+)
+def test_sanitize_docker_host(docker_host: str, expected: str) -> None:
+    from testcontainers.core.docker_client import _sanitize_docker_host
+
+    assert _sanitize_docker_host(docker_host) == expected
+
+
+@pytest.mark.parametrize(
+    "docker_host, expected_hostname",
+    [
+        pytest.param("ssh://user@192.168.1.42", "192.168.1.42", id="ssh_ip"),
+        pytest.param("ssh://user@myhost.example.com", "myhost.example.com", id="ssh_fqdn"),
+        pytest.param("tcp://localhost:2375", None, id="tcp_returns_none"),
+        pytest.param(None, None, id="unset_returns_none"),
+    ],
+)
+def test_get_docker_host_hostname(monkeypatch: pytest.MonkeyPatch, docker_host: str, expected_hostname) -> None:
+    from testcontainers.core.docker_client import get_docker_host_hostname
+
+    monkeypatch.setattr(c, "tc_properties_get_tc_host", lambda: None)
+    monkeypatch.setattr("testcontainers.core.docker_client._get_docker_host_from_context", lambda: None)
+    if docker_host:
+        monkeypatch.setenv("DOCKER_HOST", docker_host)
+    else:
+        monkeypatch.delenv("DOCKER_HOST", raising=False)
+    assert get_docker_host_hostname() == expected_hostname
+
+
+def test_ssh_docker_host(monkeypatch: pytest.MonkeyPatch) -> None:
+    """Verify SSH DOCKER_HOST sets use_ssh_client and host() returns the remote hostname."""
+    monkeypatch.setenv("DOCKER_HOST", "ssh://user@10.0.0.1")
+    monkeypatch.setattr(c, "tc_properties_get_tc_host", lambda: None)
+    monkeypatch.setattr(c, "tc_host_override", None)
+    mock_docker = MagicMock(spec=docker)
+    with patch("testcontainers.core.docker_client.docker", mock_docker):
+        client = DockerClient()
+    mock_docker.from_env.assert_called_once_with(use_ssh_client=True)
+    assert client.host() == "10.0.0.1"
+
+
+_PODMAN_DAEMON_ERROR = RuntimeError("daemon unreachable")
+
+
+@pytest.mark.parametrize(
+    "version, expected",
+    [
+        pytest.param({"Platform": {"Name": "Docker Engine - Community"}}, False, id="docker_platform"),
+        pytest.param({"Platform": {"Name": "Podman Engine"}}, True, id="podman_platform"),
+        pytest.param({"Platform": {}, "Components": [{"Name": "podman"}]}, True, id="podman_components_fallback"),
+        pytest.param({}, False, id="empty_version_no_match"),
+        pytest.param(_PODMAN_DAEMON_ERROR, False, id="daemon_error_swallowed"),
+    ],
+)
+def test_is_podman(monkeypatch: pytest.MonkeyPatch, version: object, expected: bool) -> None:
+    from testcontainers.core import docker_client as dc
+
+    dc.is_podman.cache_clear()
+    mock_client = MagicMock()
+    if isinstance(version, Exception):
+        monkeypatch.setattr("testcontainers.core.docker_client.docker.from_env", MagicMock(side_effect=version))
+    else:
+        mock_client.version.return_value = version
+        monkeypatch.setattr("testcontainers.core.docker_client.docker.from_env", lambda: mock_client)
+    try:
+        # Call twice to also assert the lru_cache only hits the daemon once.
+        assert dc.is_podman() is expected
+        assert dc.is_podman() is expected
+        if not isinstance(version, Exception):
+            assert mock_client.version.call_count == 1
+    finally:
+        dc.is_podman.cache_clear()
+
+
+def _mock_docker_context(name: str, host: str) -> MagicMock:
+    context = MagicMock()
+    context.Name = name
+    context.Host = host
+    return context
+
+
+@pytest.mark.parametrize(
+    "context, expected",
+    [
+        pytest.param(_mock_docker_context("remote", "ssh://user@10.0.0.1"), "ssh://user@10.0.0.1", id="returns_host"),
+        pytest.param(
+            _mock_docker_context("default", "unix:///var/run/docker.sock"), None, id="default_context_skipped"
+        ),
+        pytest.param(_mock_docker_context("remote", ""), None, id="empty_host_returns_none"),
+        pytest.param(None, None, id="no_current_context"),
+    ],
+)
+def test_get_docker_host_from_context(monkeypatch: pytest.MonkeyPatch, context, expected) -> None:
+    from testcontainers.core.docker_client import _get_docker_host_from_context
+
+    monkeypatch.setattr(
+        "testcontainers.core.docker_client.ContextAPI.get_current_context",
+        lambda: context,
+    )
+    assert _get_docker_host_from_context() == expected
+
+
+def test_get_docker_host_from_context_swallows_errors(monkeypatch: pytest.MonkeyPatch) -> None:
+    """A malformed docker config should not crash; we fall through to None."""
+    from testcontainers.core.docker_client import _get_docker_host_from_context
+
+    def _raise() -> None:
+        raise RuntimeError("broken docker config")
+
+    monkeypatch.setattr("testcontainers.core.docker_client.ContextAPI.get_current_context", _raise)
+    assert _get_docker_host_from_context() is None
+
+
+def test_get_docker_host_falls_back_to_context(monkeypatch: pytest.MonkeyPatch) -> None:
+    """When tc.host and DOCKER_HOST are unset, the current docker context wins."""
+    from testcontainers.core.docker_client import get_docker_host
+
+    monkeypatch.setattr(c, "tc_properties_get_tc_host", lambda: None)
+    monkeypatch.delenv("DOCKER_HOST", raising=False)
+    monkeypatch.setattr(
+        "testcontainers.core.docker_client.ContextAPI.get_current_context",
+        lambda: _mock_docker_context("remote", "ssh://user@10.0.0.1"),
+    )
+    assert get_docker_host() == "ssh://user@10.0.0.1"

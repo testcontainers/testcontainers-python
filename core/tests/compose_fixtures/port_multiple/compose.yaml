@@ -7,7 +7,6 @@ services:
       - '82'
       - target: 80
         published: "5000-5999"
-        host_ip: 127.0.0.1
         protocol: tcp
     command:
       - sh
@@ -20,7 +19,6 @@ services:
     ports:
       - target: 80
         published: "5000-5999"
-        host_ip: 127.0.0.1
         protocol: tcp
     command:
       - sh

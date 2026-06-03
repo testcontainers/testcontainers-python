@@ -3,6 +3,9 @@
 Note: Using the testcontainers-python library to test the Docker registry.
 This could be considered a bad practice as it is not recommended to use the same library to test itself.
 However, it is a very good use case for DockerRegistryContainer and allows us to test it thoroughly.
+
+Note2: These tests are skipped on macOS and SSH-based Docker hosts because they rely on insecure HTTP registries,
+which are not supported in those environments without additional configuration.
 """
 
 import json
@@ -14,17 +17,21 @@ from docker.errors import NotFound
 
 from testcontainers.core.config import testcontainers_config
 from testcontainers.core.container import DockerContainer
-from testcontainers.core.docker_client import DockerClient
+from testcontainers.core.docker_client import DockerClient, is_ssh_docker_host
 from testcontainers.core.waiting_utils import wait_for_logs
 
 from testcontainers.registry import DockerRegistryContainer
 from testcontainers.core.utils import is_mac
+from testcontainers.core.docker_client import is_podman
 
 
-@pytest.mark.skipif(
-    is_mac(),
-    reason="Docker Desktop on macOS does not support insecure private registries without daemon reconfiguration",
+_skip_insecure_registry = pytest.mark.skipif(
+    is_mac() or is_podman() or is_ssh_docker_host(),
+    reason="Insecure HTTP registries are not supported without daemon reconfiguration on macOS, Podman, or SSH-based Docker hosts",
 )
+
+
+@_skip_insecure_registry
 def test_missing_on_private_registry(monkeypatch):
     username = "user"
     password = "pass"
@@ -46,10 +53,7 @@ def test_missing_on_private_registry(monkeypatch):
                 wait_for_logs(test_container, "Hello from Docker!")
 
 
-@pytest.mark.skipif(
-    is_mac(),
-    reason="Docker Desktop on macOS does not support local insecure registries over HTTP without modifying daemon settings",
-)
+@_skip_insecure_registry
 @pytest.mark.parametrize(
     "image,tag,username,password,expected_output",
     [

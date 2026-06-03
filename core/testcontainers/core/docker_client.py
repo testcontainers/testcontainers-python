@@ -22,6 +22,7 @@ from collections.abc import Iterable
 from typing import TYPE_CHECKING, Any, Callable, Optional, TypeVar, Union, cast
 
 import docker
+from docker.context import ContextAPI
 from docker.models.containers import Container, ContainerCollection
 from docker.models.images import Image, ImageCollection
 from typing_extensions import ParamSpec
@@ -30,6 +31,7 @@ from testcontainers.core import utils
 from testcontainers.core.auth import DockerAuthInfo, parse_docker_auth_config
 from testcontainers.core.config import ConnectionMode
 from testcontainers.core.config import testcontainers_config as c
+from testcontainers.core.inspect import ContainerInspectInfo
 from testcontainers.core.labels import SESSION_ID, create_labels
 
 if TYPE_CHECKING:
@@ -68,9 +70,12 @@ class DockerClient:
         if docker_host:
             LOGGER.info(f"using host {docker_host}")
             os.environ["DOCKER_HOST"] = docker_host
-            self.client = docker.from_env(**kwargs)
-        else:
-            self.client = docker.from_env(**kwargs)
+            # Use shell-based SSH client instead of paramiko to avoid conflicts with pytest stdin capture
+            # (paramiko's invoke library fails when reading from captured stdin).
+            if docker_host.startswith("ssh://"):
+                kwargs.setdefault("use_ssh_client", True)
+
+        self.client = docker.from_env(**kwargs)
         self.client.api.headers["x-tc-sid"] = SESSION_ID
         self.client.api.headers["User-Agent"] = "tc-python/" + importlib.metadata.version("testcontainers")
 
@@ -113,6 +118,43 @@ class DockerClient:
             **kwargs,
         )
         return container
+
+    @_wrapped_container_collection
+    def create(
+        self,
+        image: str,
+        command: Optional[Union[str, list[str]]] = None,
+        environment: Optional[dict[str, str]] = None,
+        ports: Optional[dict[int, Optional[int]]] = None,
+        labels: Optional[dict[str, str]] = None,
+        **kwargs: Any,
+    ) -> Container:
+        """Create a container without starting it, pulling the image first if not present locally."""
+        if "network" not in kwargs and not get_docker_host():
+            host_network = self.find_host_network()
+            if host_network:
+                kwargs["network"] = host_network
+
+        try:
+            # This is more or less a replication of what the self.client.containers.start does internally
+            self.client.images.get(image)
+        except docker.errors.ImageNotFound:
+            self.client.images.pull(image)
+
+        container = self.client.containers.create(
+            image,
+            command=command,
+            environment=environment,
+            ports=ports,
+            labels=create_labels(image, labels),
+            **kwargs,
+        )
+        return container
+
+    @_wrapped_container_collection
+    def start(self, container: Container) -> None:
+        """Start a previously created container."""
+        container.start()
 
     @_wrapped_image_collection
     def build(
@@ -234,6 +276,14 @@ class DockerClient:
         host = c.tc_host_override
         if host:
             return host
+
+        # For SSH-based connections, the Docker SDK rewrites base_url to
+        # "http+docker://ssh" which loses the original hostname.
+        # Extract it from the original DOCKER_HOST instead.
+        ssh_host = get_docker_host_hostname()
+        if ssh_host:
+            return ssh_host
+
         try:
             url = urllib.parse.urlparse(self.client.api.base_url)
         except ValueError:
@@ -264,9 +314,104 @@ class DockerClient:
         labels = create_labels("", param.get("labels"))
         return self.client.networks.create(name, **{**param, "labels": labels})
 
+    def get_container_inspect_info(self, container_id: str) -> "ContainerInspectInfo":
+        """Get container inspect information with fresh data."""
+        container = self.client.containers.get(container_id)
+        return ContainerInspectInfo.from_dict(container.attrs)
+
 
 def get_docker_host() -> Optional[str]:
-    return c.tc_properties_get_tc_host() or os.getenv("DOCKER_HOST")
+    host = c.tc_properties_get_tc_host() or os.getenv("DOCKER_HOST") or _get_docker_host_from_context()
+    if host:
+        return _sanitize_docker_host(host)
+    return None
+
+
+def _get_docker_host_from_context() -> Optional[str]:
+    """
+    Look up the docker host from the current docker context (e.g. as set by``docker context use``).
+    This allows users with a remote docker host configured via docker contexts to use testcontainers
+    without having to additionally export ``DOCKER_HOST``.
+    """
+    try:
+        context = ContextAPI.get_current_context()
+    except Exception as e:
+        LOGGER.debug(f"failed to read current docker context: {e}")
+        return None
+    if context is None:
+        return None
+    host = context.Host
+    # The default context points at the local unix socket / named pipe; let
+    # docker-py fall back to its own defaults in that case.
+    if not host or context.Name == "default":
+        return None
+    return cast("str", host)
+
+
+def get_docker_host_hostname() -> Optional[str]:
+    """Extract the remote hostname from an SSH-based DOCKER_HOST.
+
+    Returns the hostname (e.g. '192.168.1.42') when DOCKER_HOST is an ssh:// URL, or None otherwise.
+    """
+    docker_host = get_docker_host()
+    if docker_host and docker_host.startswith("ssh://"):
+        parsed = urllib.parse.urlparse(docker_host)
+        if parsed.hostname:
+            return parsed.hostname
+    return None
+
+
+def is_ssh_docker_host() -> bool:
+    """Check if the current DOCKER_HOST is an SSH-based connection."""
+    return get_docker_host_hostname() is not None
+
+
+@ft.lru_cache(maxsize=1)
+def is_podman() -> bool:
+    """Detect whether the configured Docker daemon is actually Podman.
+
+    The result is cached for the lifetime of the process: detection requires a
+    daemon round-trip, and this helper is invoked at test-collection time via
+    ``pytest.mark.skipif`` decorators.
+    """
+    try:
+        # Use docker.from_env() directly rather than DockerClient() so we avoid
+        # the constructor's side effects (DOCKER_HOST mutation, registry login).
+        version = docker.from_env().version()
+    except Exception as e:
+        LOGGER.debug(f"is_podman: failed to query daemon version: {e}")
+        return False
+
+    # Prefer the top-level Platform.Name field (matches testcontainers-go).
+    platform_name = (version.get("Platform") or {}).get("Name", "")
+    if "podman" in platform_name.lower():
+        return True
+    # Fall back to scanning the Components array for older podman versions.
+    return any("podman" in comp.get("Name", "").lower() for comp in version.get("Components") or [])
+
+
+def _sanitize_docker_host(docker_host: str) -> str:
+    """
+    Sanitize the DOCKER_HOST value for compatibility with the Docker SDK.
+
+    Strips path components from ``ssh://`` URLs because the Docker SDK
+    does not support them.  A lone trailing ``/`` is treated as
+    equivalent to no path and silently normalised without a warning.
+    """
+    if docker_host.startswith("ssh://"):
+        parsed = urllib.parse.urlparse(docker_host)
+        if parsed.path and parsed.path != "/":
+            sanitized = urllib.parse.urlunparse(parsed._replace(path=""))
+            LOGGER.warning(
+                "Stripped path from SSH DOCKER_HOST (unsupported by Docker SDK): %s -> %s",
+                docker_host,
+                sanitized,
+            )
+            return sanitized
+        if parsed.path == "/":
+            # Trailing slash is harmless — strip quietly.
+            return urllib.parse.urlunparse(parsed._replace(path=""))
+    return docker_host
 
 
 def get_docker_auth_config() -> Optional[str]:

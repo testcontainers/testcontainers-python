@@ -14,10 +14,10 @@ async def message_handler(msg: Msg):
 
 
 async def basic_example():
-    with NatsContainer() as nats_container:
+    with NatsContainer(jetstream=True) as nats_container:
         # Get connection parameters
         host = nats_container.get_container_host_ip()
-        port = nats_container.get_exposed_port(nats_container.port)
+        port = nats_container.get_exposed_port(nats_container.client_port)
 
         # Create NATS client
         nc = NATS()
@@ -32,7 +32,7 @@ async def basic_example():
         print(f"\nCreated stream: {stream.config.name}")
 
         # Create consumer
-        consumer = await js.add_consumer(stream_name="test-stream", durable_name="test-consumer")
+        consumer = await js.add_consumer(stream="test-stream", durable_name="test-consumer")
         print(f"Created consumer: {consumer.name}")
 
         # Subscribe to subjects

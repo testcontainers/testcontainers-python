@@ -16,6 +16,8 @@ Testcontainers Core
 
 .. autoclass:: testcontainers.core.wait_strategies.WaitStrategy
 
+.. autoclass:: testcontainers.core.transferable.Transferable
+
 .. raw:: html
 
     <hr>
@@ -49,3 +51,20 @@ Using `DockerContainer` and `DockerImage` to create a container:
 
 The `DockerImage` class is used to build the image from the specified path and tag.
 The `DockerContainer` class is then used to create a container from the image.
+
+Copying a file from disk into a container:
+
+.. doctest::
+
+    >>> import tempfile
+    >>> from pathlib import Path
+    >>> from testcontainers.core.container import DockerContainer
+
+    >>> with tempfile.TemporaryDirectory() as tmp:
+    ...     my_file = Path(tmp) / "my_file.txt"
+    ...     _ = my_file.write_text("file content")
+    ...     with DockerContainer("bash", command="sleep infinity") as container:
+    ...         container.copy_into_container(my_file, "/tmp/my_file.txt")
+    ...         result = container.exec("cat /tmp/my_file.txt")
+    ...         result.output
+    b'file content'
