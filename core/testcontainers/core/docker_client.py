@@ -22,6 +22,7 @@ from collections.abc import Iterable
 from typing import TYPE_CHECKING, Any, Callable, Optional, TypeVar, Union, cast
 
 import docker
+from docker.context import ContextAPI
 from docker.models.containers import Container, ContainerCollection
 from docker.models.images import Image, ImageCollection
 from typing_extensions import ParamSpec
@@ -320,10 +321,31 @@ class DockerClient:
 
 
 def get_docker_host() -> Optional[str]:
-    host = c.tc_properties_get_tc_host() or os.getenv("DOCKER_HOST")
+    host = c.tc_properties_get_tc_host() or os.getenv("DOCKER_HOST") or _get_docker_host_from_context()
     if host:
         return _sanitize_docker_host(host)
     return None
+
+
+def _get_docker_host_from_context() -> Optional[str]:
+    """
+    Look up the docker host from the current docker context (e.g. as set by``docker context use``).
+    This allows users with a remote docker host configured via docker contexts to use testcontainers
+    without having to additionally export ``DOCKER_HOST``.
+    """
+    try:
+        context = ContextAPI.get_current_context()
+    except Exception as e:
+        LOGGER.debug(f"failed to read current docker context: {e}")
+        return None
+    if context is None:
+        return None
+    host = context.Host
+    # The default context points at the local unix socket / named pipe; let
+    # docker-py fall back to its own defaults in that case.
+    if not host or context.Name == "default":
+        return None
+    return cast("str", host)
 
 
 def get_docker_host_hostname() -> Optional[str]:
@@ -342,6 +364,30 @@ def get_docker_host_hostname() -> Optional[str]:
 def is_ssh_docker_host() -> bool:
     """Check if the current DOCKER_HOST is an SSH-based connection."""
     return get_docker_host_hostname() is not None
+
+
+@ft.lru_cache(maxsize=1)
+def is_podman() -> bool:
+    """Detect whether the configured Docker daemon is actually Podman.
+
+    The result is cached for the lifetime of the process: detection requires a
+    daemon round-trip, and this helper is invoked at test-collection time via
+    ``pytest.mark.skipif`` decorators.
+    """
+    try:
+        # Use docker.from_env() directly rather than DockerClient() so we avoid
+        # the constructor's side effects (DOCKER_HOST mutation, registry login).
+        version = docker.from_env().version()
+    except Exception as e:
+        LOGGER.debug(f"is_podman: failed to query daemon version: {e}")
+        return False
+
+    # Prefer the top-level Platform.Name field (matches testcontainers-go).
+    platform_name = (version.get("Platform") or {}).get("Name", "")
+    if "podman" in platform_name.lower():
+        return True
+    # Fall back to scanning the Components array for older podman versions.
+    return any("podman" in comp.get("Name", "").lower() for comp in version.get("Components") or [])
 
 
 def _sanitize_docker_host(docker_host: str) -> str:
