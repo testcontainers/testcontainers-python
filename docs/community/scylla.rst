@@ -1,2 +1,2 @@
-.. autoclass:: testcontainers.scylla.ScyllaContainer
-.. title:: testcontainers.scylla.ScyllaContainer
+.. autoclass:: testcontainers.community.scylla.ScyllaContainer
+.. title:: testcontainers.community.scylla.ScyllaContainer

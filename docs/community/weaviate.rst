@@ -1,2 +1,2 @@
-.. autoclass:: testcontainers.weaviate.WeaviateContainer
-.. title:: testcontainers.weaviate.WeaviateContainer
+.. autoclass:: testcontainers.community.weaviate.WeaviateContainer
+.. title:: testcontainers.community.weaviate.WeaviateContainer

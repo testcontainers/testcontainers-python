@@ -14,7 +14,6 @@
 from typing import Optional
 
 import requests
-
 from testcontainers.core.container import DockerContainer
 from testcontainers.core.waiting_utils import wait_container_is_ready
 
@@ -41,7 +40,7 @@ class OpenFGAContainer(DockerContainer):
 
         .. doctest::
 
-            >>> from testcontainers.openfga import OpenFGAContainer
+            >>> from testcontainers.community.openfga import OpenFGAContainer
             >>> from sys import version_info
 
             >>> with OpenFGAContainer("openfga/openfga:v1.8.4") as openfga:

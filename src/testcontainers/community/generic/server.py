@@ -16,7 +16,7 @@ class ServerContainer(DockerContainer):
     .. doctest::
 
         >>> import httpx
-        >>> from testcontainers.generic import ServerContainer
+        >>> from testcontainers.community.generic import ServerContainer
         >>> from testcontainers.core.waiting_utils import wait_for_logs
         >>> from testcontainers.core.image import DockerImage
 

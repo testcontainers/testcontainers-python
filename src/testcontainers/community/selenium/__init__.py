@@ -14,14 +14,14 @@ from pathlib import Path
 from typing import Any, Optional
 
 import urllib3
+from testcontainers.community.selenium.video import SeleniumVideoContainer
+from testcontainers.core.container import DockerContainer
+from testcontainers.core.network import Network
+from testcontainers.core.waiting_utils import wait_container_is_ready
 from typing_extensions import Self
 
 from selenium import webdriver
 from selenium.webdriver.common.options import ArgOptions
-from testcontainers.core.container import DockerContainer
-from testcontainers.core.network import Network
-from testcontainers.core.waiting_utils import wait_container_is_ready
-from testcontainers.selenium.video import SeleniumVideoContainer
 
 IMAGES = {"firefox": "selenium/standalone-firefox:latest", "chrome": "selenium/standalone-chrome:latest"}
 
@@ -38,7 +38,7 @@ class BrowserWebDriverContainer(DockerContainer):
 
         .. doctest::
 
-            >>> from testcontainers.selenium import BrowserWebDriverContainer
+            >>> from testcontainers.community.selenium import BrowserWebDriverContainer
             >>> from selenium.webdriver import DesiredCapabilities
 
             >>> with BrowserWebDriverContainer(DesiredCapabilities.CHROME) as chrome:

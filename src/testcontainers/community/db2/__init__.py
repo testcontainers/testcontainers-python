@@ -14,7 +14,7 @@ class Db2Container(DbContainer):
         .. doctest::
 
             >>> import sqlalchemy
-            >>> from testcontainers.db2 import Db2Container
+            >>> from testcontainers.community.db2 import Db2Container
 
             >>> with Db2Container("icr.io/db2_community/db2:latest") as db2:
             ...    engine = sqlalchemy.create_engine(db2.get_connection_url())

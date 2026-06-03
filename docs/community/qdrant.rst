@@ -1,2 +1,2 @@
-.. autoclass:: testcontainers.qdrant.QdrantContainer
-.. title:: testcontainers.qdrant.QdrantContainer
+.. autoclass:: testcontainers.community.qdrant.QdrantContainer
+.. title:: testcontainers.community.qdrant.QdrantContainer

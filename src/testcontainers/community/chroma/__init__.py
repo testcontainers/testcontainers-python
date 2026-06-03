@@ -1,7 +1,6 @@
 from typing import TYPE_CHECKING
 
 from requests import ConnectionError, get
-
 from testcontainers.core.container import DockerContainer
 from testcontainers.core.utils import raise_for_deprecated_parameter
 from testcontainers.core.waiting_utils import wait_container_is_ready
@@ -20,7 +19,7 @@ class ChromaContainer(DockerContainer):
         .. doctest::
 
             >>> import chromadb
-            >>> from testcontainers.chroma import ChromaContainer
+            >>> from testcontainers.community.chroma import ChromaContainer
 
             >>> with ChromaContainer() as chroma:
             ...   config = chroma.get_config()

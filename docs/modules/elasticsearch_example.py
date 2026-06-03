@@ -3,7 +3,7 @@ from datetime import datetime
 
 from elasticsearch import Elasticsearch
 
-from testcontainers.elasticsearch import ElasticsearchContainer
+from testcontainers.community.elasticsearch import ElasticsearchContainer
 
 
 def basic_example():

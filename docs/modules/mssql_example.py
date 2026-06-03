@@ -1,6 +1,6 @@
 import pymssql
 
-from testcontainers.mssql import MsSqlContainer
+from testcontainers.community.mssql import MsSqlContainer
 
 
 def basic_example():

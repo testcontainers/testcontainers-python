@@ -1,3 +1,3 @@
-.. autoclass:: testcontainers.mailpit.MailpitUser
-.. autoclass:: testcontainers.mailpit.MailpitContainer
-.. title:: testcontainers.mailpit.MailpitContainer
+.. autoclass:: testcontainers.community.mailpit.MailpitUser
+.. autoclass:: testcontainers.community.mailpit.MailpitContainer
+.. title:: testcontainers.community.mailpit.MailpitContainer

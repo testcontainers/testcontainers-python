@@ -1,2 +1,2 @@
-.. autoclass:: testcontainers.mssql.SqlServerContainer
-.. title:: testcontainers.mssql.SqlServerContainer
+.. autoclass:: testcontainers.community.mssql.SqlServerContainer
+.. title:: testcontainers.community.mssql.SqlServerContainer

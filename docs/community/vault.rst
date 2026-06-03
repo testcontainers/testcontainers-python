@@ -1,2 +1,2 @@
-.. autoclass:: testcontainers.vault.VaultContainer
-.. title:: testcontainers.vault.VaultContainer
+.. autoclass:: testcontainers.community.vault.VaultContainer
+.. title:: testcontainers.community.vault.VaultContainer

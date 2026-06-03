@@ -1,2 +1,2 @@
-.. autoclass:: testcontainers.keycloak.KeycloakContainer
-.. title:: testcontainers.keycloak.KeycloakContainer
+.. autoclass:: testcontainers.community.keycloak.KeycloakContainer
+.. title:: testcontainers.community.keycloak.KeycloakContainer

@@ -26,7 +26,7 @@ class QdrantContainer(DockerContainer):
     Example:
         .. doctest::
 
-            >>> from testcontainers.qdrant import QdrantContainer
+            >>> from testcontainers.community.qdrant import QdrantContainer
 
             >>> with QdrantContainer() as qdrant:
             ...     client = qdrant.get_client()

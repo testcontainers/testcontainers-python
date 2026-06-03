@@ -13,8 +13,9 @@
 import os
 from unittest.mock import patch
 
-from google.cloud import pubsub
 from testcontainers.core.container import DockerContainer
+
+from google.cloud import pubsub
 
 
 class PubSubContainer(DockerContainer):
@@ -30,7 +31,7 @@ class PubSubContainer(DockerContainer):
 
         .. doctest::
 
-            >>> from testcontainers.google import PubSubContainer
+            >>> from testcontainers.community.google import PubSubContainer
 
             >>> config = PubSubContainer()
             >>> with config as pubsub:

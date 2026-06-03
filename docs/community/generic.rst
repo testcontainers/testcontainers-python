@@ -1,13 +1,13 @@
 :code:`testcontainers-generic` is a set of generic containers modules that can be used to creat containers.
 
-.. autoclass:: testcontainers.generic.ServerContainer
-.. title:: testcontainers.generic.ServerContainer
+.. autoclass:: testcontainers.community.generic.ServerContainer
+.. title:: testcontainers.community.generic.ServerContainer
 
 FastAPI container that is using :code:`ServerContainer`
 
 .. doctest::
 
-    >>> from testcontainers.generic import ServerContainer
+    >>> from testcontainers.community.generic import ServerContainer
     >>> from testcontainers.core.waiting_utils import wait_for_logs
     >>> from testcontainers.core.image import DockerImage
 
@@ -24,8 +24,8 @@ A more advance use-case, where we are using a FastAPI container that is using Re
 
 .. doctest::
 
-    >>> from testcontainers.redis import RedisContainer
-    >>> from testcontainers.generic import ServerContainer
+    >>> from testcontainers.community.redis import RedisContainer
+    >>> from testcontainers.community.generic import ServerContainer
 
     >>> with RedisContainer() as redis:
     ...     redis_container_port = redis.port
@@ -52,15 +52,15 @@ A more advance use-case, where we are using a FastAPI container that is using Re
     ...             assert response.status_code == 200, "Failed to get data"
     ...             assert response.json() == {"key": test_data["key"], "value": test_data["value"]}
 
-.. autoclass:: testcontainers.generic.SqlContainer
-.. title:: testcontainers.generic.SqlContainer
+.. autoclass:: testcontainers.community.generic.SqlContainer
+.. title:: testcontainers.community.generic.SqlContainer
 
 Postgres container that is using :code:`SqlContainer`
 
 .. doctest::
 
-    >>> from testcontainers.generic import SqlContainer
-    >>> from testcontainers.generic.providers.sql_connection_wait_strategy import SqlAlchemyConnectWaitStrategy
+    >>> from testcontainers.community.generic import SqlContainer
+    >>> from testcontainers.community.generic.providers.sql_connection_wait_strategy import SqlAlchemyConnectWaitStrategy
     >>> from sqlalchemy import text
     >>> import sqlalchemy
 

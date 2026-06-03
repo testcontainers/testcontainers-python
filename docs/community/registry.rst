@@ -1,4 +1,4 @@
-.. autoclass:: testcontainers.registry.DockerRegistryContainer
+.. autoclass:: testcontainers.community.registry.DockerRegistryContainer
 
 When building Docker containers with Docker Buildx there is currently no option to test your containers locally without
 a local registry. Otherwise Buildx pushes your image to Docker Hub, which is not what you want in a test case. More

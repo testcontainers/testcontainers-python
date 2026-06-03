@@ -12,7 +12,6 @@
 #    under the License.
 
 import requests
-
 from testcontainers.core.config import testcontainers_config as c
 from testcontainers.core.generic import DockerContainer
 from testcontainers.core.waiting_utils import wait_container_is_ready, wait_for_logs
@@ -30,7 +29,7 @@ class MilvusContainer(DockerContainer):
 
         .. doctest::
 
-            >>> from testcontainers.milvus import MilvusContainer
+            >>> from testcontainers.community.milvus import MilvusContainer
             >>> with MilvusContainer("milvusdb/milvus:v2.4.4") as milvus_container:
             ...     milvus_container.get_exposed_port(milvus_container.port) in milvus_container.get_connection_url()
             True

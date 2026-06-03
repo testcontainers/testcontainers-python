@@ -1,6 +1,6 @@
 import requests
 
-from testcontainers.ollama import OllamaContainer
+from testcontainers.community.ollama import OllamaContainer
 
 
 def basic_example():

@@ -2,7 +2,7 @@ import json
 
 import boto3
 
-from testcontainers.localstack import LocalStackContainer
+from testcontainers.community.localstack import LocalStackContainer
 
 
 def basic_example():

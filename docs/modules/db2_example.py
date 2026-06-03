@@ -2,7 +2,7 @@ import ibm_db
 import ibm_db_dbi
 import pandas as pd
 
-from testcontainers.db2 import Db2Container
+from testcontainers.community.db2 import Db2Container
 
 
 def basic_example():

@@ -33,7 +33,7 @@ class PostgresContainer(DbContainer):
 
         .. doctest::
 
-            >>> from testcontainers.postgres import PostgresContainer
+            >>> from testcontainers.community.postgres import PostgresContainer
             >>> import sqlalchemy
 
             >>> with PostgresContainer("postgres:16") as postgres:

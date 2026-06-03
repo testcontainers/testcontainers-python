@@ -4,7 +4,7 @@ import json
 from nats.aio.client import Client as NATS
 from nats.aio.msg import Msg
 
-from testcontainers.nats import NatsContainer
+from testcontainers.community.nats import NatsContainer
 
 
 async def message_handler(msg: Msg):

@@ -4,7 +4,7 @@ from datetime import timedelta
 
 from minio import Minio
 
-from testcontainers.minio import MinioContainer
+from testcontainers.community.minio import MinioContainer
 
 
 def basic_example():

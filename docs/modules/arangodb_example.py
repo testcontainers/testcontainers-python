@@ -2,7 +2,7 @@ import json
 
 from arango import ArangoClient
 
-from testcontainers.arangodb import ArangoDbContainer
+from testcontainers.community.arangodb import ArangoDbContainer
 
 
 def basic_example():

@@ -1,2 +1,2 @@
-.. autoclass:: testcontainers.arangodb.ArangoDbContainer
-.. title:: testcontainers.arangodb.ArangoDbContainer
+.. autoclass:: testcontainers.community.arangodb.ArangoDbContainer
+.. title:: testcontainers.community.arangodb.ArangoDbContainer

@@ -27,7 +27,7 @@ class K3SContainer(DockerContainer):
         .. doctest::
 
             >>> import yaml
-            >>> from testcontainers.k3s import K3SContainer
+            >>> from testcontainers.community.k3s import K3SContainer
             >>> from kubernetes import client, config
 
             >>> with K3SContainer() as k3s:

@@ -14,8 +14,7 @@
 from typing import Optional
 
 from influxdb import InfluxDBClient
-
-from testcontainers.influxdb import InfluxDbContainer
+from testcontainers.community.influxdb import InfluxDbContainer
 
 
 class InfluxDb1Container(InfluxDbContainer):
@@ -27,7 +26,7 @@ class InfluxDb1Container(InfluxDbContainer):
 
         .. doctest::
 
-            >>> from testcontainers.influxdb1 import InfluxDbContainer
+            >>> from testcontainers.community.influxdb1 import InfluxDbContainer
 
             >>> with InfluxDbContainer() as influxdb:
             ...    version = influxdb.get_version()

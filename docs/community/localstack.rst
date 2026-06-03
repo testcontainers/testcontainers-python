@@ -1,2 +1,2 @@
-.. autoclass:: testcontainers.localstack.LocalStackContainer
-.. title:: testcontainers.localstack.LocalStackContainer
+.. autoclass:: testcontainers.community.localstack.LocalStackContainer
+.. title:: testcontainers.community.localstack.LocalStackContainer

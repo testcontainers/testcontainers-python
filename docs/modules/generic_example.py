@@ -1,6 +1,6 @@
 import requests
 
-from testcontainers.generic import GenericContainer
+from testcontainers.community.generic import GenericContainer
 
 
 def basic_example():

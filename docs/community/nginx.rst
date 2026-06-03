@@ -1,2 +1,2 @@
-.. autoclass:: testcontainers.nginx.NginxContainer
-.. title:: testcontainers.nginx.NginxContainer
+.. autoclass:: testcontainers.community.nginx.NginxContainer
+.. title:: testcontainers.community.nginx.NginxContainer

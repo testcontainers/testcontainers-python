@@ -13,11 +13,12 @@
 
 from typing import Optional
 
-import redis
-from redis.asyncio import Redis as asyncRedis
 from testcontainers.core.container import DockerContainer
 from testcontainers.core.utils import raise_for_deprecated_parameter
 from testcontainers.core.waiting_utils import WaitStrategy, WaitStrategyTarget
+
+import redis
+from redis.asyncio import Redis as asyncRedis
 
 
 class RedisContainer(DockerContainer):
@@ -28,7 +29,7 @@ class RedisContainer(DockerContainer):
 
         .. doctest::
 
-            >>> from testcontainers.redis import RedisContainer
+            >>> from testcontainers.community.redis import RedisContainer
 
             >>> with RedisContainer() as redis_container:
             ...     redis_client = redis_container.get_client()
@@ -79,7 +80,7 @@ class AsyncRedisContainer(RedisContainer):
     -------
     .. doctest::
 
-        >>> from testcontainers.redis import AsyncRedisContainer
+        >>> from testcontainers.community.redis import AsyncRedisContainer
 
         >>> with AsyncRedisContainer() as redis_container:
         ...     redis_client =await  redis_container.get_async_client()

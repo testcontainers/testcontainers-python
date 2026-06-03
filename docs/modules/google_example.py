@@ -3,7 +3,7 @@ from datetime import datetime
 
 from google.cloud import bigquery, datastore, pubsub, storage
 
-from testcontainers.google import GoogleContainer
+from testcontainers.community.google import GoogleContainer
 
 
 def basic_example():

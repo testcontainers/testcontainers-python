@@ -1,7 +1,6 @@
 from azure.core.exceptions import ServiceRequestError
 from azure.cosmos import CosmosClient as SyncCosmosClient
 from azure.cosmos.aio import CosmosClient as AsyncCosmosClient
-
 from testcontainers.core.waiting_utils import wait_container_is_ready
 
 from ._emulator import CosmosDBEmulatorContainer
@@ -19,13 +18,13 @@ class CosmosDBNoSQLEndpointContainer(CosmosDBEmulatorContainer):
 
         .. code-block:: python
 
-            >>> from testcontainers.cosmosdb import CosmosDBNoSQLEndpointContainer
+            >>> from testcontainers.community.cosmosdb import CosmosDBNoSQLEndpointContainer
             >>> with CosmosDBNoSQLEndpointContainer() as emulator:
             ...   db = emulator.insecure_sync_client().create_database_if_not_exists("test")
 
         .. code-block:: python
 
-            >>> from testcontainers.cosmosdb import CosmosDBNoSQLEndpointContainer
+            >>> from testcontainers.community.cosmosdb import CosmosDBNoSQLEndpointContainer
             >>> from azure.cosmos import CosmosClient
 
             >>> with CosmosDBNoSQLEndpointContainer() as emulator:

@@ -4,7 +4,7 @@ from datetime import datetime
 import numpy as np
 from pymilvus import Collection, CollectionSchema, DataType, FieldSchema, connections, utility
 
-from testcontainers.milvus import MilvusContainer
+from testcontainers.community.milvus import MilvusContainer
 
 
 def basic_example():

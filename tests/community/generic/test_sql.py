@@ -2,8 +2,8 @@ import pytest
 from unittest.mock import patch
 
 from testcontainers.core.exceptions import ContainerStartException
-from testcontainers.generic.sql import SqlContainer
-from testcontainers.generic.providers.sql_connection_wait_strategy import SqlAlchemyConnectWaitStrategy
+from testcontainers.community.generic.sql import SqlContainer
+from testcontainers.community.generic.providers.sql_connection_wait_strategy import SqlAlchemyConnectWaitStrategy
 
 
 class SimpleSqlContainer(SqlContainer):
@@ -153,7 +153,7 @@ class TestSqlContainer:
         assert hasattr(container, "start")
 
     def test_additional_transient_errors_list(self):
-        from testcontainers.generic.providers.sql_connection_wait_strategy import ADDITIONAL_TRANSIENT_ERRORS
+        from testcontainers.community.generic.providers.sql_connection_wait_strategy import ADDITIONAL_TRANSIENT_ERRORS
 
         assert isinstance(ADDITIONAL_TRANSIENT_ERRORS, list)
         # List may be empty if SQLAlchemy not available, or contain DBAPIError if it is

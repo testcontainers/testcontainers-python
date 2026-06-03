@@ -24,7 +24,7 @@ Getting Started
 
 .. doctest::
 
-    >>> from testcontainers.postgres import PostgresContainer
+    >>> from testcontainers.community.postgres import PostgresContainer
     >>> import sqlalchemy
 
     >>> with PostgresContainer("postgres:16") as postgres:
@@ -39,7 +39,7 @@ The snippet above will spin up the current latest version of a postgres database
 
 .. doctest::
 
-    >>> from testcontainers.postgres import PostgresContainer
+    >>> from testcontainers.community.postgres import PostgresContainer
     >>> import psycopg
 
     >>> with PostgresContainer("postgres:16", driver=None) as postgres:

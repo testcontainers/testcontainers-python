@@ -13,7 +13,6 @@
 from typing import TYPE_CHECKING, Optional
 
 from requests import ConnectionError, get
-
 from testcontainers.core.generic import DbContainer
 from testcontainers.core.waiting_utils import wait_container_is_ready
 
@@ -36,7 +35,7 @@ class WeaviateContainer(DbContainer):
 
         .. doctest::
 
-            >>> from testcontainers.weaviate import WeaviateContainer
+            >>> from testcontainers.community.weaviate import WeaviateContainer
 
             >>> with WeaviateContainer() as container:
             ...     with container.get_client() as client:
@@ -47,7 +46,7 @@ class WeaviateContainer(DbContainer):
 
         .. doctest::
 
-            >>> from testcontainers.weaviate import WeaviateContainer
+            >>> from testcontainers.community.weaviate import WeaviateContainer
 
             >>> with WeaviateContainer(
             ...     env_vars={

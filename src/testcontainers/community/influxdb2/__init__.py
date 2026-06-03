@@ -15,8 +15,7 @@ from os import getenv
 from typing import Optional
 
 from influxdb_client import InfluxDBClient, Organization
-
-from testcontainers.influxdb import InfluxDbContainer
+from testcontainers.community.influxdb import InfluxDbContainer
 
 
 class InfluxDb2Container(InfluxDbContainer):
@@ -28,7 +27,7 @@ class InfluxDb2Container(InfluxDbContainer):
 
         .. doctest::
 
-            >>> from testcontainers.influxdb2 import InfluxDb2Container
+            >>> from testcontainers.community.influxdb2 import InfluxDb2Container
 
             >>> with InfluxDb2Container() as influxdb2:
             ...    version = influxdb2.get_version()

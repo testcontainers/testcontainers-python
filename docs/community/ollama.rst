@@ -1,2 +1,2 @@
-.. autoclass:: testcontainers.ollama.OllamaContainer
-.. title:: testcontainers.ollama.OllamaContainer
+.. autoclass:: testcontainers.community.ollama.OllamaContainer
+.. title:: testcontainers.community.ollama.OllamaContainer

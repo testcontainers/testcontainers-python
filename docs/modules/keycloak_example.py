@@ -2,7 +2,7 @@ import json
 
 from keycloak import KeycloakAdmin, KeycloakOpenID
 
-from testcontainers.keycloak import KeycloakContainer
+from testcontainers.community.keycloak import KeycloakContainer
 
 
 def basic_example():

@@ -1,3 +1,3 @@
-.. autoclass:: testcontainers.kafka.KafkaContainer
-.. title:: testcontainers.kafka.KafkaContainer
-.. autoclass:: testcontainers.kafka.RedpandaContainer
+.. autoclass:: testcontainers.community.kafka.KafkaContainer
+.. title:: testcontainers.community.kafka.KafkaContainer
+.. autoclass:: testcontainers.community.kafka.RedpandaContainer

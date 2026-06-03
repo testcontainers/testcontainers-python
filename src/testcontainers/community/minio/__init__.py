@@ -1,7 +1,8 @@
-from minio import Minio
 from testcontainers.core.container import DockerContainer
 from testcontainers.core.utils import raise_for_deprecated_parameter
 from testcontainers.core.wait_strategies import HttpWaitStrategy
+
+from minio import Minio
 
 
 class MinioContainer(DockerContainer):
@@ -18,7 +19,7 @@ class MinioContainer(DockerContainer):
         .. doctest::
 
             >>> import io
-            >>> from testcontainers.minio import MinioContainer
+            >>> from testcontainers.community.minio import MinioContainer
 
             >>> with MinioContainer() as minio:
             ...   client = minio.get_client()

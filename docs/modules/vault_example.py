@@ -2,7 +2,7 @@ import json
 
 import hvac
 
-from testcontainers.vault import VaultContainer
+from testcontainers.community.vault import VaultContainer
 
 
 def basic_example():

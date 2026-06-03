@@ -3,7 +3,7 @@ from datetime import datetime
 
 import weaviate
 
-from testcontainers.weaviate import WeaviateContainer
+from testcontainers.community.weaviate import WeaviateContainer
 
 
 def basic_example():

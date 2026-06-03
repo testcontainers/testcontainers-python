@@ -2,11 +2,10 @@ from contextlib import suppress
 
 from opensearchpy import OpenSearch
 from opensearchpy.exceptions import ConnectionError, TransportError
-from urllib3.exceptions import ProtocolError
-
 from testcontainers.core.container import DockerContainer
 from testcontainers.core.utils import raise_for_deprecated_parameter
 from testcontainers.core.waiting_utils import wait_container_is_ready
+from urllib3.exceptions import ProtocolError
 
 MIN_REQUIRED_INITIAL_ADMIN_PASSWORD = [2, 12, 0]
 
@@ -25,7 +24,7 @@ class OpenSearchContainer(DockerContainer):
 
         .. doctest::
 
-            >>> from testcontainers.opensearch import OpenSearchContainer
+            >>> from testcontainers.community.opensearch import OpenSearchContainer
 
             >>> with OpenSearchContainer() as opensearch:
             ...   client = opensearch.get_client()

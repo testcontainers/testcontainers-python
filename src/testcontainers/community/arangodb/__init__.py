@@ -23,7 +23,7 @@ class ArangoDbContainer(DbContainer):
 
         .. doctest::
 
-            >>> from testcontainers.arangodb import ArangoDbContainer
+            >>> from testcontainers.community.arangodb import ArangoDbContainer
             >>> from arango import ArangoClient
 
             >>> with ArangoDbContainer("arangodb:3.11.8") as arango:

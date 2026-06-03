@@ -14,10 +14,10 @@ import os
 from typing import Optional
 
 import requests
-
-from keycloak import KeycloakAdmin
 from testcontainers.core.container import DockerContainer
 from testcontainers.core.waiting_utils import wait_container_is_ready, wait_for_logs
+
+from keycloak import KeycloakAdmin
 
 _DEFAULT_DEV_COMMAND = "start-dev"
 # Since Keycloak v26.0.0
@@ -36,7 +36,7 @@ class KeycloakContainer(DockerContainer):
 
         .. doctest::
 
-            >>> from testcontainers.keycloak import KeycloakContainer
+            >>> from testcontainers.community.keycloak import KeycloakContainer
 
             >>> with KeycloakContainer(f"quay.io/keycloak/keycloak:25.0.4") as keycloak:
             ...     keycloak.get_client().users_count()

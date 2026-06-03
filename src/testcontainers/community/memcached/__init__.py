@@ -28,7 +28,7 @@ class MemcachedContainer(DockerContainer):
 
         .. doctest::
 
-            >>> from testcontainers.memcached import MemcachedContainer
+            >>> from testcontainers.community.memcached import MemcachedContainer
 
             >>> with MemcachedContainer() as memcached_container:
             ...    host, port = memcached_container.get_host_and_port()

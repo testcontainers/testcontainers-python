@@ -2,7 +2,7 @@ import json
 
 import requests
 
-from testcontainers.registry import RegistryContainer
+from testcontainers.community.registry import RegistryContainer
 
 
 def basic_example():

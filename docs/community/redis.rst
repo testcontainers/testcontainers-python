@@ -1,2 +1,2 @@
-.. autoclass:: testcontainers.redis.RedisContainer
-.. title:: testcontainers.redis.RedisContainer
+.. autoclass:: testcontainers.community.redis.RedisContainer
+.. title:: testcontainers.community.redis.RedisContainer

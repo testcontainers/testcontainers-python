@@ -1,2 +1,2 @@
-.. autoclass:: testcontainers.opensearch.OpenSearchContainer
-.. title:: testcontainers.opensearch.OpenSearchContainer
+.. autoclass:: testcontainers.community.opensearch.OpenSearchContainer
+.. title:: testcontainers.community.opensearch.OpenSearchContainer

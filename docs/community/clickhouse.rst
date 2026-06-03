@@ -1,2 +1,2 @@
-.. autoclass:: testcontainers.clickhouse.ClickHouseContainer
-.. title:: testcontainers.clickhouse.ClickHouseContainer
+.. autoclass:: testcontainers.community.clickhouse.ClickHouseContainer
+.. title:: testcontainers.community.clickhouse.ClickHouseContainer

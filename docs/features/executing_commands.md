@@ -7,7 +7,7 @@ Testcontainers-Python provides several ways to execute commands inside container
 The simplest way to execute a command is using the `exec` method:
 
 ```python
-from testcontainers.generic import GenericContainer
+from testcontainers.community.generic import GenericContainer
 
 with GenericContainer("alpine:latest") as container:
     # Execute a simple command
@@ -108,7 +108,7 @@ with GenericContainer("alpine:latest") as container:
 ### Database Setup
 
 ```python
-from testcontainers.postgres import PostgresContainer
+from testcontainers.community.postgres import PostgresContainer
 
 with PostgresContainer() as postgres:
     # Create a database

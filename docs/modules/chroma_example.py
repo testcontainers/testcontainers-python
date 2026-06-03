@@ -1,7 +1,7 @@
 import chromadb
 from chromadb.config import Settings
 
-from testcontainers.chroma import ChromaContainer
+from testcontainers.community.chroma import ChromaContainer
 
 
 def basic_example():
