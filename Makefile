@@ -3,12 +3,10 @@
 
 PYTHON_VERSION ?= 3.10
 IMAGE = testcontainers-python:${PYTHON_VERSION}
-PACKAGES = core $(addprefix modules/,$(notdir $(wildcard modules/*)))
 
-UPLOAD = $(addsuffix /upload,${PACKAGES})
-TESTS = $(addsuffix /tests,$(filter-out meta,${PACKAGES}))
-TESTS_DIND = $(addsuffix -dind,${TESTS})
-DOCTESTS = $(addsuffix /doctests,$(filter-out modules/README.md,${PACKAGES}))
+COMMUNITY_MODULES = $(patsubst tests/community/%/,%,$(wildcard tests/community/*/))
+COMMUNITY_TESTS = $(addprefix community/,$(addsuffix /tests,$(COMMUNITY_MODULES)))
+COMMUNITY_DOCTESTS = $(addprefix community/,$(addsuffix /doctests,$(COMMUNITY_MODULES)))
 
 
 install:  ## Set up the project for development
@@ -18,15 +16,17 @@ install:  ## Set up the project for development
 build:  ## Build the python package
 	uv build && uv run twine check dist/*
 
-tests: ${TESTS}  ## Run tests for each package
-${TESTS}: %/tests:
-	uv run coverage run --parallel -m pytest -v $*/tests
+tests: core/tests community-tests  ## Run all tests
+
+core/tests:  ## Run tests for the core package
+	uv run coverage run --parallel -m pytest -v tests/core
+
+community-tests: $(COMMUNITY_TESTS)  ## Run tests for all community modules
+$(COMMUNITY_TESTS): community/%/tests:
+	uv run coverage run --parallel -m pytest -v tests/community/$*
 
 quick-core-tests:  ## Run core tests excluding long_running
-	uv run coverage run --parallel -m pytest -v -m "not long_running" core/tests
-
-core-tests:  ## Run tests for the core package
-	uv run coverage run --parallel -m pytest -v core/tests
+	uv run coverage run --parallel -m pytest -v -m "not long_running" tests/core
 
 coverage:  ## Target to combine and report coverage.
 	uv run coverage combine
@@ -37,24 +37,21 @@ coverage:  ## Target to combine and report coverage.
 lint:  ## Lint all files in the project, which we also run in pre-commit
 	uv run pre-commit run --all-files
 
-mypy-core:  ## Run mypy on the core package
-	uv run mypy --config-file pyproject.toml core
-
-mypy-core-report:  ## Generate a report for mypy on the core package
-	uv run mypy --config-file pyproject.toml core | uv run python scripts/mypy_report.py
-
 docs: ## Build the docs for the project
 	uv run --all-extras sphinx-build -nW docs docs/_build
 
 # Target to build docs watching for changes as per https://stackoverflow.com/a/21389615
-docs-watch :
+docs-watch:
 	uv run sphinx-autobuild docs docs/_build # requires 'pip install sphinx-autobuild'
 
-doctests: ${DOCTESTS}  ## Run doctests found across the documentation.
-	uv run --all-extras sphinx-build -b doctest . docs/_build
+doctests: core/doctests community-doctests  ## Run doctests found across the documentation.
 
-${DOCTESTS}: %/doctests:  ##  Run doctests found for a module.
-	uv run --all-extras sphinx-build -b doctest -c doctests $* docs/_build
+core/doctests:  ## Run doctests for the core package
+	uv run --all-extras sphinx-build -b doctest -c doctests docs/core docs/_build
+
+community-doctests: $(COMMUNITY_DOCTESTS)  ## Run doctests for all community modules
+$(COMMUNITY_DOCTESTS): community/%/doctests:
+	uv run --all-extras sphinx-build -b doctest docs docs/_build docs/community/$*.rst
 
 
 clean:  ## Remove generated files.
@@ -67,7 +64,9 @@ clean-all: clean ## Remove all generated files and reset the local virtual envir
 	rm -rf .venv
 
 # Targets that do not generate file-level artifacts.
-.PHONY: clean docs doctests image tests quick-core-tests ${TESTS}
+.PHONY: clean docs doctests core/doctests community-doctests $(COMMUNITY_DOCTESTS) \
+        tests core/tests community-tests $(COMMUNITY_TESTS) \
+        quick-core-tests install build coverage lint mypy-core mypy-core-report docs-watch
 
 
 # Implements this pattern for autodocumenting Makefiles:
