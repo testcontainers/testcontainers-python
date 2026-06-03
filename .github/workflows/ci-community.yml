@@ -10,11 +10,13 @@ on:
   push:
     branches: [ main ]
     paths:
-      - "modules/**"
+      - "src/testcontainers/community/**"
+      - "tests/community/**"
   pull_request:
     branches: [ main ]
     paths:
-      - "modules/**"
+      - "src/testcontainers/community/**"
+      - "tests/community/**"
 
 jobs:
   track-modules:
@@ -32,15 +34,29 @@ jobs:
           list-files: 'json'
           filters: |
             modules:
-              - 'modules/**'
+              - 'src/testcontainers/community/**'
+              - 'tests/community/**'
       - name: Compute modules from files
         id: compute-changes
         run: |
-          modules=$(echo "${{ toJson(steps.changed-files.outputs.modules_files) }}" | jq '.[] | split("/") | nth(1)' | jq -s -c '. | unique')
+          modules=$(echo '${{ toJson(steps.changed-files.outputs.modules_files) }}' | jq -c '
+            [.[] |
+              if startswith("src/testcontainers/community/") then split("/")[3]
+              elif startswith("tests/community/") then split("/")[2]
+              else empty
+              end |
+              select(. and (startswith("__") | not)) |
+              if . == "oracle" then "oracle-free"
+              elif . == "influxdb1" or . == "influxdb2" then "influxdb"
+              else .
+              end
+            ] | unique
+          ')
           echo "computed_modules=$modules"
           echo "computed_modules=$modules" >> $GITHUB_OUTPUT
     outputs:
       changed_modules: ${{ steps.compute-changes.outputs.computed_modules }}
+
   test:
     runs-on: ubuntu-22.04
     needs: [track-modules]
@@ -60,6 +76,6 @@ jobs:
       - name: Install Python dependencies
         run: uv sync --extra ${{ matrix.module }}
       - name: Run tests
-        run: make modules/${{ matrix.module }}/tests
+        run: make community/${{ matrix.module }}/tests
       - name: Run doctests
-        run: make modules/${{ matrix.module }}/doctests
+        run: make community/${{ matrix.module }}/doctests
