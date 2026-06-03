@@ -3,7 +3,7 @@ import string
 from pathlib import Path
 
 import requests
-from testcontainers.ollama import OllamaContainer
+from testcontainers.community.ollama import OllamaContainer
 
 
 def random_string(length=6):

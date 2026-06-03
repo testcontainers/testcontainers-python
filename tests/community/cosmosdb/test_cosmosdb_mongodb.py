@@ -1,5 +1,5 @@
 import pytest
-from testcontainers.cosmosdb import CosmosDBMongoEndpointContainer
+from testcontainers.community.cosmosdb import CosmosDBMongoEndpointContainer
 
 
 def test_requires_a_version():

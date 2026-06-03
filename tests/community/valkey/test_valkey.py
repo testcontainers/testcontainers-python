@@ -1,6 +1,6 @@
 import socket
 
-from testcontainers.valkey import ValkeyContainer
+from testcontainers.community.valkey import ValkeyContainer
 
 
 def test_docker_run_valkey():

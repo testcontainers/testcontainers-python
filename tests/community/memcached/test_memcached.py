@@ -1,6 +1,6 @@
 import socket
 
-from testcontainers.memcached import MemcachedContainer
+from testcontainers.community.memcached import MemcachedContainer
 
 import pytest
 

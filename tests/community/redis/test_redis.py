@@ -1,6 +1,6 @@
 import time
 
-from testcontainers.redis import RedisContainer, AsyncRedisContainer
+from testcontainers.community.redis import RedisContainer, AsyncRedisContainer
 import pytest
 import redis
 

@@ -1,5 +1,5 @@
 import pytest
-from testcontainers.cosmosdb import CosmosDBNoSQLEndpointContainer
+from testcontainers.community.cosmosdb import CosmosDBNoSQLEndpointContainer
 
 
 def test_runs():

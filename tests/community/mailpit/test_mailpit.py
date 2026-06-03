@@ -4,7 +4,7 @@ from email.mime.multipart import MIMEMultipart
 
 import pytest
 
-from testcontainers.mailpit import MailpitContainer, MailpitUser
+from testcontainers.community.mailpit import MailpitContainer, MailpitUser
 
 _sender = "from@example.com"
 _receivers = ["to@example.com"]

@@ -2,7 +2,7 @@ import pytest
 from kafka import KafkaAdminClient, KafkaConsumer, KafkaProducer, TopicPartition
 
 from testcontainers.core.network import Network
-from testcontainers.kafka import KafkaContainer, kafka_config
+from testcontainers.community.kafka import KafkaContainer, kafka_config
 
 
 def test_kafka_producer_consumer():

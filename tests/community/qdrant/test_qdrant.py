@@ -1,5 +1,5 @@
 import pytest
-from testcontainers.qdrant import QdrantContainer
+from testcontainers.community.qdrant import QdrantContainer
 import uuid
 from grpc import RpcError
 from pathlib import Path

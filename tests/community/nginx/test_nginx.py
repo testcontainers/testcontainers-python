@@ -1,6 +1,6 @@
 import requests
 
-from testcontainers.nginx import NginxContainer
+from testcontainers.community.nginx import NginxContainer
 
 
 def test_docker_run_nginx():

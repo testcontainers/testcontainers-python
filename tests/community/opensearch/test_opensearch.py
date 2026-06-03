@@ -1,4 +1,4 @@
-from testcontainers.opensearch import OpenSearchContainer
+from testcontainers.community.opensearch import OpenSearchContainer
 
 import pytest
 

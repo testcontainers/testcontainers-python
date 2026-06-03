@@ -1,4 +1,4 @@
-from testcontainers.scylla import ScyllaContainer
+from testcontainers.community.scylla import ScyllaContainer
 
 
 def test_docker_run_scylla():

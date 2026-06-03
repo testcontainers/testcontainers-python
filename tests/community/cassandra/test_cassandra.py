@@ -1,4 +1,4 @@
-from testcontainers.cassandra import CassandraContainer
+from testcontainers.community.cassandra import CassandraContainer
 import sys
 
 from importlib.metadata import version

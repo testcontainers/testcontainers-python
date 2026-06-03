@@ -2,7 +2,7 @@ import pytest
 import sqlalchemy
 
 from testcontainers.core.utils import is_arm
-from testcontainers.mssql import SqlServerContainer
+from testcontainers.community.mssql import SqlServerContainer
 
 
 @pytest.mark.skipif(is_arm(), reason="mssql container not available for ARM")

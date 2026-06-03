@@ -1,4 +1,4 @@
-from testcontainers.nats import NatsContainer
+from testcontainers.community.nats import NatsContainer
 from uuid import uuid4
 import pytest
 
