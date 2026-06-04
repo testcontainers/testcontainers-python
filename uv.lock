@@ -550,8 +550,8 @@ name = "cassandra-driver"
 version = "3.30.0"
 source = { registry = "https://pypi.org/simple" }
 dependencies = [
-    { name = "deprecated", marker = "python_full_version < '3.14'" },
-    { name = "geomet", marker = "python_full_version < '3.14'" },
+    { name = "deprecated" },
+    { name = "geomet" },
 ]
 sdist = { url = "https://files.pythonhosted.org/packages/85/26/8806d0949422b560029a040e7a628d92addd612726468c3fb546354a43a4/cassandra_driver-3.30.0.tar.gz", hash = "sha256:7e4cfd6ec3023576ed0ffa34882d9778e4bacfd918048ae9139ccdd00628ed85", size = 4242039, upload-time = "2026-04-16T05:04:59.838Z" }
 wheels = [
@@ -1097,7 +1097,7 @@ name = "deprecated"
 version = "1.3.1"
 source = { registry = "https://pypi.org/simple" }
 dependencies = [
-    { name = "wrapt", marker = "python_full_version < '3.14'" },
+    { name = "wrapt" },
 ]
 sdist = { url = "https://files.pythonhosted.org/packages/49/85/12f0a49a7c4ffb70572b6c2ef13c90c88fd190debda93b23f026b25f9634/deprecated-1.3.1.tar.gz", hash = "sha256:b1b50e0ff0c1fddaa5708a2c6b0a6588bb09b892825ab2b214ac9ea9d92a5223", size = 2932523, upload-time = "2025-10-30T08:19:02.757Z" }
 wheels = [
@@ -1359,7 +1359,7 @@ name = "geomet"
 version = "1.1.0"
 source = { registry = "https://pypi.org/simple" }
 dependencies = [
-    { name = "click", marker = "python_full_version < '3.14'" },
+    { name = "click" },
 ]
 sdist = { url = "https://files.pythonhosted.org/packages/2a/8c/dde022aa6747b114f6b14a7392871275dea8867e2bd26cddb80cc6d66620/geomet-1.1.0.tar.gz", hash = "sha256:51e92231a0ef6aaa63ac20c443377ba78a303fd2ecd179dc3567de79f3c11605", size = 28732, upload-time = "2023-11-14T15:43:36.764Z" }
 wheels = [
@@ -5495,6 +5495,7 @@ weaviate = [
 [package.dev-dependencies]
 dev = [
     { name = "anyio" },
+    { name = "boto3-stubs-lite", extra = ["boto3"] },
     { name = "cassandra-driver", marker = "python_full_version < '3.14'" },
     { name = "hvac", marker = "python_full_version < '4'" },
     { name = "kafka-python-ng" },
@@ -5544,7 +5545,7 @@ lint = [
 ]
 test = [
     { name = "anyio" },
-    { name = "cassandra-driver", marker = "python_full_version < '3.14'" },
+    { name = "cassandra-driver" },
     { name = "hvac", marker = "python_full_version < '4'" },
     { name = "kafka-python-ng" },
     { name = "paho-mqtt" },
@@ -5622,6 +5623,7 @@ provides-extras = ["arangodb", "aws", "azurite", "cassandra", "clickhouse", "cos
 [package.metadata.requires-dev]
 dev = [
     { name = "anyio", specifier = ">=4" },
+    { name = "boto3-stubs-lite", extras = ["boto3"] },
     { name = "cassandra-driver", marker = "python_full_version < '3.14'", specifier = ">=3" },
     { name = "hvac", marker = "python_full_version < '4'", specifier = ">=2" },
     { name = "kafka-python-ng", specifier = ">=2" },
@@ -5669,7 +5671,7 @@ lint = [
 ]
 test = [
     { name = "anyio", specifier = ">=4" },
-    { name = "cassandra-driver", marker = "python_full_version < '3.14'", specifier = ">=3" },
+    { name = "cassandra-driver", specifier = ">=3.30" },
     { name = "hvac", marker = "python_full_version < '4'", specifier = ">=2" },
     { name = "kafka-python-ng", specifier = ">=2" },
     { name = "paho-mqtt", specifier = ">=2" },

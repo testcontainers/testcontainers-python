@@ -122,7 +122,7 @@ test = [
   "psycopg2-binary==2.9.11",
   "pg8000==1.31.5",
   "psycopg>=3",
-  "cassandra-driver>=3; python_version < '3.14'",
+  "cassandra-driver>=3.30",
   "kafka-python-ng>=2",
   "hvac>=2; python_version < '4.0'",
   "pymilvus>=2",
