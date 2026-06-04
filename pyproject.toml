@@ -139,6 +139,8 @@ lint = [
   "types-paramiko>=4",
   "ruff",
   "pre-commit>=4",
+  "types-docker>=7.1.0.20260518",
+  "boto3-stubs-lite[boto3]",
 ]
 docs = [
   "sphinx>=8; python_version < '3.11'",
@@ -277,15 +279,15 @@ check_untyped_defs = true
 disable_error_code = ["no-untyped-def"]
 
 [[tool.mypy.overrides]]
-module = ["docker.*"]
+module = ["pika.*"]
 ignore_missing_imports = true
 
 [[tool.mypy.overrides]]
-module = ["wrapt.*"]
+module = ["influxdb.*"]
 ignore_missing_imports = true
 
 [[tool.mypy.overrides]]
-module = ["requests.*"]
+module = ["cassandra.*"]
 ignore_missing_imports = true
 
 [[tool.mypy.overrides]]

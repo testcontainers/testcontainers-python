@@ -22,7 +22,7 @@ class SeleniumVideoContainer(DockerContainer):
     Selenium video container.
     """
 
-    def __init__(self, image: Optional[str] = None, **kwargs) -> None:
+    def __init__(self, image: Optional[str] = None, **kwargs: object) -> None:
         self.image = image or VIDEO_DEFAULT_IMAGE
         super().__init__(image=self.image, **kwargs)
 

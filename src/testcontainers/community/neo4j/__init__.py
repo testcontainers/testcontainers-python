@@ -14,12 +14,12 @@
 import os
 from typing import Optional
 
+from neo4j import Driver, GraphDatabase
+
 from testcontainers.core.config import testcontainers_config as c
 from testcontainers.core.generic import DbContainer
 from testcontainers.core.utils import raise_for_deprecated_parameter
 from testcontainers.core.wait_strategies import LogMessageWaitStrategy
-
-from neo4j import Driver, GraphDatabase
 
 
 class Neo4jContainer(DbContainer):
@@ -72,5 +72,5 @@ class Neo4jContainer(DbContainer):
             # force them to do a round trip to confirm neo4j is working
             driver.verify_connectivity()
 
-    def get_driver(self, **kwargs) -> Driver:
+    def get_driver(self, **kwargs: object) -> Driver:
         return GraphDatabase.driver(self.get_connection_url(), auth=(self.username, self.password), **kwargs)

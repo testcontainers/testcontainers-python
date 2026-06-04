@@ -16,6 +16,7 @@ from typing import Any, Optional, TypedDict, Union
 
 from docker.types.containers import DeviceRequest
 from requests import get
+
 from testcontainers.core.container import DockerContainer
 from testcontainers.core.waiting_utils import wait_for_logs
 
@@ -91,7 +92,7 @@ class OllamaContainer(DockerContainer):
         ollama_home: Optional[Union[str, PathLike]] = None,
         **kwargs,
         #
-    ):
+    ) -> None:
         super().__init__(image=image, **kwargs)
         self.ollama_home = ollama_home
         self.with_exposed_ports(OllamaContainer.OLLAMA_PORT)

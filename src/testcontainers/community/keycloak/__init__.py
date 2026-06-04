@@ -14,10 +14,10 @@ import os
 from typing import Optional
 
 import requests
+from keycloak import KeycloakAdmin
+
 from testcontainers.core.container import DockerContainer
 from testcontainers.core.waiting_utils import wait_container_is_ready, wait_for_logs
-
-from keycloak import KeycloakAdmin
 
 _DEFAULT_DEV_COMMAND = "start-dev"
 # Since Keycloak v26.0.0
@@ -153,7 +153,7 @@ class KeycloakContainer(DockerContainer):
         self.has_realm_imports = True
         return self
 
-    def get_client(self, **kwargs) -> KeycloakAdmin:
+    def get_client(self, **kwargs: object) -> KeycloakAdmin:
         default_kwargs = {
             "server_url": self.get_url(),
             "username": self.username,

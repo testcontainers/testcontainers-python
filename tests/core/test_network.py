@@ -39,6 +39,7 @@ def test_network_create_errors():
     with pytest.raises(docker.errors.APIError) as excinfo:
         network.create()
 
+    assert excinfo.value.response is not None
     assert excinfo.value.response.status_code == HTTPStatus.CONFLICT
     excinfo.match(f"network.*{network.name}.*already exists")
     network.remove()
@@ -82,6 +83,7 @@ def assert_can_ping(container: DockerContainer, remote_name: str):
 def assert_can_request(container: DockerContainer, remote_name: str):
     status, output = container.exec(f"wget -qO- http://{remote_name}")
     assert status == 0
+    assert isinstance(output, bytes)
     assert "Welcome to nginx!" in output.decode()
 
 
@@ -89,7 +91,10 @@ def test_network_has_labels():
     network = Network()
     try:
         network.create()
-        network = network._docker.client.networks.get(network_id=network.id)
-        assert LABEL_SESSION_ID in network.attrs.get("Labels")
+        assert network.id is not None
+        docker_network = network._docker.client.networks.get(network_id=network.id)
+        labels = docker_network.attrs.get("Labels")
+        assert labels is not None
+        assert LABEL_SESSION_ID in labels
     finally:
         network.remove()

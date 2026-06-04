@@ -14,9 +14,10 @@
 from pathlib import Path
 from typing import TYPE_CHECKING, Optional
 
+from typing_extensions import Self
+
 from testcontainers.core.container import DockerContainer
 from testcontainers.core.waiting_utils import wait_container_is_ready, wait_for_logs
-from typing_extensions import Self
 
 if TYPE_CHECKING:
     from paho.mqtt.client import Client
@@ -74,7 +75,7 @@ class MosquittoContainer(DockerContainer):
         self.client = client
         return client
 
-    def new_client(self, **kwargs) -> tuple["Client", "MQTTErrorCode"]:
+    def new_client(self, **kwargs: object) -> tuple["Client", "MQTTErrorCode"]:
         """
         Get a paho.mqtt client connected to this container.
         Check the returned object is_connected() method before use

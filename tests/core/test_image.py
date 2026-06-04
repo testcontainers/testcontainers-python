@@ -30,7 +30,13 @@ def test_docker_image(test_image_tag: Optional[str], test_cleanup: bool, check_f
             assert image.get_wrapped_image() is not None
             logs = image.get_logs()
             assert isinstance(logs, list), "Logs should be a list"
-            streams = [entry.get("stream", "").strip() for entry in logs]
+            streams = []
+            for entry in logs:
+                if isinstance(entry, dict):
+                    stream = entry.get("stream", "")
+                    if isinstance(stream, str):
+                        streams.append(stream)
+
             assert any(s.upper().startswith("STEP 1/2") and "FROM ALPINE:LATEST" in s.upper() for s in streams)
             assert any(s.upper().startswith("STEP 2/2") and random_string in s for s in streams), (
                 f"Expected step 2 with '{random_string}' in logs: {streams}"
@@ -38,6 +44,7 @@ def test_docker_image(test_image_tag: Optional[str], test_cleanup: bool, check_f
             with DockerContainer(str(image)) as container:
                 c_c = container._container
                 assert c_c
+                assert c_c.image is not None
                 assert c_c.image.short_id.endswith(image_short_id), "Image ID mismatch"
                 assert container.get_logs() == ((random_string + "\n").encode(), b""), "Container logs mismatch"
 
@@ -70,6 +77,7 @@ def test_docker_image_with_custom_dockerfile_path(dockerfile_path: Optional[Path
             with DockerContainer(str(image)) as container:
                 c_c = container._container
                 assert c_c
+                assert c_c.image is not None
                 assert c_c.image.short_id.endswith(image_short_id), "Image ID mismatch"
                 assert container.get_logs() == (("Hello world!\n").encode(), b""), "Container logs mismatch"
 
@@ -93,5 +101,6 @@ def test_docker_image_with_kwargs():
             with DockerContainer(str(image)) as container:
                 c_c = container._container
                 assert c_c
+                assert c_c.image is not None
                 assert c_c.image.short_id.endswith(image_short_id), "Image ID mismatch"
                 assert container.get_logs() == (("new_arg\n").encode(), b""), "Container logs mismatch"

@@ -13,12 +13,12 @@
 
 from typing import Optional
 
+import redis
+from redis.asyncio import Redis as asyncRedis
+
 from testcontainers.core.container import DockerContainer
 from testcontainers.core.utils import raise_for_deprecated_parameter
 from testcontainers.core.waiting_utils import WaitStrategy, WaitStrategyTarget
-
-import redis
-from redis.asyncio import Redis as asyncRedis
 
 
 class RedisContainer(DockerContainer):
@@ -35,7 +35,9 @@ class RedisContainer(DockerContainer):
             ...     redis_client = redis_container.get_client()
     """
 
-    def __init__(self, image: str = "redis:latest", port: int = 6379, password: Optional[str] = None, **kwargs) -> None:
+    def __init__(
+        self, image: str = "redis:latest", port: int = 6379, password: Optional[str] = None, **kwargs: object
+    ) -> None:
         raise_for_deprecated_parameter(kwargs, "port_to_expose", "port")
         super().__init__(image, _wait_strategy=PingWaitStrategy(), **kwargs)
         self.port = port
@@ -44,7 +46,7 @@ class RedisContainer(DockerContainer):
         if self.password:
             self.with_command(f"redis-server --requirepass {self.password}")
 
-    def get_client(self, **kwargs) -> redis.Redis:
+    def get_client(self, **kwargs: object) -> redis.Redis:
         """
         Get a redis client.
 
@@ -86,10 +88,10 @@ class AsyncRedisContainer(RedisContainer):
         ...     redis_client =await  redis_container.get_async_client()
     """
 
-    def __init__(self, image="redis:latest", port_to_expose=6379, password=None, **kwargs):
+    def __init__(self, image="redis:latest", port_to_expose=6379, password=None, **kwargs: object) -> None:
         super().__init__(image, port_to_expose, password, **kwargs)
 
-    async def get_async_client(self, **kwargs):
+    async def get_async_client(self, **kwargs: object):
         return await asyncRedis(
             host=self.get_container_host_ip(),
             port=self.get_exposed_port(self.port),

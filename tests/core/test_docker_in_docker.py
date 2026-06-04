@@ -40,6 +40,7 @@ RUN_ONCE_IN_CI = pytest.mark.skipif(
 def _wait_for_dind_return_ip(client: DockerClient, dind: Container):
     # get ip address for DOCKER_HOST
     # avoiding DockerContainer class here to prevent code changes affecting the test
+    assert dind.id is not None
     docker_host_ip = client.bridge_ip(dind.id)
     # Wait for startup
     timeout = 10
@@ -116,9 +117,11 @@ def test_dind_inherits_network():
     ) as container:
         assert container.get_container_host_ip() == docker_host_ip
         # Check the gateways are the same, so they can talk to each other
-        assert container.get_docker_client().gateway_ip(container.get_wrapped_container().id) == client.gateway_ip(
-            not_really_dind.id
-        )
+        wrapped_id = container.get_wrapped_container().id
+        assert wrapped_id is not None
+        dind_id = not_really_dind.id
+        assert dind_id is not None
+        assert container.get_docker_client().gateway_ip(wrapped_id) == client.gateway_ip(dind_id)
         wait_for_logs(container, "Hello from Docker!")
         stdout, stderr = container.get_logs()
         assert stdout, "There should be something on stdout"

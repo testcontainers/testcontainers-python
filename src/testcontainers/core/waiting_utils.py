@@ -161,7 +161,7 @@ def wait_container_is_ready(*transient_exceptions: type[Exception]) -> Callable[
     )
 
     class LegacyWaitStrategy(WaitStrategy):
-        def __init__(self, func: Callable[..., Any], instance: Any, args: tuple[Any], kwargs: dict[str, Any]):
+        def __init__(self, func: Callable[..., Any], instance: Any, args: tuple[Any], kwargs: dict[str, Any]) -> None:
             super().__init__()
             self.func = func
             self.instance = instance

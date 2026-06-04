@@ -15,6 +15,7 @@ from os import getenv
 from typing import Optional
 
 from influxdb_client import InfluxDBClient, Organization
+
 from testcontainers.community.influxdb import InfluxDbContainer
 
 
@@ -52,7 +53,7 @@ class InfluxDb2Container(InfluxDbContainer):
         bucket: Optional[str] = None,
         retention: Optional[str] = None,
         **docker_client_kw,
-    ):
+    ) -> None:
         super().__init__(image, container_port, host_port, **docker_client_kw)
 
         configuration = {

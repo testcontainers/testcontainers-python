@@ -24,7 +24,7 @@ class ValkeyContainer(DockerContainer):
 
     """
 
-    def __init__(self, image: str = f"{_BASE_IMAGE}:latest", port: int = 6379, **kwargs) -> None:
+    def __init__(self, image: str = f"{_BASE_IMAGE}:latest", port: int = 6379, **kwargs: object) -> None:
         super().__init__(image, **kwargs)
         self.port = port
         self.password: str | None = None

@@ -224,7 +224,7 @@ def test_find_host_network_found_by_docker_host(monkeypatch: pytest.MonkeyPatch)
     client = DockerClient()
     monkeypatch.setattr(client, "host", lambda: "172.22.0.1")
 
-    networks = [
+    networks: list[dict[str, Any]] = [
         # a network without IPAM
         {"Name": "host"},
         # network with invalid subnet
@@ -291,9 +291,9 @@ def test_run_uses_found_network(monkeypatch: pytest.MonkeyPatch) -> None:
         def __init__(self) -> None:
             self.calls: list[dict[str, Any]] = []
 
-        def run(self, image: str, **kwargs: Any) -> str:
+        def run(self, image: str, **kwargs: Any) -> bytes:
             self.calls.append(kwargs)
-            return "CONTAINER"
+            return b"CONTAINER"
 
     class FakeClient:
         def __init__(self) -> None:
@@ -304,7 +304,7 @@ def test_run_uses_found_network(monkeypatch: pytest.MonkeyPatch) -> None:
     monkeypatch.setattr(client, "find_host_network", lambda: "new_bridge_network")
     monkeypatch.setattr(client, "client", fake_client)
 
-    assert client.run("test") == "CONTAINER"
+    assert client.run("test") == b"CONTAINER"
 
     assert fake_client.containers.calls[0]["network"] == "new_bridge_network"
 

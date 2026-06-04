@@ -27,7 +27,7 @@ class Network:
 
     def __init__(
         self, docker_client_kw: Optional[dict[str, Any]] = None, docker_network_kw: Optional[dict[str, Any]] = None
-    ):
+    ) -> None:
         self.name = str(uuid.uuid4())
         self._docker = DockerClient(**(docker_client_kw or {}))
         self._docker_network_kw = docker_network_kw or {}

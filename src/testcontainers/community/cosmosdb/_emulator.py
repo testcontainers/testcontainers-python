@@ -40,7 +40,7 @@ class CosmosDBEmulatorContainer(DockerContainer):
         bind_ports: bool = os.getenv("AZURE_COSMOS_EMULATOR_BIND_PORTS", "true").strip().lower() in _ENV_TRUTHY,
         endpoint_ports: Iterable[int] = [],
         **other_kwargs,
-    ):
+    ) -> None:
         super().__init__(image=image, **other_kwargs)
         self.endpoint_ports = endpoint_ports
         self.partition_count = partition_count

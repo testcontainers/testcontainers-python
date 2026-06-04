@@ -35,7 +35,7 @@ import socket
 import time
 from datetime import timedelta
 from pathlib import Path
-from typing import TYPE_CHECKING, Any, Callable, Optional, Union, cast
+from typing import TYPE_CHECKING, Any, Callable, Optional, Union
 from urllib.error import HTTPError, URLError
 from urllib.request import Request, urlopen
 
@@ -699,7 +699,7 @@ class ContainerStatusWaitStrategy(WaitStrategy):
         logger.debug("fetching status of container %s", container)
         wrapped = container.get_wrapped_container()
         wrapped.reload()
-        return cast("str", wrapped.status)
+        return wrapped.status
 
     @staticmethod
     def _get_status_compose_container(container: DockerCompose) -> str:

@@ -19,7 +19,7 @@ except ImportError:
 class SqlAlchemyConnectWaitStrategy(WaitStrategy):
     """Wait strategy for database connectivity testing using SQLAlchemy."""
 
-    def __init__(self):
+    def __init__(self) -> None:
         super().__init__()
         self.with_transient_exceptions(TimeoutError, ConnectionError, *ADDITIONAL_TRANSIENT_ERRORS)
 

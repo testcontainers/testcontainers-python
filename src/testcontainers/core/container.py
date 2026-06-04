@@ -4,6 +4,7 @@ import io
 import pathlib
 import sys
 import tarfile
+from collections.abc import Mapping
 from os import PathLike
 from socket import socket
 from types import TracebackType
@@ -11,6 +12,7 @@ from typing import TYPE_CHECKING, Any, Optional, TypedDict, Union, cast
 
 import docker.errors
 from docker import version
+from docker.errors import APIError
 from docker.models.containers import ExecResult
 from docker.types import EndpointConfig
 from dotenv import dotenv_values
@@ -37,6 +39,11 @@ logger = setup_logger(__name__)
 class Mount(TypedDict):
     bind: str
     mode: str
+
+
+class BytesExecResult(ExecResult):
+    exit_code: int | None
+    output: bytes
 
 
 class DockerContainer:
@@ -80,7 +87,7 @@ class DockerContainer:
     ) -> None:
         self.env = env or {}
 
-        self.ports: dict[Union[str, int], Optional[Union[str, int]]] = {}
+        self.ports: dict[str, Optional[int]] = {}
         if ports:
             self.with_exposed_ports(*ports)
 
@@ -142,7 +149,28 @@ class DockerContainer:
         >>> container = container.with_bind_ports("8081/tcp", 8081)
 
         """
-        self.ports[container] = host
+        container = str(container)
+        host_protocol = ""
+        host_port: Optional[int] = None
+
+        # normalize the host port to fit the typing protocol and podman api
+        if isinstance(host, int):
+            host_port = host
+        elif host:
+            host_port_str, _, host_protocol = host.partition("/")
+            try:
+                host_port = int(host_port_str)
+            except ValueError:
+                raise APIError(f"Host port '{host_port_str}' of '{host}' is not an integer.") from None
+
+        if host_protocol:
+            container_port, _, container_protocol = container.partition("/")
+            if not container_protocol:
+                container = f"{container_port}/{host_protocol}"
+            elif container_protocol != host_protocol:
+                raise APIError(f"Container protocol {container_protocol} does not match host protocol {host_protocol}")
+
+        self.ports[container] = host_port
         return self
 
     def with_exposed_ports(self, *ports: Union[str, int]) -> Self:
@@ -160,7 +188,7 @@ class DockerContainer:
         """
 
         for port in ports:
-            self.ports[port] = None
+            self.ports[str(port)] = None
         return self
 
     def with_network(self, network: Network) -> Self:
@@ -208,9 +236,10 @@ class DockerContainer:
             self.image,
             command=self._command,
             environment=self.env,
-            ports=cast("dict[int, Optional[int]]", self.ports),
+            ports=self.ports,
             name=self._name,
-            volumes=self.volumes,
+            # dict is invariant: expanding fields explicitly lets mypy verify each value type.
+            volumes={host: {"bind": mount["bind"], "mode": mount["mode"]} for host, mount in self.volumes.items()},
             tmpfs=self.tmpfs,
             **{**network_kwargs, **self._kwargs},
         )
@@ -249,6 +278,11 @@ class DockerContainer:
     ) -> None:
         self.stop()
 
+    def get_container_id(self) -> str:
+        if self._container is None or self._container.id is None:
+            raise ContainerStartException("Container is not started")
+        return self._container.id
+
     def get_container_host_ip(self) -> str:
         connection_mode: ConnectionMode
         connection_mode = self.get_docker_client().get_connection_mode()
@@ -256,15 +290,9 @@ class DockerContainer:
         if connection_mode == ConnectionMode.docker_host:
             return self.get_docker_client().host()
         elif connection_mode == ConnectionMode.gateway_ip:
-            # mypy:
-            container = self._container
-            assert container is not None
-            return self.get_docker_client().gateway_ip(container.id)
+            return self.get_docker_client().gateway_ip(self.get_container_id())
         elif connection_mode == ConnectionMode.bridge_ip:
-            # mypy:
-            container = self._container
-            assert container is not None
-            return self.get_docker_client().bridge_ip(container.id)
+            return self.get_docker_client().bridge_ip(self.get_container_id())
         else:
             # ensure that we covered all possible connection_modes
             assert_never(connection_mode)
@@ -277,9 +305,7 @@ class DockerContainer:
 
     def _get_exposed_port(self, port: int) -> int:
         if self.get_docker_client().get_connection_mode().use_mapped_port:
-            c = self._container
-            assert c is not None
-            return int(self.get_docker_client().port(c.id, port))
+            return int(self.get_docker_client().port(self.get_container_id(), port))
         return port
 
     def with_command(self, command: Union[str, list[str]]) -> Self:
@@ -306,6 +332,8 @@ class DockerContainer:
         return self
 
     def get_wrapped_container(self) -> "Container":
+        if self._container is None:
+            raise ContainerStartException("Container is not started")
         return self._container
 
     def get_docker_client(self) -> DockerClient:
@@ -329,12 +357,14 @@ class DockerContainer:
         """Get container status for compatibility with wait strategies."""
         if not self._container:
             return "not_started"
-        return cast("str", self._container.status)
+        return self._container.status
 
-    def exec(self, command: Union[str, list[str]]) -> ExecResult:
+    def exec(self, command: Union[str, list[str]]) -> BytesExecResult:
         if not self._container:
             raise ContainerStartException("Container should be started before executing a command")
-        return self._container.exec_run(command)
+        result = self._container.exec_run(command)
+        assert isinstance(result.output, bytes)
+        return BytesExecResult(result[0], result[1])
 
     def wait(self) -> int:
         """Wait for the container to stop and return its exit code."""
@@ -352,7 +382,7 @@ class DockerContainer:
         if self._cached_container_info is not None:
             return self._cached_container_info
 
-        if not self._container:
+        if not self._container or self._container.id is None:
             return None
 
         try:

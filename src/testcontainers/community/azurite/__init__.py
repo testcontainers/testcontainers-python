@@ -131,17 +131,17 @@ class AzuriteContainer(DockerContainer):
             f"DefaultEndpointsProtocol=http;AccountName={self.account_name};AccountKey={self.account_key};"
         )
 
-        if self.blob_service_port in self.ports:
+        if str(self.blob_service_port) in self.ports:
             connection_string += (
                 f"BlobEndpoint=http://{host_ip}:{self.get_exposed_port(self.blob_service_port)}/{self.account_name};"
             )
 
-        if self.queue_service_port in self.ports:
+        if str(self.queue_service_port) in self.ports:
             connection_string += (
                 f"QueueEndpoint=http://{host_ip}:{self.get_exposed_port(self.queue_service_port)}/{self.account_name};"
             )
 
-        if self.table_service_port in self.ports:
+        if str(self.table_service_port) in self.ports:
             connection_string += (
                 f"TableEndpoint=http://{host_ip}:{self.get_exposed_port(self.table_service_port)}/{self.account_name};"
             )
@@ -206,13 +206,13 @@ class AzuriteContainer(DockerContainer):
             f"DefaultEndpointsProtocol=http;AccountName={self.account_name};AccountKey={self.account_key};"
         )
 
-        if self.blob_service_port in self.ports:
+        if str(self.blob_service_port) in self.ports:
             connection_string += f"BlobEndpoint=http://{host_ip}:{blob_port}/{self.account_name};"
 
-        if self.queue_service_port in self.ports:
+        if str(self.queue_service_port) in self.ports:
             connection_string += f"QueueEndpoint=http://{host_ip}:{queue_port}/{self.account_name};"
 
-        if self.table_service_port in self.ports:
+        if str(self.table_service_port) in self.ports:
             connection_string += f"TableEndpoint=http://{host_ip}:{table_port}/{self.account_name};"
 
         return connection_string

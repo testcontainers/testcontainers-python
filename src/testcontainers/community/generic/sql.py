@@ -20,7 +20,7 @@ class SqlContainer(DockerContainer):
     Note: `SqlAlchemyConnectWaitStrategy` from `sql_connection_wait_strategy` is a provided wait strategy for SQL databases.
     """
 
-    def __init__(self, image: str, wait_strategy: WaitStrategy, **kwargs):
+    def __init__(self, image: str, wait_strategy: WaitStrategy, **kwargs: object) -> None:
         """
         Initialize SqlContainer with optional wait strategy.
 

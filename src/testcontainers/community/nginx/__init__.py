@@ -20,7 +20,7 @@ from testcontainers.core.waiting_utils import wait_container_is_ready
 
 
 class NginxContainer(DockerContainer):
-    def __init__(self, image: str = "nginx:latest", port: int = 80, **kwargs) -> None:
+    def __init__(self, image: str = "nginx:latest", port: int = 80, **kwargs: object) -> None:
         raise_for_deprecated_parameter(kwargs, "port_to_expose", "port")
         super().__init__(image, **kwargs)
         self.port = port

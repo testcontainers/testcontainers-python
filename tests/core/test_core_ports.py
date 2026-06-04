@@ -8,35 +8,23 @@ from testcontainers.core.docker_client import is_podman
 
 
 @pytest.mark.parametrize(
-    "container_port, host_port",
+    "container_port, host_port, expected_container_port",
     [
-        ("8080", "8080"),
-        pytest.param(
-            "8125/udp",
-            "8125/udp",
-            marks=pytest.mark.skipif(is_podman(), reason="Podman rejects protocol in host_port"),
-        ),
-        pytest.param(
-            "8092/udp",
-            "8092/udp",
-            marks=pytest.mark.skipif(is_podman(), reason="Podman rejects protocol in host_port"),
-        ),
-        pytest.param(
-            "9000/tcp",
-            "9000/tcp",
-            marks=pytest.mark.skipif(is_podman(), reason="Podman rejects protocol in host_port"),
-        ),
-        pytest.param(
-            "8080", "8080/udp", marks=pytest.mark.skipif(is_podman(), reason="Podman rejects protocol in host_port")
-        ),
-        (8080, 8080),
-        (9000, None),
-        ("9009", None),
-        ("9000", ""),
-        ("9000/udp", ""),
+        ("8080", "8080", "8080/tcp"),
+        ("8125/udp", "8125/udp", "8125/udp"),
+        ("8092/udp", "8092/udp", "8092/udp"),
+        ("9000/tcp", "9000/tcp", "9000/tcp"),
+        ("8080", "8080/udp", "8080/udp"),
+        (8080, 8080, "8080/tcp"),
+        (9000, None, "9000/tcp"),
+        ("9009", None, "9009/tcp"),
+        ("9000", "", "9000/tcp"),
+        ("9000/udp", "", "9000/udp"),
     ],
 )
-def test_docker_container_with_bind_ports(container_port: Union[str, int], host_port: Optional[Union[str, int]]):
+def test_docker_container_with_bind_ports(
+    container_port: Union[str, int], host_port: Optional[Union[str, int]], expected_container_port: str
+):
     container = DockerContainer("alpine:latest")
     container.with_bind_ports(container_port, host_port)
     container.start()
@@ -45,17 +33,13 @@ def test_docker_container_with_bind_ports(container_port: Union[str, int], host_
     c_c = container._container
     assert c_c
     container_id = c_c.id
+    assert container_id is not None
     client = c_c.client
+    assert client is not None
 
     # assemble expected output to compare to container API
-    container_port = str(container_port)
     host_port = str(host_port or "")
-
-    # if the port protocol is not specified, it will default to tcp
-    if "/" not in container_port:
-        container_port += "/tcp"
-
-    expected = {container_port: [{"HostIp": "", "HostPort": host_port}]}
+    expected = {expected_container_port: [{"HostIp": "", "HostPort": host_port.partition("/")[0]}]}
 
     # compare PortBindings to expected output
     actual = client.containers.get(container_id).attrs["HostConfig"]["PortBindings"]
@@ -81,6 +65,7 @@ def test_docker_container_with_bind_ports(container_port: Union[str, int], host_
         (0, 0),
         (-1, 8080),
         (None, 8080),
+        ("8080/tcp", "8080/udp"),
     ],
 )
 def test_error_docker_container_with_bind_ports(container_port: Union[str, int], host_port: Optional[Union[str, int]]):
@@ -110,7 +95,9 @@ def test_docker_container_with_exposed_ports(ports: tuple[Union[str, int], ...],
     c_c = container._container
     assert c_c
     container_id = c_c.id
+    assert container_id is not None
     client = c_c.client
+    assert client is not None
     assert client.containers.get(container_id).attrs["Config"]["ExposedPorts"] == expected
     container.stop()
 

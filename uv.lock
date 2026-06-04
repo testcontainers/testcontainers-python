@@ -514,6 +514,25 @@ wheels = [
 ]
 
 [[package]]
+name = "boto3-stubs-lite"
+version = "1.43.21"
+source = { registry = "https://pypi.org/simple" }
+dependencies = [
+    { name = "botocore-stubs" },
+    { name = "types-s3transfer" },
+    { name = "typing-extensions", marker = "python_full_version < '3.12'" },
+]
+sdist = { url = "https://files.pythonhosted.org/packages/92/7b/1fd2c45f0f62f20e293f6ef1a863c7da63cef4572fa7417cc22512bf427b/boto3_stubs_lite-1.43.21.tar.gz", hash = "sha256:c42813b79c5528d6f94fde9e09917c317f2be1ad1e9858b8af57e88baaf28150", size = 73978, upload-time = "2026-06-03T10:08:59.931Z" }
+wheels = [
+    { url = "https://files.pythonhosted.org/packages/ee/39/6aeb3e46c9877184c9fd72cc05af56043f57bfe9264caa04be2b3c72b917/boto3_stubs_lite-1.43.21-py3-none-any.whl", hash = "sha256:7106bf04a60d4ec31710683893b88e12796722ee7d059544ff3b39e96f89a88c", size = 43235, upload-time = "2026-06-03T10:08:56.804Z" },
+]
+
+[package.optional-dependencies]
+boto3 = [
+    { name = "boto3" },
+]
+
+[[package]]
 name = "botocore"
 version = "1.43.23"
 source = { registry = "https://pypi.org/simple" }
@@ -525,6 +544,18 @@ dependencies = [
 sdist = { url = "https://files.pythonhosted.org/packages/fb/79/9c3313d8be64ebff5a100d73777d5c6249229ceee57e269a0830b2f7d3a3/botocore-1.43.23.tar.gz", hash = "sha256:a6737c598750f330bfa8ef2be2d9fa84b5d2d643b6bbb0d22e129e03b7535df1", size = 15464775, upload-time = "2026-06-04T19:39:26.6Z" }
 wheels = [
     { url = "https://files.pythonhosted.org/packages/08/0e/63e4720c6fe6dab278faf9f09b59c377e49a9f9a1afaec2c69dc2e7b9de2/botocore-1.43.23-py3-none-any.whl", hash = "sha256:69ff3d951cb644d1d84db646663c7eb919dc9c0c47e5768e947c8a71121b3d77", size = 15147962, upload-time = "2026-06-04T19:39:22.141Z" },
+]
+
+[[package]]
+name = "botocore-stubs"
+version = "1.43.14"
+source = { registry = "https://pypi.org/simple" }
+dependencies = [
+    { name = "types-awscrt" },
+]
+sdist = { url = "https://files.pythonhosted.org/packages/7f/81/79693e833291c00dc89ee610e5e915381b6f08233912e28df50106840780/botocore_stubs-1.43.14.tar.gz", hash = "sha256:9e3bc1fdd51da7473f0df726c82747a1b0ae913449d629659765c247fecc2039", size = 42738, upload-time = "2026-05-25T06:06:37.484Z" }
+wheels = [
+    { url = "https://files.pythonhosted.org/packages/89/ca/f017727b11895908c5dedc829cf2ec35e0c4b2a26ba875db325fef2cefdf/botocore_stubs-1.43.14-py3-none-any.whl", hash = "sha256:fb98f1475c92fd718644e786b5c543a20f1b1f610e89e0a7191c3f1f429c75aa", size = 67093, upload-time = "2026-05-25T06:06:34.532Z" },
 ]
 
 [[package]]
@@ -5496,7 +5527,7 @@ weaviate = [
 dev = [
     { name = "anyio" },
     { name = "boto3-stubs-lite", extra = ["boto3"] },
-    { name = "cassandra-driver", marker = "python_full_version < '3.14'" },
+    { name = "cassandra-driver" },
     { name = "hvac", marker = "python_full_version < '4'" },
     { name = "kafka-python-ng" },
     { name = "mkdocs" },
@@ -5525,6 +5556,7 @@ dev = [
     { name = "sqlalchemy-cockroachdb" },
     { name = "tomli" },
     { name = "twine" },
+    { name = "types-docker" },
     { name = "types-paramiko" },
 ]
 docs = [
@@ -5538,9 +5570,11 @@ docs = [
     { name = "sphinx", version = "9.1.0", source = { registry = "https://pypi.org/simple" }, marker = "python_full_version >= '3.12'" },
 ]
 lint = [
+    { name = "boto3-stubs-lite", extra = ["boto3"] },
     { name = "mypy" },
     { name = "pre-commit" },
     { name = "ruff" },
+    { name = "types-docker" },
     { name = "types-paramiko" },
 ]
 test = [
@@ -5624,7 +5658,7 @@ provides-extras = ["arangodb", "aws", "azurite", "cassandra", "clickhouse", "cos
 dev = [
     { name = "anyio", specifier = ">=4" },
     { name = "boto3-stubs-lite", extras = ["boto3"] },
-    { name = "cassandra-driver", marker = "python_full_version < '3.14'", specifier = ">=3" },
+    { name = "cassandra-driver", specifier = ">=3.30" },
     { name = "hvac", marker = "python_full_version < '4'", specifier = ">=2" },
     { name = "kafka-python-ng", specifier = ">=2" },
     { name = "mkdocs", specifier = ">=1.5.3,<2.0.0" },
@@ -5652,6 +5686,7 @@ dev = [
     { name = "sqlalchemy-cockroachdb", specifier = ">=2" },
     { name = "tomli" },
     { name = "twine", specifier = ">=6.2.0" },
+    { name = "types-docker", specifier = ">=7.1.0.20260518" },
     { name = "types-paramiko", specifier = ">=4" },
 ]
 docs = [
@@ -5664,9 +5699,11 @@ docs = [
     { name = "sphinx", marker = "python_full_version >= '3.11'", specifier = ">=9" },
 ]
 lint = [
+    { name = "boto3-stubs-lite", extras = ["boto3"] },
     { name = "mypy", specifier = ">=1" },
     { name = "pre-commit", specifier = ">=4" },
     { name = "ruff" },
+    { name = "types-docker", specifier = ">=7.1.0.20260518" },
     { name = "types-paramiko", specifier = ">=4" },
 ]
 test = [
@@ -5817,6 +5854,29 @@ wheels = [
 ]
 
 [[package]]
+name = "types-awscrt"
+version = "0.33.0"
+source = { registry = "https://pypi.org/simple" }
+sdist = { url = "https://files.pythonhosted.org/packages/e2/e3/40e8148a07a3c1c6fb151eddcfdd94083560e759e954b1f5a67ca0b36bcf/types_awscrt-0.33.0.tar.gz", hash = "sha256:803bc7e7e2f6172a0abd71df6593368f82fc23127ca15d287f360e9fcbd3a977", size = 19038, upload-time = "2026-05-25T06:56:04.027Z" }
+wheels = [
+    { url = "https://files.pythonhosted.org/packages/a0/a6/704fbf052edf2497d09292e5f9555b400594924f1154d6c86f2173c2fc11/types_awscrt-0.33.0-py3-none-any.whl", hash = "sha256:95adb57388e1cacc6e7e96fb7ddc735e60096a6151930640bdbe496d9400493a", size = 45687, upload-time = "2026-05-25T06:56:02.549Z" },
+]
+
+[[package]]
+name = "types-docker"
+version = "7.1.0.20260518"
+source = { registry = "https://pypi.org/simple" }
+dependencies = [
+    { name = "types-paramiko" },
+    { name = "types-requests" },
+    { name = "urllib3" },
+]
+sdist = { url = "https://files.pythonhosted.org/packages/dc/71/ee4bd2b713f0b3b0cecc48fd13952b244f187c3b68cfa0408360f102fde8/types_docker-7.1.0.20260518.tar.gz", hash = "sha256:d194c4b82a4110fc58c84af05a5d9de6d3e54f94357ff745d01b5dca12c8eaaa", size = 33868, upload-time = "2026-05-18T06:08:19.78Z" }
+wheels = [
+    { url = "https://files.pythonhosted.org/packages/1f/1d/1d174b6f94afe0de50189de0a9dfd4531d2f8170e6dd9ef68ab616aa770b/types_docker-7.1.0.20260518-py3-none-any.whl", hash = "sha256:59893937816bfe40eb2915c84b31c3131107537500287c47d4a10dd7a9d59deb", size = 48183, upload-time = "2026-05-18T06:08:18.89Z" },
+]
+
+[[package]]
 name = "types-paramiko"
 version = "4.0.0.20260518"
 source = { registry = "https://pypi.org/simple" }
@@ -5826,6 +5886,27 @@ dependencies = [
 sdist = { url = "https://files.pythonhosted.org/packages/e4/b6/4cdb11fb6006be6309844dc5f88b6efef3f5ea5352ade42a1e9308570e28/types_paramiko-4.0.0.20260518.tar.gz", hash = "sha256:286f6830945cba63797eedf375ed87138d93198121253afe66c5d6dbcf91318d", size = 29193, upload-time = "2026-05-18T06:06:36.776Z" }
 wheels = [
     { url = "https://files.pythonhosted.org/packages/44/a2/1a54b77758c9c175526bd0448de353f0563e71ba1ddc8bd4ac0c835deafd/types_paramiko-4.0.0.20260518-py3-none-any.whl", hash = "sha256:0ffaf1a6eb796833a49653cba4c7be13af51c8269d75234972d6239763dda270", size = 38791, upload-time = "2026-05-18T06:06:35.771Z" },
+]
+
+[[package]]
+name = "types-requests"
+version = "2.33.0.20260518"
+source = { registry = "https://pypi.org/simple" }
+dependencies = [
+    { name = "urllib3" },
+]
+sdist = { url = "https://files.pythonhosted.org/packages/e0/01/c5a19253fe1ac159159ddf9a3a07cec8bb5e486ec4d9002ad2821da0e5d2/types_requests-2.33.0.20260518.tar.gz", hash = "sha256:df7bd3bfe0ca8402dfb841e7d9be714bb5578203283d66d7dc4ef69343449a5e", size = 24752, upload-time = "2026-05-18T06:07:37.966Z" }
+wheels = [
+    { url = "https://files.pythonhosted.org/packages/1c/bc/b139710a3b6018f7fb2b9508b35c8af564e61bf2bf4fa619d088f3e16f85/types_requests-2.33.0.20260518-py3-none-any.whl", hash = "sha256:626d697d1adaaff76e2044dc8c5c051d8f21abc157bdfe204a75558076fe0bf0", size = 21391, upload-time = "2026-05-18T06:07:37.044Z" },
+]
+
+[[package]]
+name = "types-s3transfer"
+version = "0.16.0"
+source = { registry = "https://pypi.org/simple" }
+sdist = { url = "https://files.pythonhosted.org/packages/fe/64/42689150509eb3e6e82b33ee3d89045de1592488842ddf23c56957786d05/types_s3transfer-0.16.0.tar.gz", hash = "sha256:b4636472024c5e2b62278c5b759661efeb52a81851cde5f092f24100b1ecb443", size = 13557, upload-time = "2025-12-08T08:13:09.928Z" }
+wheels = [
+    { url = "https://files.pythonhosted.org/packages/98/27/e88220fe6274eccd3bdf95d9382918716d312f6f6cef6a46332d1ee2feff/types_s3transfer-0.16.0-py3-none-any.whl", hash = "sha256:1c0cd111ecf6e21437cb410f5cddb631bfb2263b77ad973e79b9c6d0cb24e0ef", size = 19247, upload-time = "2025-12-08T08:13:08.426Z" },
 ]
 
 [[package]]

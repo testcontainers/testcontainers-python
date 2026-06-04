@@ -59,7 +59,7 @@ class QdrantContainer(DockerContainer):
     def _configure(self) -> None:
         self.with_env("QDRANT__SERVICE__API_KEY", self._api_key)
 
-    def get_client(self, **kwargs):
+    def get_client(self, **kwargs: object):
         """
         Get a `qdrant_client.QdrantClient` instance associated with the container.
 
@@ -84,7 +84,7 @@ class QdrantContainer(DockerContainer):
             **kwargs,
         )
 
-    def get_async_client(self, **kwargs):
+    def get_async_client(self, **kwargs: object):
         """
         Get a `qdrant_client.AsyncQdrantClient` instance associated with the container.
 

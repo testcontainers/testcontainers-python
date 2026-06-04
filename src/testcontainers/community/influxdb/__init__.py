@@ -54,7 +54,7 @@ class InfluxDbContainer(DockerContainer):
         # specifies the port on the host machine where influxdb is exposed; a random available port otherwise
         host_port: Optional[int] = None,
         **docker_client_kw,
-    ):
+    ) -> None:
         super().__init__(image=image, **docker_client_kw)
         self.container_port = container_port
         self.host_port = host_port

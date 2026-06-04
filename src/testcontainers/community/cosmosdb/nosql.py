@@ -1,6 +1,7 @@
 from azure.core.exceptions import ServiceRequestError
 from azure.cosmos import CosmosClient as SyncCosmosClient
 from azure.cosmos.aio import CosmosClient as AsyncCosmosClient
+
 from testcontainers.core.waiting_utils import wait_container_is_ready
 
 from ._emulator import CosmosDBEmulatorContainer
@@ -33,7 +34,7 @@ class CosmosDBNoSQLEndpointContainer(CosmosDBEmulatorContainer):
 
     """
 
-    def __init__(self, **kwargs):
+    def __init__(self, **kwargs: object) -> None:
         super().__init__(endpoint_ports=[NOSQL_PORT], **kwargs)
 
     @property
