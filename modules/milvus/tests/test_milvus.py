@@ -21,7 +21,7 @@ def test_run_milvus_success(version: str):
         exposed_port = milvus_container.get_exposed_port(milvus_container.port)
         url = milvus_container.get_connection_url()
 
-    assert url and exposed_port in url
+    assert url and str(exposed_port) in url
 
 
 @pytest.mark.parametrize("version", VERSIONS)

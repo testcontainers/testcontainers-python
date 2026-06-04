@@ -32,7 +32,7 @@ class MilvusContainer(DockerContainer):
 
             >>> from testcontainers.milvus import MilvusContainer
             >>> with MilvusContainer("milvusdb/milvus:v2.4.4") as milvus_container:
-            ...     milvus_container.get_exposed_port(milvus_container.port) in milvus_container.get_connection_url()
+            ...     str(milvus_container.get_exposed_port(milvus_container.port)) in milvus_container.get_connection_url()
             True
     """
 
