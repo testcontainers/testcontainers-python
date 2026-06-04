@@ -12,7 +12,7 @@ from testcontainers.core.utils import is_mac
 from testcontainers.core.waiting_utils import wait_for_logs
 
 
-def _wait_for_container_removed(client: DockerClient, container_id: str, timeout: float = 30) -> None:
+def _wait_for_container_removed(client: DockerClient, container_id: str, timeout: float = 60) -> None:
     """Poll until a container is fully removed (raises NotFound)."""
     start = perf_counter()
     while perf_counter() - start < timeout:

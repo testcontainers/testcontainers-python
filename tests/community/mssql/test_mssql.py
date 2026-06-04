@@ -4,6 +4,8 @@ import sqlalchemy
 from testcontainers.core.utils import is_arm
 from testcontainers.community.mssql import SqlServerContainer
 
+pytestmark = pytest.mark.xdist_group("mssql")
+
 
 @pytest.mark.skipif(is_arm(), reason="mssql container not available for ARM")
 @pytest.mark.parametrize("version", ["2022-CU12-ubuntu-22.04", "2019-CU25-ubuntu-20.04"])
