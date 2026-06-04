@@ -11,12 +11,13 @@
 #    License for the specific language governing permissions and limitations
 #    under the License.
 import random
-import socket
 import string
 from typing import Any, Optional
 
+from typing_extensions import Self
+
 from testcontainers.core.container import DockerContainer
-from testcontainers.core.waiting_utils import wait_container_is_ready
+from testcontainers.core.wait_strategies import PortWaitStrategy
 
 
 class SocatContainer(DockerContainer):
@@ -77,15 +78,7 @@ class SocatContainer(DockerContainer):
 
         self.with_command(f'-c "{command}"')
 
-    def start(self) -> "SocatContainer":
-        super().start()
-        self._connect()
-        return self
-
-    @wait_container_is_ready(OSError)
-    def _connect(self) -> None:
-        with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as s:
-            next_port = next(iter(self.ports))
-            # todo remove this limitation
-            assert isinstance(next_port, int)
-            s.connect((self.get_container_host_ip(), int(self.get_exposed_port(next_port))))
+    def start(self) -> Self:
+        if self.targets:
+            self.waiting_for(PortWaitStrategy(next(iter(self.targets))))
+        return super().start()
