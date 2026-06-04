@@ -2,6 +2,7 @@ from os import PathLike
 from types import TracebackType
 from typing import TYPE_CHECKING, Any, Optional, Union
 
+import docker.errors
 from typing_extensions import Self
 
 from testcontainers.core.docker_client import DockerClient
@@ -85,8 +86,11 @@ class DockerImage:
         :param noprune: Do not delete untagged parent images
         """
         if self._image and self.clean_up:
-            logger.info(f"Removing image {self.short_id}")
-            self._image.remove(force=force, noprune=noprune)
+            try:
+                logger.info(f"Removing image {self.short_id}")
+                self._image.remove(force=force, noprune=noprune)
+            except docker.errors.NotFound:
+                logger.debug(f"Image {self.short_id} already removed")
         self.get_docker_client().client.close()
 
     def __str__(self) -> str:
@@ -101,6 +105,7 @@ class DockerImage:
         self.remove()
 
     def get_wrapped_image(self) -> "Image":
+        assert self._image is not None
         return self._image
 
     def get_docker_client(self) -> DockerClient:
