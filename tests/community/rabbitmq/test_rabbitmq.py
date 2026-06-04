@@ -44,7 +44,7 @@ def test_docker_run_rabbitmq(
         # create exchange and queue:
         channel = connection.channel()
         channel.exchange_declare(exchange=EXCHANGE, exchange_type="topic")
-        channel.queue_declare(QUEUE, arguments={})
+        channel.queue_declare(QUEUE, durable=True, arguments={})
         channel.queue_bind(QUEUE, EXCHANGE, ROUTING_KEY)
 
         # publish message:
