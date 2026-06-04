@@ -112,7 +112,30 @@ class KeycloakContainer(DockerContainer):
     def start(self) -> "KeycloakContainer":
         super().start()
         self._readiness_probe()
+        self._disable_ssl_required()
         return self
+
+    def _disable_ssl_required(self) -> None:
+        result = self.get_wrapped_container().exec_run(
+            [
+                "/opt/keycloak/bin/kcadm.sh",
+                "update",
+                "realms/master",
+                "-s",
+                "sslRequired=none",
+                "--no-config",
+                "--server",
+                f"http://localhost:{self.port}",
+                "--realm",
+                "master",
+                "--user",
+                self.username,
+                "--password",
+                self.password,
+            ]
+        )
+        if result.exit_code != 0:
+            raise RuntimeError(f"Failed to disable SSL for master realm: {result.output.decode()}")
 
     def with_realm_import_file(self, realm_import_file: str) -> "KeycloakContainer":
         file = os.path.abspath(realm_import_file)
@@ -136,6 +159,7 @@ class KeycloakContainer(DockerContainer):
             "username": self.username,
             "password": self.password,
             "realm_name": "master",
+            "user_realm_name": "master",
             "verify": True,
         }
         kwargs = {**default_kwargs, **kwargs}
