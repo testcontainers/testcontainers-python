@@ -54,12 +54,10 @@ class QdrantContainer(DockerContainer):
             self.with_volume_mapping(host=str(config_file_path), container=QdrantContainer.QDRANT_CONFIG_FILE_PATH)
 
         self.with_exposed_ports(self._rest_port, self._grpc_port)
+        self.waiting_for(LogMessageWaitStrategy(".*Actix runtime found; starting in Actix runtime.*"))
 
     def _configure(self) -> None:
         self.with_env("QDRANT__SERVICE__API_KEY", self._api_key)
-
-    def _connect(self) -> None:
-        LogMessageWaitStrategy(".*Actix runtime found; starting in Actix runtime.*").wait_until_ready(self)
 
     def get_client(self, **kwargs):
         """
