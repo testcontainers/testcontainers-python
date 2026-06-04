@@ -172,111 +172,19 @@ include = [
   "pyproject.toml",
 ]
 
-# TODO: Remove all this below once the project moved to `src` layout
+
 [tool.hatch.build.targets.wheel]
-# Mirror Poetry's multi-source package includes. Each path contains a "testcontainers" package.
 packages = [
-  "core/testcontainers",
-  "modules/arangodb/testcontainers",
-  "modules/aws/testcontainers",
-  "modules/azurite/testcontainers",
-  "modules/cassandra/testcontainers",
-  "modules/chroma/testcontainers",
-  "modules/clickhouse/testcontainers",
-  "modules/cockroachdb/testcontainers",
-  "modules/cosmosdb/testcontainers",
-  "modules/db2/testcontainers",
-  "modules/elasticsearch/testcontainers",
-  "modules/generic/testcontainers",
-  "modules/test_module_import/testcontainers",
-  "modules/google/testcontainers",
-  "modules/influxdb/testcontainers",
-  "modules/k3s/testcontainers",
-  "modules/kafka/testcontainers",
-  "modules/keycloak/testcontainers",
-  "modules/localstack/testcontainers",
-  "modules/mailpit/testcontainers",
-  "modules/memcached/testcontainers",
-  "modules/minio/testcontainers",
-  "modules/milvus/testcontainers",
-  "modules/mongodb/testcontainers",
-  "modules/mqtt/testcontainers",
-  "modules/mssql/testcontainers",
-  "modules/mysql/testcontainers",
-  "modules/nats/testcontainers",
-  "modules/neo4j/testcontainers",
-  "modules/nginx/testcontainers",
-  "modules/ollama/testcontainers",
-  "modules/openfga/testcontainers",
-  "modules/opensearch/testcontainers",
-  "modules/oracle-free/testcontainers",
-  "modules/postgres/testcontainers",
-  "modules/qdrant/testcontainers",
-  "modules/rabbitmq/testcontainers",
-  "modules/redis/testcontainers",
-  "modules/registry/testcontainers",
-  "modules/sftp/testcontainers",
-  "modules/selenium/testcontainers",
-  "modules/scylla/testcontainers",
-  "modules/trino/testcontainers",
-  "modules/valkey/testcontainers",
-  "modules/vault/testcontainers",
-  "modules/weaviate/testcontainers",
-]
-# Yeah we need to duplicate this folders here for hatchling to work, really waiting for src layout
-# There is a test that ensures both list are identical
-dev-mode-dirs = [
-  "core",
-  "modules/arangodb",
-  "modules/aws",
-  "modules/azurite",
-  "modules/cassandra",
-  "modules/chroma",
-  "modules/clickhouse",
-  "modules/cockroachdb",
-  "modules/cosmosdb",
-  "modules/db2",
-  "modules/elasticsearch",
-  "modules/generic",
-  "modules/test_module_import",
-  "modules/google",
-  "modules/influxdb",
-  "modules/k3s",
-  "modules/kafka",
-  "modules/keycloak",
-  "modules/localstack",
-  "modules/mailpit",
-  "modules/memcached",
-  "modules/minio",
-  "modules/milvus",
-  "modules/mongodb",
-  "modules/mqtt",
-  "modules/mssql",
-  "modules/mysql",
-  "modules/nats",
-  "modules/neo4j",
-  "modules/nginx",
-  "modules/ollama",
-  "modules/openfga",
-  "modules/opensearch",
-  "modules/oracle-free",
-  "modules/postgres",
-  "modules/qdrant",
-  "modules/rabbitmq",
-  "modules/redis",
-  "modules/registry",
-  "modules/sftp",
-  "modules/selenium",
-  "modules/scylla",
-  "modules/trino",
-  "modules/valkey",
-  "modules/vault",
-  "modules/weaviate",
+  "src/testcontainers",
 ]
 
 # ---------- Tool configs----------
 [tool.pytest.ini_options]
-addopts = "--tb=short --strict-markers"
+addopts = [
+  "--tb=short",
+  "--strict-markers",
+  "--import-mode=importlib",  # https://docs.pytest.org/en/stable/explanation/goodpractices.html#choosing-a-test-layout
+]
 log_cli = true
 log_cli_level = "INFO"
 markers = [
@@ -303,7 +211,9 @@ exclude_lines = [
 
 [tool.coverage.paths]
 source = [
-    "core/testcontainers",
+    "src/testcontainers/core",
+    "src/testcontainers/compose",
+    "src/testcontainers/cocat",
     "*/site-packages/testcontainers",
     "*/dist-packages/testcontainers",
 ]
@@ -312,7 +222,6 @@ source = [
 target-version = "py39"
 line-length = 120
 fix = true
-src = ["core", "modules/*"]
 
 [tool.ruff.lint]
 fixable = ["I"]

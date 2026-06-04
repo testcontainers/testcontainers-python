@@ -44,11 +44,11 @@ mypy-core-report:  ## Generate a report for mypy on the core package
 	uv run mypy --config-file pyproject.toml core | uv run python scripts/mypy_report.py
 
 docs: ## Build the docs for the project
-	uv run --all-extras sphinx-build -nW . docs/_build
+	uv run --all-extras sphinx-build -nW docs docs/_build
 
 # Target to build docs watching for changes as per https://stackoverflow.com/a/21389615
 docs-watch :
-	uv run sphinx-autobuild . docs/_build # requires 'pip install sphinx-autobuild'
+	uv run sphinx-autobuild docs docs/_build # requires 'pip install sphinx-autobuild'
 
 doctests: ${DOCTESTS}  ## Run doctests found across the documentation.
 	uv run --all-extras sphinx-build -b doctest . docs/_build

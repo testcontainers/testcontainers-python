@@ -18,7 +18,7 @@ pip install testcontainers[cockroachdb] sqlalchemy psycopg2
 
 <!--codeinclude-->
 
-[Creating a CockroachDB container](../../modules/cockroachdb/example_basic.py)
+[Creating a CockroachDB container](cockroachdb_example.py)
 
 <!--/codeinclude-->
 
