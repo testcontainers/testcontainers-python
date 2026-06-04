@@ -6,6 +6,8 @@ import sqlalchemy
 from testcontainers.core.utils import is_arm
 from testcontainers.community.db2 import Db2Container
 
+pytestmark = pytest.mark.xdist_group("db2")
+
 
 @pytest.mark.skipif(is_arm(), reason="db2 container not available for ARM")
 @pytest.mark.parametrize("version", ["11.5.9.0", "11.5.8.0"])

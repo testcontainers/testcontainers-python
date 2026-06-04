@@ -132,6 +132,7 @@ test = [
   "twine>=6.2.0",
   "anyio>=4",
   "tomli", # required for pyproject.toml tests, TODO: remove once we drop py3.10 support
+  "pytest-xdist>=3.8.0",
 ]
 lint = [
   "mypy>=1",
@@ -162,11 +163,8 @@ requires = ["hatchling"]
 build-backend = "hatchling.build"
 
 [tool.hatch.build]
-# If you build sdists, you probably want to include core/ + modules/ in the sdist.
-# Adjust as needed.
 include = [
-  "core/**",
-  "modules/**",
+  "src/**",
   "README.md",
   "LICENSE*",
   "pyproject.toml",
@@ -270,12 +268,7 @@ pretty = true
 show_error_codes = true
 warn_return_any = true
 strict = true
-modules = ["testcontainers.core"]
-mypy_path = [
-  "core",
-  "modules/mailpit",
-  "modules/sftp",
-]
+mypy_path = ["src"]
 enable_error_code = ["ignore-without-code", "redundant-expr", "truthy-bool"]
 
 [[tool.mypy.overrides]]
