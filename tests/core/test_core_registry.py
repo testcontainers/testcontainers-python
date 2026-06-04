@@ -12,7 +12,7 @@ import base64
 import json
 
 import pytest
-from _local_registry_container import _LocalRegistryContainer  # type: ignore[import-not-found]
+from ._local_registry_container import _LocalRegistryContainer
 from docker.errors import NotFound
 
 from testcontainers.core.config import testcontainers_config
