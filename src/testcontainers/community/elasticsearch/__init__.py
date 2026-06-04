@@ -72,7 +72,7 @@ class ElasticSearchContainer(DockerContainer):
             '8.3.3'
     """
 
-    def __init__(self, image: str = "elasticsearch", port: int = 9200, **kwargs) -> None:
+    def __init__(self, image: str = "elasticsearch", port: int = 9200, **kwargs: object) -> None:
         raise_for_deprecated_parameter(kwargs, "port_to_expose", "port")
         super().__init__(image, _wait_strategy=HttpWaitStrategy(port), **kwargs)
         self.port = port

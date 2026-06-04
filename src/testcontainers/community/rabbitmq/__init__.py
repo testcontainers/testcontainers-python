@@ -2,6 +2,7 @@ import os
 from typing import Optional
 
 import pika
+
 from testcontainers.core.container import DockerContainer
 from testcontainers.core.waiting_utils import wait_container_is_ready
 

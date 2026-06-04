@@ -20,7 +20,7 @@ class ScyllaContainer(DockerContainer):
         ...            "= {'class': 'SimpleStrategy', 'replication_factor': '1'};")
     """
 
-    def __init__(self, image="scylladb/scylla:latest", ports_to_expose=(9042,)):
+    def __init__(self, image="scylladb/scylla:latest", ports_to_expose=(9042,)) -> None:
         super().__init__(image)
         self.ports_to_expose = ports_to_expose
         self.with_exposed_ports(*self.ports_to_expose)
@@ -37,7 +37,7 @@ class ScyllaContainer(DockerContainer):
         self._connect()
         return self
 
-    def get_cluster(self, **kwargs):
+    def get_cluster(self, **kwargs: object):
         from cassandra.cluster import Cluster
 
         hostname = self.get_container_host_ip()

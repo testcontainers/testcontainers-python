@@ -39,7 +39,9 @@ def test_docker_container_with_env_file():
         container = DockerContainer("alpine").with_command("tail -f /dev/null")  # Keep the container running
         container.with_env_file(env_file_path)  # Load the environment variables from the file
         with container:
-            output = container.exec("env").output.decode("utf-8").strip()
+            exec_output = container.exec("env").output
+            assert isinstance(exec_output, bytes)
+            output = exec_output.decode("utf-8").strip()
             assert "TEST_ENV_VAR=hello" in output
             assert "NUMBER=123" in output
             assert "DOMAIN=example.org" in output

@@ -39,7 +39,7 @@ class K3SContainer(DockerContainer):
     KUBE_SECURE_PORT = 6443
     RANCHER_WEBHOOK_PORT = 8443
 
-    def __init__(self, image="rancher/k3s:latest", enable_cgroup_mount=True, **kwargs) -> None:
+    def __init__(self, image="rancher/k3s:latest", enable_cgroup_mount=True, **kwargs: object) -> None:
         super().__init__(image, **kwargs)
         self.with_exposed_ports(self.KUBE_SECURE_PORT, self.RANCHER_WEBHOOK_PORT)
         self.with_env("K3S_URL", f"https://{self.get_container_host_ip()}:{self.KUBE_SECURE_PORT}")

@@ -14,10 +14,11 @@ import contextlib
 from typing import Optional
 
 from docker.types import IPAMConfig, IPAMPool
+from typing_extensions import Self
+
 from testcontainers.core.container import DockerContainer
 from testcontainers.core.network import Network
 from testcontainers.core.wait_strategies import HttpWaitStrategy
-from typing_extensions import Self
 
 
 class WeaviateContainer(DockerContainer):

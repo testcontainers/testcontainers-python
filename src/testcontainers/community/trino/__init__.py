@@ -26,7 +26,7 @@ class TrinoContainer(DockerContainer):
         container_start_timeout: int = 60,
         wait_strategy_check_string: str = ".*======== SERVER STARTED ========.*",
         **kwargs,
-    ):
+    ) -> None:
         super().__init__(image=image, **kwargs)
         self.user = user
         self.port = port

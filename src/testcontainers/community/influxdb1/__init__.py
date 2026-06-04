@@ -14,6 +14,7 @@
 from typing import Optional
 
 from influxdb import InfluxDBClient
+
 from testcontainers.community.influxdb import InfluxDbContainer
 
 
@@ -40,7 +41,7 @@ class InfluxDb1Container(InfluxDbContainer):
         # specifies the port on the host machine where influxdb is exposed; a random available port otherwise
         host_port: Optional[int] = None,
         **docker_client_kw,
-    ):
+    ) -> None:
         super().__init__(image, container_port, host_port, **docker_client_kw)
 
     def get_client(self, **client_kwargs):

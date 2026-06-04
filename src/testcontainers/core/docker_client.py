@@ -10,22 +10,24 @@
 #    WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the
 #    License for the specific language governing permissions and limitations
 #    under the License.
+from __future__ import annotations
+
 import contextlib
-import functools as ft
+import functools
 import importlib.metadata
 import ipaddress
 import os
 import socket
 import urllib
 import urllib.parse
-from collections.abc import Iterable
-from typing import TYPE_CHECKING, Any, Callable, Optional, TypeVar, Union, cast
+from collections.abc import Iterable, Iterator, Mapping
+from typing import TYPE_CHECKING, Any, Literal, Optional, TypedDict, Union, cast, overload
 
 import docker
 from docker.context import ContextAPI
-from docker.models.containers import Container, ContainerCollection
-from docker.models.images import Image, ImageCollection
-from typing_extensions import ParamSpec
+from docker.models.containers import Container
+from docker.models.images import Image
+from typing_extensions import Unpack
 
 from testcontainers.core import utils
 from testcontainers.core.auth import DockerAuthInfo, parse_docker_auth_config
@@ -35,34 +37,148 @@ from testcontainers.core.inspect import ContainerInspectInfo
 from testcontainers.core.labels import SESSION_ID, create_labels
 
 if TYPE_CHECKING:
+    from io import StringIO
+    from typing import IO
+
+    from docker._types import JSON, ContainerWeightDevice  # only exists in docker-stubs, not at runtime
+    from docker.models.containers import _RestartPolicy
+    from docker.models.images import _ContainerLimits
     from docker.models.networks import Network as DockerNetwork
+    from docker.types import EndpointConfig
+    from docker.types.containers import DeviceRequest, LogConfig, Ulimit
+    from docker.types.services import Mount
+
+    class _RunKwargs(TypedDict, total=False):
+        """Extra keyword arguments for :meth:`DockerClient.run`.
+
+        Mirrors the parameters of :meth:`docker.models.containers.ContainerCollection.run`
+        that are not declared explicitly on :meth:`DockerClient.run`. All fields are optional
+        (``total=False``); omitting a field lets the Docker daemon apply its default.
+        """
+
+        auto_remove: bool
+        blkio_weight_device: Optional[list[ContainerWeightDevice]]
+        blkio_weight: Optional[int]
+        cap_add: Optional[list[str]]
+        cap_drop: Optional[list[str]]
+        cgroup_parent: Optional[str]
+        cgroupns: Optional[Literal["private", "host"]]
+        cpu_count: Optional[int]
+        cpu_percent: Optional[int]
+        cpu_period: Optional[int]
+        cpu_quota: Optional[int]
+        cpu_rt_period: Optional[int]
+        cpu_rt_runtime: Optional[int]
+        cpu_shares: Optional[int]
+        cpuset_cpus: Optional[str]
+        cpuset_mems: Optional[str]
+        device_cgroup_rules: Optional[list[str]]
+        device_read_bps: Optional[list[Mapping[str, Union[str, int]]]]
+        device_read_iops: Optional[list[Mapping[str, Union[str, int]]]]
+        device_write_bps: Optional[list[Mapping[str, Union[str, int]]]]
+        device_write_iops: Optional[list[Mapping[str, Union[str, int]]]]
+        devices: Optional[list[str]]
+        device_requests: Optional[list[DeviceRequest]]
+        dns: Optional[list[str]]
+        dns_opt: Optional[list[str]]
+        dns_search: Optional[list[str]]
+        domainname: Optional[Union[str, list[str]]]
+        entrypoint: Optional[Union[str, list[str]]]
+        extra_hosts: Optional[dict[str, str]]
+        group_add: Optional[Iterable[Union[str, int]]]
+        healthcheck: Optional[dict[str, Any]]
+        hostname: Optional[str]
+        init: Optional[bool]
+        init_path: Optional[str]
+        ipc_mode: Optional[str]
+        isolation: Optional[str]
+        kernel_memory: Optional[Union[str, int]]
+        links: Optional[
+            Union[dict[str, str], dict[str, None], dict[str, Union[str, None]], Iterable[tuple[str, Union[str, None]]]]
+        ]
+        log_config: Optional[LogConfig]
+        lxc_conf: Optional[dict[str, str]]
+        mac_address: Optional[str]
+        mem_limit: Optional[Union[str, int]]
+        mem_reservation: Optional[Union[str, int]]
+        mem_swappiness: Optional[int]
+        memswap_limit: Optional[Union[str, int]]
+        mounts: Optional[list[Mount]]
+        name: Optional[str]
+        nano_cpus: Optional[int]
+        network: Optional[str]
+        network_disabled: bool
+        network_mode: Optional[str]
+        networking_config: Optional[dict[str, EndpointConfig]]
+        oom_kill_disable: bool
+        oom_score_adj: Optional[int]
+        pid_mode: Optional[str]
+        pids_limit: Optional[int]
+        platform: Optional[str]
+        privileged: bool
+        publish_all_ports: bool
+        read_only: Optional[bool]
+        restart_policy: Optional[_RestartPolicy]
+        runtime: Optional[str]
+        security_opt: Optional[list[str]]
+        shm_size: Optional[Union[str, int]]
+        stdin_open: bool
+        stop_signal: Optional[str]
+        storage_opt: Optional[dict[str, str]]
+        stream: bool
+        sysctls: Optional[dict[str, str]]
+        tmpfs: Optional[dict[str, str]]
+        tty: bool
+        ulimits: Optional[list[Ulimit]]
+        use_config_proxy: Optional[bool]
+        user: Optional[Union[str, int]]
+        userns_mode: Optional[str]
+        uts_mode: Optional[str]
+        version: Optional[str]
+        volume_driver: Optional[str]
+        volumes: Optional[Union[dict[str, dict[str, str]], list[str]]]
+        volumes_from: Optional[list[str]]
+        working_dir: Optional[str]
+
+    class _BuildKwargs(TypedDict, total=False):
+        """Extra keyword arguments for :meth:`DockerClient.build`.
+
+        Mirrors the parameters of :meth:`docker.models.images.ImageCollection.build`
+        that are not declared explicitly on :meth:`DockerClient.build`. All fields are optional;
+        """
+
+        fileobj: Union[StringIO, IO[bytes]]
+        quiet: bool
+        nocache: bool
+        timeout: int
+        custom_context: bool
+        encoding: str
+        pull: bool
+        forcerm: bool
+        dockerfile: str
+        buildargs: dict[str, Any]
+        container_limits: _ContainerLimits
+        shmsize: int
+        labels: dict[str, Any]
+        cache_from: list[str]
+        target: str
+        network_mode: str
+        squash: bool
+        extra_hosts: Union[list[str], dict[str, str]]
+        platform: str
+        isolation: str
+        use_config_proxy: bool
+
 
 LOGGER = utils.setup_logger(__name__)
-
-_P = ParamSpec("_P")
-_T = TypeVar("_T")
-
-
-def _wrapped_container_collection(function: Callable[_P, _T]) -> Callable[_P, _T]:
-    @ft.wraps(ContainerCollection.run)
-    def wrapper(*args: _P.args, **kwargs: _P.kwargs) -> _T:
-        return function(*args, **kwargs)
-
-    return wrapper
-
-
-def _wrapped_image_collection(function: Callable[_P, _T]) -> Callable[_P, _T]:
-    @ft.wraps(ImageCollection.build)
-    def wrapper(*args: _P.args, **kwargs: _P.kwargs) -> _T:
-        return function(*args, **kwargs)
-
-    return wrapper
 
 
 class DockerClient:
     """
     Thin wrapper around :class:`docker.DockerClient` for a more functional interface.
     """
+
+    client: docker.DockerClient
 
     def __init__(self, **kwargs: Any) -> None:
         docker_host = get_docker_host()
@@ -85,49 +201,94 @@ class DockerClient:
             if auth_config := parse_docker_auth_config(docker_auth_config):
                 self.login(auth_config[0])  # Only using the first auth config)
 
-    @_wrapped_container_collection
+    @overload
     def run(
         self,
         image: str,
         command: Optional[Union[str, list[str]]] = None,
-        environment: Optional[dict[str, str]] = None,
-        ports: Optional[dict[int, Optional[int]]] = None,
+        *,
+        detach: Literal[True],
+        environment: Optional[Union[dict[str, str], list[str]]] = None,
+        ports: Optional[Mapping[str, Union[int, list[int], tuple[str, int], None]]] = None,
         labels: Optional[dict[str, str]] = None,
-        detach: bool = False,
         stdout: bool = True,
         stderr: bool = False,
         remove: bool = False,
-        **kwargs: Any,
-    ) -> Container:
+        **kwargs: Unpack[_RunKwargs],
+    ) -> Container: ...
+
+    @overload
+    def run(
+        self,
+        image: str,
+        command: Optional[Union[str, list[str]]] = None,
+        *,
+        detach: Literal[False] = False,
+        environment: Optional[Union[dict[str, str], list[str]]] = None,
+        ports: Optional[Mapping[str, Union[int, list[int], tuple[str, int], None]]] = None,
+        labels: Optional[dict[str, str]] = None,
+        stdout: bool = True,
+        stderr: bool = False,
+        remove: bool = False,
+        **kwargs: Unpack[_RunKwargs],
+    ) -> bytes: ...
+
+    def run(
+        self,
+        image: str,
+        command: Optional[Union[str, list[str]]] = None,
+        *,
+        detach: bool = False,
+        environment: Optional[Union[dict[str, str], list[str]]] = None,
+        ports: Optional[Mapping[str, Union[int, list[int], tuple[str, int], None]]] = None,
+        labels: Optional[dict[str, str]] = None,
+        stdout: bool = True,
+        stderr: bool = False,
+        remove: bool = False,
+        **kwargs: Unpack[_RunKwargs],
+    ) -> Union[Container, bytes]:
         # If the user has specified a network, we'll assume the user knows best
         if "network" not in kwargs and not get_docker_host():
             # Otherwise we'll try to find the docker host for dind usage.
             host_network = self.find_host_network()
             if host_network:
                 kwargs["network"] = host_network
-        container = self.client.containers.run(
-            image,
-            command=command,
-            stdout=stdout,
-            stderr=stderr,
-            remove=remove,
-            detach=detach,
-            environment=environment,
-            ports=ports,
-            labels=create_labels(image, labels),
-            **kwargs,
-        )
-        return container
+        if detach:
+            return self.client.containers.run(
+                image,
+                command=command,
+                stdout=stdout,
+                stderr=stderr,
+                remove=remove,
+                detach=True,
+                environment=environment,
+                ports=ports,
+                labels=create_labels(image, labels),
+                **kwargs,
+            )
+        else:
+            return self.client.containers.run(
+                image,
+                command=command,
+                stdout=stdout,
+                stderr=stderr,
+                remove=remove,
+                detach=False,
+                environment=environment,
+                ports=ports,
+                labels=create_labels(image, labels),
+                **kwargs,
+            )
 
-    @_wrapped_container_collection
     def create(
         self,
         image: str,
         command: Optional[Union[str, list[str]]] = None,
         environment: Optional[dict[str, str]] = None,
-        ports: Optional[dict[int, Optional[int]]] = None,
+        ports: Optional[Mapping[str, Union[int, list[int], tuple[str, int], None]]] = None,
         labels: Optional[dict[str, str]] = None,
-        **kwargs: Any,
+        detach: bool = False,
+        **kwargs: Unpack[_RunKwargs],
     ) -> Container:
         """Create a container without starting it, pulling the image first if not present locally."""
         if "network" not in kwargs and not get_docker_host():
@@ -147,19 +308,18 @@ class DockerClient:
             environment=environment,
             ports=ports,
             labels=create_labels(image, labels),
+            detach=detach,
             **kwargs,
         )
         return container
 
-    @_wrapped_container_collection
     def start(self, container: Container) -> None:
         """Start a previously created container."""
         container.start()
 
-    @_wrapped_image_collection
     def build(
-        self, path: str, tag: Optional[str], rm: bool = True, **kwargs: Any
-    ) -> tuple[Image, Iterable[dict[str, Any]]]:
+        self, path: str, tag: Optional[str] = None, rm: bool = True, **kwargs: Unpack[_BuildKwargs]
+    ) -> tuple[Image, Iterator[JSON]]:
         """
         Build a Docker image from a directory containing the Dockerfile.
 
@@ -345,7 +505,7 @@ def _get_docker_host_from_context() -> Optional[str]:
     # docker-py fall back to its own defaults in that case.
     if not host or context.Name == "default":
         return None
-    return cast("str", host)
+    return host
 
 
 def get_docker_host_hostname() -> Optional[str]:
@@ -366,7 +526,7 @@ def is_ssh_docker_host() -> bool:
     return get_docker_host_hostname() is not None
 
 
-@ft.lru_cache(maxsize=1)
+@functools.lru_cache(maxsize=1)
 def is_podman() -> bool:
     """Detect whether the configured Docker daemon is actually Podman.
 

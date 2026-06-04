@@ -1,8 +1,8 @@
+from minio import Minio
+
 from testcontainers.core.container import DockerContainer
 from testcontainers.core.utils import raise_for_deprecated_parameter
 from testcontainers.core.wait_strategies import HttpWaitStrategy
-
-from minio import Minio
 
 
 class MinioContainer(DockerContainer):
@@ -64,7 +64,7 @@ class MinioContainer(DockerContainer):
         self.with_env("MINIO_SECRET_KEY", self.secret_key)
         self.with_command(f"server /data --address :{self.port}")
 
-    def get_client(self, **kwargs) -> Minio:
+    def get_client(self, **kwargs: object) -> Minio:
         """Returns a Minio client to connect to the container.
 
         Returns:

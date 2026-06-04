@@ -89,7 +89,7 @@ def test_get_exposed_port_original(container: DockerContainer, monkeypatch: pyte
         ("command", "ps", "_command", "ps"),
         ("env", {"e1": "v1"}, "env", {"e1": "v1"}),
         ("name", "foo-bar", "_name", "foo-bar"),
-        ("ports", [22, 80], "ports", {22: None, 80: None}),
+        ("ports", [22, 80], "ports", {"22": None, "80": None}),
         (
             "volumes",
             [("/tmp", "/tmp2", "ro")],

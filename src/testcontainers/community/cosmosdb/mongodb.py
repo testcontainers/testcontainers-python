@@ -30,7 +30,7 @@ class CosmosDBMongoEndpointContainer(CosmosDBEmulatorContainer):
             "AZURE_COSMOS_EMULATOR_IMAGE", "mcr.microsoft.com/cosmosdb/linux/azure-cosmos-emulator:latest"
         ),
         **other_kwargs,
-    ):
+    ) -> None:
         super().__init__(image=image, endpoint_ports=[ENDPOINT_PORT], **other_kwargs)
         assert mongodb_version is not None, "A MongoDB version is required to use the MongoDB Endpoint"
         self.mongodb_version = mongodb_version

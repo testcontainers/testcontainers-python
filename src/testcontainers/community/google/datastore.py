@@ -13,10 +13,10 @@
 import os
 from unittest.mock import patch
 
+from google.cloud import datastore
+
 from testcontainers.core.container import DockerContainer
 from testcontainers.core.waiting_utils import wait_for_logs
-
-from google.cloud import datastore
 
 
 class DatastoreContainer(DockerContainer):
@@ -56,7 +56,7 @@ class DatastoreContainer(DockerContainer):
     def get_datastore_emulator_host(self) -> str:
         return f"{self.get_container_host_ip()}:{self.get_exposed_port(self.port)}"
 
-    def get_datastore_client(self, **kwargs) -> datastore.Client:
+    def get_datastore_client(self, **kwargs: object) -> datastore.Client:
         wait_for_logs(self, "Dev App Server is now running.", timeout=30.0)
         env_vars = {
             "DATASTORE_DATASET": self.project,

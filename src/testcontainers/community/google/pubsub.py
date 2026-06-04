@@ -11,11 +11,14 @@
 #    License for the specific language governing permissions and limitations
 #    under the License.
 import os
+from typing import TypeVar
 from unittest.mock import patch
+
+from google.cloud import pubsub
 
 from testcontainers.core.container import DockerContainer
 
-from google.cloud import pubsub
+T = TypeVar("T")
 
 
 class PubSubContainer(DockerContainer):
@@ -52,18 +55,18 @@ class PubSubContainer(DockerContainer):
     def get_pubsub_emulator_host(self) -> str:
         return f"{self.get_container_host_ip()}:{self.get_exposed_port(self.port)}"
 
-    def _get_client(self, cls: type, **kwargs) -> dict:
+    def _get_client(self, cls: type[T], **kwargs: object) -> T:
         with patch.dict(os.environ, PUBSUB_EMULATOR_HOST=self.get_pubsub_emulator_host()):
             return cls(**kwargs)
 
-    def get_publisher_client(self, **kwargs) -> pubsub.PublisherClient:
+    def get_publisher_client(self, **kwargs: object) -> pubsub.PublisherClient:
         from google.auth import credentials
 
         kwargs["client_options"] = {"api_endpoint": self.get_pubsub_emulator_host()}
         kwargs["credentials"] = credentials.AnonymousCredentials()
         return self._get_client(pubsub.PublisherClient, **kwargs)
 
-    def get_subscriber_client(self, **kwargs) -> pubsub.SubscriberClient:
+    def get_subscriber_client(self, **kwargs: object) -> pubsub.SubscriberClient:
         from google.auth import credentials
 
         kwargs["client_options"] = {"api_endpoint": self.get_pubsub_emulator_host()}

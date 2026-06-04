@@ -15,6 +15,7 @@ import os
 from typing import Any, Optional
 
 import boto3
+
 from testcontainers.core.container import DockerContainer
 from testcontainers.core.waiting_utils import wait_for_logs
 
@@ -74,7 +75,7 @@ class LocalStackContainer(DockerContainer):
         return f"http://{host}:{port}"
 
     @ft.wraps(boto3.client)
-    def get_client(self, name, **kwargs) -> Any:
+    def get_client(self, name, **kwargs: object) -> Any:
         kwargs_ = {
             "endpoint_url": self.get_url(),
             "region_name": self.region_name,

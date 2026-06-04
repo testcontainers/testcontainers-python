@@ -28,7 +28,7 @@ def test_server_container(test_image_tag: Optional[str], test_image_cleanup: boo
         image_build_logs = docker_image.get_logs()
         # check if dict is in any of the logs
         assert {"stream": f"Step 2/3 : EXPOSE {port}"} in image_build_logs, "Image logs mismatch"
-        assert (port, None) in srv.ports.items(), "Port mismatch"
+        assert (str(port), None) in srv.ports.items(), "Port mismatch"
         with pytest.raises(NotImplementedError):
             srv.get_api_url()
         test_url = srv._create_connection_url()

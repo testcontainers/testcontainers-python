@@ -3,7 +3,7 @@ from pathlib import Path
 import pytest
 from pytest import MonkeyPatch, raises, mark
 
-from testcontainers.core import utils
+import testcontainers.core.utils as utils
 
 
 def test_setup_logger() -> None:

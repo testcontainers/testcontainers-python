@@ -1,6 +1,8 @@
+from __future__ import annotations
+
 from os import PathLike
 from types import TracebackType
-from typing import TYPE_CHECKING, Any, Optional, Union
+from typing import TYPE_CHECKING, Any, Iterator, Optional, Union, cast
 
 import docker.errors
 from typing_extensions import Self
@@ -11,6 +13,7 @@ from testcontainers.core.utils import setup_logger
 if TYPE_CHECKING:
     from collections.abc import Iterable
 
+    from docker._types import JSON  # only exists in docker-stubs, not at runtime
     from docker.models.images import Image
 
 logger = setup_logger(__name__)
@@ -42,7 +45,7 @@ class DockerImage:
         docker_client_kw: Optional[dict[str, Any]] = None,
         tag: Optional[str] = None,
         clean_up: bool = True,
-        dockerfile_path: Union[str, PathLike[str]] = "Dockerfile",
+        dockerfile_path: str = "Dockerfile",
         no_cache: bool = False,
         **kwargs: Any,
     ) -> None:
@@ -52,7 +55,7 @@ class DockerImage:
         self.clean_up = clean_up
         self._kwargs = kwargs
         self._image: Optional[Image] = None
-        self._logs: Optional[Iterable[dict[str, Any]]] = None
+        self._logs: Iterator[JSON] | None = None
         self._dockerfile_path = dockerfile_path
         self._no_cache = no_cache
 
@@ -104,14 +107,14 @@ class DockerImage:
     ) -> None:
         self.remove()
 
-    def get_wrapped_image(self) -> "Image":
+    def get_wrapped_image(self) -> Image:
         assert self._image is not None
         return self._image
 
     def get_docker_client(self) -> DockerClient:
         return self._docker
 
-    def get_logs(self) -> list[dict[str, Any]]:
+    def get_logs(self) -> list[JSON]:
         logs = self._logs
         if logs is None:
             return []
