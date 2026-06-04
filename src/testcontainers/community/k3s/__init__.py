@@ -44,7 +44,9 @@ class K3SContainer(DockerContainer):
         self.with_exposed_ports(self.KUBE_SECURE_PORT, self.RANCHER_WEBHOOK_PORT)
         self.with_env("K3S_URL", f"https://{self.get_container_host_ip()}:{self.KUBE_SECURE_PORT}")
         self.with_command("server --disable traefik --tls-san=" + self.get_container_host_ip())
-        self.with_kwargs(privileged=True, tmpfs={"/run": "", "/var/run": ""})
+        self.with_kwargs(privileged=True)
+        self.with_tmpfs_mount("/run")
+        self.with_tmpfs_mount("/var/run")
         if enable_cgroup_mount:
             self.with_volume_mapping("/sys/fs/cgroup", "/sys/fs/cgroup", "rw")
         else:
