@@ -1,6 +1,7 @@
-from typing import Union, Self
+from typing import Union
 
 import httpx
+from typing_extensions import Self
 
 from testcontainers.core.container import DockerContainer
 from testcontainers.core.exceptions import ContainerStartException

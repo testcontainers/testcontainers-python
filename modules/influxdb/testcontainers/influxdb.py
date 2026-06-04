@@ -27,10 +27,11 @@ The 2 containers are separated in different modules for 2 reasons:
   so you won't have to install dependencies that you do not need
 """
 
-from typing import Optional, Self
+from typing import Optional
 
 from requests import get
 from requests.exceptions import ConnectionError, ReadTimeout
+from typing_extensions import Self
 
 from testcontainers.core.container import DockerContainer
 from testcontainers.core.waiting_utils import wait_container_is_ready

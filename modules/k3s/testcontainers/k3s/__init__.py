@@ -12,7 +12,8 @@
 #    under the License.
 
 import logging
-from typing import Self
+
+from typing_extensions import Self
 
 from testcontainers.core.config import testcontainers_config
 from testcontainers.core.container import DockerContainer

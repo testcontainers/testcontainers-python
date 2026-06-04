@@ -1,10 +1,11 @@
-from io import BytesIO
 import os.path
 import re
 import tarfile
-from textwrap import dedent
 import time
-from typing import Self
+from io import BytesIO
+from textwrap import dedent
+
+from typing_extensions import Self
 
 from testcontainers.core.container import DockerContainer
 from testcontainers.core.wait_strategies import LogMessageWaitStrategy

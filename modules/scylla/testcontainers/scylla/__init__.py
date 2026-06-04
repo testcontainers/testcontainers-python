@@ -1,4 +1,4 @@
-from typing import Self
+from typing_extensions import Self
 
 from testcontainers.core.generic import DockerContainer
 from testcontainers.core.waiting_utils import wait_container_is_ready, wait_for_logs

@@ -1,8 +1,8 @@
 from contextlib import suppress
-from typing import Self
 
 from opensearchpy import OpenSearch
 from opensearchpy.exceptions import ConnectionError, TransportError
+from typing_extensions import Self
 from urllib3.exceptions import ProtocolError
 
 from testcontainers.core.container import DockerContainer

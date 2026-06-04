@@ -35,9 +35,11 @@ import socket
 import time
 from datetime import timedelta
 from pathlib import Path
-from typing import TYPE_CHECKING, Any, Callable, Optional, Self, Union, cast
+from typing import TYPE_CHECKING, Any, Callable, Optional, Union, cast
 from urllib.error import HTTPError, URLError
 from urllib.request import Request, urlopen
+
+from typing_extensions import Self
 
 from testcontainers.compose import DockerCompose
 from testcontainers.core.utils import setup_logger

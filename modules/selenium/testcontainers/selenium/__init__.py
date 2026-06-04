@@ -11,9 +11,10 @@
 #    License for the specific language governing permissions and limitations
 #    under the License.
 from pathlib import Path
-from typing import Any, Optional, Self
+from typing import Any, Optional
 
 import urllib3
+from typing_extensions import Self
 
 from selenium import webdriver
 from selenium.webdriver.common.options import ArgOptions

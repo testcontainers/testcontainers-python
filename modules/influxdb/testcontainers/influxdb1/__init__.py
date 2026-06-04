@@ -11,9 +11,10 @@
 #    License for the specific language governing permissions and limitations
 #    under the License.
 
-from typing import Optional, Self
+from typing import Optional
 
 from influxdb import InfluxDBClient
+from typing_extensions import Self
 
 from testcontainers.influxdb import InfluxDbContainer
 

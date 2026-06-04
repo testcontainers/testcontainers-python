@@ -12,10 +12,11 @@
 #    under the License.
 
 from os import PathLike
-from typing import Any, Optional, Self, TypedDict, Union
+from typing import Any, Optional, TypedDict, Union
 
 from docker.types.containers import DeviceRequest
 from requests import get
+from typing_extensions import Self
 
 from testcontainers.core.container import DockerContainer
 from testcontainers.core.waiting_utils import wait_for_logs

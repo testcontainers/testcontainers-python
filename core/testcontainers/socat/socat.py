@@ -13,7 +13,9 @@
 import random
 import socket
 import string
-from typing import Any, Optional, Self
+from typing import Any, Optional
+
+from typing_extensions import Self
 
 from testcontainers.core.container import DockerContainer
 from testcontainers.core.waiting_utils import wait_container_is_ready

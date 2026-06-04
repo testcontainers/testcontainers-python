@@ -14,7 +14,9 @@
 """Docker Engine API data structures for container inspect responses."""
 
 from dataclasses import dataclass, fields, is_dataclass
-from typing import Any, Optional, Self, TypeVar
+from typing import Any, Optional, TypeVar
+
+from typing_extensions import Self
 
 _IPT = TypeVar("_IPT")
 

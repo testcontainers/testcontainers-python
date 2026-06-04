@@ -11,11 +11,11 @@
 #    License for the specific language governing permissions and limitations
 #    under the License.
 
-from typing import Self
-
 from http.client import HTTPException
 from urllib.error import URLError
 from urllib.request import urlopen
+
+from typing_extensions import Self
 
 from testcontainers.core.container import DockerContainer
 from testcontainers.core.waiting_utils import wait_container_is_ready

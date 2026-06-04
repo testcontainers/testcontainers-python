@@ -10,8 +10,10 @@
 #    WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the
 #    License for the specific language governing permissions and limitations
 #    under the License.
-from typing import Any, Optional, Self
+from typing import Any, Optional
 from urllib.parse import quote
+
+from typing_extensions import Self
 
 from testcontainers.core.container import DockerContainer
 from testcontainers.core.exceptions import ContainerStartException

@@ -10,7 +10,9 @@ from re import split
 from subprocess import CalledProcessError, CompletedProcess
 from subprocess import run as subprocess_run
 from types import TracebackType
-from typing import Any, Callable, Literal, Optional, Self, TypeVar, Union, cast
+from typing import Any, Callable, Literal, Optional, TypeVar, Union, cast
+
+from typing_extensions import Self
 
 from testcontainers.core.docker_client import DockerClient, get_docker_host_hostname, is_podman
 from testcontainers.core.exceptions import ContainerIsNotRunning, NoSuchPortExposed
@@ -47,7 +49,7 @@ class PublishedPortModel:
     PublishedPort: Optional[int] = None
     Protocol: Optional[str] = None
 
-    def normalize(self) -> Self:
+    def normalize(self) -> "PublishedPortModel":
         url = self.URL
 
         # For SSH-based DOCKER_HOST, local addresses (0.0.0.0, 127.0.0.1, localhost, ::, ::1)

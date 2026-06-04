@@ -1,6 +1,8 @@
 import logging
-from typing import Any, Optional, Self
+from typing import Any, Optional
 from urllib.parse import quote, urlencode
+
+from typing_extensions import Self
 
 from testcontainers.core.container import DockerContainer
 from testcontainers.core.exceptions import ContainerStartException

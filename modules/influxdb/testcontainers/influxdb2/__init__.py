@@ -12,9 +12,10 @@
 #    under the License.
 
 from os import getenv
-from typing import Optional, Self
+from typing import Optional
 
 from influxdb_client import InfluxDBClient, Organization
+from typing_extensions import Self
 
 from testcontainers.influxdb import InfluxDbContainer
 

@@ -5,7 +5,8 @@ from dataclasses import dataclass, field
 from io import BytesIO
 from os import environ
 from textwrap import dedent
-from typing import Self
+
+from typing_extensions import Self
 
 from testcontainers.core.container import DockerContainer
 from testcontainers.core.utils import raise_for_deprecated_parameter

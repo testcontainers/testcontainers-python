@@ -1,12 +1,13 @@
 import time
 from io import BytesIO
 from tarfile import TarFile, TarInfo
-from typing import Any, Optional, Self, TYPE_CHECKING
+from typing import TYPE_CHECKING, Any, Optional
 
 import bcrypt
 from requests import get
 from requests.auth import HTTPBasicAuth
 from requests.exceptions import ConnectionError, ReadTimeout
+from typing_extensions import Self
 
 from testcontainers.core.container import DockerContainer
 from testcontainers.core.waiting_utils import wait_container_is_ready

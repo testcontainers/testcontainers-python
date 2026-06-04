@@ -12,9 +12,10 @@
 #    under the License.
 import functools as ft
 import os
-from typing import Any, Optional, Self
+from typing import Any, Optional
 
 import boto3
+from typing_extensions import Self
 
 from testcontainers.core.container import DockerContainer
 from testcontainers.core.waiting_utils import wait_for_logs

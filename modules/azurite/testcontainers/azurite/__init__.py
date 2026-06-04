@@ -12,7 +12,9 @@
 #    under the License.
 import enum
 import os
-from typing import Optional, Self
+from typing import Optional
+
+from typing_extensions import Self
 
 from testcontainers.core.container import DockerContainer
 from testcontainers.core.utils import raise_for_deprecated_parameter

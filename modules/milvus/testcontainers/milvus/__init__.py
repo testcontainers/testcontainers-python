@@ -12,7 +12,7 @@
 #    under the License.
 
 import requests
-from typing import Self
+from typing_extensions import Self
 
 from testcontainers.core.config import testcontainers_config as c
 from testcontainers.core.generic import DockerContainer

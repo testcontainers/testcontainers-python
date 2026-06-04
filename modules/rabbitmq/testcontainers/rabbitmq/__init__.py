@@ -1,7 +1,8 @@
 import os
-from typing import Optional, Self
+from typing import Optional
 
 import pika
+from typing_extensions import Self
 
 from testcontainers.core.container import DockerContainer
 from testcontainers.core.waiting_utils import wait_container_is_ready

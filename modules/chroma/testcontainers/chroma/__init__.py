@@ -1,6 +1,7 @@
-from typing import TYPE_CHECKING, Self
+from typing import TYPE_CHECKING
 
 from requests import ConnectionError, get
+from typing_extensions import Self
 
 from testcontainers.core.container import DockerContainer
 from testcontainers.core.utils import raise_for_deprecated_parameter

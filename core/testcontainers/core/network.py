@@ -12,7 +12,9 @@
 #    under the License.
 import uuid
 from types import TracebackType
-from typing import TYPE_CHECKING, Any, Optional, Self
+from typing import TYPE_CHECKING, Any, Optional
+
+from typing_extensions import Self
 
 from testcontainers.core.docker_client import DockerClient
 

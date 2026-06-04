@@ -11,9 +11,10 @@
 #    License for the specific language governing permissions and limitations
 #    under the License.
 import os
-from typing import Optional, Self
+from typing import Optional
 
 import requests
+from typing_extensions import Self
 
 from keycloak import KeycloakAdmin
 from testcontainers.core.container import DockerContainer
