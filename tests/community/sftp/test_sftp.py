@@ -9,7 +9,6 @@ from testcontainers.community.sftp import SFTPContainer, SFTPUser
 
 def test_sftp_login_with_default_basic_auth():
     with SFTPContainer() as sftp_container:
-        sftp_container.start()
         host_ip = sftp_container.get_container_host_ip()
         host_port = sftp_container.get_exposed_sftp_port()
         ssh = paramiko.SSHClient()
@@ -19,12 +18,13 @@ def test_sftp_login_with_default_basic_auth():
             port=host_port,
             username=sftp_container.users[0].name,
             password=sftp_container.users[0].password,
+            allow_agent=False,
+            look_for_keys=False,
         )
 
 
 def test_sftp_login_with_default_keypair_auth():
     with SFTPContainer() as sftp_container:
-        sftp_container.start()
         host_ip = sftp_container.get_container_host_ip()
         host_port = sftp_container.get_exposed_sftp_port()
         ssh = paramiko.SSHClient()
@@ -40,7 +40,6 @@ def test_sftp_login_with_default_keypair_auth():
 def test_sftp_login_with_custom_user_basic_auth():
     user = SFTPUser(name="custom", password="custom_password")
     with SFTPContainer(users=[user]) as sftp_container:
-        sftp_container.start()
         host_ip = sftp_container.get_container_host_ip()
         host_port = sftp_container.get_exposed_sftp_port()
         ssh = paramiko.SSHClient()
@@ -50,13 +49,14 @@ def test_sftp_login_with_custom_user_basic_auth():
             port=host_port,
             username=user.name,
             password=user.password,
+            allow_agent=False,
+            look_for_keys=False,
         )
 
 
 def test_sftp_login_with_custom_user_keypair_auth():
     user = SFTPUser.with_keypair(name="custom")
     with SFTPContainer(users=[user]) as sftp_container:
-        sftp_container.start()
         host_ip = sftp_container.get_container_host_ip()
         host_port = sftp_container.get_exposed_sftp_port()
         ssh = paramiko.SSHClient()
@@ -72,7 +72,6 @@ def test_sftp_login_with_custom_user_keypair_auth():
 def test_sftp_login_with_custom_user_password_and_keypair_auth():
     user = SFTPUser.with_keypair(name="custom", password="custom_password")
     with SFTPContainer(users=[user]) as sftp_container:
-        sftp_container.start()
         host_ip = sftp_container.get_container_host_ip()
         host_port = sftp_container.get_exposed_sftp_port()
         ssh = paramiko.SSHClient()
@@ -88,7 +87,6 @@ def test_sftp_login_with_custom_user_password_and_keypair_auth():
 
 def test_sftp_user_can_upload():
     with SFTPContainer() as sftp_container:
-        sftp_container.start()
         host_ip = sftp_container.get_container_host_ip()
         host_port = sftp_container.get_exposed_sftp_port()
         ssh = paramiko.SSHClient()
@@ -98,6 +96,8 @@ def test_sftp_user_can_upload():
             port=host_port,
             username=sftp_container.users[0].name,
             password=sftp_container.users[0].password,
+            allow_agent=False,
+            look_for_keys=False,
         )
         sftp = ssh.open_sftp()
         sftp.chdir("upload")
@@ -119,7 +119,6 @@ def test_sftp_user_can_download_from_mounted(tmp_path: Path):
     temp_file.write_text("test")
     user = SFTPUser.with_keypair(name="custom", mount_dir=temp_dir.as_posix())
     with SFTPContainer(users=[user]) as sftp_container:
-        sftp_container.start()
         host_ip = sftp_container.get_container_host_ip()
         host_port = sftp_container.get_exposed_sftp_port()
         ssh = paramiko.SSHClient()
@@ -143,7 +142,6 @@ def test_sftp_user_cant_upload_to_root(tmp_path: Path):
     temp_file = temp_dir / "test.txt"
     temp_file.write_text("test")
     with SFTPContainer() as sftp_container:
-        sftp_container.start()
         host_ip = sftp_container.get_container_host_ip()
         host_port = sftp_container.get_exposed_sftp_port()
         ssh = paramiko.SSHClient()
@@ -153,6 +151,8 @@ def test_sftp_user_cant_upload_to_root(tmp_path: Path):
             port=host_port,
             username=sftp_container.users[0].name,
             password=sftp_container.users[0].password,
+            allow_agent=False,
+            look_for_keys=False,
         )
         sftp = ssh.open_sftp()
         with pytest.raises(PermissionError):
