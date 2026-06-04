@@ -18,6 +18,6 @@ pip install testcontainers[keycloak] python-keycloak requests
 
 <!--codeinclude-->
 
-[Creating a Keycloak container](../../modules/keycloak/example_basic.py)
+[Creating a Keycloak container](keycloak_example.py)
 
 <!--/codeinclude-->
