@@ -11,10 +11,8 @@
 #    License for the specific language governing permissions and limitations
 #    under the License.
 
-import requests
-from testcontainers.core.config import testcontainers_config as c
 from testcontainers.core.generic import DockerContainer
-from testcontainers.core.waiting_utils import wait_container_is_ready, wait_for_logs
+from testcontainers.core.wait_strategies import CompositeWaitStrategy, HttpWaitStrategy, LogMessageWaitStrategy
 
 
 class MilvusContainer(DockerContainer):
@@ -31,7 +29,7 @@ class MilvusContainer(DockerContainer):
 
             >>> from testcontainers.community.milvus import MilvusContainer
             >>> with MilvusContainer("milvusdb/milvus:v2.4.4") as milvus_container:
-            ...     milvus_container.get_exposed_port(milvus_container.port) in milvus_container.get_connection_url()
+            ...     str(milvus_container.get_exposed_port(milvus_container.port)) in milvus_container.get_connection_url()
             True
     """
 
@@ -45,40 +43,20 @@ class MilvusContainer(DockerContainer):
         self.port = port
         self.healthcheck_port = 9091
         self.with_exposed_ports(self.port, self.healthcheck_port)
-        self.cmd = "milvus run standalone"
+        self.with_command("milvus run standalone")
 
-        envs = {"ETCD_USE_EMBED": "true", "ETCD_DATA_DIR": "/var/lib/milvus/etcd", "COMMON_STORAGETYPE": "local"}
+        self.with_env("ETCD_USE_EMBED", "true")
+        self.with_env("ETCD_DATA_DIR", "/var/lib/milvus/etcd")
+        self.with_env("COMMON_STORAGETYPE", "local")
 
-        for env, value in envs.items():
-            self.with_env(env, value)
+        self.waiting_for(
+            CompositeWaitStrategy(
+                LogMessageWaitStrategy("Welcome to use Milvus!"),
+                HttpWaitStrategy(self.healthcheck_port, "/healthz"),
+            )
+        )
 
     def get_connection_url(self) -> str:
         ip = self.get_container_host_ip()
         port = self.get_exposed_port(self.port)
         return f"http://{ip}:{port}"
-
-    @wait_container_is_ready()
-    def _connect(self) -> None:
-        msg = "Welcome to use Milvus!"
-        wait_for_logs(self, f".*{msg}.*", c.max_tries, c.sleep_time)
-        self._healthcheck()
-
-    def _get_healthcheck_url(self) -> str:
-        ip = self.get_container_host_ip()
-        port = self.get_exposed_port(self.healthcheck_port)
-        return f"http://{ip}:{port}"
-
-    @wait_container_is_ready(requests.exceptions.HTTPError, requests.exceptions.ConnectionError)
-    def _healthcheck(self) -> None:
-        healthcheck_url = self._get_healthcheck_url()
-        response = requests.get(f"{healthcheck_url}/healthz", timeout=1)
-        response.raise_for_status()
-
-    def start(self) -> "MilvusContainer":
-        """This method starts the Milvus container and runs the healthcheck
-        to verify that the container is ready to use."""
-        self.with_command(self.cmd)
-        super().start()
-        self._connect()
-        self._healthcheck()
-        return self
