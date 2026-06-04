@@ -21,7 +21,6 @@ class CassandraContainer(DockerContainer):
     Example:
 
         .. doctest:: cassandra_container
-            :skipif: SKIP_CASSANDRA_EXAMPLE
 
             >>> from testcontainers.community.cassandra import CassandraContainer
             >>> from cassandra.cluster import Cluster, DCAwareRoundRobinPolicy
@@ -29,6 +28,7 @@ class CassandraContainer(DockerContainer):
             >>> with CassandraContainer("cassandra:4.1.4") as cassandra, Cluster(
             ...    cassandra.get_contact_points(),
             ...    load_balancing_policy=DCAwareRoundRobinPolicy(cassandra.get_local_datacenter()),
+            ...    protocol_version=5,
             ... ) as cluster:
             ...    session = cluster.connect()
             ...    result = session.execute("SELECT release_version FROM system.local;")
