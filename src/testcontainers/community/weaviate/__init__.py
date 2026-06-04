@@ -10,17 +10,17 @@
 #    WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the
 #    License for the specific language governing permissions and limitations
 #    under the License.
-from typing import TYPE_CHECKING, Optional
+import contextlib
+from typing import Optional
 
-from requests import ConnectionError, get
-from testcontainers.core.generic import DbContainer
-from testcontainers.core.waiting_utils import wait_container_is_ready
+from docker.types import IPAMConfig, IPAMPool
+from testcontainers.core.container import DockerContainer
+from testcontainers.core.network import Network
+from testcontainers.core.wait_strategies import HttpWaitStrategy
+from typing_extensions import Self
 
-if TYPE_CHECKING:
-    from requests import Response
 
-
-class WeaviateContainer(DbContainer):
+class WeaviateContainer(DockerContainer):
     """
     Weaviate vector database container.
 
@@ -62,7 +62,7 @@ class WeaviateContainer(DbContainer):
 
     def __init__(
         self,
-        image: str = "semitechnologies/weaviate:1.24.5",
+        image: str = "semitechnologies/weaviate:1.28.4",
         env_vars: Optional[dict[str, str]] = None,
         **kwargs,
     ) -> None:
@@ -70,22 +70,38 @@ class WeaviateContainer(DbContainer):
         self._http_port = 8080
         self._grpc_port = 50051
 
-        self.with_command(f"--host 0.0.0.0 --scheme http --port {self._http_port}")
+        # Weaviate's memberlist gossip requires an RFC1918 private IP to advertise.
+        # Docker bridge subnets are not always in RFC1918 ranges, so we create a
+        # dedicated network using 10.10.10.0/24 which is always recognised as private.
+        self._weaviate_network = Network(
+            docker_network_kw={"ipam": IPAMConfig(pool_configs=[IPAMPool(subnet="10.10.10.0/24")])}
+        )
+        self.with_network(self._weaviate_network)
         self.with_exposed_ports(self._http_port, self._grpc_port)
+        self.waiting_for(HttpWaitStrategy(self._http_port, "/v1/.well-known/ready"))
 
         if env_vars is not None:
             for key, value in env_vars.items():
                 self.with_env(key, value)
 
     def _configure(self) -> None:
+        self.with_env("HOST", "0.0.0.0")
+        self.with_env("PORT", str(self._http_port))
+        self.with_env("SCHEME", "http")
         self.with_env("AUTHENTICATION_ANONYMOUS_ACCESS_ENABLED", "true")
         self.with_env("PERSISTENCE_DATA_PATH", "/var/lib/weaviate")
+        self.with_env("DEFAULT_VECTORIZER_MODULE", "none")
+        self.with_env("CLUSTER_HOSTNAME", "node1")
 
-    @wait_container_is_ready(ConnectionError)
-    def _connect(self) -> None:
-        url = f"http://{self.get_http_host()}:{self.get_http_port()}/v1/.well-known/ready"
-        response: Response = get(url)
-        response.raise_for_status()
+    def start(self) -> Self:
+        self._weaviate_network.create()
+        return super().start()
+
+    def stop(self, force: bool = True, delete_volume: bool = True) -> None:
+        super().stop(force=force, delete_volume=delete_volume)
+        if self._weaviate_network._network is not None:
+            with contextlib.suppress(Exception):
+                self._weaviate_network.remove()
 
     def get_client(
         self,
