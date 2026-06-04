@@ -23,7 +23,7 @@ class TrinoContainer(DockerContainer):
         image="trinodb/trino:latest",
         user: str = "test",
         port: int = 8080,
-        container_start_timeout: int = 30,
+        container_start_timeout: int = 60,
         wait_strategy_check_string: str = ".*======== SERVER STARTED ========.*",
         **kwargs,
     ):

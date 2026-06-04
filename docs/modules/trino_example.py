@@ -1,7 +1,6 @@
 import trino
-from trino.exceptions import TrinoQueryError
-
 from testcontainers.community.trino import TrinoContainer
+from trino.exceptions import TrinoQueryError
 
 
 def basic_example():
