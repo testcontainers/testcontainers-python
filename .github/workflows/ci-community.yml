@@ -50,6 +50,11 @@ jobs:
       matrix:
         python-version: ["3.10", "3.13", "3.14"]
         module: ${{ fromJSON(needs.track-modules.outputs.changed_modules) }}
+        exclude:
+          # cassandra-driver has no Python 3.14 support
+          # (see `python_version < '3.14'` markers in pyproject.toml).
+          - python-version: "3.14"
+            module: scylla
     steps:
       - name: Checkout contents
         uses: actions/checkout@v4
