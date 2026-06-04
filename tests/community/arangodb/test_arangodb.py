@@ -34,7 +34,7 @@ def arango_test_ops(arango_client, expected_version, username="root", password="
     students = database.create_collection("students")
 
     # Add a hash index to the collection.
-    students.add_hash_index(fields=["name"], unique=True)
+    students.add_persistent_index(fields=["name"], unique=True)
 
     # Insert new documents into the collection. (students_to_insert_cnt)
     students.insert({"name": "jane", "age": 39})
