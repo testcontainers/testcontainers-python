@@ -550,8 +550,8 @@ name = "cassandra-driver"
 version = "3.30.0"
 source = { registry = "https://pypi.org/simple" }
 dependencies = [
-    { name = "deprecated" },
-    { name = "geomet" },
+    { name = "deprecated", marker = "python_full_version < '3.14'" },
+    { name = "geomet", marker = "python_full_version < '3.14'" },
 ]
 sdist = { url = "https://files.pythonhosted.org/packages/85/26/8806d0949422b560029a040e7a628d92addd612726468c3fb546354a43a4/cassandra_driver-3.30.0.tar.gz", hash = "sha256:7e4cfd6ec3023576ed0ffa34882d9778e4bacfd918048ae9139ccdd00628ed85", size = 4242039, upload-time = "2026-04-16T05:04:59.838Z" }
 wheels = [
@@ -1097,7 +1097,7 @@ name = "deprecated"
 version = "1.3.1"
 source = { registry = "https://pypi.org/simple" }
 dependencies = [
-    { name = "wrapt" },
+    { name = "wrapt", marker = "python_full_version < '3.14'" },
 ]
 sdist = { url = "https://files.pythonhosted.org/packages/49/85/12f0a49a7c4ffb70572b6c2ef13c90c88fd190debda93b23f026b25f9634/deprecated-1.3.1.tar.gz", hash = "sha256:b1b50e0ff0c1fddaa5708a2c6b0a6588bb09b892825ab2b214ac9ea9d92a5223", size = 2932523, upload-time = "2025-10-30T08:19:02.757Z" }
 wheels = [
@@ -1350,7 +1350,7 @@ name = "geomet"
 version = "1.1.0"
 source = { registry = "https://pypi.org/simple" }
 dependencies = [
-    { name = "click" },
+    { name = "click", marker = "python_full_version < '3.14'" },
 ]
 sdist = { url = "https://files.pythonhosted.org/packages/2a/8c/dde022aa6747b114f6b14a7392871275dea8867e2bd26cddb80cc6d66620/geomet-1.1.0.tar.gz", hash = "sha256:51e92231a0ef6aaa63ac20c443377ba78a303fd2ecd179dc3567de79f3c11605", size = 28732, upload-time = "2023-11-14T15:43:36.764Z" }
 wheels = [
@@ -1419,7 +1419,7 @@ wheels = [
 
 [[package]]
 name = "google-cloud-datastore"
-version = "2.24.0"
+version = "2.25.0"
 source = { registry = "https://pypi.org/simple" }
 dependencies = [
     { name = "google-api-core", extra = ["grpc"] },
@@ -1429,9 +1429,9 @@ dependencies = [
     { name = "proto-plus" },
     { name = "protobuf" },
 ]
-sdist = { url = "https://files.pythonhosted.org/packages/8f/69/1389655f6949d0da0c1c5a359e64aece0a199ba177b33b7a070aa86bf672/google_cloud_datastore-2.24.0.tar.gz", hash = "sha256:f087c02a6aa4ac68bbf17f0c048ae3ee355856bf09c51439bfba193741387792", size = 266157, upload-time = "2026-03-30T22:49:52.688Z" }
+sdist = { url = "https://files.pythonhosted.org/packages/d6/b2/d4679b666980da16cfe8c80c7a3f1996c29fc2b9d5a2db1ab22144d88a09/google_cloud_datastore-2.25.0.tar.gz", hash = "sha256:dd646a3d8f99c2750bb5f6e0f18ece7bed95fd76e02dacaddbfa35a2b22328ff", size = 265596, upload-time = "2026-06-03T15:28:05.261Z" }
 wheels = [
-    { url = "https://files.pythonhosted.org/packages/5b/88/357efc6b331fd29155dcb92a5dfb0030a8a6feddb7bbf8a6215defbed6c7/google_cloud_datastore-2.24.0-py3-none-any.whl", hash = "sha256:81f1d1c12c2906f59507f72742545ab04c38f62ed70b0542057e3cf04a53aa65", size = 207690, upload-time = "2026-03-30T22:47:49.48Z" },
+    { url = "https://files.pythonhosted.org/packages/95/b2/fd5a3e55a5f698fd527f783ce27368e8e9c3d872bd1e1c39dd377b2b9f14/google_cloud_datastore-2.25.0-py3-none-any.whl", hash = "sha256:e47e25933bcfad7118335015b0de2f2b2b5444e81f6f029a62040f568f4f52eb", size = 207230, upload-time = "2026-06-03T15:27:15.488Z" },
 ]
 
 [[package]]
@@ -5345,7 +5345,7 @@ wheels = [
 
 [[package]]
 name = "testcontainers"
-version = "4.15.0rc2"
+version = "4.15.0rc3"
 source = { editable = "." }
 dependencies = [
     { name = "docker" },
