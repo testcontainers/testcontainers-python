@@ -1,5 +1,6 @@
-from testcontainers.community.weaviate import WeaviateContainer
 import weaviate
+
+from testcontainers.community.weaviate import WeaviateContainer
 
 
 def test_docker_run_weaviate():

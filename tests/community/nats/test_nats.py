@@ -1,9 +1,10 @@
-from testcontainers.community.nats import NatsContainer
 from uuid import uuid4
-import pytest
 
+import pytest
 from nats import connect as nats_connect
 from nats.aio.client import Client as NATSClient
+
+from testcontainers.community.nats import NatsContainer
 
 
 async def get_client(container: NatsContainer) -> "NATSClient":
@@ -22,7 +23,7 @@ def test_basic_container_ops():
     with NatsContainer() as container:
         # Not sure how to get type information without doing this
         container: NatsContainer = container
-        h, p = container.nats_host_and_port()
+        h, _p = container.nats_host_and_port()
         assert h == "localhost"
         uri = container.nats_uri()
         management_uri = container.nats_management_uri()

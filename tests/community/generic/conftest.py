@@ -1,5 +1,7 @@
-import pytest
 from typing import Callable
+
+import pytest
+
 from testcontainers.core.container import DockerClient
 
 

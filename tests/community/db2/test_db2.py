@@ -1,10 +1,8 @@
-from unittest import mock
-
 import pytest
 import sqlalchemy
 
-from testcontainers.core.utils import is_arm
 from testcontainers.community.db2 import Db2Container
+from testcontainers.core.utils import is_arm
 
 pytestmark = pytest.mark.xdist_group("db2")
 

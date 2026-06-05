@@ -13,12 +13,12 @@ MESSAGE = {"hello": "world"}
 
 
 @pytest.mark.parametrize(
-    argnames=["port", "username", "password", "vhost"],
+    argnames="port, username, password, vhost",
     argvalues=[
-        [None, None, None, None],  # use the defaults
-        [5673, None, None, None],  # test with custom port
-        [None, "my_test_user", "my_secret_password", None],  # test with custom credentials
-        [None, None, None, "vhost"],  # test with custom vhost
+        (None, None, None, None),  # use the defaults
+        (5673, None, None, None),  # test with custom port
+        (None, "my_test_user", "my_secret_password", None),  # test with custom credentials
+        (None, None, None, "vhost"),  # test with custom vhost
     ],
 )
 def test_docker_run_rabbitmq(

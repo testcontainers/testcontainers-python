@@ -1,10 +1,9 @@
 # This app will use redis to store given key-value pairs.
 
 import os
+
 import redis
-
 from fastapi import FastAPI
-
 
 app = FastAPI()
 

@@ -1,13 +1,14 @@
+import pytest
+
+from testcontainers.core.config import testcontainers_config as config
 from testcontainers.core.labels import (
     LABEL_LANG,
     LABEL_SESSION_ID,
     LABEL_TESTCONTAINERS,
     LABEL_VERSION,
-    create_labels,
     TESTCONTAINERS_NAMESPACE,
+    create_labels,
 )
-import pytest
-from testcontainers.core.config import testcontainers_config as config
 
 
 def assert_in_with_value(labels: dict[str, str], label: str, value: str, known_before_test_time: bool):

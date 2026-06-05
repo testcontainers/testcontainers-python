@@ -1,5 +1,6 @@
-from testcontainers.community.trino import TrinoContainer
 from trino.dbapi import connect
+
+from testcontainers.community.trino import TrinoContainer
 
 
 def test_docker_run_trino():

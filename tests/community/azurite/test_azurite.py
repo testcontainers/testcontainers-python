@@ -1,16 +1,13 @@
 import logging
-import time
 from pathlib import Path
 
 from azure.storage.blob import BlobServiceClient
 
 from testcontainers.community.azurite import AzuriteContainer, ConnectionStringType
-
-from testcontainers.core.image import DockerImage
 from testcontainers.core.container import DockerContainer
+from testcontainers.core.image import DockerImage
 from testcontainers.core.network import Network
 from testcontainers.core.waiting_utils import wait_for_logs
-
 
 logger = logging.getLogger(__name__)
 

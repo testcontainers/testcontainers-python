@@ -1,6 +1,6 @@
-from testcontainers.community.opensearch import OpenSearchContainer
-
 import pytest
+
+from testcontainers.community.opensearch import OpenSearchContainer
 
 
 @pytest.fixture(autouse=True)

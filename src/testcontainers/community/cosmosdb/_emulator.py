@@ -32,7 +32,9 @@ class CosmosDBEmulatorContainer(DockerContainer):
             "AZURE_COSMOS_EMULATOR_IMAGE", "mcr.microsoft.com/cosmosdb/linux/azure-cosmos-emulator:latest"
         ),
         partition_count: int = os.getenv("AZURE_COSMOS_EMULATOR_PARTITION_COUNT", None),
-        enable_data_persistence: bool = os.getenv("AZURE_COSMOS_EMULATOR_ENABLE_DATA_PERSISTENCE", "false").strip().lower() in _ENV_TRUTHY,
+        enable_data_persistence: bool = (
+            os.getenv("AZURE_COSMOS_EMULATOR_ENABLE_DATA_PERSISTENCE", "false").strip().lower() in _ENV_TRUTHY
+        ),
         key: str = os.getenv(
             "AZURE_COSMOS_EMULATOR_KEY",
             "C2y6yDjf5/R+ob0N8A7Cgv30VRDJIWEHLM+4QDU5DE2nQ9nDuVTqobD4b8mGGyPMbIZnqyMsEcaGQy67XIw/Jw==",

@@ -2,12 +2,13 @@
 ArangoDB Container Tests
 """
 
+import platform
+
 import pytest
 from arango import ArangoClient
 from arango.exceptions import DatabaseCreateError, ServerVersionError
 
 from testcontainers.community.arangodb import ArangoDbContainer
-import platform
 
 ARANGODB_IMAGE_NAME = "arangodb"
 IMAGE_VERSION = "3.11.8"

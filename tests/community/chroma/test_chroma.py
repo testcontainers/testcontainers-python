@@ -1,5 +1,6 @@
-from testcontainers.community.chroma import ChromaContainer
 import chromadb
+
+from testcontainers.community.chroma import ChromaContainer
 
 
 def test_docker_run_chroma():

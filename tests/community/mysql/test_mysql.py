@@ -1,12 +1,12 @@
-from pathlib import Path
 import re
+from pathlib import Path
 from unittest import mock
 
 import pytest
 import sqlalchemy
 
-from testcontainers.core.utils import is_arm
 from testcontainers.community.mysql import MySqlContainer
+from testcontainers.core.utils import is_arm
 
 
 @pytest.mark.inside_docker_check
@@ -77,7 +77,7 @@ def test_docker_env_variables():
     ],
 )
 def test_mysql_dialect_expecting_error_on_mysql_prefix(dialect: str):
-    match = f"Please remove *.* prefix from dialect parameter"
+    match = "Please remove *.* prefix from dialect parameter"
 
     with pytest.raises(ValueError, match=match):
         _ = MySqlContainer("mariadb:10.6.5", dialect=dialect)

@@ -224,8 +224,6 @@ line-length = 120
 fix = true
 
 [tool.ruff.lint]
-fixable = ["I"]
-exclude = ["**/tests/**/*.py"]
 select = [
   "YTT",
   "B",
@@ -248,20 +246,33 @@ select = [
 ]
 ignore = [
   "E501",
-  "INP001",
   "A004",
+  "PT011",# there are a lof broad exception catches, fix later
+  "PT012", # multiple statements in pytest.raises are okay
+  "PT030", # also broad Depecration Warnings are okay
+  "TC001","TC002","TC003" # performance effect of type-like imports is minimal
 ]
 
 [tool.ruff.lint.per-file-ignores]
 "**/example_*.py" = ["T201"]
 "**/*_example.py" = ["T201"]
 "**/examples/*.py" = ["T201"]
+"tests/**" = [
+  "SIM", # we don't need simple code in tests
+  "T201", # prints are okay in tests
+  "T203",# pprint is okay in tests
+  "B017",# assert Exception is okay in tests
+  "RUF059",  # unused unpacked variables are okay in tests
+]
 
 [tool.ruff.lint.pyupgrade]
 keep-runtime-typing = true
 
 [tool.ruff.lint.flake8-type-checking]
 strict = true
+
+[tool.ruff.lint.flake8-pytest-style]
+parametrize-names-type = "csv"
 
 [tool.mypy]
 python_version = "3.10"

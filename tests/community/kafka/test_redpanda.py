@@ -1,9 +1,9 @@
-import pytest
-from requests import post, get
 from json import dumps
 
-from kafka import KafkaConsumer, KafkaProducer, TopicPartition, KafkaAdminClient
+import pytest
+from kafka import KafkaAdminClient, KafkaConsumer, KafkaProducer, TopicPartition
 from kafka.admin import NewTopic
+from requests import get, post
 
 from testcontainers.community.kafka import RedpandaContainer
 

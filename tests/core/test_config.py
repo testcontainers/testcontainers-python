@@ -1,22 +1,21 @@
-import pytest
-
-from testcontainers.core.config import (
-    TestcontainersConfiguration as TCC,
-    TC_FILE,
-    TestcontainersConfiguration,
-    get_user_overwritten_connection_mode,
-    ConnectionMode,
-    get_docker_socket,
-)
-
-from pytest import MonkeyPatch, mark, LogCaptureFixture
-
 import logging
 import tempfile
 from unittest.mock import Mock
 
+import pytest
 
-def test_read_tc_properties(monkeypatch: MonkeyPatch) -> None:
+from testcontainers.core.config import (
+    TC_FILE,
+    TestcontainersConfiguration,
+    get_docker_socket,
+    get_user_overwritten_connection_mode,
+)
+from testcontainers.core.config import (
+    TestcontainersConfiguration as TCC,
+)
+
+
+def test_read_tc_properties(monkeypatch: pytest.MonkeyPatch) -> None:
     with tempfile.TemporaryDirectory() as tmpdirname:
         file = f"{tmpdirname}/{TC_FILE}"
         with open(file, "w") as f:
@@ -28,7 +27,7 @@ def test_read_tc_properties(monkeypatch: MonkeyPatch) -> None:
         assert config.tc_properties == {"tc.host": "some_value"}
 
 
-def test_hub_image_name_prefix(monkeypatch: MonkeyPatch) -> None:
+def test_hub_image_name_prefix(monkeypatch: pytest.MonkeyPatch) -> None:
     """
     Ensure that the hub_image_name_prefix configuration variable can be read from the environment
     """
@@ -37,7 +36,7 @@ def test_hub_image_name_prefix(monkeypatch: MonkeyPatch) -> None:
     assert config.hub_image_name_prefix == "myregistry.local/"
 
 
-def test_set_tc_properties(monkeypatch: MonkeyPatch) -> None:
+def test_set_tc_properties(monkeypatch: pytest.MonkeyPatch) -> None:
     """
     Ensure the configuration file variables can be read if no environment variable is set
     """
@@ -51,11 +50,11 @@ def test_set_tc_properties(monkeypatch: MonkeyPatch) -> None:
 
         config = TCC()
 
-        assert config.ryuk_disabled == True
-        assert config.ryuk_privileged == False
+        assert config.ryuk_disabled
+        assert not config.ryuk_privileged
 
 
-def test_override_tc_properties_1(monkeypatch: MonkeyPatch) -> None:
+def test_override_tc_properties_1(monkeypatch: pytest.MonkeyPatch) -> None:
     """
     Ensure that we can re-set the configuration variables programattically to override
     testcontainers.properties
@@ -72,11 +71,11 @@ def test_override_tc_properties_1(monkeypatch: MonkeyPatch) -> None:
         config.ryuk_disabled = False
         config.ryuk_privileged = True
 
-        assert config.ryuk_disabled == False
-        assert config.ryuk_privileged == True
+        assert not config.ryuk_disabled
+        assert config.ryuk_privileged
 
 
-def test_override_tc_properties_2(monkeypatch: MonkeyPatch) -> None:
+def test_override_tc_properties_2(monkeypatch: pytest.MonkeyPatch) -> None:
     """
     Ensure that we can override the testcontainers.properties with environment variables
     """
@@ -95,16 +94,16 @@ def test_override_tc_properties_2(monkeypatch: MonkeyPatch) -> None:
 
         config = TCC()
 
-        assert config.ryuk_disabled == False
-        assert config.ryuk_privileged == True
+        assert config.ryuk_disabled is False
+        assert config.ryuk_privileged is True
 
 
-@mark.parametrize("docker_auth_config_env", ["key=value", ""])
-@mark.parametrize("warning_dict", [{}, {"key": "value"}, {"DOCKER_AUTH_CONFIG": "TEST"}])
-@mark.parametrize("warning_dict_post", [{}, {"key": "value"}, {"DOCKER_AUTH_CONFIG": "TEST"}])
+@pytest.mark.parametrize("docker_auth_config_env", ["key=value", ""])
+@pytest.mark.parametrize("warning_dict", [{}, {"key": "value"}, {"DOCKER_AUTH_CONFIG": "TEST"}])
+@pytest.mark.parametrize("warning_dict_post", [{}, {"key": "value"}, {"DOCKER_AUTH_CONFIG": "TEST"}])
 def test_docker_auth_config(
-    caplog: LogCaptureFixture,
-    monkeypatch: MonkeyPatch,
+    caplog: pytest.LogCaptureFixture,
+    monkeypatch: pytest.MonkeyPatch,
     docker_auth_config_env: str,
     warning_dict: dict[str, str],
     warning_dict_post: dict[str, str],
@@ -145,11 +144,11 @@ def test_timeout() -> None:
 
 def test_invalid_connection_mode(monkeypatch: pytest.MonkeyPatch) -> None:
     monkeypatch.setenv("TESTCONTAINERS_CONNECTION_MODE", "FOOBAR")
-    with pytest.raises(ValueError, match="Error parsing TESTCONTAINERS_CONNECTION_MODE.*FOOBAR.*"):
+    with pytest.raises(ValueError, match=r"Error parsing TESTCONTAINERS_CONNECTION_MODE.*FOOBAR.*"):
         get_user_overwritten_connection_mode()
 
 
-@pytest.mark.parametrize("mode, use_mapped", (("bridge_ip", False), ("gateway_ip", True), ("docker_host", True)))
+@pytest.mark.parametrize("mode, use_mapped", [("bridge_ip", False), ("gateway_ip", True), ("docker_host", True)])
 def test_valid_connection_mode(monkeypatch: pytest.MonkeyPatch, mode: str, use_mapped: bool) -> None:
     monkeypatch.setenv("TESTCONTAINERS_CONNECTION_MODE", mode)
     uo_cmo = get_user_overwritten_connection_mode()
@@ -178,8 +177,8 @@ def mock_docker_client_connections(monkeypatch: pytest.MonkeyPatch) -> None:
     """
     Ensure the docker client does not make any actual network calls
     """
-    from docker.transport.sshconn import SSHHTTPAdapter
     from docker.api.client import APIClient
+    from docker.transport.sshconn import SSHHTTPAdapter
 
     # ensure that no actual connection is tried
     monkeypatch.setattr(SSHHTTPAdapter, "_connect", Mock())
@@ -240,4 +239,4 @@ def test_attribut_error() -> None:
     from testcontainers.core import config
 
     with pytest.raises(AttributeError):
-        config.missing
+        config.missing  # noqa: B018

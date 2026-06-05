@@ -1,21 +1,21 @@
+import itertools
 import logging
 import re
 import time
 from datetime import timedelta
-from unittest.mock import Mock, patch, MagicMock
-import pytest
-import itertools
+from unittest.mock import Mock, patch
 
-from testcontainers.core.container import DockerContainer
+import pytest
+
 from testcontainers.core.wait_strategies import (
     CompositeWaitStrategy,
-    WaitStrategyTarget,
     FileExistsWaitStrategy,
     HealthcheckWaitStrategy,
     HttpWaitStrategy,
     LogMessageWaitStrategy,
     PortWaitStrategy,
     WaitStrategy,
+    WaitStrategyTarget,
 )
 
 
@@ -485,7 +485,7 @@ class TestPortWaitStrategy:
             strategy.wait_until_ready(mock_container)
             mock_socket_instance.connect.assert_called_once_with(("localhost", 8080))
         else:
-            with pytest.raises(TimeoutError, match="Port 8080 not available within 1.0 seconds"):
+            with pytest.raises(TimeoutError, match=r"Port 8080 not available within 1.0 seconds"):
                 strategy.wait_until_ready(mock_container)
 
 
@@ -547,7 +547,7 @@ class TestFileExistsWaitStrategy:
             strategy.wait_until_ready(mock_container)
             mock_is_file.assert_called()
         else:
-            with pytest.raises(TimeoutError, match="File.*did not exist within.*seconds"):
+            with pytest.raises(TimeoutError, match=r"File.*did not exist within.*seconds"):
                 with caplog.at_level(logging.CRITICAL, logger="testcontainers.core.wait_strategies"):
                     strategy.wait_until_ready(mock_container)
 

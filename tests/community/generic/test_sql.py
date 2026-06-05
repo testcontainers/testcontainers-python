@@ -1,9 +1,10 @@
-import pytest
 from unittest.mock import patch
 
-from testcontainers.core.exceptions import ContainerStartException
-from testcontainers.community.generic.sql import SqlContainer
+import pytest
+
 from testcontainers.community.generic.providers.sql_connection_wait_strategy import SqlAlchemyConnectWaitStrategy
+from testcontainers.community.generic.sql import SqlContainer
+from testcontainers.core.exceptions import ContainerStartException
 
 
 class SimpleSqlContainer(SqlContainer):

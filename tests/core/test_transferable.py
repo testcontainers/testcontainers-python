@@ -1,12 +1,12 @@
-from pathlib import Path
-
-import pytest
-from testcontainers.core.container import DockerContainer
-from testcontainers.core.transferable import Transferable, TransferSpec, build_transfer_tar
-
 import io
 import tarfile
+from pathlib import Path
 from typing import Any
+
+import pytest
+
+from testcontainers.core.container import DockerContainer
+from testcontainers.core.transferable import Transferable, TransferSpec, build_transfer_tar
 
 
 def test_build_transfer_tar_from_bytes():

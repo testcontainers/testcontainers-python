@@ -2,10 +2,9 @@ from typing import Any
 
 import pytest
 
+from testcontainers.core.config import ConnectionMode, testcontainers_config
 from testcontainers.core.container import DockerContainer
 from testcontainers.core.docker_client import DockerClient
-from testcontainers.core.config import ConnectionMode
-from testcontainers.core.config import testcontainers_config
 
 FAKE_ID = "ABC123"
 
@@ -162,7 +161,7 @@ def test_container_info_network_details():
         assert network_settings is not None
 
         if network_settings.Networks:
-            network_name, network = next(iter(network_settings.Networks.items()))
+            _network_name, network = next(iter(network_settings.Networks.items()))
             assert network.IPAddress is not None
             assert network.Gateway is not None
             assert network.NetworkID is not None

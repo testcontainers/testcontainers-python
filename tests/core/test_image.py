@@ -1,10 +1,10 @@
-import pytest
-import tempfile
-import random
 import os
-
+import random
+import tempfile
 from pathlib import Path
 from typing import Any, Optional
+
+import pytest
 
 from testcontainers.core.container import DockerContainer
 from testcontainers.core.image import DockerImage
@@ -66,7 +66,7 @@ def test_docker_image_with_custom_dockerfile_path(dockerfile_path: Optional[Path
 
         with open(temp_dir_path / dockerfile_rel_path, "x") as f:
             f.write(
-                f"""
+                """
                 FROM alpine:latest
                 CMD echo "Hello world!"
                 """
@@ -79,14 +79,14 @@ def test_docker_image_with_custom_dockerfile_path(dockerfile_path: Optional[Path
                 assert c_c
                 assert c_c.image is not None
                 assert c_c.image.short_id.endswith(image_short_id), "Image ID mismatch"
-                assert container.get_logs() == (("Hello world!\n").encode(), b""), "Container logs mismatch"
+                assert container.get_logs() == ((b"Hello world!\n"), b""), "Container logs mismatch"
 
 
 def test_docker_image_with_kwargs():
     with tempfile.TemporaryDirectory() as temp_directory:
         with open(f"{temp_directory}/Dockerfile", "w") as f:
             f.write(
-                f"""
+                """
                 FROM alpine:latest
                 ARG TEST_ARG
                 ENV TEST_ARG $TEST_ARG
@@ -103,4 +103,4 @@ def test_docker_image_with_kwargs():
                 assert c_c
                 assert c_c.image is not None
                 assert c_c.image.short_id.endswith(image_short_id), "Image ID mismatch"
-                assert container.get_logs() == (("new_arg\n").encode(), b""), "Container logs mismatch"
+                assert container.get_logs() == ((b"new_arg\n"), b""), "Container logs mismatch"

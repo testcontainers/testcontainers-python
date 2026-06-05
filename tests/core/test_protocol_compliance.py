@@ -1,11 +1,8 @@
 """Test protocol compliance for wait strategy targets."""
 
-import pytest
-from typing import get_type_hints
-
-from testcontainers.core.waiting_utils import WaitStrategyTarget
-from testcontainers.core.container import DockerContainer
 from testcontainers.compose.compose import ComposeContainer
+from testcontainers.core.container import DockerContainer
+from testcontainers.core.waiting_utils import WaitStrategyTarget
 
 
 def test_docker_container_implements_wait_strategy_target():

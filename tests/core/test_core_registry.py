@@ -12,7 +12,6 @@ import base64
 import json
 
 import pytest
-from ._local_registry_container import _LocalRegistryContainer
 from docker.errors import NotFound
 
 from testcontainers.core.config import testcontainers_config
@@ -20,6 +19,8 @@ from testcontainers.core.container import DockerContainer
 from testcontainers.core.docker_client import DockerClient, is_podman, is_ssh_docker_host
 from testcontainers.core.utils import is_mac
 from testcontainers.core.waiting_utils import wait_for_logs
+
+from ._local_registry_container import _LocalRegistryContainer
 
 _skip_insecure_registry = pytest.mark.skipif(
     is_mac() or is_podman() or is_ssh_docker_host(),
@@ -38,7 +39,7 @@ def test_missing_on_private_registry(monkeypatch):
         registry_url = registry.get_registry()
 
         # prepare auth config
-        creds: bytes = base64.b64encode(f"{username}:{password}".encode("utf-8"))
+        creds: bytes = base64.b64encode(f"{username}:{password}".encode())
         config = {"auths": {f"{registry_url}": {"auth": creds.decode("utf-8")}}}
         monkeypatch.setattr(testcontainers_config, name="docker_auth_config", value=json.dumps(config))
         assert testcontainers_config.docker_auth_config, "docker_auth_config not set"
@@ -78,7 +79,7 @@ def test_with_private_registry(image, tag, username, password, expected_output, 
         client.images.remove(f"{registry_url}/{image}:{tag}")
 
         # prepare auth config
-        creds: bytes = base64.b64encode(f"{username}:{password}".encode("utf-8"))
+        creds: bytes = base64.b64encode(f"{username}:{password}".encode())
         config = {"auths": {f"{registry_url}": {"auth": creds.decode("utf-8")}}}
         monkeypatch.setattr(testcontainers_config, name="docker_auth_config", value=json.dumps(config))
         assert testcontainers_config.docker_auth_config, "docker_auth_config not set"

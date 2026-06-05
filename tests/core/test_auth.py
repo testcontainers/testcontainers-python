@@ -1,7 +1,8 @@
 import json
+
 import pytest
 
-from testcontainers.core.auth import parse_docker_auth_config, DockerAuthInfo
+from testcontainers.core.auth import DockerAuthInfo, parse_docker_auth_config
 
 
 def test_parse_docker_auth_config_encoded():

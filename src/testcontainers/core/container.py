@@ -4,11 +4,10 @@ import io
 import pathlib
 import sys
 import tarfile
-from collections.abc import Mapping
 from os import PathLike
 from socket import socket
 from types import TracebackType
-from typing import TYPE_CHECKING, Any, Optional, TypedDict, Union, cast
+from typing import TYPE_CHECKING, Any, Optional, TypedDict, Union
 
 import docker.errors
 from docker import version

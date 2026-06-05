@@ -1,5 +1,5 @@
-import os
 import json
+import os
 from collections import namedtuple
 from typing import Any
 from unittest import mock
@@ -7,17 +7,15 @@ from unittest.mock import MagicMock, patch
 
 import docker
 import pytest
+from docker.models.networks import Network
 
-from testcontainers.core.config import testcontainers_config as c, ConnectionMode
+from testcontainers.core import utils
+from testcontainers.core.auth import parse_docker_auth_config
+from testcontainers.core.config import ConnectionMode
+from testcontainers.core.config import testcontainers_config as c
 from testcontainers.core.container import DockerContainer
 from testcontainers.core.docker_client import DockerClient, is_ssh_docker_host
-from testcontainers.core.auth import parse_docker_auth_config
 from testcontainers.core.image import DockerImage
-from testcontainers.core import utils
-
-from pytest import mark
-
-from docker.models.networks import Network
 
 
 def _expected_from_env_kwargs(**kwargs: Any) -> dict[str, Any]:
@@ -99,7 +97,7 @@ def test_docker_client_login_empty_parse_docker_auth_config():
 
 
 # This is used to make sure we don't fail (nor try to login) when we have unsupported auth config
-@mark.parametrize("auth_config_sample", [{"credHelpers": {"test": "login"}}, {"credsStore": "login"}])
+@pytest.mark.parametrize("auth_config_sample", [{"credHelpers": {"test": "login"}}, {"credsStore": "login"}])
 def test_docker_client_login_unsupported_auth_config(auth_config_sample):
     mock_docker = MagicMock(spec=docker)
     mock_get_docker_auth_config = MagicMock()

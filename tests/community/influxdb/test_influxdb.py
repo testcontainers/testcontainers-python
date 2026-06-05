@@ -12,33 +12,32 @@
 #    under the License.
 
 from datetime import datetime
-from typing import Type
 
+import pytest
 from influxdb.resultset import ResultSet
 from influxdb_client import Bucket
 from influxdb_client.client.write_api import SYNCHRONOUS
-from pytest import mark
 
 from testcontainers.community.influxdb import InfluxDbContainer
 from testcontainers.community.influxdb1 import InfluxDb1Container
 from testcontainers.community.influxdb2 import InfluxDb2Container
 
 
-@mark.parametrize(
-    ["image", "influxdb_container_class", "exposed_port"],
+@pytest.mark.parametrize(
+    "image, influxdb_container_class, exposed_port",
     [
         ("influxdb:2.7", InfluxDb1Container, 8086),
         ("influxdb:1.8", InfluxDb2Container, 8086),
     ],
 )
-def test_influxdbcontainer_get_url(image: str, influxdb_container_class: Type[InfluxDbContainer], exposed_port: int):
+def test_influxdbcontainer_get_url(image: str, influxdb_container_class: type[InfluxDbContainer], exposed_port: int):
     with influxdb_container_class(image, host_port=exposed_port) as influxdb_container:
         connection_url = influxdb_container.get_url()
         assert str(exposed_port) in connection_url
 
 
-@mark.parametrize(
-    ["image", "influxdb_container_class", "expected_version"],
+@pytest.mark.parametrize(
+    "image, influxdb_container_class, expected_version",
     [
         ("influxdb:1.8", InfluxDb1Container, "1.8.10"),
         ("influxdb:1.8.10", InfluxDb1Container, "1.8.10"),
@@ -47,7 +46,7 @@ def test_influxdbcontainer_get_url(image: str, influxdb_container_class: Type[In
     ],
 )
 def test_influxdbcontainer_get_influxdb_version(
-    image: str, influxdb_container_class: Type[InfluxDbContainer], expected_version: str
+    image: str, influxdb_container_class: type[InfluxDbContainer], expected_version: str
 ):
     with influxdb_container_class(image) as influxdb_container:
         assert influxdb_container.get_influxdb_version().startswith(expected_version)

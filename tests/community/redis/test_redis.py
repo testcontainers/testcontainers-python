@@ -1,8 +1,9 @@
 import time
 
-from testcontainers.community.redis import RedisContainer, AsyncRedisContainer
 import pytest
 import redis
+
+from testcontainers.community.redis import AsyncRedisContainer, RedisContainer
 
 
 def test_docker_run_redis():

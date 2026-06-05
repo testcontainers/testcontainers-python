@@ -470,11 +470,11 @@ class DockerClient:
         login_info = self.client.login(**auth_config._asdict())
         LOGGER.debug(f"logged in using {login_info}")
 
-    def client_networks_create(self, name: str, param: dict[str, Any]) -> "DockerNetwork":
+    def client_networks_create(self, name: str, param: dict[str, Any]) -> DockerNetwork:
         labels = create_labels("", param.get("labels"))
         return self.client.networks.create(name, **{**param, "labels": labels})
 
-    def get_container_inspect_info(self, container_id: str) -> "ContainerInspectInfo":
+    def get_container_inspect_info(self, container_id: str) -> ContainerInspectInfo:
         """Get container inspect information with fresh data."""
         container = self.client.containers.get(container_id)
         return ContainerInspectInfo.from_dict(container.attrs)

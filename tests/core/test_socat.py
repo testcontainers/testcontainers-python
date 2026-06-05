@@ -18,7 +18,7 @@ def test_socat_with_helloworld():
     ):
         socat_url = f"http://{socat.get_container_host_ip()}:{socat.get_exposed_port(8080)}"
 
-        response = requests.get(f"{socat_url}/ping")  # noqa: S113
+        response = requests.get(f"{socat_url}/ping")
 
         assert response.status_code == 200
         assert response.content == b"PONG"

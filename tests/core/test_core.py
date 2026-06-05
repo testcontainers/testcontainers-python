@@ -19,7 +19,7 @@ def test_get_logs():
         stdout, stderr = container.get_logs()
         assert isinstance(stdout, bytes)
         assert isinstance(stderr, bytes)
-        assert "Hello from Docker".encode() in stdout, "There should be something on stdout"
+        assert b"Hello from Docker" in stdout, "There should be something on stdout"
 
 
 def test_docker_container_with_env_file():
