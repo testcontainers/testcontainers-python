@@ -131,7 +131,7 @@ test = [
   "paramiko>=4",
   "twine>=6.2.0",
   "anyio>=4",
-  "tomli", # required for pyproject.toml tests, TODO: remove once we drop py3.10 support
+  "tomli>=2.0; python_version < '3.11'", # required for pyproject.toml tests, TODO: remove once we drop py3.10 support
   "pytest-xdist>=3.8.0",
 ]
 lint = [

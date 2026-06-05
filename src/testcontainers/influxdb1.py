@@ -1,6 +1,6 @@
 import warnings
 
-from testcontainers.community.influxdb1 import (
+from testcontainers.community.influxdb import (
     InfluxDb1Container,
 )
 
