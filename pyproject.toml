@@ -204,9 +204,10 @@ branch = true
 omit = ["oracle.py"]
 
 [tool.coverage.report]
-exclude_lines = [
+exclude_also = [
   "pass",
   "raise NotImplementedError",
+  "if TYPE_CHECKING:",
 ]
 
 [tool.coverage.paths]
