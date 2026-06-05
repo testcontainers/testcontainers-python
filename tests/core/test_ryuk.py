@@ -1,13 +1,11 @@
-from time import sleep, perf_counter
-import pytest
-from pytest import MonkeyPatch
+from time import perf_counter, sleep
 
+import pytest
 from docker import DockerClient
 from docker.errors import NotFound
 
 from testcontainers.core.config import testcontainers_config
-from testcontainers.core.container import Reaper
-from testcontainers.core.container import DockerContainer
+from testcontainers.core.container import DockerContainer, Reaper
 from testcontainers.core.utils import is_mac
 from testcontainers.core.waiting_utils import wait_for_logs
 
@@ -38,7 +36,7 @@ def _wait_for_container_removed(client: DockerClient, container_id: str, timeout
     reason="Ryuk container reaping is unreliable on Docker Desktop for macOS due to VM-based container lifecycle handling",
 )
 @pytest.mark.inside_docker_check
-def test_wait_for_reaper(monkeypatch: MonkeyPatch):
+def test_wait_for_reaper(monkeypatch: pytest.MonkeyPatch):
     Reaper.delete_instance()
     monkeypatch.setattr(testcontainers_config, "ryuk_reconnection_timeout", "0.1s")
     container = DockerContainer("hello-world")
@@ -78,7 +76,7 @@ def test_wait_for_reaper(monkeypatch: MonkeyPatch):
     is_mac(), reason="Ryuk disabling behavior is unreliable on Docker Desktop for macOS due to Docker socket emulation"
 )
 @pytest.mark.inside_docker_check
-def test_container_without_ryuk(monkeypatch: MonkeyPatch):
+def test_container_without_ryuk(monkeypatch: pytest.MonkeyPatch):
     Reaper.delete_instance()
     monkeypatch.setattr(testcontainers_config, "ryuk_disabled", True)
     with DockerContainer("hello-world") as container:

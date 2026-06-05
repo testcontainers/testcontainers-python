@@ -5,16 +5,17 @@ from typing import Optional
 import pytest
 from httpx import get
 
-from testcontainers.core.waiting_utils import wait_for_logs
-from testcontainers.core.image import DockerImage
 from testcontainers.community.generic import ServerContainer
+from testcontainers.core.image import DockerImage
+from testcontainers.core.waiting_utils import wait_for_logs
 
 TEST_DIR = Path(__file__).parent
 
 
 @pytest.mark.parametrize("test_image_cleanup", [True, False])
 @pytest.mark.parametrize("test_image_tag", [None, "custom-image:test"])
-def test_server_container(test_image_tag: Optional[str], test_image_cleanup: bool, check_for_image, port=9000):
+def test_server_container(test_image_tag: Optional[str], test_image_cleanup: bool, check_for_image):
+    port = 9000
     with (
         DockerImage(
             path=TEST_DIR / "samples/python_server",

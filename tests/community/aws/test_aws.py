@@ -1,13 +1,13 @@
-import re
 import os
-
-import pytest
+import re
+from pathlib import Path
 from unittest.mock import patch
 
-from testcontainers.core.image import DockerImage
+import pytest
+
 from testcontainers.community.aws import AWSLambdaContainer
 from testcontainers.community.aws.aws_lambda import RIE_PATH
-from pathlib import Path
+from testcontainers.core.image import DockerImage
 
 DOCKER_FILE_PATH = Path(__file__).parent / "lambda_sample"
 IMAGE_TAG = "lambda:test"
@@ -30,12 +30,12 @@ def test_aws_lambda_container():
 
 
 def test_aws_lambda_container_external_env_vars():
-    vars = {
+    variables = {
         "AWS_DEFAULT_REGION": "region",
         "AWS_ACCESS_KEY_ID": "id",
         "AWS_SECRET_ACCESS_KEY": "key",
     }
-    with patch.dict(os.environ, vars):
+    with patch.dict(os.environ, variables):
         with DockerImage(path=DOCKER_FILE_PATH, tag="test-lambda-env-vars:latest") as image:
             with AWSLambdaContainer(image=image, port=8080) as func:
                 assert func.env["AWS_DEFAULT_REGION"] == "region"
@@ -52,6 +52,6 @@ def test_aws_lambda_container_no_port():
 
 def test_aws_lambda_container_no_path():
     with pytest.raises(TypeError):
-        with DockerImage(path=DOCKER_FILE_PATH, tag="test-lambda-no-path:latest") as image:
+        with DockerImage(path=DOCKER_FILE_PATH, tag="test-lambda-no-path:latest"):
             with AWSLambdaContainer() as func:  # noqa: F841
                 pass

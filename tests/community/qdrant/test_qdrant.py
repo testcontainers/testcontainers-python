@@ -1,10 +1,11 @@
-import pytest
-from testcontainers.community.qdrant import QdrantContainer
 import uuid
-from grpc import RpcError
 from pathlib import Path
 
+import pytest
 import qdrant_client
+from grpc import RpcError
+
+from testcontainers.community.qdrant import QdrantContainer
 
 
 def test_docker_run_qdrant():

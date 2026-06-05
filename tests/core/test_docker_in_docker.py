@@ -1,23 +1,23 @@
 import contextlib
 import json
 import os
-import time
 import socket
 import sys
+import time
+from collections.abc import Generator
 from pathlib import Path
-from typing import Final, Any, Generator
+from typing import Any, Final
 
 import pytest
 from docker.models.containers import Container
 
 from testcontainers.core import utils
 from testcontainers.core.config import testcontainers_config as tcc
+from testcontainers.core.container import DockerContainer
+from testcontainers.core.docker_client import LOGGER, DockerClient, is_ssh_docker_host
 from testcontainers.core.labels import SESSION_ID
 from testcontainers.core.network import Network
-from testcontainers.core.container import DockerContainer
-from testcontainers.core.docker_client import DockerClient, LOGGER, is_ssh_docker_host
-from testcontainers.core.utils import inside_container
-from testcontainers.core.utils import is_mac
+from testcontainers.core.utils import inside_container, is_mac
 from testcontainers.core.waiting_utils import wait_for_logs
 
 _DIND_PYTHON_VERSION = (3, 13)
@@ -51,7 +51,7 @@ def _wait_for_dind_return_ip(client: DockerClient, dind: Container):
                 break
         except ConnectionRefusedError:
             if time.perf_counter() - start_wait > timeout:
-                raise RuntimeError("Docker in docker took longer than 10 seconds to start")
+                raise RuntimeError("Docker in docker took longer than 10 seconds to start") from None
             time.sleep(0.01)
     return docker_host_ip
 
@@ -80,7 +80,7 @@ def test_wait_for_logs_docker_in_docker():
     ) as container:
         assert container.get_container_host_ip() == docker_host_ip
         wait_for_logs(container, "Hello from Docker!")
-        stdout, stderr = container.get_logs()
+        stdout, _stderr = container.get_logs()
         assert stdout, "There should be something on stdout"
 
     not_really_dind.stop()
@@ -123,7 +123,7 @@ def test_dind_inherits_network():
         assert dind_id is not None
         assert container.get_docker_client().gateway_ip(wrapped_id) == client.gateway_ip(dind_id)
         wait_for_logs(container, "Hello from Docker!")
-        stdout, stderr = container.get_logs()
+        stdout, _stderr = container.get_logs()
         assert stdout, "There should be something on stdout"
 
     not_really_dind.stop()

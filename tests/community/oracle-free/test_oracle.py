@@ -1,8 +1,8 @@
 import pytest
 import sqlalchemy
 
-from testcontainers.core.utils import is_arm
 from testcontainers.community.oracle import OracleDbContainer
+from testcontainers.core.utils import is_arm
 
 
 @pytest.mark.skipif(is_arm(), reason="oracle-free container not available for ARM")
@@ -11,7 +11,7 @@ def test_docker_run_oracle_with_system_password():
         engine = sqlalchemy.create_engine(oracledb.get_connection_url())
         with engine.begin() as connection:
             test_val = 1
-            result = connection.execute(sqlalchemy.text("SELECT {} FROM dual".format(test_val)))
+            result = connection.execute(sqlalchemy.text(f"SELECT {test_val} FROM dual"))
             for row in result:
                 assert row[0] == test_val
 
@@ -22,7 +22,7 @@ def test_docker_run_oracle_with_username_password():
         engine = sqlalchemy.create_engine(oracledb.get_connection_url())
         with engine.begin() as connection:
             test_val = 1
-            result = connection.execute(sqlalchemy.text("SELECT {} FROM dual".format(test_val)))
+            result = connection.execute(sqlalchemy.text(f"SELECT {test_val} FROM dual"))
             for row in result:
                 assert row[0] == test_val
 
@@ -33,7 +33,7 @@ def test_docker_run_oracle_with_custom_db_and_system_username_password():
         engine = sqlalchemy.create_engine(oracledb.get_connection_url())
         with engine.begin() as connection:
             test_val = 1
-            result = connection.execute(sqlalchemy.text("SELECT {} FROM dual".format(test_val)))
+            result = connection.execute(sqlalchemy.text(f"SELECT {test_val} FROM dual"))
             for row in result:
                 assert row[0] == test_val
 
@@ -44,7 +44,7 @@ def test_docker_run_oracle_with_custom_db_and_app_username_password():
         engine = sqlalchemy.create_engine(oracledb.get_connection_url())
         with engine.begin() as connection:
             test_val = 1
-            result = connection.execute(sqlalchemy.text("SELECT {} FROM dual".format(test_val)))
+            result = connection.execute(sqlalchemy.text(f"SELECT {test_val} FROM dual"))
             for row in result:
                 assert row[0] == test_val
 
@@ -55,7 +55,7 @@ def test_docker_run_oracle_with_default_db_and_app_username_password():
         engine = sqlalchemy.create_engine(oracledb.get_connection_url())
         with engine.begin() as connection:
             test_val = 1
-            result = connection.execute(sqlalchemy.text("SELECT {} FROM dual".format(test_val)))
+            result = connection.execute(sqlalchemy.text(f"SELECT {test_val} FROM dual"))
             for row in result:
                 assert row[0] == test_val
 
@@ -66,7 +66,7 @@ def test_docker_run_oracle_with_cdb_and_system_username():
         engine = sqlalchemy.create_engine(oracledb.get_connection_url())
         with engine.begin() as connection:
             test_val = 1
-            result = connection.execute(sqlalchemy.text("SELECT {} FROM dual".format(test_val)))
+            result = connection.execute(sqlalchemy.text(f"SELECT {test_val} FROM dual"))
             for row in result:
                 assert row[0] == test_val
 

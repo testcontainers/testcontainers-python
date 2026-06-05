@@ -1,4 +1,5 @@
 import hvac
+
 from testcontainers.community.vault import VaultContainer
 
 

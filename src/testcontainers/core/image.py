@@ -1,8 +1,7 @@
 from __future__ import annotations
 
 from os import PathLike
-from types import TracebackType
-from typing import TYPE_CHECKING, Any, Iterator, Optional, Union, cast
+from typing import TYPE_CHECKING, Any, Optional, Union
 
 import docker.errors
 from typing_extensions import Self
@@ -11,7 +10,8 @@ from testcontainers.core.docker_client import DockerClient
 from testcontainers.core.utils import setup_logger
 
 if TYPE_CHECKING:
-    from collections.abc import Iterable
+    from collections.abc import Iterator
+    from types import TracebackType
 
     from docker._types import JSON  # only exists in docker-stubs, not at runtime
     from docker.models.images import Image

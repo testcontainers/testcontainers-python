@@ -1,9 +1,9 @@
-import pytest
-from typing import Any, Union, Optional
-from testcontainers.core.container import DockerContainer
+from typing import Any, Optional, Union
 
+import pytest
 from docker.errors import APIError
 
+from testcontainers.core.container import DockerContainer
 from testcontainers.core.docker_client import is_podman
 
 

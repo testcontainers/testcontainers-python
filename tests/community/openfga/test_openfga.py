@@ -1,6 +1,8 @@
-import pytest
-from testcontainers.community.openfga import OpenFGAContainer
 from sys import version_info
+
+import pytest
+
+from testcontainers.community.openfga import OpenFGAContainer
 
 
 def test_openfga():

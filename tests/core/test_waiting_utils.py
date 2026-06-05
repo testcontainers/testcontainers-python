@@ -2,7 +2,7 @@ import pytest
 
 from testcontainers.core.container import DockerContainer
 from testcontainers.core.wait_strategies import ContainerStatusWaitStrategy
-from testcontainers.core.waiting_utils import wait_for_logs, wait_for, wait_container_is_ready
+from testcontainers.core.waiting_utils import wait_container_is_ready, wait_for_logs
 
 
 def test_wait_for_logs() -> None:

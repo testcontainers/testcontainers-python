@@ -1,9 +1,10 @@
-from testcontainers.community.nats import NatsContainer
 from uuid import uuid4
-import pytest
 
+import pytest
 from nats import connect as nats_connect
 from nats.aio.client import Client as NATSClient
+
+from testcontainers.community.nats import NatsContainer
 
 
 async def get_client(container: NatsContainer) -> "NATSClient":

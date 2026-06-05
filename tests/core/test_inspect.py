@@ -5,7 +5,6 @@ import pytest
 from testcontainers.core.container import DockerContainer
 from testcontainers.core.docker_client import DockerClient
 from testcontainers.core.inspect import ContainerInspectInfo
-from testcontainers.core.config import ConnectionMode
 
 FAKE_ID = "ABC123"
 

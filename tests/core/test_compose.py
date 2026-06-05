@@ -3,13 +3,13 @@ import subprocess
 from pathlib import Path
 from re import split
 from time import sleep
-from typing import Union, Optional
-from urllib.request import urlopen, Request
+from typing import Optional, Union
+from urllib.request import Request, urlopen
 
 import pytest
 from pytest_mock import MockerFixture
 
-from testcontainers.compose import DockerCompose, ComposeContainer
+from testcontainers.compose import ComposeContainer, DockerCompose
 from testcontainers.core.docker_client import is_podman
 from testcontainers.core.exceptions import ContainerIsNotRunning, NoSuchPortExposed
 
@@ -169,7 +169,7 @@ def test_compose_volumes(caplog):
     # execute another time to confirm the file is still there, but we're not keeping the volumes this time
     volumes.keep_volumes = False
     with volumes:
-        stdout, stderr, exitcode = volumes.exec_in_container(["cat", _file_in_volume], "alpine")
+        stdout, _stderr, exitcode = volumes.exec_in_container(["cat", _file_in_volume], "alpine")
     assert exitcode == 0
     assert "hello" in stdout
 
@@ -228,7 +228,7 @@ def test_compose_multiple_containers_and_ports():
         try:
             # this fails when ipv6 is enabled and docker is forwarding for both 4 + 6
             multiple.get_container(service_name="alpine").get_publisher(by_port=81, prefer_ip_version="IPv6")
-        except:  # noqa
+        except:  # noqa: E722
             pass
 
         ports = [
@@ -369,7 +369,7 @@ def fetch(req: Union[Request, str]):
 
 
 @pytest.mark.parametrize(
-    argnames=["profiles", "running", "not_running"],
+    argnames="profiles, running, not_running",
     argvalues=[
         pytest.param(None, ["runs-always"], ["runs-profile-a", "runs-profile-b"], id="default"),
         pytest.param(
@@ -489,7 +489,7 @@ def test_container_info_network_details():
 
         if network_settings.Networks:
             # Test first network
-            network_name, network = next(iter(network_settings.Networks.items()))
+            _network_name, network = next(iter(network_settings.Networks.items()))
             assert network.IPAddress is not None
             assert network.Gateway is not None
             assert network.NetworkID is not None

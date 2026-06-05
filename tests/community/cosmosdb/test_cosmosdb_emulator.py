@@ -1,4 +1,3 @@
-import pytest
 from testcontainers.community.cosmosdb._emulator import CosmosDBEmulatorContainer
 
 

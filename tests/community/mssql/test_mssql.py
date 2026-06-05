@@ -1,8 +1,8 @@
 import pytest
 import sqlalchemy
 
-from testcontainers.core.utils import is_arm
 from testcontainers.community.mssql import SqlServerContainer
+from testcontainers.core.utils import is_arm
 
 pytestmark = pytest.mark.xdist_group("mssql")
 

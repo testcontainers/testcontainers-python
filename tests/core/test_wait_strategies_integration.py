@@ -1,5 +1,3 @@
-import tempfile
-import time
 from pathlib import Path
 
 import pytest
@@ -34,9 +32,9 @@ class TestDockerComposeIntegration:
 
     def test_compose_service_wait_strategies(self):
         """Test that wait strategies work with Docker Compose services."""
-        from testcontainers.compose import DockerCompose
-        import tempfile
         from pathlib import Path
+
+        from testcontainers.compose import DockerCompose
 
         # Use basic_multiple fixture with two alpine services that output logs
         compose = DockerCompose(
@@ -72,7 +70,6 @@ class TestDockerComposeIntegration:
     def test_compose_wait_strategy_timeout(self):
         """Test that compose wait strategies properly timeout."""
         from testcontainers.compose import DockerCompose
-        from pathlib import Path
 
         compose = DockerCompose(
             context=Path(__file__).parent / "compose_fixtures" / "basic", compose_file_name="docker-compose.yaml"

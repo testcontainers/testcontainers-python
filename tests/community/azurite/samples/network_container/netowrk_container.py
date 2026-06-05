@@ -1,5 +1,6 @@
-from azure.storage.blob import BlobClient, BlobServiceClient
 import os
+
+from azure.storage.blob import BlobServiceClient
 
 
 def hello_from_external_container():

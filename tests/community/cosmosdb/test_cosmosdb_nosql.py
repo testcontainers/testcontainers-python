@@ -1,4 +1,3 @@
-import pytest
 from testcontainers.community.cosmosdb import CosmosDBNoSQLEndpointContainer
 
 

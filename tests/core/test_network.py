@@ -1,11 +1,12 @@
 from http import HTTPStatus
+
+import docker.errors
+import pytest
+
 from testcontainers.core.container import DockerContainer
 from testcontainers.core.docker_client import DockerClient
 from testcontainers.core.labels import LABEL_SESSION_ID
 from testcontainers.core.network import Network
-
-import docker.errors
-import pytest
 
 NGINX_ALPINE_SLIM_IMAGE = "nginx:1.25.4-alpine-slim"
 
@@ -75,7 +76,7 @@ def test_containers_can_communicate_over_network():
 
 
 def assert_can_ping(container: DockerContainer, remote_name: str):
-    status, output = container.exec("ping -c 1 %s" % remote_name)
+    status, output = container.exec(f"ping -c 1 {remote_name}")
     assert status == 0
     assert "64 bytes" in str(output)
 

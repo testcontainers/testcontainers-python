@@ -1,9 +1,8 @@
 import time
-import pytest
-from pymongo import MongoClient
-from pymongo.errors import OperationFailure
 
-from testcontainers.community.mongodb import MongoDbContainer, MongoDBAtlasLocalContainer
+import pytest
+
+from testcontainers.community.mongodb import MongoDBAtlasLocalContainer, MongoDbContainer
 
 
 @pytest.mark.parametrize("version", ["7.0.7", "6.0.14", "5.0.26"])

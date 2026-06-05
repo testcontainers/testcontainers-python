@@ -1,10 +1,11 @@
+import sys
 from pathlib import Path
+from pprint import pprint
+from typing import Callable
 
 import pytest
-from typing import Callable
+
 from testcontainers.core.docker_client import DockerClient
-from pprint import pprint
-import sys
 
 PROJECT_DIR = Path(__file__).parent.parent.parent.resolve()
 
