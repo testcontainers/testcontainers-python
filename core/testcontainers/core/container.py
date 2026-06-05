@@ -212,7 +212,7 @@ class DockerContainer:
             name=self._name,
             volumes=self.volumes,
             tmpfs=self.tmpfs,
-            **{**network_kwargs, **self._kwargs},
+            **{**network_kwargs, **self._kwargs},  # ty: ignore[invalid-argument-type]
         )
 
         for t in self._transferable_specs:
@@ -225,7 +225,7 @@ class DockerContainer:
                 self._wait_strategy.wait_until_ready(self)
             except TimeoutError as ex:
                 if hasattr(ex, "add_note"):
-                    ex.add_note(self._container.logs().decode())
+                    ex.add_note(self._container.logs().decode())  # ty: ignore[call-non-callable]
                 raise ex
 
         logger.info("Container started: %s", self._container.short_id)
@@ -256,12 +256,10 @@ class DockerContainer:
         if connection_mode == ConnectionMode.docker_host:
             return self.get_docker_client().host()
         elif connection_mode == ConnectionMode.gateway_ip:
-            # mypy:
             container = self._container
             assert container is not None
             return self.get_docker_client().gateway_ip(container.id)
         elif connection_mode == ConnectionMode.bridge_ip:
-            # mypy:
             container = self._container
             assert container is not None
             return self.get_docker_client().bridge_ip(container.id)
@@ -305,7 +303,7 @@ class DockerContainer:
         self.tmpfs[container_path] = size or ""
         return self
 
-    def get_wrapped_container(self) -> "Container":
+    def get_wrapped_container(self) -> Optional["Container"]:
         return self._container
 
     def get_docker_client(self) -> DockerClient:
@@ -377,7 +375,9 @@ class DockerContainer:
     def copy_into_container(self, transferable: Transferable, destination_in_container: str, mode: int = 0o644) -> None:
         return self._transfer_into_container(transferable, destination_in_container, mode)
 
-    def _transfer_into_container(self, transferable: Transferable, destination_in_container: str, mode: int) -> None:
+    def _transfer_into_container(
+        self, transferable: Transferable, destination_in_container: str, mode: int = 0o644
+    ) -> None:
         if not self._container:
             raise ContainerStartException("Container must be started before transferring files")
 

@@ -37,11 +37,8 @@ coverage:  ## Target to combine and report coverage.
 lint:  ## Lint all files in the project, which we also run in pre-commit
 	uv run pre-commit run --all-files
 
-mypy-core:  ## Run mypy on the core package
-	uv run mypy --config-file pyproject.toml core
-
-mypy-core-report:  ## Generate a report for mypy on the core package
-	uv run mypy --config-file pyproject.toml core | uv run python scripts/mypy_report.py
+ty-core:  ## Run ty on the core package
+	uv run ty check core/testcontainers
 
 docs: ## Build the docs for the project
 	uv run --all-extras sphinx-build -nW . docs/_build

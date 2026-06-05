@@ -27,7 +27,5 @@ jobs:
           uv run pre-commit run end-of-file-fixer
           uv run pre-commit run ruff
           uv run pre-commit run ruff-format
-      - name: Execute mypy
-        run: |
-          make mypy-core-report
-          make mypy-core
+      - name: Execute ty
+        run: make ty-core

@@ -100,7 +100,7 @@ class DockerImage:
     ) -> None:
         self.remove()
 
-    def get_wrapped_image(self) -> "Image":
+    def get_wrapped_image(self) -> Optional["Image"]:
         return self._image
 
     def get_docker_client(self) -> DockerClient:

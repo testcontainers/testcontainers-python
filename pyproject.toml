@@ -134,8 +134,7 @@ test = [
   "tomli", # required for pyproject.toml tests, TODO: remove once we drop py3.10 support
 ]
 lint = [
-  "mypy>=1",
-  "types-paramiko>=4",
+  "ty",
   "ruff",
   "pre-commit>=4",
 ]
@@ -353,39 +352,19 @@ keep-runtime-typing = true
 [tool.ruff.lint.flake8-type-checking]
 strict = true
 
-[tool.mypy]
-python_version = "3.10"
-namespace_packages = true
-explicit_package_bases = true
-pretty = true
-show_error_codes = true
-warn_return_any = true
-strict = true
-modules = ["testcontainers.core"]
-mypy_path = [
+[tool.ty.src]
+include = ["core/testcontainers"]
+
+[tool.ty.environment]
+python-version = "3.10"
+extra-paths = [
   "core",
   "modules/mailpit",
   "modules/sftp",
 ]
-enable_error_code = ["ignore-without-code", "redundant-expr", "truthy-bool"]
 
-[[tool.mypy.overrides]]
-module = ["tests.*"]
-check_untyped_defs = true
-disable_error_code = ["no-untyped-def"]
-
-[[tool.mypy.overrides]]
-module = ["docker.*"]
-ignore_missing_imports = true
-
-[[tool.mypy.overrides]]
-module = ["wrapt.*"]
-ignore_missing_imports = true
-
-[[tool.mypy.overrides]]
-module = ["requests.*"]
-ignore_missing_imports = true
-
-[[tool.mypy.overrides]]
-module = ["testcontainers.registry"]
-ignore_missing_imports = true
+[tool.ty.rules]
+# Suppressed because docker/wrapt/requests/testcontainers.registry are
+# not type-stubbed; previously suppressed via ignore-missing-imports overrides.
+unresolved-import = "ignore"
+possibly-missing-submodule = "ignore"

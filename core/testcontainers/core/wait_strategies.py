@@ -42,6 +42,7 @@ from urllib.request import Request, urlopen
 from typing_extensions import Self
 
 from testcontainers.compose import DockerCompose
+from testcontainers.core.exceptions import ContainerStartException
 from testcontainers.core.utils import setup_logger
 
 # Import base classes from waiting_utils to make them available for tests
@@ -698,6 +699,8 @@ class ContainerStatusWaitStrategy(WaitStrategy):
     def _get_status_tc_container(container: "DockerContainer") -> str:
         logger.debug("fetching status of container %s", container)
         wrapped = container.get_wrapped_container()
+        if wrapped is None:
+            raise ContainerStartException("Container must be started before fetching status")
         wrapped.reload()
         return cast("str", wrapped.status)
 
@@ -855,7 +858,7 @@ class ExecWaitStrategy(WaitStrategy):
                 )
 
             try:
-                result = container.exec(self._command)
+                result = container.exec(self._command)  # ty: ignore[call-non-callable]
                 last_exit_code = result.exit_code
                 last_output = result.output.decode() if hasattr(result.output, "decode") else str(result.output)
 

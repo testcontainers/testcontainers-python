@@ -189,7 +189,8 @@ def wait_container_is_ready(*transient_exceptions: type[Exception]) -> Callable[
                 except self.transient_exceptions as e:
                     if time.time() - start_time > self._startup_timeout:
                         raise TimeoutError(
-                            f"Wait time ({self._startup_timeout}s) exceeded for {self.func.__name__}"
+                            f"Wait time ({self._startup_timeout}s) exceeded for "
+                            f"{getattr(self.func, '__name__', repr(self.func))}"
                             f"(args: {self.args}, kwargs: {self.kwargs}). Exception: {e}. "
                             f"Hint: Check if the container is ready, the function parameters are correct, "
                             f"and the expected conditions are met for the function to succeed."
@@ -213,7 +214,7 @@ def wait_container_is_ready(*transient_exceptions: type[Exception]) -> Callable[
             # Fallback to direct call if we can't identify the container
             return wrapped(*args, **kwargs)
 
-    return cast("Callable[[F], F]", wrapper)
+    return cast("Callable[[F], F]", wrapper)  # ty: ignore[invalid-return-type]
 
 
 def wait_for(condition: Callable[..., bool]) -> bool:

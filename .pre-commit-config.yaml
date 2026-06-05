@@ -20,11 +20,11 @@ repos:
 
   - repo: local
     hooks:
-      - id: mypy
-        name: mypy
-        entry: uv run mypy
-        args: ["--config-file", "pyproject.toml"]
-        files: "core"  # start with the core being type checked
+      - id: ty
+        name: ty
+        entry: uv run ty check
+        files: "core/testcontainers"
         language: system
         types: [ python ]
+        pass_filenames: false
         require_serial: true
