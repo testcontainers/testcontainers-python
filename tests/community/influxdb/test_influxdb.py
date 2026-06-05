@@ -18,9 +18,7 @@ from influxdb.resultset import ResultSet
 from influxdb_client import Bucket
 from influxdb_client.client.write_api import SYNCHRONOUS
 
-from testcontainers.community.influxdb import InfluxDbContainer
-from testcontainers.community.influxdb1 import InfluxDb1Container
-from testcontainers.community.influxdb2 import InfluxDb2Container
+from testcontainers.community.influxdb import InfluxDb1Container, InfluxDb2Container, InfluxDbContainer
 
 
 @pytest.mark.parametrize(

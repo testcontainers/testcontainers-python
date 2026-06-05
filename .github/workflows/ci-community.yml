@@ -34,26 +34,11 @@ jobs:
           list-files: 'json'
           filters: |
             modules:
-              - 'src/testcontainers/community/**'
-              - 'tests/community/**'
+              - '**'
       - name: Compute modules from files
         id: compute-changes
         run: |
-          modules=$(echo '${{ toJson(steps.changed-files.outputs.modules_files) }}' | jq -c '
-            [.[] |
-              if startswith("src/testcontainers/community/") then split("/")[3]
-              elif startswith("tests/community/") then split("/")[2]
-              else empty
-              end |
-              select(. and (startswith("__") | not)) |
-              if . == "oracle" then "oracle-free"
-              elif . == "influxdb1" or . == "influxdb2" then "influxdb"
-              else .
-              end
-            ] | unique
-          ')
-          echo "computed_modules=$modules"
-          echo "computed_modules=$modules" >> $GITHUB_OUTPUT
+          python3 scripts/compute_modules.py '${{ steps.changed-files.outputs.modules_files }}'
     outputs:
       changed_modules: ${{ steps.compute-changes.outputs.computed_modules }}
 

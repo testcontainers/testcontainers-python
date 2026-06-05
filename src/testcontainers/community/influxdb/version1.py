@@ -15,7 +15,7 @@ from typing import Optional
 
 from influxdb import InfluxDBClient
 
-from testcontainers.community.influxdb import InfluxDbContainer
+from .base import InfluxDbContainer
 
 
 class InfluxDb1Container(InfluxDbContainer):
