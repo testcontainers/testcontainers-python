@@ -199,7 +199,7 @@ class SFTPContainer(DockerContainer):
             ...     host_port = sftp_container.get_exposed_sftp_port()
             ...     ssh = paramiko.SSHClient()
             ...     ssh.set_missing_host_key_policy(paramiko.AutoAddPolicy())
-            ...     ssh.connect(host_ip, host_port, "basic", "password")
+            ...     ssh.connect(host_ip, host_port, "basic", "password", allow_agent=False, look_for_keys=False)
             ...     # ssh.get(...)
             ...     # ssh.listdir()
             ...     # ssh.chdir("upload")
@@ -219,7 +219,7 @@ class SFTPContainer(DockerContainer):
             ...     ssh = paramiko.SSHClient()
             ...     ssh.set_missing_host_key_policy(paramiko.AutoAddPolicy())
             ...     private_key_file = sftp_container.users[1].private_key_file
-            ...     ssh.connect(host_ip, host_port, "keypair", key_filename=private_key_file)
+            ...     ssh.connect(host_ip, host_port, "keypair", key_filename=private_key_file, allow_agent=False)
             ...     # ssh.listdir()
             ...     # ssh.get(...)
             ...     # ssh.chdir("upload")

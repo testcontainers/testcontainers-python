@@ -45,7 +45,7 @@ Using `DockerContainer` and `DockerImage` to create a container:
     >>> from testcontainers.core.waiting_utils import wait_for_logs
     >>> from testcontainers.core.image import DockerImage
 
-    >>> with DockerImage(path="./core/tests/image_fixtures/sample/", tag="test-sample:latest") as image:
+    >>> with DockerImage(path=f"{TEST_DIR}/core/image_fixtures/sample/", tag="test-sample:latest") as image:
     ...     with DockerContainer(str(image)) as container:
     ...         delay = wait_for_logs(container, "Test Sample Image")
 

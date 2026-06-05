@@ -232,7 +232,7 @@ class DockerCompose:
 
             >>> from testcontainers.compose import DockerCompose
 
-            >>> compose = DockerCompose("core/tests/compose_fixtures/basic", compose_file_name="hello.yaml",
+            >>> compose = DockerCompose(f"{TEST_DIR}/core/compose_fixtures/basic", compose_file_name="hello.yaml",
             ...                         pull=True)
             >>> with compose:
             ...     stdout, stderr = compose.get_logs()
