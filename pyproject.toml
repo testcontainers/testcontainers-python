@@ -210,12 +210,22 @@ exclude_lines = [
 ]
 
 [tool.coverage.paths]
-source = [
+# only consider non-community/core packages for the coverage.
+# Community packages are run conditionally anyway.
+core = [
     "src/testcontainers/core",
+    "*/site-packages/testcontainers/core",
+    "*/dist-packages/testcontainers/core",
+]
+compose = [
     "src/testcontainers/compose",
+    "*/site-packages/testcontainers/compose",
+    "*/dist-packages/testcontainers/compose",
+]
+concat = [
     "src/testcontainers/cocat",
-    "*/site-packages/testcontainers",
-    "*/dist-packages/testcontainers",
+    "*/site-packages/testcontainer/cocat",
+    "*/dist-packages/testcontainers/cocat",
 ]
 
 [tool.ruff]
