@@ -3,8 +3,10 @@ import os
 import platform
 import subprocess
 import sys
+from collections.abc import Generator
+from contextlib import AbstractContextManager, ExitStack, contextmanager
 from pathlib import Path
-from typing import Any, Final, Optional
+from typing import Any, Final, Optional, TypeVar
 
 LINUX = "linux"
 MAC = "mac"
@@ -98,3 +100,57 @@ def get_running_in_container_id() -> Optional[str]:
         if path.startswith("/docker"):
             return path.removeprefix("/docker/")
     return None
+
+
+T = TypeVar("T")
+
+
+@contextmanager
+def run_containers(*containers: AbstractContextManager[T]) -> Generator[tuple[T, ...], None, None]:
+    """
+    Context manager that runs multiple container instances and ensures proper cleanup.
+
+    Each container is started in the order provided and yields control once all containers
+    are running. When the context exits, containers are stopped in reverse order (LIFO).
+
+    This is particularly useful for integration tests or resource setups where multiple
+    containers need to run together and be reliably cleaned up afterward.
+
+    Parameters
+    ----------
+    *containers : iterable
+        One or more container instancesto.
+
+    Yields
+    ------
+    list
+        A list of the started container instances, in the same order they were provided.
+
+    Examples
+    --------
+    >>> import sqlalchemy.engine
+    >>> from testcontainers.core.network import Network
+    >>> from testcontainers.core.utils import run_containers
+    >>> from testcontainers.postgres import PostgresContainer
+    >>>
+    >>> network = Network()
+    >>> network.create()
+    >>>
+    >>> with run_containers(
+    ...     PostgresContainer(network=network),
+    ...     PostgresContainer(image='postgres:16', network=network),
+    ... ) as containers:
+    ...     c1, c2 = containers
+    ...     conn1 = sqlalchemy.engine.create_engine(c1.get_connection_url()).connect()
+    ...     conn2 = sqlalchemy.engine.create_engine(c2.get_connection_url()).connect()
+    ...
+    ...     result1 = conn1.execute(sqlalchemy.text("select version()")).fetchone()
+    ...     result2 = conn2.execute(sqlalchemy.text("select version()")).fetchone()
+    ...
+    ...     print(result1, result2, sep='\\n')
+    ...
+    >>> # The network is removed only after all containers have been stopped.
+    >>> network.remove()
+    """
+    with ExitStack() as stack:
+        yield tuple(stack.enter_context(container) for container in containers)
