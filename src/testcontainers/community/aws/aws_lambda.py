@@ -24,7 +24,7 @@ class AWSLambdaContainer(ServerContainer):
             >>> from testcontainers.core.waiting_utils import wait_for_logs
             >>> from testcontainers.core.image import DockerImage
 
-            >>> with DockerImage(path="./modules/aws/tests/lambda_sample", tag="test-lambda:latest") as image:
+            >>> with DockerImage(path=f"{TEST_DIR}/community/aws/lambda_sample", tag="test-lambda:latest") as image:
             ...     with AWSLambdaContainer(image=image, port=8080) as func:
             ...         response = func.send_request(data={'payload': 'some data'})
             ...         assert response.status_code == 200

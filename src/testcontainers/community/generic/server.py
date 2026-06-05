@@ -21,7 +21,7 @@ class ServerContainer(DockerContainer):
         >>> from testcontainers.core.waiting_utils import wait_for_logs
         >>> from testcontainers.core.image import DockerImage
 
-        >>> with DockerImage(path="./modules/generic/tests/samples/python_server", tag="test-srv:latest") as image:
+        >>> with DockerImage(path=f"{TEST_DIR}/community/generic/samples/python_server", tag="test-srv:latest") as image:
         ...     with ServerContainer(port=9000, image=image) as srv:
         ...         url = srv._create_connection_url()
         ...         response = httpx.get(f"{url}", timeout=5)

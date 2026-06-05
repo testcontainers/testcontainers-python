@@ -38,7 +38,7 @@ class MySqlContainer(DbContainer):
             >>> import sqlalchemy
             >>> from testcontainers.community.mysql import MySqlContainer
 
-            >>> with MySqlContainer("mysql:5.7.17", dialect="pymysql") as mysql:
+            >>> with MySqlContainer("mysql:8.0", dialect="pymysql") as mysql:
             ...     engine = sqlalchemy.create_engine(mysql.get_connection_url())
             ...     with engine.begin() as connection:
             ...         result = connection.execute(sqlalchemy.text("select version()"))
@@ -50,12 +50,13 @@ class MySqlContainer(DbContainer):
         automatically.
 
         .. doctest::
+
             >>> import sqlalchemy
             >>> from testcontainers.community.mysql import MySqlContainer
-            >>> with MySqlContainer(seed="../../tests/seeds/") as mysql:
+            >>> with MySqlContainer(seed=f"{TEST_DIR}/community/mysql/seeds/", dialect="pymysql") as mysql:
             ...     engine = sqlalchemy.create_engine(mysql.get_connection_url())
             ...     with engine.begin() as connection:
-            ...         query = "select * from stuff"  # Can now rely on schema/data
+            ...         query = "select name from stuff"
             ...         result = connection.execute(sqlalchemy.text(query))
             ...         first_stuff, = result.fetchone()
 

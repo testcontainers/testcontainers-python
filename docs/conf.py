@@ -18,6 +18,10 @@
 # import sys
 # sys.path.insert(0, os.path.abspath('.'))
 
+from pathlib import Path
+
+BASE_DIR = Path(__file__).parent.parent.resolve()
+TEST_DIR = BASE_DIR / "tests"
 
 # -- General configuration ------------------------------------------------
 
@@ -170,3 +174,5 @@ nitpick_ignore = [
     ("py:class", "docker.models.containers.ExecResult"),
     ("py:class", "testcontainers.core.docker_client.ContainerInspectInfo"),
 ]
+
+doctest_global_setup = f"TEST_DIR = '{TEST_DIR}'"
