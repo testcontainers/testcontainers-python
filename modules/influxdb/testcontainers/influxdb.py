@@ -20,10 +20,12 @@ testcontainers/influxdb provides means to spawn an InfluxDB instance within a Do
   a container for an InfluxDB 1.x instance
 - import the InfluxDb2Container class from the influxdb2/__init__.py module to spawn
   a container for an InfluxDB 2.x instance
+- import the InfluxDb3Container class from the influxdb3/__init__.py module to spawn
+  a container for an InfluxDB 3 Core instance
 
-The 2 containers are separated in different modules for 2 reasons:
+The 3 containers are separated in different modules for 3 reasons:
 - because the Docker images are not designed to be used in the same way
-- because the InfluxDB clients are different for 1.x and 2.x versions,
+- because the InfluxDB clients are different for 1.x, 2.x and 3.x versions,
   so you won't have to install dependencies that you do not need
 """
 

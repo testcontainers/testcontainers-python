@@ -72,6 +72,7 @@ google = [
 influxdb = [
   "influxdb>=5",
   "influxdb-client>=1",
+  "influxdb3-python>=0.1.0",
 ]
 k3s = ["kubernetes", "pyyaml>=6.0.3"]
 kafka = []

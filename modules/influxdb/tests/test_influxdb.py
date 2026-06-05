@@ -22,13 +22,15 @@ from pytest import mark
 from testcontainers.influxdb import InfluxDbContainer
 from testcontainers.influxdb1 import InfluxDb1Container
 from testcontainers.influxdb2 import InfluxDb2Container
+from testcontainers.influxdb3 import InfluxDb3Container
 
 
 @mark.parametrize(
     ["image", "influxdb_container_class", "exposed_port"],
     [
-        ("influxdb:2.7", InfluxDb1Container, 8086),
-        ("influxdb:1.8", InfluxDb2Container, 8086),
+        ("influxdb:2.7", InfluxDb2Container, 8086),
+        ("influxdb:1.8", InfluxDb1Container, 8086),
+        ("influxdb:3-core", InfluxDb3Container, 8181),
     ],
 )
 def test_influxdbcontainer_get_url(image: str, influxdb_container_class: Type[InfluxDbContainer], exposed_port: int):
@@ -136,3 +138,25 @@ def test_influxdb2container_get_client():
         assert len(results) == 2, "2 datapoints were retrieved"
         assert results[0] == ["influxdbcontainer", "ratio", datetime.fromisoformat("1978-11-30T09:30:00+00:00"), 0.42]
         assert results[1] == ["influxdbcontainer", "ratio", datetime.fromisoformat("1978-12-25T10:30:00+00:00"), 0.55]
+
+
+def test_influxdb3container_get_client():
+    """
+    This is a test example showing how you could use testcontainers/influxdb for InfluxDB 3 Core versions with SQL queries
+    """
+    with InfluxDb3Container("influxdb:3-core") as influxdb3_container:
+        client = influxdb3_container.get_client(database="testcontainers")
+
+        from influxdb_client_3 import Point
+
+        point = Point("influxdbcontainer").tag("source", "test").field("ratio", 0.42)
+        client.write(point)
+
+        table = client.query("SELECT source, ratio FROM influxdbcontainer", language="sql")
+        rows = table.to_pylist()
+
+        assert len(rows) == 1, "1 datapoint was retrieved"
+        assert rows[0]["source"] == "test"
+        assert rows[0]["ratio"] == 0.42
+
+        client.close()
