@@ -208,6 +208,7 @@ exclude_also = [
   "pass",
   "raise NotImplementedError",
   "if TYPE_CHECKING:",
+  "@overload",
 ]
 
 [tool.coverage.paths]
