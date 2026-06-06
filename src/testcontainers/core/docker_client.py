@@ -535,9 +535,20 @@ def is_podman() -> bool:
     ``pytest.mark.skipif`` decorators.
     """
     try:
-        # Use docker.from_env() directly rather than DockerClient() so we avoid
-        # the constructor's side effects (DOCKER_HOST mutation, registry login).
-        version = docker.from_env().version()
+        # Build the client directly rather than via DockerClient() so we avoid
+        # the constructor's side effects (registry login). We still resolve the
+        # host the same way DockerClient does so that hosts coming from the
+        # docker context (and SSH connections) are detected correctly.
+        docker_host = get_docker_host()
+        if docker_host:
+            client_kwargs: dict[str, Any] = {"base_url": docker_host}
+            if docker_host.startswith("ssh://"):
+                # Mirror DockerClient: use the shell SSH client to avoid paramiko
+                # failures under pytest stdin capture.
+                client_kwargs["use_ssh_client"] = True
+            version = docker.DockerClient(**client_kwargs).version()
+        else:
+            version = docker.from_env().version()
     except Exception as e:
         LOGGER.debug(f"is_podman: failed to query daemon version: {e}")
         return False
