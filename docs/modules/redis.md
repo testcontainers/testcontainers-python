@@ -18,6 +18,6 @@ pip install testcontainers[redis] redis
 
 <!--codeinclude-->
 
-[Creating a Redis container](../../modules/redis/example_basic.py)
+[Creating a Redis container](redis_example.py)
 
 <!--/codeinclude-->

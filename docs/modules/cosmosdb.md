@@ -18,7 +18,7 @@ pip install testcontainers[cosmosdb] pymongo azure-cosmos
 
 <!--codeinclude-->
 
-[Creating a CosmosDB container](../../modules/cosmosdb/example_basic.py)
+[Creating a CosmosDB container](cosmosdb_example.py)
 
 <!--/codeinclude-->
 

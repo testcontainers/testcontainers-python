@@ -18,6 +18,6 @@ pip install testcontainers[google] google-cloud-datastore google-cloud-pubsub
 
 <!--codeinclude-->
 
-[Creating a Google container](../../modules/google/example_basic.py)
+[Creating a Google container](google_example.py)
 
 <!--/codeinclude-->
