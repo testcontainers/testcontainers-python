@@ -438,7 +438,7 @@ class Reaper:
 
     @classmethod
     def get_instance(cls) -> "Reaper":
-        if not Reaper._instance:
+        if Reaper._instance is None:
             Reaper._instance = Reaper._create_instance()
 
         return Reaper._instance

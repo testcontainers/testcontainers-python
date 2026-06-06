@@ -15,6 +15,7 @@ import os
 from typing import Any, Optional
 
 import boto3
+from typing_extensions import Self
 
 from testcontainers.core.container import DockerContainer
 from testcontainers.core.waiting_utils import wait_for_logs
@@ -52,7 +53,7 @@ class LocalStackContainer(DockerContainer):
         self.with_env("AWS_ACCESS_KEY_ID", "testcontainers-localstack")
         self.with_env("AWS_SECRET_ACCESS_KEY", "testcontainers-localstack")
 
-    def with_services(self, *services) -> "LocalStackContainer":
+    def with_services(self, *services) -> Self:
         """
         Restrict what services to run. By default all localstack services are launched.
 
@@ -85,7 +86,7 @@ class LocalStackContainer(DockerContainer):
         kwargs_.update(kwargs)
         return boto3.client(name, **kwargs_)
 
-    def start(self, timeout: float = 60) -> "LocalStackContainer":
+    def start(self, timeout: float = 60) -> Self:
         super().start()
         wait_for_logs(self, r"Ready\.\n", timeout=timeout)
         return self

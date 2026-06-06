@@ -5,6 +5,8 @@ import time
 from io import BytesIO
 from textwrap import dedent
 
+from typing_extensions import Self
+
 from testcontainers.core.container import DockerContainer
 from testcontainers.core.wait_strategies import LogMessageWaitStrategy
 
@@ -66,7 +68,7 @@ class RedpandaContainer(DockerContainer):
 
         self.create_file(data, RedpandaContainer.TC_START_SCRIPT)
 
-    def start(self, timeout=10) -> "RedpandaContainer":
+    def start(self, timeout=10) -> Self:
         script = RedpandaContainer.TC_START_SCRIPT
         command = f'-c "while [ ! -f {script} ]; do sleep 0.1; done; sh {script}"'
         self.with_command(command)

@@ -15,6 +15,8 @@ from http.client import HTTPException
 from urllib.error import URLError
 from urllib.request import urlopen
 
+from typing_extensions import Self
+
 from testcontainers.core.container import DockerContainer
 from testcontainers.core.waiting_utils import wait_container_is_ready
 
@@ -69,7 +71,7 @@ class VaultContainer(DockerContainer):
             if res.status > 299:
                 raise HTTPException()
 
-    def start(self) -> "VaultContainer":
+    def start(self) -> Self:
         super().start()
         self._healthcheck()
         return self

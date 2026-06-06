@@ -7,6 +7,7 @@ import bcrypt
 from requests import get
 from requests.auth import HTTPBasicAuth
 from requests.exceptions import ConnectionError, ReadTimeout
+from typing_extensions import Self
 
 from testcontainers.core.container import DockerContainer
 from testcontainers.core.waiting_utils import wait_container_is_ready
@@ -62,7 +63,7 @@ class DockerRegistryContainer(DockerContainer):
             response: Response = get(url, timeout=1)
             response.raise_for_status()
 
-    def start(self) -> "DockerRegistryContainer":
+    def start(self) -> Self:
         if self.username and self.password:
             self.with_env("REGISTRY_AUTH_HTPASSWD_REALM", "local-registry")
             self.with_env("REGISTRY_AUTH_HTPASSWD_PATH", self.credentials_path)

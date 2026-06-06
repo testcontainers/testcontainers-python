@@ -14,6 +14,8 @@ import enum
 import os
 from typing import Optional
 
+from typing_extensions import Self
+
 from testcontainers.core.container import DockerContainer
 from testcontainers.core.utils import raise_for_deprecated_parameter
 from testcontainers.core.wait_strategies import PortWaitStrategy
@@ -217,7 +219,7 @@ class AzuriteContainer(DockerContainer):
 
         return connection_string
 
-    def start(self) -> "AzuriteContainer":
+    def start(self) -> Self:
         super().start()
         self._connect()
         return self

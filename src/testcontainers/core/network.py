@@ -14,6 +14,8 @@ import uuid
 from types import TracebackType
 from typing import TYPE_CHECKING, Any, Optional
 
+from typing_extensions import Self
+
 from testcontainers.core.docker_client import DockerClient
 
 if TYPE_CHECKING:
@@ -52,11 +54,11 @@ class Network:
     def remove(self) -> None:
         self._unwrap_network.remove()
 
-    def create(self) -> "Network":
+    def create(self) -> Self:
         self._network = self._docker.client_networks_create(self.name, self._docker_network_kw)
         return self
 
-    def __enter__(self) -> "Network":
+    def __enter__(self) -> Self:
         return self.create()
 
     def __exit__(

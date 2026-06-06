@@ -15,6 +15,7 @@ from typing import Optional
 
 import requests
 from keycloak import KeycloakAdmin
+from typing_extensions import Self
 
 from testcontainers.core.container import DockerContainer
 from testcontainers.core.waiting_utils import wait_container_is_ready, wait_for_logs
@@ -109,7 +110,7 @@ class KeycloakContainer(DockerContainer):
             wait_for_logs(self, "started in \\d+\\.\\d+s")
             wait_for_logs(self, "Created temporary admin user|Added user '")
 
-    def start(self) -> "KeycloakContainer":
+    def start(self) -> Self:
         super().start()
         self._readiness_probe()
         self._disable_ssl_required()
@@ -137,7 +138,7 @@ class KeycloakContainer(DockerContainer):
         if result.exit_code != 0:
             raise RuntimeError(f"Failed to disable SSL for master realm: {result.output.decode()}")
 
-    def with_realm_import_file(self, realm_import_file: str) -> "KeycloakContainer":
+    def with_realm_import_file(self, realm_import_file: str) -> Self:
         file = os.path.abspath(realm_import_file)
         if not os.path.exists(file):
             raise FileNotFoundError(f"Realm file {file} does not exist")
@@ -145,7 +146,7 @@ class KeycloakContainer(DockerContainer):
         self.has_realm_imports = True
         return self
 
-    def with_realm_import_folder(self, realm_import_folder: str) -> "KeycloakContainer":
+    def with_realm_import_folder(self, realm_import_folder: str) -> Self:
         folder = os.path.abspath(realm_import_folder)
         if not os.path.exists(folder):
             raise FileNotFoundError(f"Realm folder {folder} does not exist")

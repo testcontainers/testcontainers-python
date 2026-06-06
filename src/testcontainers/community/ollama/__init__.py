@@ -16,6 +16,7 @@ from typing import Any, Optional, TypedDict, Union
 
 from docker.types.containers import DeviceRequest
 from requests import get
+from typing_extensions import Self
 
 from testcontainers.core.container import DockerContainer
 from testcontainers.core.waiting_utils import wait_for_logs
@@ -103,7 +104,7 @@ class OllamaContainer(DockerContainer):
         if "nvidia" in info["Runtimes"]:
             self._kwargs = {**self._kwargs, "device_requests": [DeviceRequest(count=-1, capabilities=[["gpu"]])]}
 
-    def start(self) -> "OllamaContainer":
+    def start(self) -> Self:
         """
         Start the Ollama server
         """
