@@ -1,0 +1,26 @@
+# https://docs.codecov.com/docs/codecov-yaml
+coverage:
+  status:
+    project:
+      default:
+        target: auto
+        # Allow small coverage fluctuations without failing the check.
+        threshold: 1%
+        # Don't fail codecov if the CI run itself failed (avoids double-noise).
+        if_ci_failed: success
+    patch:
+      default:
+        # Report patch coverage, but never block the PR on it.
+        informational: true
+
+# Recompute the base when code is removed so refactors don't appear to
+# regress overall coverage.
+codecov:
+  notify:
+    after_n_builds: 1
+  require_ci_to_pass: true
+
+comment:
+  layout: "reach,diff,flags,files"
+  behavior: default
+  require_changes: true  # only post a PR comment when coverage actually changed
