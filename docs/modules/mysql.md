@@ -18,6 +18,6 @@ pip install testcontainers[mysql] sqlalchemy pymysql
 
 <!--codeinclude-->
 
-[Creating a MySQL container](../../modules/mysql/example_basic.py)
+[Creating a MySQL container](mysql_example.py)
 
 <!--/codeinclude-->

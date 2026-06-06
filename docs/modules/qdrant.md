@@ -18,6 +18,6 @@ pip install testcontainers[qdrant]
 
 <!--codeinclude-->
 
-[Creating a Qdrant container](../../modules/qdrant/example_basic.py)
+[Creating a Qdrant container](qdrant_example.py)
 
 <!--/codeinclude-->

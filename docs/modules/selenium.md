@@ -18,6 +18,6 @@ pip install testcontainers[selenium] selenium urllib3
 
 <!--codeinclude-->
 
-[Creating a Selenium container](../../modules/selenium/example_basic.py)
+[Creating a Selenium container](selenium_example.py)
 
 <!--/codeinclude-->

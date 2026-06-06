@@ -18,6 +18,6 @@ pip install testcontainers[k3s] kubernetes pyyaml
 
 <!--codeinclude-->
 
-[Creating a K3s container](../../modules/k3s/example_basic.py)
+[Creating a K3s container](k3s_example.py)
 
 <!--/codeinclude-->
