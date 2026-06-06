@@ -18,6 +18,6 @@ pip install testcontainers[sftp] paramiko cryptography
 
 <!--codeinclude-->
 
-[Creating an SFTP container](../../modules/sftp/example_basic.py)
+[Creating an SFTP container](sftp_example.py)
 
 <!--/codeinclude-->
