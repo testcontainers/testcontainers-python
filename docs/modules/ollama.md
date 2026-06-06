@@ -18,6 +18,6 @@ pip install testcontainers[ollama] requests
 
 <!--codeinclude-->
 
-[Creating an Ollama container](../../modules/ollama/example_basic.py)
+[Creating an Ollama container](ollama_example.py)
 
 <!--/codeinclude-->

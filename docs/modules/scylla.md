@@ -18,6 +18,6 @@ pip install testcontainers[scylla]
 
 <!--codeinclude-->
 
-[Creating a Scylla container](../../modules/scylla/example_basic.py)
+[Creating a Scylla container](scylla_example.py)
 
 <!--/codeinclude-->
