@@ -2,6 +2,8 @@ import logging
 from typing import Any, Optional
 from urllib.parse import quote, urlencode
 
+from typing_extensions import Self
+
 from testcontainers.core.container import DockerContainer
 from testcontainers.core.exceptions import ContainerStartException
 from testcontainers.core.waiting_utils import WaitStrategy
@@ -83,7 +85,7 @@ class SqlContainer(DockerContainer):
 
         return url
 
-    def start(self) -> "SqlContainer":
+    def start(self) -> Self:
         """
         Start the database container and perform initialization.
 

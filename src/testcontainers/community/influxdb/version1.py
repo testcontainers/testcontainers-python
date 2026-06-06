@@ -14,6 +14,7 @@
 from typing import Optional
 
 from influxdb import InfluxDBClient
+from typing_extensions import Self
 
 from .base import InfluxDbContainer
 
@@ -58,7 +59,7 @@ class InfluxDb1Container(InfluxDbContainer):
 
         return InfluxDBClient(self.get_container_host_ip(), self.get_exposed_port(self.container_port), **client_kwargs)
 
-    def start(self) -> "InfluxDb1Container":
+    def start(self) -> Self:
         """
         Overridden for better typing reason
         """

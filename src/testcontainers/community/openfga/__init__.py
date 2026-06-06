@@ -14,6 +14,7 @@
 from typing import Optional
 
 import requests
+from typing_extensions import Self
 
 from testcontainers.core.container import DockerContainer
 from testcontainers.core.waiting_utils import wait_container_is_ready
@@ -82,7 +83,7 @@ class OpenFGAContainer(DockerContainer):
     def _readiness_probe(self) -> None:
         self.exec(["grpc_health_probe", "-addr=0.0.0.0:8081"])  # from chart
 
-    def start(self) -> "OpenFGAContainer":
+    def start(self) -> Self:
         super().start()
         self._readiness_probe()
         return self

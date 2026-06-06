@@ -14,6 +14,8 @@ import urllib.error
 import urllib.parse
 import urllib.request
 
+from typing_extensions import Self
+
 from testcontainers.core.container import DockerContainer
 from testcontainers.core.utils import raise_for_deprecated_parameter
 from testcontainers.core.waiting_utils import wait_container_is_ready
@@ -26,7 +28,7 @@ class NginxContainer(DockerContainer):
         self.port = port
         self.with_exposed_ports(self.port)
 
-    def start(self) -> "NginxContainer":
+    def start(self) -> Self:
         super().start()
 
         host = self.get_container_host_ip()

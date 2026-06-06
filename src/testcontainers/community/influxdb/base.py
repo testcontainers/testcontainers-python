@@ -15,6 +15,7 @@ from typing import Optional
 
 from requests import get
 from requests.exceptions import ConnectionError, ReadTimeout
+from typing_extensions import Self
 
 from testcontainers.core.container import DockerContainer
 from testcontainers.core.waiting_utils import wait_container_is_ready
@@ -74,7 +75,7 @@ class InfluxDbContainer(DockerContainer):
 
         return self._health_check().get("version")
 
-    def start(self) -> "InfluxDbContainer":
+    def start(self) -> Self:
         """
         Spawns a container of the InfluxDB Docker image, ready to be used.
         """

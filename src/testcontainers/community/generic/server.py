@@ -1,6 +1,7 @@
 from typing import Union
 
 import httpx
+from typing_extensions import Self
 
 from testcontainers.core.container import DockerContainer
 from testcontainers.core.exceptions import ContainerStartException
@@ -53,7 +54,7 @@ class ServerContainer(DockerContainer):
         url = f"http://{host}:{exposed_port}"
         return url
 
-    def start(self) -> "ServerContainer":
+    def start(self) -> Self:
         super().start()
         self._connect()
         return self

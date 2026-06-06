@@ -13,6 +13,8 @@
 from typing import Any, Optional
 from urllib.parse import quote
 
+from typing_extensions import Self
+
 from testcontainers.core.container import DockerContainer
 from testcontainers.core.exceptions import ContainerStartException
 from testcontainers.core.utils import raise_for_deprecated_parameter
@@ -74,7 +76,7 @@ class DbContainer(DockerContainer):
             url = f"{url}/{dbname}"
         return url
 
-    def start(self) -> "DbContainer":
+    def start(self) -> Self:
         self._configure()
         super().start()
         self._transfer_seed()

@@ -1,6 +1,7 @@
 from typing import TYPE_CHECKING
 
 from requests import ConnectionError, get
+from typing_extensions import Self
 
 from testcontainers.core.container import DockerContainer
 from testcontainers.core.utils import raise_for_deprecated_parameter
@@ -73,7 +74,7 @@ class ChromaContainer(DockerContainer):
         response: Response = get(url)
         response.raise_for_status()
 
-    def start(self) -> "ChromaContainer":
+    def start(self) -> Self:
         """This method starts the Chroma container and runs the healthcheck
         to verify that the container is ready to use."""
         super().start()

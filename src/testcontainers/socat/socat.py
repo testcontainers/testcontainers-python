@@ -47,7 +47,7 @@ class SocatContainer(DockerContainer):
 
         super().__init__(image=image, **kwargs)
 
-    def with_target(self, exposed_port: int, host: str, internal_port: Optional[int] = None) -> "SocatContainer":
+    def with_target(self, exposed_port: int, host: str, internal_port: Optional[int] = None) -> Self:
         """
         Add a target to forward connections from the exposed port to the given host and port.
 
