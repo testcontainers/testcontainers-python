@@ -12,10 +12,19 @@ The tests in this module are split in two:
 """
 
 from collections.abc import Iterator
+from dataclasses import FrozenInstanceError, replace
+from pathlib import Path
+from typing import TYPE_CHECKING
+from unittest.mock import MagicMock
 
 import pytest
+from docker.models.containers import ExecResult
 
-from testcontainers.core.container import DockerContainer
+from testcontainers.core.container import DockerContainer, ExecConfig
+from testcontainers.core.exceptions import ContainerStartException
+
+if TYPE_CHECKING:
+    from pytest_mock import MockerFixture
 
 
 @pytest.fixture(scope="module")
@@ -66,3 +75,98 @@ def test_str_command_does_not_expand_variables(running_container: DockerContaine
     result = running_container.exec("echo $HOME")
     assert result.exit_code == 0
     assert result.output.strip() == b"$HOME"
+
+
+# --- Pure unit tests for the config -> exec_run kwargs seam (no Docker needed) ---
+
+
+def test_exec_config_requires_only_command() -> None:
+    config = ExecConfig(command=["echo", "hi"])
+    assert config.command == ["echo", "hi"]
+    assert config.user is None
+    assert config.environment is None
+    assert config.workdir is None
+    assert config.privileged is False
+
+
+def test_exec_config_is_frozen() -> None:
+    config = ExecConfig(command="true")
+    with pytest.raises(FrozenInstanceError):
+        config.user = "frob"  # type: ignore[misc]
+
+
+def test_exec_config_supports_dataclasses_replace() -> None:
+    base = ExecConfig(command="true")
+    derived = replace(base, workdir="/tmp", user="frob")
+    assert base.workdir is None  # original untouched
+    assert base.user is None
+    assert derived.command == "true"
+    assert derived.workdir == "/tmp"
+    assert derived.user == "frob"
+
+
+def test_kwargs_defaults_collapse_user_to_docker_sentinel() -> None:
+    kwargs = ExecConfig(command=["whoami"]).to_exec_run_kwargs()
+    assert kwargs == {
+        "cmd": ["whoami"],
+        "user": "",  # docker-py's empty-string sentinel, not our None
+        "environment": None,
+        "workdir": None,
+        "privileged": False,
+    }
+
+
+def test_kwargs_forward_str_command_verbatim() -> None:
+    # docker-py does its own shlex tokenization; we must not pre-split.
+    assert ExecConfig(command="echo a | wc -l").to_exec_run_kwargs()["cmd"] == "echo a | wc -l"
+
+
+def test_kwargs_pass_through_user_environment_and_privileged() -> None:
+    kwargs = ExecConfig(command=["env"], user="frob", environment={"FROB": "243"}, privileged=True).to_exec_run_kwargs()
+    assert kwargs["user"] == "frob"
+    assert kwargs["environment"] == {"FROB": "243"}
+    assert kwargs["privileged"] is True
+
+
+def test_kwargs_stringify_pathlike_workdir() -> None:
+    kwargs = ExecConfig(command=["pwd"], workdir=Path("/tmp/xyzzy")).to_exec_run_kwargs()
+    assert kwargs["workdir"] == "/tmp/xyzzy"
+    assert isinstance(kwargs["workdir"], str)
+
+
+def test_kwargs_leave_unset_workdir_as_none() -> None:
+    assert ExecConfig(command=["pwd"]).to_exec_run_kwargs()["workdir"] is None
+
+
+@pytest.fixture
+def offline_container(mocker: "MockerFixture") -> DockerContainer:
+    """A DockerContainer whose client is mocked away, so exec() can be exercised
+    without a running daemon. ``_container`` is wired with a stub ``exec_run``."""
+    mocker.patch("testcontainers.core.container.DockerClient")
+    return DockerContainer("alpine")
+
+
+def test_exec_wraps_str_into_config_and_forwards_kwargs(offline_container: DockerContainer) -> None:
+    offline_container._container = MagicMock()
+    offline_container._container.exec_run.return_value = ExecResult(exit_code=0, output=b"hi")
+    result = offline_container.exec("echo hi")
+    offline_container._container.exec_run.assert_called_once_with(
+        cmd="echo hi", user="", environment=None, workdir=None, privileged=False
+    )
+    assert result.exit_code == 0
+    assert result.output == b"hi"
+
+
+def test_exec_accepts_exec_config_directly(offline_container: DockerContainer) -> None:
+    offline_container._container = MagicMock()
+    offline_container._container.exec_run.return_value = ExecResult(exit_code=0, output=b"hi")
+    offline_container.exec(ExecConfig(command=["pwd"], workdir=Path("/tmp"), user="frob"))
+    offline_container._container.exec_run.assert_called_once_with(
+        cmd=["pwd"], user="frob", environment=None, workdir="/tmp", privileged=False
+    )
+
+
+def test_exec_before_start_raises(mocker: "MockerFixture") -> None:
+    mocker.patch("testcontainers.core.container.DockerClient")
+    with pytest.raises(ContainerStartException):
+        DockerContainer("alpine").exec("true")

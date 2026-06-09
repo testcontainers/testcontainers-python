@@ -4,6 +4,7 @@ import io
 import pathlib
 import sys
 import tarfile
+from dataclasses import dataclass
 from os import PathLike
 from socket import socket
 from types import TracebackType
@@ -43,6 +44,34 @@ class Mount(TypedDict):
 class BytesExecResult(ExecResult):
     exit_code: int | None
     output: bytes
+
+
+@dataclass(frozen=True)
+class ExecConfig:
+    """Configuration for a command executed inside a running container.
+
+    Backend-agnostic data carrier. Only `command` is required, and every other field
+    defaults to `None`/`False`.
+
+    `command` accepts either an argv `list[str]` or a `str`. Both are forwarded untouched.
+    """
+
+    command: Union[str, list[str]]
+    user: Optional[str] = None
+    environment: Optional[dict[str, str]] = None
+    workdir: Optional[Union[str, PathLike[str]]] = None
+    privileged: bool = False
+
+    def to_exec_run_kwargs(self) -> dict[str, Any]:
+        """Yield the kwargs-dict equivalent for a `docker-py` `exec_run()` call."""
+
+        return {
+            "cmd": self.command,
+            "user": self.user or "",
+            "environment": self.environment,
+            "workdir": str(self.workdir) if self.workdir is not None else None,
+            "privileged": self.privileged,
+        }
 
 
 class DockerContainer:
@@ -358,10 +387,11 @@ class DockerContainer:
             return "not_started"
         return self._container.status
 
-    def exec(self, command: Union[str, list[str]]) -> BytesExecResult:
+    def exec(self, command: Union[str, list[str], ExecConfig]) -> BytesExecResult:
         if not self._container:
             raise ContainerStartException("Container should be started before executing a command")
-        result = self._container.exec_run(command)
+        config = command if isinstance(command, ExecConfig) else ExecConfig(command=command)
+        result = self._container.exec_run(**config.to_exec_run_kwargs())
         assert isinstance(result.output, bytes)
         return BytesExecResult(result[0], result[1])
 
