@@ -4,104 +4,80 @@ Testcontainers-Python provides several ways to execute commands inside container
 
 ## Basic Command Execution
 
-The simplest way to execute a command is using the `exec` method:
+The simplest way to execute a command is using the `exec` method, passing either an argv list or a string:
 
 ```python
-from testcontainers.community.generic import GenericContainer
+from testcontainers.core.container import DockerContainer
 
-with GenericContainer("alpine:latest") as container:
-    # Execute a simple command
-    exit_code, output = container.exec(["ls", "-la"])
-    print(output)  # Command output as string
+with DockerContainer("alpine:latest") as container:
+    # Execute a simple command (argv form)
+    result = container.exec(["ls", "-la"])
+    print(result.exit_code)       # 0
+    print(result.output)          # command output as bytes
+    print(result.output.decode()) # ...decoded to str
+
+    # A string is also accepted
+    result = container.exec("ls -la")
 ```
+
+`exec` returns a named `(exit_code, output)` tuple, so you can also unpack it directly:
+
+```python
+exit_code, output = container.exec(["ls", "-la"])
+```
+
+> **A string command is *not* run through a shell.** `docker-py` tokenizes it with `shlex.split`, so shell features such as pipes, redirections, and variable expansion are passed through literally — `container.exec("echo $HOME")` prints the text `$HOME`, not your home directory. When you need shell behavior, invoke a shell explicitly: `container.exec(["sh", "-c", "echo $HOME"])`.
 
 ## Command Execution with Options
 
-You can customize command execution with various options:
+To customize how a command runs — the user, environment, or working directory — pass an `ExecConfig`:
 
 ```python
-with GenericContainer("alpine:latest") as container:
-    # Execute command with user
-    exit_code, output = container.exec(
-        ["whoami"],
-        user="nobody"
-    )
+from testcontainers.core.container import DockerContainer, ExecConfig
+
+with DockerContainer("alpine:latest") as container:
+    # Execute command as a specific user
+    result = container.exec(ExecConfig(command=["whoami"], user="nobody"))
 
     # Execute command with environment variables
-    exit_code, output = container.exec(
-        ["echo", "$TEST_VAR"],
-        environment={"TEST_VAR": "test_value"}
-    )
+    # (use a command that reads the environment, e.g. printenv -- a bare
+    # argv command is not shell-expanded, see the note above)
+    result = container.exec(ExecConfig(command=["printenv", "TEST_VAR"], environment={"TEST_VAR": "test_value"}))
 
-    # Execute command with working directory
-    exit_code, output = container.exec(
-        ["pwd"],
-        workdir="/tmp"
-    )
+    # Execute command in a working directory (str or pathlib.Path)
+    result = container.exec(ExecConfig(command=["pwd"], workdir="/tmp"))
 ```
 
-## Interactive Commands
-
-For interactive commands, you can use the `exec_interactive` method:
+`ExecConfig` is a frozen dataclass: only `command` is required, and `user`, `environment`, `workdir`, and `privileged` are optional. Because it is immutable, the idiomatic way to derive a variant is `dataclasses.replace`:
 
 ```python
-with GenericContainer("alpine:latest") as container:
-    # Start an interactive shell
-    container.exec_interactive(["sh"])
-```
+from dataclasses import replace
 
-## Command Execution with Timeout
-
-You can set a timeout for command execution:
-
-```python
-with GenericContainer("alpine:latest") as container:
-    # Execute command with timeout
-    try:
-        exit_code, output = container.exec(
-            ["sleep", "10"],
-            timeout=5  # Timeout in seconds
-        )
-    except TimeoutError:
-        print("Command timed out")
+base = ExecConfig(command=["pwd"], workdir="/tmp")
+in_var = replace(base, workdir="/var")
 ```
 
 ## Command Execution with Privileges
 
-For commands that require elevated privileges:
+For commands that require elevated privileges, set `privileged=True`:
 
 ```python
-with GenericContainer("alpine:latest") as container:
+from testcontainers.core.container import DockerContainer, ExecConfig
+
+with DockerContainer("alpine:latest") as container:
     # Execute command with privileges
-    exit_code, output = container.exec(
-        ["mount"],
-        privileged=True
-    )
-```
-
-## Command Execution with TTY
-
-For commands that require a TTY:
-
-```python
-with GenericContainer("alpine:latest") as container:
-    # Execute command with TTY
-    exit_code, output = container.exec(
-        ["top"],
-        tty=True
-    )
+    result = container.exec(ExecConfig(command=["mount"], privileged=True))
 ```
 
 ## Best Practices
 
-1. Use appropriate timeouts for long-running commands
-2. Handle command failures gracefully
-3. Use environment variables for configuration
-4. Consider security implications of privileged commands
-5. Clean up after command execution
-6. Use appropriate user permissions
-7. Handle command output appropriately
-8. Consider using shell scripts for complex commands
+1. Handle command failures gracefully — check `exit_code` rather than assuming success
+2. Use environment variables for configuration
+3. Consider security implications of privileged commands
+4. Clean up after command execution
+5. Use appropriate user permissions
+6. Decode `output` from bytes when you need text
+7. Use an explicit `["sh", "-c", ...]` invocation for commands that rely on shell features
 
 ## Common Use Cases
 
@@ -121,7 +97,9 @@ with PostgresContainer() as postgres:
 ### File Operations
 
 ```python
-with GenericContainer("alpine:latest") as container:
+from testcontainers.core.container import DockerContainer
+
+with DockerContainer("alpine:latest") as container:
     # Create a directory
     container.exec(["mkdir", "-p", "/data"])
 
@@ -129,15 +107,17 @@ with GenericContainer("alpine:latest") as container:
     container.exec(["chmod", "755", "/data"])
 
     # List files
-    exit_code, output = container.exec(["ls", "-la", "/data"])
+    result = container.exec(["ls", "-la", "/data"])
 ```
 
 ### Service Management
 
 ```python
-with GenericContainer("nginx:alpine") as container:
+from testcontainers.core.container import DockerContainer
+
+with DockerContainer("nginx:alpine") as container:
     # Check service status
-    exit_code, output = container.exec(["nginx", "-t"])
+    result = container.exec(["nginx", "-t"])
 
     # Reload configuration
     container.exec(["nginx", "-s", "reload"])
@@ -151,7 +131,6 @@ If you encounter issues with command execution:
 2. Verify user permissions
 3. Check container state
 4. Verify command availability
-5. Check for timeout issues
-6. Verify environment variables
-7. Check working directory
-8. Verify TTY requirements
+5. Verify environment variables
+6. Check the working directory
+7. Remember that string commands are tokenized, not shell-interpreted
