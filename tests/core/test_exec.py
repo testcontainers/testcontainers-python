@@ -170,3 +170,47 @@ def test_exec_before_start_raises(mocker: "MockerFixture") -> None:
     mocker.patch("testcontainers.core.container.DockerClient")
     with pytest.raises(ContainerStartException):
         DockerContainer("alpine").exec("true")
+
+
+# --- Integration tests for the new ExecConfig fields (require a Docker daemon) ---
+
+
+def test_exec_config_workdir_str(running_container: DockerContainer) -> None:
+    result = running_container.exec(ExecConfig(command=["pwd"], workdir="/tmp"))
+    assert result.exit_code == 0
+    assert result.output.strip() == b"/tmp"
+
+
+def test_exec_config_workdir_accepts_pathlib_path(running_container: DockerContainer) -> None:
+    result = running_container.exec(ExecConfig(command=["pwd"], workdir=Path("/tmp")))
+    assert result.exit_code == 0
+    assert result.output.strip() == b"/tmp"
+
+
+def test_exec_config_environment(running_container: DockerContainer) -> None:
+    result = running_container.exec(ExecConfig(command=["env"], environment={"FROB": "243"}))
+    assert result.exit_code == 0
+    assert b"FROB=243" in result.output
+
+
+def test_exec_config_user(running_container: DockerContainer) -> None:
+    as_default = running_container.exec(ExecConfig(command=["whoami"]))
+    as_nobody = running_container.exec(ExecConfig(command=["whoami"], user="nobody"))
+    assert as_default.output.strip() == b"root"
+    assert as_nobody.output.strip() == b"nobody"
+
+
+def test_exec_config_privileged_grants_more_capabilities(running_container: DockerContainer) -> None:
+    """A privileged exec receives the full capability set, even though the
+    container itself is unprivileged -- so its CapEff strictly exceeds the
+    default exec's. We read the effective set straight from procfs."""
+
+    def cap_eff(config: ExecConfig) -> int:
+        output = running_container.exec(config).output.decode()
+        # /proc/self/status line looks like: "CapEff:\t00000000a80425fb"
+        line = next(ln for ln in output.splitlines() if ln.startswith("CapEff:"))
+        return int(line.split()[1], 16)
+
+    default_caps = cap_eff(ExecConfig(command=["grep", "CapEff", "/proc/self/status"]))
+    privileged_caps = cap_eff(ExecConfig(command=["grep", "CapEff", "/proc/self/status"], privileged=True))
+    assert privileged_caps > default_caps
