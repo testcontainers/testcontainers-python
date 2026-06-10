@@ -373,6 +373,9 @@ def test_is_podman(monkeypatch: pytest.MonkeyPatch, version: object, expected: b
     from testcontainers.core import docker_client as dc
 
     dc.is_podman.cache_clear()
+    # Force the no-host branch so the test is deterministic regardless of the
+    # docker context configured on the machine running it.
+    monkeypatch.setattr("testcontainers.core.docker_client.get_docker_host", lambda: None)
     mock_client = MagicMock()
     if isinstance(version, Exception):
         monkeypatch.setattr("testcontainers.core.docker_client.docker.from_env", MagicMock(side_effect=version))
@@ -385,6 +388,28 @@ def test_is_podman(monkeypatch: pytest.MonkeyPatch, version: object, expected: b
         assert dc.is_podman() is expected
         if not isinstance(version, Exception):
             assert mock_client.version.call_count == 1
+    finally:
+        dc.is_podman.cache_clear()
+
+
+def test_is_podman_uses_resolved_host(monkeypatch: pytest.MonkeyPatch) -> None:
+    """When a host is resolved (e.g. from the docker context), is_podman must
+    query that host rather than falling back to docker.from_env defaults."""
+    from testcontainers.core import docker_client as dc
+
+    dc.is_podman.cache_clear()
+    monkeypatch.setattr("testcontainers.core.docker_client.get_docker_host", lambda: "ssh://root@remote-podman")
+    mock_client = MagicMock()
+    mock_client.version.return_value = {"Platform": {"Name": "Podman Engine"}}
+    mock_docker_client = MagicMock(return_value=mock_client)
+    monkeypatch.setattr("testcontainers.core.docker_client.docker.DockerClient", mock_docker_client)
+    monkeypatch.setattr(
+        "testcontainers.core.docker_client.docker.from_env",
+        MagicMock(side_effect=AssertionError("should not call from_env when host resolved")),
+    )
+    try:
+        assert dc.is_podman() is True
+        mock_docker_client.assert_called_once_with(base_url="ssh://root@remote-podman", use_ssh_client=True)
     finally:
         dc.is_podman.cache_clear()
 
