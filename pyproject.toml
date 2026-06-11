@@ -54,6 +54,7 @@ cassandra = []
 clickhouse = ["clickhouse-driver"]
 cosmosdb = ["azure-cosmos>=4"]
 cockroachdb = []
+cratedb = []
 db2 = [
   "sqlalchemy>=2",
   "ibm_db_sa; platform_machine != 'aarch64' and platform_machine != 'arm64'",
@@ -128,6 +129,7 @@ test = [
   "pymilvus>=2",
   "paho-mqtt>=2",
   "sqlalchemy-cockroachdb>=2",
+  "sqlalchemy-cratedb",
   "paramiko>=4",
   "twine>=6.2.0",
   "anyio>=4",

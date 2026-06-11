@@ -1064,6 +1064,20 @@ toml = [
 ]
 
 [[package]]
+name = "crate"
+version = "2.1.2"
+source = { registry = "https://pypi.org/simple" }
+dependencies = [
+    { name = "orjson" },
+    { name = "urllib3" },
+    { name = "verlib2" },
+]
+sdist = { url = "https://files.pythonhosted.org/packages/3a/8a/6dec8617c4383c3e3a8a3943a50b9240f5532784249adb36c4922213052d/crate-2.1.2.tar.gz", hash = "sha256:a2b88ba1b236bc2fa627e151ade47cefdfea660f950e40134a5093ff2443ebe3", size = 67914, upload-time = "2026-03-09T15:09:30.854Z" }
+wheels = [
+    { url = "https://files.pythonhosted.org/packages/2d/d1/3f9cfc180bf8961f178895f940fec0d8f04249aaf61e00b7bac6a4b89ffa/crate-2.1.2-py3-none-any.whl", hash = "sha256:3353807d71e77cb0a7a5cdfd1a59b8c90276517b7f86988578fc6d15eefb635e", size = 32419, upload-time = "2026-03-09T15:09:29.519Z" },
+]
+
+[[package]]
 name = "cryptography"
 version = "48.0.1"
 source = { registry = "https://pypi.org/simple" }
@@ -1383,6 +1397,15 @@ wheels = [
     { url = "https://files.pythonhosted.org/packages/89/76/c615883b7b521ead2944bb3480398cbb07e12b7b4e4d073d3752eb721558/frozenlist-1.8.0-cp314-cp314t-win_amd64.whl", hash = "sha256:06be8f67f39c8b1dc671f5d83aaefd3358ae5cdcf8314552c57e7ed3e6475bdd", size = 49451, upload-time = "2025-10-06T05:37:53.425Z" },
     { url = "https://files.pythonhosted.org/packages/e0/a3/5982da14e113d07b325230f95060e2169f5311b1017ea8af2a29b374c289/frozenlist-1.8.0-cp314-cp314t-win_arm64.whl", hash = "sha256:102e6314ca4da683dca92e3b1355490fed5f313b768500084fbe6371fddfdb79", size = 42507, upload-time = "2025-10-06T05:37:54.513Z" },
     { url = "https://files.pythonhosted.org/packages/9a/9a/e35b4a917281c0b8419d4207f4334c8e8c5dbf4f3f5f9ada73958d937dcc/frozenlist-1.8.0-py3-none-any.whl", hash = "sha256:0c18a16eab41e82c295618a77502e17b195883241c563b00f0aa5106fc4eaa0d", size = 13409, upload-time = "2025-10-06T05:38:16.721Z" },
+]
+
+[[package]]
+name = "geojson"
+version = "3.3.0"
+source = { registry = "https://pypi.org/simple" }
+sdist = { url = "https://files.pythonhosted.org/packages/13/a9/bd61eee2c7904947094b74866b569f3fd5a8d6ac907ecdfecef74b19d459/geojson-3.3.0.tar.gz", hash = "sha256:92e83b9cb378a450b42f1207bb9b2a031f9fc89185f335153c44369b8b8b71fd", size = 25141, upload-time = "2026-05-28T21:48:08.214Z" }
+wheels = [
+    { url = "https://files.pythonhosted.org/packages/aa/5e/fdd72167b57158d743353f71d453200719744d1e75f18b1c8230508db370/geojson-3.3.0-py3-none-any.whl", hash = "sha256:a2d885187eeaa8b357600b3fcc9d963cb4300d1694196636dbd7eddc82fd0825", size = 15181, upload-time = "2026-05-28T21:48:06.648Z" },
 ]
 
 [[package]]
@@ -5388,6 +5411,21 @@ wheels = [
 ]
 
 [[package]]
+name = "sqlalchemy-cratedb"
+version = "0.42.0"
+source = { registry = "https://pypi.org/simple" }
+dependencies = [
+    { name = "crate" },
+    { name = "geojson" },
+    { name = "sqlalchemy" },
+    { name = "verlib2" },
+]
+sdist = { url = "https://files.pythonhosted.org/packages/ea/ac/e2732072194d6eb11cb2b948c3c31e5336a2e19e0c3caa04baa035974371/sqlalchemy_cratedb-0.42.0.tar.gz", hash = "sha256:e4f9530fe8204a338523ec230ad22ca692f64cc966c1da4f13b2215def923525", size = 46493, upload-time = "2026-05-28T15:14:43.282Z" }
+wheels = [
+    { url = "https://files.pythonhosted.org/packages/27/c3/f32c4d021eb660ad703f35df0e926b52c01224d4e392387b7cf9d931dfff/sqlalchemy_cratedb-0.42.0-py3-none-any.whl", hash = "sha256:82a551c9b9156dde0b621287a56e95ebec3c80462359541820c2c6cb8c9a8a9b", size = 46054, upload-time = "2026-05-28T15:14:42.142Z" },
+]
+
+[[package]]
 name = "tenacity"
 version = "9.1.4"
 source = { registry = "https://pypi.org/simple" }
@@ -5554,6 +5592,7 @@ dev = [
     { name = "sphinx", version = "9.1.0", source = { registry = "https://pypi.org/simple" }, marker = "python_full_version >= '3.12'" },
     { name = "sqlalchemy" },
     { name = "sqlalchemy-cockroachdb" },
+    { name = "sqlalchemy-cratedb" },
     { name = "tomli", marker = "python_full_version < '3.11'" },
     { name = "twine" },
     { name = "types-docker" },
@@ -5595,6 +5634,7 @@ test = [
     { name = "pytest-xdist" },
     { name = "sqlalchemy" },
     { name = "sqlalchemy-cockroachdb" },
+    { name = "sqlalchemy-cratedb" },
     { name = "tomli", marker = "python_full_version < '3.11'" },
     { name = "twine" },
 ]
@@ -5652,7 +5692,7 @@ requires-dist = [
     { name = "weaviate-client", marker = "extra == 'weaviate'", specifier = ">=4" },
     { name = "wrapt" },
 ]
-provides-extras = ["arangodb", "aws", "azurite", "cassandra", "clickhouse", "cosmosdb", "cockroachdb", "db2", "elasticsearch", "generic", "test-module-import", "google", "influxdb", "k3s", "kafka", "keycloak", "localstack", "mailpit", "memcached", "minio", "milvus", "mongodb", "mqtt", "mssql", "mysql", "nats", "neo4j", "nginx", "openfga", "opensearch", "ollama", "oracle", "oracle-free", "postgres", "qdrant", "rabbitmq", "redis", "registry", "selenium", "scylla", "sftp", "valkey", "vault", "weaviate", "chroma", "trino"]
+provides-extras = ["arangodb", "aws", "azurite", "cassandra", "clickhouse", "cosmosdb", "cockroachdb", "cratedb", "db2", "elasticsearch", "generic", "test-module-import", "google", "influxdb", "k3s", "kafka", "keycloak", "localstack", "mailpit", "memcached", "minio", "milvus", "mongodb", "mqtt", "mssql", "mysql", "nats", "neo4j", "nginx", "openfga", "opensearch", "ollama", "oracle", "oracle-free", "postgres", "qdrant", "rabbitmq", "redis", "registry", "selenium", "scylla", "sftp", "valkey", "vault", "weaviate", "chroma", "trino"]
 
 [package.metadata.requires-dev]
 dev = [
@@ -5684,6 +5724,7 @@ dev = [
     { name = "sphinx", marker = "python_full_version >= '3.11'", specifier = ">=9" },
     { name = "sqlalchemy", specifier = ">=2" },
     { name = "sqlalchemy-cockroachdb", specifier = ">=2" },
+    { name = "sqlalchemy-cratedb" },
     { name = "tomli", marker = "python_full_version < '3.11'", specifier = ">=2.0" },
     { name = "twine", specifier = ">=6.2.0" },
     { name = "types-docker", specifier = ">=7.1.0.20260518" },
@@ -5724,6 +5765,7 @@ test = [
     { name = "pytest-xdist", specifier = ">=3.8.0" },
     { name = "sqlalchemy", specifier = ">=2" },
     { name = "sqlalchemy-cockroachdb", specifier = ">=2" },
+    { name = "sqlalchemy-cratedb" },
     { name = "tomli", marker = "python_full_version < '3.11'", specifier = ">=2.0" },
     { name = "twine", specifier = ">=6.2.0" },
 ]
@@ -5972,6 +6014,15 @@ source = { registry = "https://pypi.org/simple" }
 sdist = { url = "https://files.pythonhosted.org/packages/53/66/a435d9ae49850b2f071f7ebd8119dd4e84872b01630d6736761e6e7fd847/validators-0.35.0.tar.gz", hash = "sha256:992d6c48a4e77c81f1b4daba10d16c3a9bb0dbb79b3a19ea847ff0928e70497a", size = 73399, upload-time = "2025-05-01T05:42:06.7Z" }
 wheels = [
     { url = "https://files.pythonhosted.org/packages/fa/6e/3e955517e22cbdd565f2f8b2e73d52528b14b8bcfdb04f62466b071de847/validators-0.35.0-py3-none-any.whl", hash = "sha256:e8c947097eae7892cb3d26868d637f79f47b4a0554bc6b80065dfe5aac3705dd", size = 44712, upload-time = "2025-05-01T05:42:04.203Z" },
+]
+
+[[package]]
+name = "verlib2"
+version = "0.3.2"
+source = { registry = "https://pypi.org/simple" }
+sdist = { url = "https://files.pythonhosted.org/packages/c0/94/b3f689e44c14702ce67fdf24db649e8193958f8de971e69d024ef7e6b295/verlib2-0.3.2.tar.gz", hash = "sha256:a0a6af9838d8d26c18225a30c8d57fb70714462e3cd29f2451e7982d5a51e21e", size = 16987, upload-time = "2026-03-31T01:18:45.997Z" }
+wheels = [
+    { url = "https://files.pythonhosted.org/packages/b8/b2/5d2d39c1afb8b3904ed053dc4ec4a992f17c6a993e51e62a4af0d7878d00/verlib2-0.3.2-py3-none-any.whl", hash = "sha256:ddcc6f3a4f42019703ac5f6406faecefcd5f122e84a3d1a58190ddff23ec0426", size = 15054, upload-time = "2026-03-31T01:18:46.805Z" },
 ]
 
 [[package]]
