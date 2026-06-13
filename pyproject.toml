@@ -54,7 +54,10 @@ cassandra = []
 clickhouse = ["clickhouse-driver"]
 cosmosdb = ["azure-cosmos>=4"]
 cockroachdb = []
-cratedb = ["sqlalchemy-cratedb"]
+cratedb = [
+    "httpx",
+    "sqlalchemy-cratedb"
+]
 db2 = [
   "sqlalchemy>=2",
   "ibm_db_sa; platform_machine != 'aarch64' and platform_machine != 'arm64'",

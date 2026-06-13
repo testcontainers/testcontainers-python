@@ -5466,6 +5466,10 @@ clickhouse = [
 cosmosdb = [
     { name = "azure-cosmos" },
 ]
+cratedb = [
+    { name = "httpx" },
+    { name = "sqlalchemy-cratedb" },
+]
 db2 = [
     { name = "ibm-db-sa", marker = "platform_machine != 'aarch64' and platform_machine != 'arm64'" },
     { name = "sqlalchemy" },
@@ -5655,6 +5659,7 @@ requires-dist = [
     { name = "google-cloud-datastore", marker = "extra == 'google'", specifier = ">=2" },
     { name = "google-cloud-pubsub", marker = "extra == 'google'", specifier = ">=2" },
     { name = "httpx", marker = "extra == 'aws'" },
+    { name = "httpx", marker = "extra == 'cratedb'" },
     { name = "httpx", marker = "extra == 'generic'" },
     { name = "httpx", marker = "extra == 'test-module-import'" },
     { name = "ibm-db-sa", marker = "platform_machine != 'aarch64' and platform_machine != 'arm64' and extra == 'db2'" },
@@ -5686,6 +5691,7 @@ requires-dist = [
     { name = "sqlalchemy", marker = "extra == 'mysql'", specifier = ">=2" },
     { name = "sqlalchemy", marker = "extra == 'oracle'", specifier = ">=2" },
     { name = "sqlalchemy", marker = "extra == 'oracle-free'", specifier = ">=2" },
+    { name = "sqlalchemy-cratedb", marker = "extra == 'cratedb'" },
     { name = "trino", marker = "extra == 'trino'" },
     { name = "typing-extensions" },
     { name = "urllib3" },

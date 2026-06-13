@@ -48,7 +48,7 @@ class CrateDBContainer(SqlContainer):
 
     # Default command-line options. CrateDB needs single-node discovery to run
     # as a one-node cluster suitable for testing.
-    CMD_OPTS: ClassVar[dict[str, str]] = {"discovery.type": "single-node"}
+    CMD_OPTS: ClassVar[list[tuple[str, str]]] = [("discovery.type", "single-node")]
 
     def __init__(
         self,
@@ -57,7 +57,7 @@ class CrateDBContainer(SqlContainer):
         username: Optional[str] = None,
         password: Optional[str] = None,
         dialect: str = "crate",
-        cmd_opts: Optional[dict[str, str]] = None,
+        cmd_opts: Optional[list[tuple[str, str]]] = None,
         **kwargs,
     ) -> None:
         """
@@ -73,12 +73,13 @@ class CrateDBContainer(SqlContainer):
                          merged over (and able to override) the defaults.
         """
         raise_for_deprecated_parameter(kwargs, "user", "username")
-        # Readiness is signalled by CrateDB's HTTP interface returning 200; this
+        # Readiness is signaled by CrateDB's HTTP interface returning 200; this
         # keeps startup free of any database client library.
         super().__init__(image, wait_strategy=HttpWaitStrategy(HTTP_PORT).for_status_code(200), **kwargs)
 
-        cmd_opts = cmd_opts or {}
-        self._command = self._build_cmd({**self.CMD_OPTS, **cmd_opts})
+        cmd_opts = cmd_opts or []
+        default_cmd_opts = [s for s in self.CMD_OPTS if s[0] not in {k[0] for k in cmd_opts}]
+        self._command = self._build_cmd([*default_cmd_opts, *cmd_opts])
 
         self.username = username or os.environ.get("CRATEDB_USER", "crate")
         self.password = password or os.environ.get("CRATEDB_PASSWORD", "crate")
@@ -88,10 +89,10 @@ class CrateDBContainer(SqlContainer):
         self.with_exposed_ports(HTTP_PORT, PSQL_PORT)
 
     @staticmethod
-    def _build_cmd(opts: dict[str, str]) -> str:
+    def _build_cmd(opts: list[tuple[str, str]]) -> str:
         """Render a CrateDB ``-C<key>=<value> ...`` command-line string."""
         cmd = []
-        for key, val in opts.items():
+        for key, val in opts:
             if isinstance(val, bool):
                 val = str(val).lower()
             cmd.append(f"-C{key}={val}")
