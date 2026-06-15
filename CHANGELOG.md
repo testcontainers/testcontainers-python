@@ -1,5 +1,12 @@
 # Changelog
 
+## [4.15.1-rc4](https://github.com/testcontainers/testcontainers-python/compare/testcontainers-v4.15.0-rc4...testcontainers-v4.15.1-rc4) (2026-06-15)
+
+
+### Bug Fixes
+
+* **cratedb:** add CrateDB community module ([#1051](https://github.com/testcontainers/testcontainers-python/issues/1051)) ([0976c7e](https://github.com/testcontainers/testcontainers-python/commit/0976c7e7ec3455e90731c84d4ab65de378d350d7))
+
 ## [4.15.0-rc4](https://github.com/testcontainers/testcontainers-python/compare/testcontainers-v4.15.0-rc3...testcontainers-v4.15.0-rc4) (2026-06-11)
 
 
