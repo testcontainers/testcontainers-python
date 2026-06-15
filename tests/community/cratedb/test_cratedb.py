@@ -30,12 +30,12 @@ def test_cratedb_connection_url():
     "cmd_opts, expected",
     [
         pytest.param(
-            {"indices.breaker.total.limit": "90%"},
+            [("indices.breaker.total.limit", "90%")],
             "-Cdiscovery.type=single-node -Cindices.breaker.total.limit=90%",
             id="add_cmd_option",
         ),
         pytest.param(
-            {"discovery.type": "zen", "indices.breaker.total.limit": "90%"},
+            [("discovery.type", "zen"), ("indices.breaker.total.limit", "90%")],
             "-Cdiscovery.type=zen -Cindices.breaker.total.limit=90%",
             id="override_defaults",
         ),
