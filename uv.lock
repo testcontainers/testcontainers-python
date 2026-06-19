@@ -6093,7 +6093,7 @@ wheels = [
 
 [[package]]
 name = "weaviate-client"
-version = "4.21.3"
+version = "4.22.0"
 source = { registry = "https://pypi.org/simple" }
 dependencies = [
     { name = "authlib" },
@@ -6104,9 +6104,9 @@ dependencies = [
     { name = "pydantic" },
     { name = "validators" },
 ]
-sdist = { url = "https://files.pythonhosted.org/packages/2b/b8/103f3aaa246d4e932f4cfeb846e51436966f2aeedf60c2665a3fc51a975a/weaviate_client-4.21.3.tar.gz", hash = "sha256:d7b1f2b0cecbc747e9427f4e3b9463cdfee090746bfbbd40e59cfa25ea2afd4a", size = 847895, upload-time = "2026-06-02T13:03:51.598Z" }
+sdist = { url = "https://files.pythonhosted.org/packages/34/2a/73cf7d6c7c6aa638738dfcb0d318e0404aab3c0673f82a1a4d89455b21a5/weaviate_client-4.22.0.tar.gz", hash = "sha256:0c50fbef546a522262a87d1138cde0509c7a8a48e702e967be33472e9f7fbae3", size = 860126, upload-time = "2026-06-18T06:08:30.202Z" }
 wheels = [
-    { url = "https://files.pythonhosted.org/packages/69/d6/ec1267a2a90fcbe1bb4b75cd6b946039ff8f282cac98d11d03ec08fc4732/weaviate_client-4.21.3-py3-none-any.whl", hash = "sha256:3be9be261e01c9e64d84d0deee1a94e86fa25c41bdc8cdef509923fca30ded53", size = 643197, upload-time = "2026-06-02T13:03:49.281Z" },
+    { url = "https://files.pythonhosted.org/packages/e1/a3/27353ea3fbf9e7d4f03375176a838c632d009f5167d801adcbb5f6d3bd07/weaviate_client-4.22.0-py3-none-any.whl", hash = "sha256:ff2dbc8d1fc25739942402c22d1aba2350a16ba4a6b6ed0ba140689c70adf1d9", size = 652691, upload-time = "2026-06-18T06:08:28.622Z" },
 ]
 
 [[package]]
