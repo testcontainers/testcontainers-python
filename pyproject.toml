@@ -59,7 +59,7 @@ cratedb = [
   "sqlalchemy-cratedb"
 ]
 db2 = [
-  "sqlalchemy>=2",
+  "sqlalchemy",
   "ibm_db_sa; platform_machine != 'aarch64' and platform_machine != 'arm64'",
 ]
 elasticsearch = []
@@ -87,16 +87,16 @@ minio = ["minio>=7"]
 milvus = []
 mongodb = ["pymongo>=4"]
 mqtt = []
-mssql = ["sqlalchemy>=2", "pymssql>=2"]
-mysql = ["sqlalchemy>=2", "pymysql[rsa]>=1"]
+mssql = ["sqlalchemy", "pymssql>=2"]
+mysql = ["sqlalchemy", "pymysql[rsa]>=1"]
 nats = ["nats-py>=2"]
 neo4j = ["neo4j>=6"]
 nginx = []
 openfga = ["openfga-sdk"]
 opensearch = ["opensearch-py>=3; python_version < '4.0'"]
 ollama = []
-oracle = ["sqlalchemy>=2", "oracledb>=3"]
-oracle-free = ["sqlalchemy>=2", "oracledb>=3"]
+oracle = ["sqlalchemy", "oracledb>=3"]
+oracle-free = ["sqlalchemy", "oracledb>=3"]
 postgres = []
 qdrant = ["qdrant-client>=1"]
 rabbitmq = ["pika>=1"]
@@ -122,7 +122,7 @@ test = [
   # TODO: Check what test requirements are really need and for which modules
   #       Make a group for each module requiring extra deps in order to test
   #       Each module with minimal extra depencies
-  "sqlalchemy>=2",
+  "sqlalchemy",
   "psycopg2-binary==2.9.11",
   "pg8000==1.31.5",
   "psycopg>=3",
