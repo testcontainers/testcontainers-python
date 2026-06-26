@@ -501,30 +501,30 @@ wheels = [
 
 [[package]]
 name = "boto3"
-version = "1.43.33"
+version = "1.43.36"
 source = { registry = "https://pypi.org/simple" }
 dependencies = [
     { name = "botocore" },
     { name = "jmespath" },
     { name = "s3transfer" },
 ]
-sdist = { url = "https://files.pythonhosted.org/packages/10/9d/794d03504b8c72bf978a1ef93bc9e7d0867951bf5fbbe50881cd50fb26d5/boto3-1.43.33.tar.gz", hash = "sha256:da6e400b2d11eb041fbbb2743ef3ffe6540889676ffdff0e628628e9b4f04cde", size = 113152, upload-time = "2026-06-18T19:35:00.57Z" }
+sdist = { url = "https://files.pythonhosted.org/packages/ff/9f/897287e955db0f50b12fd69ef45956e4fd2c7ddb48c736872f7ea2314443/boto3-1.43.36.tar.gz", hash = "sha256:587d7ee92a12e440ad12b0e7f11f3358f0c4d65b19f64726efc94aaf194aff28", size = 112690, upload-time = "2026-06-23T02:47:14.561Z" }
 wheels = [
-    { url = "https://files.pythonhosted.org/packages/b1/42/bb88180fe1e46f77fe9507083a256dad243747e29aa0f2fbf6ff421b4132/boto3-1.43.33-py3-none-any.whl", hash = "sha256:97b563127f7678ad20249f9bf99877b7a3a78f6fcdcf222c6e25d27d4406ce0d", size = 140534, upload-time = "2026-06-18T19:34:58.062Z" },
+    { url = "https://files.pythonhosted.org/packages/9f/f1/274303f52483ecf199eae6f8d9b6f5951670397ee4d72c06cfd4eb644612/boto3-1.43.36-py3-none-any.whl", hash = "sha256:42942dde254673abcbc9e6e60017c88341a4f49d99d24e1f2e290fb38138c26f", size = 140031, upload-time = "2026-06-23T02:47:13.178Z" },
 ]
 
 [[package]]
 name = "boto3-stubs-lite"
-version = "1.43.33"
+version = "1.43.36"
 source = { registry = "https://pypi.org/simple" }
 dependencies = [
     { name = "botocore-stubs" },
     { name = "types-s3transfer" },
     { name = "typing-extensions", marker = "python_full_version < '3.12'" },
 ]
-sdist = { url = "https://files.pythonhosted.org/packages/db/3d/ed9dc8dd15421ea83f505a414cbaee298c5bbabf3cf7d07ea0676c50dfd6/boto3_stubs_lite-1.43.33.tar.gz", hash = "sha256:a686c1f660e5a4d73c575a0944ef7d2a22f4ce16b8859b4b458b16eb7ee62935", size = 73979, upload-time = "2026-06-18T20:11:20.57Z" }
+sdist = { url = "https://files.pythonhosted.org/packages/7a/e2/24d2cc088a64815589414cf70dbba27b5eaff2a0568934d37d6c4416e075/boto3_stubs_lite-1.43.36.tar.gz", hash = "sha256:b32b87aeee2d68b3b34eb3e665b2bcc3f491590e26147796e7786b6cc579dff6", size = 74197, upload-time = "2026-06-23T05:49:38.018Z" }
 wheels = [
-    { url = "https://files.pythonhosted.org/packages/6e/f4/edb2ff5f657dd614530db7c004c79c6eec63e2a060ba4c4c57aad44bd0e4/boto3_stubs_lite-1.43.33-py3-none-any.whl", hash = "sha256:f29b6b5a152dcb9c27d0edcc20b9b56af212df88cb9e0946b9f85eb9b720dd99", size = 43235, upload-time = "2026-06-18T20:11:15.227Z" },
+    { url = "https://files.pythonhosted.org/packages/4a/c5/12fd141051a633cca9baf703164522e1c199eb2fa6a15572e06232e995e1/boto3_stubs_lite-1.43.36-py3-none-any.whl", hash = "sha256:8af2ffdc7de78bc4997f1d6e3c09596b5b9a1a47f4c9fd1ad3857a9a606c36da", size = 43313, upload-time = "2026-06-23T05:49:35.162Z" },
 ]
 
 [package.optional-dependencies]
@@ -534,16 +534,16 @@ boto3 = [
 
 [[package]]
 name = "botocore"
-version = "1.43.33"
+version = "1.43.36"
 source = { registry = "https://pypi.org/simple" }
 dependencies = [
     { name = "jmespath" },
     { name = "python-dateutil" },
     { name = "urllib3" },
 ]
-sdist = { url = "https://files.pythonhosted.org/packages/20/d5/8ec6df4e82bec2be4ac417f542736dc6cfe89152693337152421b336eb71/botocore-1.43.33.tar.gz", hash = "sha256:74b3d5626ebeb2677fac1ca12ac975faf328e54349ceb4dcda17f50674d5b9b4", size = 15586539, upload-time = "2026-06-18T19:34:48.44Z" }
+sdist = { url = "https://files.pythonhosted.org/packages/7c/37/da9e7f6ca73ac73afd7f0bb7f238aa5daba35c081e98d7f48a7c399599c0/botocore-1.43.36.tar.gz", hash = "sha256:4cae47d1b2d426316b85a0087d9e69e048f13bc003b5177d74639fe9dfd28205", size = 15625488, upload-time = "2026-06-23T02:47:03.192Z" }
 wheels = [
-    { url = "https://files.pythonhosted.org/packages/a1/f5/55fc2d15a81ae39115ebcf8db876f54e78f834446b468e178c9de8e7977e/botocore-1.43.33-py3-none-any.whl", hash = "sha256:4292bb2cc645e5cb404515c54b5b164563f2b4218c52aeee3f1ce851724e177a", size = 15272140, upload-time = "2026-06-18T19:34:44.056Z" },
+    { url = "https://files.pythonhosted.org/packages/5c/19/934f81592527a3f7f9b943c893e334c721a4644948642bc33885d584e9ec/botocore-1.43.36-py3-none-any.whl", hash = "sha256:3c65fdc39ed01d8dfde1e961b34038aed03c459f8ddf80717a12ac006475e49d", size = 15313630, upload-time = "2026-06-23T02:46:59.327Z" },
 ]
 
 [[package]]
@@ -5685,12 +5685,12 @@ requires-dist = [
     { name = "redis", marker = "extra == 'generic'", specifier = ">=7" },
     { name = "redis", marker = "extra == 'redis'", specifier = ">=7" },
     { name = "selenium", marker = "extra == 'selenium'", specifier = ">=4" },
-    { name = "sqlalchemy", marker = "extra == 'db2'", specifier = ">=2" },
+    { name = "sqlalchemy", marker = "extra == 'db2'" },
     { name = "sqlalchemy", marker = "extra == 'generic'" },
-    { name = "sqlalchemy", marker = "extra == 'mssql'", specifier = ">=2" },
-    { name = "sqlalchemy", marker = "extra == 'mysql'", specifier = ">=2" },
-    { name = "sqlalchemy", marker = "extra == 'oracle'", specifier = ">=2" },
-    { name = "sqlalchemy", marker = "extra == 'oracle-free'", specifier = ">=2" },
+    { name = "sqlalchemy", marker = "extra == 'mssql'" },
+    { name = "sqlalchemy", marker = "extra == 'mysql'" },
+    { name = "sqlalchemy", marker = "extra == 'oracle'" },
+    { name = "sqlalchemy", marker = "extra == 'oracle-free'" },
     { name = "sqlalchemy-cratedb", marker = "extra == 'cratedb'" },
     { name = "trino", marker = "extra == 'trino'" },
     { name = "typing-extensions" },
@@ -5728,7 +5728,7 @@ dev = [
     { name = "ruff" },
     { name = "sphinx", marker = "python_full_version < '3.11'", specifier = ">=8" },
     { name = "sphinx", marker = "python_full_version >= '3.11'", specifier = ">=9" },
-    { name = "sqlalchemy", specifier = ">=2" },
+    { name = "sqlalchemy" },
     { name = "sqlalchemy-cockroachdb", specifier = ">=2" },
     { name = "sqlalchemy-cratedb" },
     { name = "tomli", marker = "python_full_version < '3.11'", specifier = ">=2.0" },
@@ -5769,7 +5769,7 @@ test = [
     { name = "pytest-cov", specifier = ">=7" },
     { name = "pytest-mock", specifier = ">=3" },
     { name = "pytest-xdist", specifier = ">=3.8.0" },
-    { name = "sqlalchemy", specifier = ">=2" },
+    { name = "sqlalchemy" },
     { name = "sqlalchemy-cockroachdb", specifier = ">=2" },
     { name = "sqlalchemy-cratedb" },
     { name = "tomli", marker = "python_full_version < '3.11'", specifier = ">=2.0" },
