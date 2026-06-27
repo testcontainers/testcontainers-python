@@ -58,6 +58,7 @@ nav:
           - modules/clickhouse.md
           - modules/cockroachdb.md
           - modules/cosmosdb.md
+          - modules/cratedb.md
           - modules/db2.md
           - modules/elasticsearch.md
           - modules/influxdb.md
@@ -72,6 +73,7 @@ nav:
           - modules/redis.md
           - modules/scylla.md
           - modules/trino.md
+          - modules/valkey.md
           - modules/weaviate.md
       - modules/aws.md
       - modules/azurite.md

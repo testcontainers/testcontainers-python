@@ -18,6 +18,6 @@ pip install testcontainers[oracle-free]
 
 <!--codeinclude-->
 
-[Creating an Oracle Free container](../../modules/oracle-free/example_basic.py)
+[Creating an Oracle Free container](oracle-free_example.py)
 
 <!--/codeinclude-->

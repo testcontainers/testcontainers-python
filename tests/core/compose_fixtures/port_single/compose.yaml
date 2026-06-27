@@ -1,0 +1,11 @@
+services:
+  alpine:
+    image: nginx:alpine-slim
+    init: true
+    ports:
+      - target: 80
+        protocol: tcp
+    command:
+      - sh
+      - -c
+      - 'nginx -g "daemon off;"'

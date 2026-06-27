@@ -18,6 +18,6 @@ pip install testcontainers[mqtt] paho-mqtt
 
 <!--codeinclude-->
 
-[Creating an MQTT container](../../modules/mqtt/example_basic.py)
+[Creating an MQTT container](mqtt_example.py)
 
 <!--/codeinclude-->

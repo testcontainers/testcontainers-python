@@ -3,52 +3,55 @@
 
 PYTHON_VERSION ?= 3.10
 IMAGE = testcontainers-python:${PYTHON_VERSION}
-PACKAGES = core $(addprefix modules/,$(notdir $(wildcard modules/*)))
 
-UPLOAD = $(addsuffix /upload,${PACKAGES})
-TESTS = $(addsuffix /tests,$(filter-out meta,${PACKAGES}))
-TESTS_DIND = $(addsuffix -dind,${TESTS})
-DOCTESTS = $(addsuffix /doctests,$(filter-out modules/README.md,${PACKAGES}))
+COMMUNITY_MODULES = $(patsubst tests/community/%/,%,$(wildcard tests/community/*/))
+COMMUNITY_TESTS = $(addprefix community/,$(addsuffix /tests,$(COMMUNITY_MODULES)))
+COMMUNITY_DOCTESTS = $(addprefix community/,$(addsuffix /doctests,$(COMMUNITY_MODULES)))
 
 
 install:  ## Set up the project for development
-	poetry install --all-extras
-	poetry run pre-commit install
+	uv sync --all-extras
+	uv run pre-commit install
 
 build:  ## Build the python package
-	poetry build && poetry run twine check dist/*
+	uv build && uv run twine check dist/*
 
-tests: ${TESTS}  ## Run tests for each package
-${TESTS}: %/tests:
-	poetry run pytest -v --cov=testcontainers.$* $*/tests
+tests: core/tests community-tests  ## Run all tests
+
+core/tests:  ## Run tests for the core package
+	uv run coverage run --parallel -m pytest -v tests/core
+
+community-tests: $(COMMUNITY_TESTS)  ## Run tests for all community modules
+$(COMMUNITY_TESTS): community/%/tests:
+	uv run coverage run --parallel -m pytest -v tests/community/$*
+
+quick-core-tests:  ## Run core tests excluding long_running
+	uv run coverage run --parallel -m pytest -v -m "not long_running" tests/core
 
 coverage:  ## Target to combine and report coverage.
-	poetry run coverage combine
-	poetry run coverage report
-	poetry run coverage xml
-	poetry run coverage html
+	uv run coverage combine
+	uv run coverage report
+	uv run coverage xml
+	uv run coverage html
 
 lint:  ## Lint all files in the project, which we also run in pre-commit
-	poetry run pre-commit run -a
-
-mypy-core:  ## Run mypy on the core package
-	poetry run mypy --config-file pyproject.toml core
-
-mypy-core-report:  ## Generate a report for mypy on the core package
-	poetry run mypy --config-file pyproject.toml core | poetry run python scripts/mypy_report.py
+	uv run pre-commit run --all-files
 
 docs: ## Build the docs for the project
-	poetry run sphinx-build -nW . docs/_build
+	uv run --all-extras sphinx-build -nW docs docs/_build
 
 # Target to build docs watching for changes as per https://stackoverflow.com/a/21389615
-docs-watch :
-	poetry run sphinx-autobuild . docs/_build # requires 'pip install sphinx-autobuild'
+docs-watch:
+	uv run sphinx-autobuild docs docs/_build # requires 'pip install sphinx-autobuild'
 
-doctests: ${DOCTESTS}  ## Run doctests found across the documentation.
-	poetry run sphinx-build -b doctest . docs/_build
+doctests: core/doctests community-doctests  ## Run doctests found across the documentation.
 
-${DOCTESTS}: %/doctests:  ##  Run doctests found for a module.
-	poetry run sphinx-build -b doctest -c doctests $* docs/_build
+core/doctests:  ## Run doctests for the core package
+	uv run --all-extras sphinx-build -b doctest -c doctests docs/core docs/_build
+
+community-doctests: $(COMMUNITY_DOCTESTS)  ## Run doctests for all community modules
+$(COMMUNITY_DOCTESTS): community/%/doctests:
+	uv run --all-extras sphinx-build -b doctest docs docs/_build docs/community/$*.rst
 
 
 clean:  ## Remove generated files.
@@ -61,7 +64,9 @@ clean-all: clean ## Remove all generated files and reset the local virtual envir
 	rm -rf .venv
 
 # Targets that do not generate file-level artifacts.
-.PHONY: clean docs doctests image tests ${TESTS}
+.PHONY: clean docs doctests core/doctests community-doctests $(COMMUNITY_DOCTESTS) \
+        tests core/tests community-tests $(COMMUNITY_TESTS) \
+        quick-core-tests install build coverage lint mypy-core mypy-core-report docs-watch
 
 
 # Implements this pattern for autodocumenting Makefiles:
@@ -74,36 +79,6 @@ help:  ## Display command usage
 
 ## --------------------------------------
 
-DOCS_CONTAINER=mkdocs-container
-DOCS_IMAGE=mkdocs-poetry
-DOCS_DOCKERFILE := Dockerfile.docs
-
-.PHONY: clean-docs
-clean-docs:
-	@echo "Destroying docs"
-	@if docker ps -a --format '{{.Names}}' | grep -q '^$(DOCS_CONTAINER)$$'; then \
-		docker rm -f $(DOCS_CONTAINER); \
-	fi
-	@if docker images -q $(DOCS_IMAGE) | grep -q .; then \
-		docker rmi $(DOCS_IMAGE); \
-	fi
-
-.PHONY: docs-ensure-image
-docs-ensure-image:
-	@if [ -z "$$(docker images -q $(DOCS_IMAGE))" ]; then \
-		docker build -f $(DOCS_DOCKERFILE) -t $(DOCS_IMAGE) . ; \
-	fi
-
 .PHONY: serve-docs
-serve-docs: docs-ensure-image
-	docker run --rm --name $(DOCS_CONTAINER) -it -p 8000:8000 \
-		-v $(PWD):/testcontainers-go \
-		-w /testcontainers-go \
-		$(DOCS_IMAGE) bash -c "\
-			cd docs && poetry install --no-root && \
-			poetry run mkdocs serve -f ../mkdocs.yml -a 0.0.0.0:8000"
-
-# Needed if dependencies are added to the docs site
-.PHONY: export-docs-deps
-export-docs-deps:
-	cd docs && poetry export --without-hashes --output requirements.txt
+serve-docs:
+	uv run mkdocs serve -f mkdocs.yml -a 127.0.0.1:8000

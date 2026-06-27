@@ -2,15 +2,21 @@
 
 name: modules
 
+env:
+  UV_FROZEN: "1"  # use lock file as is
+  UV_NO_EDITABLE: "1"  # test the build package, not the dev installation
+
 on:
   push:
     branches: [ main ]
     paths:
-      - "modules/**"
+      - "src/testcontainers/community/**"
+      - "tests/community/**"
   pull_request:
     branches: [ main ]
     paths:
-      - "modules/**"
+      - "src/testcontainers/community/**"
+      - "tests/community/**"
 
 jobs:
   track-modules:
@@ -28,15 +34,14 @@ jobs:
           list-files: 'json'
           filters: |
             modules:
-              - 'modules/**'
+              - '**'
       - name: Compute modules from files
         id: compute-changes
         run: |
-          modules=$(echo "${{ toJson(steps.changed-files.outputs.modules_files) }}" | jq '.[] | split("/") | nth(1)' | jq -s -c '. | unique')
-          echo "computed_modules=$modules"
-          echo "computed_modules=$modules" >> $GITHUB_OUTPUT
+          python3 scripts/compute_modules.py '${{ steps.changed-files.outputs.modules_files }}'
     outputs:
       changed_modules: ${{ steps.compute-changes.outputs.computed_modules }}
+
   test:
     runs-on: ubuntu-22.04
     needs: [track-modules]
@@ -44,7 +49,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        python-version: ["3.9", "3.13", "3.14"]
+        python-version: ["3.10", "3.13", "3.14"]
         module: ${{ fromJSON(needs.track-modules.outputs.changed_modules) }}
     steps:
       - name: Checkout contents
@@ -54,8 +59,8 @@ jobs:
         with:
           python-version: ${{ matrix.python-version }}
       - name: Install Python dependencies
-        run: poetry install -E ${{ matrix.module }}
+        run: uv sync --extra ${{ matrix.module }}
       - name: Run tests
-        run: make modules/${{ matrix.module }}/tests
+        run: make community/${{ matrix.module }}/tests
       - name: Run doctests
-        run: make modules/${{ matrix.module }}/doctests
+        run: make community/${{ matrix.module }}/doctests
