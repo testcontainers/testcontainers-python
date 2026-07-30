@@ -3487,11 +3487,11 @@ wheels = [
 
 [[package]]
 name = "pika"
-version = "1.4.1"
+version = "1.4.2"
 source = { registry = "https://pypi.org/simple" }
-sdist = { url = "https://files.pythonhosted.org/packages/f7/09/8c42dd00c4b3e09ebd174455d30823c261eefef9d2b7e94ae9ca779704c1/pika-1.4.1.tar.gz", hash = "sha256:e851f3e4992adfbf8eb64e9b86d94e3382f92ba0200055abedbb29676b8e713b", size = 154268, upload-time = "2026-05-22T18:01:24.855Z" }
+sdist = { url = "https://files.pythonhosted.org/packages/5c/06/a5e4589eccb22be5790bf1327e20c5387b64327daa40c4d857cf9265ec3c/pika-1.4.2.tar.gz", hash = "sha256:48d1f50297e76be4fc798fd5232d4d532d7a4758e51f7c0ae6c4004b9808a26b", size = 154365, upload-time = "2026-07-23T02:11:26.003Z" }
 wheels = [
-    { url = "https://files.pythonhosted.org/packages/7f/7b/a09c0d378ee8604220902c58103104b2304ef99744c4b7fc45312d280484/pika-1.4.1-py3-none-any.whl", hash = "sha256:2daae7bd422a0fc4f4879fd48c9a1932ed74a0bc7172e1e5f9bde63a101ed074", size = 164962, upload-time = "2026-05-22T18:01:23.429Z" },
+    { url = "https://files.pythonhosted.org/packages/d0/82/3b047c707700e08539cde489475eb5eaca13550599baaa17a8da038003e7/pika-1.4.2-py3-none-any.whl", hash = "sha256:b1df7389cdffaa45856bd01ade4e81bd488e0e199c443faf0c7bea89015f373f", size = 165087, upload-time = "2026-07-23T02:11:24.712Z" },
 ]
 
 [[package]]
