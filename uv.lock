@@ -1065,16 +1065,16 @@ toml = [
 
 [[package]]
 name = "crate"
-version = "2.1.2"
+version = "2.2.1"
 source = { registry = "https://pypi.org/simple" }
 dependencies = [
     { name = "orjson" },
     { name = "urllib3" },
     { name = "verlib2" },
 ]
-sdist = { url = "https://files.pythonhosted.org/packages/3a/8a/6dec8617c4383c3e3a8a3943a50b9240f5532784249adb36c4922213052d/crate-2.1.2.tar.gz", hash = "sha256:a2b88ba1b236bc2fa627e151ade47cefdfea660f950e40134a5093ff2443ebe3", size = 67914, upload-time = "2026-03-09T15:09:30.854Z" }
+sdist = { url = "https://files.pythonhosted.org/packages/00/c0/bafb5700785ac6f8e13cd47e1d34d657f5c7cbc035f439f09869a437d0d6/crate-2.2.1.tar.gz", hash = "sha256:dd329ed1d83f678d2f5ecba1adafb4673ef7006c76aa1d7ac8e9e2b9e091975d", size = 72619, upload-time = "2026-06-17T08:57:45.392Z" }
 wheels = [
-    { url = "https://files.pythonhosted.org/packages/2d/d1/3f9cfc180bf8961f178895f940fec0d8f04249aaf61e00b7bac6a4b89ffa/crate-2.1.2-py3-none-any.whl", hash = "sha256:3353807d71e77cb0a7a5cdfd1a59b8c90276517b7f86988578fc6d15eefb635e", size = 32419, upload-time = "2026-03-09T15:09:29.519Z" },
+    { url = "https://files.pythonhosted.org/packages/ea/3a/1e7973cc233ba64c1a892f5fa4641f634bda4740b5a2bd0997732c84744a/crate-2.2.1-py3-none-any.whl", hash = "sha256:2f17bf6a8c7e8ab7351a28c8da98c3686f5adfcc5c7123cbe664f7d7bcc81831", size = 34189, upload-time = "2026-06-17T08:57:44.085Z" },
 ]
 
 [[package]]
@@ -5409,7 +5409,7 @@ wheels = [
 
 [[package]]
 name = "sqlalchemy-cratedb"
-version = "0.42.0"
+version = "0.43.1"
 source = { registry = "https://pypi.org/simple" }
 dependencies = [
     { name = "crate" },
@@ -5417,9 +5417,9 @@ dependencies = [
     { name = "sqlalchemy" },
     { name = "verlib2" },
 ]
-sdist = { url = "https://files.pythonhosted.org/packages/ea/ac/e2732072194d6eb11cb2b948c3c31e5336a2e19e0c3caa04baa035974371/sqlalchemy_cratedb-0.42.0.tar.gz", hash = "sha256:e4f9530fe8204a338523ec230ad22ca692f64cc966c1da4f13b2215def923525", size = 46493, upload-time = "2026-05-28T15:14:43.282Z" }
+sdist = { url = "https://files.pythonhosted.org/packages/53/35/4fbea8c79f6df5d06ee1956648bb9ef4f08114cd9dae0329ab1cd2c45f20/sqlalchemy_cratedb-0.43.1.tar.gz", hash = "sha256:0466573af3dc5b796dc6df45ac4085d67eb4fba614a72a029c2b4671aead78a7", size = 48411, upload-time = "2026-06-22T08:54:22.56Z" }
 wheels = [
-    { url = "https://files.pythonhosted.org/packages/27/c3/f32c4d021eb660ad703f35df0e926b52c01224d4e392387b7cf9d931dfff/sqlalchemy_cratedb-0.42.0-py3-none-any.whl", hash = "sha256:82a551c9b9156dde0b621287a56e95ebec3c80462359541820c2c6cb8c9a8a9b", size = 46054, upload-time = "2026-05-28T15:14:42.142Z" },
+    { url = "https://files.pythonhosted.org/packages/6a/3c/946062f221bde60332ac175aeb40a7426a6e076056b4ad60c7bf5af7ece8/sqlalchemy_cratedb-0.43.1-py3-none-any.whl", hash = "sha256:1db7a30a7f76a023f63b0c4d396e4c32becd45c66c72c327f58720685335199b", size = 46774, upload-time = "2026-06-22T08:54:21.293Z" },
 ]
 
 [[package]]
