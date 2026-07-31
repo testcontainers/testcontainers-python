@@ -5437,7 +5437,7 @@ wheels = [
 
 [[package]]
 name = "testcontainers"
-version = "4.15.0rc4"
+version = "4.15.0"
 source = { editable = "." }
 dependencies = [
     { name = "docker" },
@@ -5927,14 +5927,14 @@ wheels = [
 
 [[package]]
 name = "types-paramiko"
-version = "5.0.0.20260617"
+version = "5.0.0.20260724"
 source = { registry = "https://pypi.org/simple" }
 dependencies = [
     { name = "cryptography" },
 ]
-sdist = { url = "https://files.pythonhosted.org/packages/de/89/902652d7b62bb7cd2b73c7f08c8fd03945c223c3814022f0ad305e1018b9/types_paramiko-5.0.0.20260617.tar.gz", hash = "sha256:50a5b0dc68b39d30097cb7d93b4915dbbc97ed740ea633bd492be25ca1f25df4", size = 28474, upload-time = "2026-06-17T06:56:52.955Z" }
+sdist = { url = "https://files.pythonhosted.org/packages/66/c2/445549ed6f0944352f2b91d88d16bbdc3993a4d6dbbedb81c557b3cad85a/types_paramiko-5.0.0.20260724.tar.gz", hash = "sha256:37e7f3f2196cf187c89649ad836621c675bc318369d80fa78051507a4ae770c9", size = 28548, upload-time = "2026-07-24T04:59:59.889Z" }
 wheels = [
-    { url = "https://files.pythonhosted.org/packages/50/4d/eab89decb4201dfff665a3b92088f384ff1e165bf6caa447509733bc1bc6/types_paramiko-5.0.0.20260617-py3-none-any.whl", hash = "sha256:83d87c396405666524441710ec59e693bca8b19021861456ac0a2401327812f8", size = 37123, upload-time = "2026-06-17T06:56:51.81Z" },
+    { url = "https://files.pythonhosted.org/packages/4c/16/fca52784f979821e2205ff514322d0e83452536acc4807a79ddb2085bbb2/types_paramiko-5.0.0.20260724-py3-none-any.whl", hash = "sha256:40c7083803a5a28ab7a8d2fe4cd9b7746d0a03538598582ce68f60967a2ad272", size = 37125, upload-time = "2026-07-24T04:59:58.955Z" },
 ]
 
 [[package]]
