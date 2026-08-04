@@ -1,8 +1,9 @@
 import time
+from urllib.parse import parse_qs, urlsplit
 
 import pytest
 
-from testcontainers.community.mongodb import MongoDBAtlasLocalContainer, MongoDbContainer
+from testcontainers.community.mongodb import MongoDBAtlasLocalContainer, MongoDbContainer, MongoDbReplicaSetContainer
 
 
 @pytest.mark.parametrize("version", ["7.0.7", "6.0.14", "5.0.26"])
@@ -26,6 +27,80 @@ def test_docker_run_mongodb(version: str):
 
         cursor = db.restaurants.find({"borough": "Manhattan"})
         assert cursor.next()["restaurant_id"] == doc["restaurant_id"]
+
+
+@pytest.mark.parametrize("version", ["7.0.7", "6.0.14", "5.0.26"])
+def test_docker_run_mongodb_replica_set_without_authentication(version: str):
+    with MongoDbReplicaSetContainer(f"mongo:{version}", replica_set="docker-rs", auth_enabled=False) as mongo:
+        connection_url = urlsplit(mongo.get_connection_url())
+        assert connection_url.username is None
+        assert parse_qs(connection_url.query) == {
+            "directConnection": ["true"],
+            "replicaSet": ["docker-rs"],
+        }
+
+        client = mongo.get_connection_client()
+
+        hello = client.admin.command("hello")
+        assert hello["setName"] == "docker-rs"
+        assert hello["isWritablePrimary"] is True
+
+        collection = client.test.transactions
+        with client.start_session() as session, session.start_transaction():
+            result = collection.insert_one({"message": "replica sets support transactions"}, session=session)
+
+        assert collection.find_one({"_id": result.inserted_id}) is not None
+
+
+@pytest.mark.parametrize("version", ["7.0.7", "6.0.14", "5.0.26"])
+def test_docker_run_authenticated_mongodb_replica_set(version: str):
+    container = MongoDbReplicaSetContainer(
+        f"mongo:{version}",
+        username="replica-user",
+        password="replica-password",
+        replica_set="secure-rs",
+        command=["--profile", "1"],
+    ).with_kwargs(labels={"testcontainers.mongodb.replica-set": "true"})
+
+    with container as mongo:
+        connection_url = urlsplit(mongo.get_connection_url())
+        assert connection_url.username == "replica-user"
+        assert connection_url.password == "replica-password"
+        assert parse_qs(connection_url.query) == {
+            "directConnection": ["true"],
+            "replicaSet": ["secure-rs"],
+        }
+
+        client = mongo.get_connection_client()
+
+        hello = client.admin.command("hello")
+        assert hello["setName"] == "secure-rs"
+        assert hello["isWritablePrimary"] is True
+
+        result = client.test.documents.insert_one({"authenticated": True})
+        assert client.test.documents.find_one({"_id": result.inserted_id}) == {
+            "_id": result.inserted_id,
+            "authenticated": True,
+        }
+
+
+@pytest.mark.parametrize("username,password", [("user", None), (None, "password")])
+def test_mongodb_rejects_credentials_when_authentication_is_disabled(
+    username: str | None,
+    password: str | None,
+):
+    with pytest.raises(ValueError, match="authentication is disabled"):
+        MongoDbReplicaSetContainer(auth_enabled=False, username=username, password=password)
+
+
+def test_authenticated_mongodb_replica_set_rejects_non_root_container_user():
+    with pytest.raises(ValueError, match="root container user"):
+        MongoDbReplicaSetContainer(replica_set="secure-rs", user="mongodb")
+
+
+def test_mongodb_replica_set_rejects_non_mongod_command():
+    with pytest.raises(ValueError, match="mongod options"):
+        MongoDbReplicaSetContainer(replica_set="secure-rs", command=["bash", "-lc", "exec mongod"])
 
 
 @pytest.mark.parametrize("version", ["8.0.13", "7.0.23"])

@@ -3,7 +3,7 @@ from datetime import datetime
 
 from pymongo import MongoClient
 
-from testcontainers.community.mongodb import MongoDbContainer
+from testcontainers.community.mongodb import MongoDbContainer, MongoDbReplicaSetContainer
 
 
 def basic_example():
@@ -81,5 +81,45 @@ def basic_example():
         print(json.dumps(stats, default=str, indent=2))
 
 
+def replica_set_example():
+    with MongoDbReplicaSetContainer() as mongodb:
+        client = mongodb.get_connection_client()
+        db = client.test_db
+
+        print("\nConnected to MongoDB replica set")
+        print(json.dumps(client.admin.command("hello"), default=str, indent=2))
+
+        # Run a multi-document transaction
+        accounts = db.accounts
+        with client.start_session() as session, session.start_transaction():
+            accounts.insert_one({"name": "checking", "balance": 100}, session=session)
+            accounts.update_one(
+                {"name": "checking"},
+                {"$inc": {"balance": -25}},
+                session=session,
+            )
+
+        print("\nTransaction result:")
+        print(json.dumps(accounts.find_one({"name": "checking"}), default=str, indent=2))
+
+        # Observe an insert through a change stream
+        events = db.events
+        with events.watch([{"$match": {"operationType": "insert"}}]) as changes:
+            events.insert_one({"kind": "created", "value": 42})
+            change = next(changes)
+
+        print("\nChange stream event:")
+        print(json.dumps(change, default=str, indent=2))
+
+
+def unauthenticated_replica_set_example():
+    with MongoDbReplicaSetContainer(auth_enabled=False) as mongodb:
+        client = mongodb.get_connection_client()
+        print("\nConnected to MongoDB replica set without authentication")
+        print(json.dumps(client.admin.command("hello"), default=str, indent=2))
+
+
 if __name__ == "__main__":
     basic_example()
+    replica_set_example()
+    unauthenticated_replica_set_example()
