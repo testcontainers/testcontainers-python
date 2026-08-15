@@ -3530,7 +3530,7 @@ wheels = [
 
 [[package]]
 name = "pre-commit"
-version = "4.6.0"
+version = "4.6.1"
 source = { registry = "https://pypi.org/simple" }
 dependencies = [
     { name = "cfgv" },
@@ -3539,9 +3539,9 @@ dependencies = [
     { name = "pyyaml" },
     { name = "virtualenv" },
 ]
-sdist = { url = "https://files.pythonhosted.org/packages/8e/22/2de9408ac81acbb8a7d05d4cc064a152ccf33b3d480ebe0cd292153db239/pre_commit-4.6.0.tar.gz", hash = "sha256:718d2208cef53fdc38206e40524a6d4d9576d103eb16f0fec11c875e7716e9d9", size = 198525, upload-time = "2026-04-21T20:31:41.613Z" }
+sdist = { url = "https://files.pythonhosted.org/packages/25/3a/ddb78f32a0814e66b18a099377a106a2dcdce92d86a034d69d65df9b256e/pre_commit-4.6.1.tar.gz", hash = "sha256:03e809865c7d178b9979d06c761fcbfe6808fdaded8581a745bb110e52050421", size = 198646, upload-time = "2026-07-21T20:56:58.225Z" }
 wheels = [
-    { url = "https://files.pythonhosted.org/packages/80/6e/4b28b62ecb6aae56769c34a8ff1d661473ec1e9519e2d5f8b2c150086b26/pre_commit-4.6.0-py2.py3-none-any.whl", hash = "sha256:e2cf246f7299edcabcf15f9b0571fdce06058527f0a06535068a86d38089f29b", size = 226472, upload-time = "2026-04-21T20:31:40.092Z" },
+    { url = "https://files.pythonhosted.org/packages/fb/49/bc925106abcdac498074f2cbe6137e94e09f418dd2b7775df5b577dc0313/pre_commit-4.6.1-py2.py3-none-any.whl", hash = "sha256:0e3b2942510d1fb34eec167a3ec57331bf8442122f1153a9fb8b58f5c49b2717", size = 226186, upload-time = "2026-07-21T20:56:57.064Z" },
 ]
 
 [[package]]
@@ -5913,16 +5913,15 @@ wheels = [
 
 [[package]]
 name = "types-docker"
-version = "7.1.0.20260518"
+version = "7.2.0.20260728"
 source = { registry = "https://pypi.org/simple" }
 dependencies = [
-    { name = "types-paramiko" },
     { name = "types-requests" },
     { name = "urllib3" },
 ]
-sdist = { url = "https://files.pythonhosted.org/packages/dc/71/ee4bd2b713f0b3b0cecc48fd13952b244f187c3b68cfa0408360f102fde8/types_docker-7.1.0.20260518.tar.gz", hash = "sha256:d194c4b82a4110fc58c84af05a5d9de6d3e54f94357ff745d01b5dca12c8eaaa", size = 33868, upload-time = "2026-05-18T06:08:19.78Z" }
+sdist = { url = "https://files.pythonhosted.org/packages/00/f9/7792217bb55b523f409e8699b41d849345fe673e7aae254e5402c8b6c391/types_docker-7.2.0.20260728.tar.gz", hash = "sha256:eeb780deddb000d3be7584cca16b02fc7f68b135b0039977be13c121861db197", size = 36538, upload-time = "2026-07-28T04:52:14.199Z" }
 wheels = [
-    { url = "https://files.pythonhosted.org/packages/1f/1d/1d174b6f94afe0de50189de0a9dfd4531d2f8170e6dd9ef68ab616aa770b/types_docker-7.1.0.20260518-py3-none-any.whl", hash = "sha256:59893937816bfe40eb2915c84b31c3131107537500287c47d4a10dd7a9d59deb", size = 48183, upload-time = "2026-05-18T06:08:18.89Z" },
+    { url = "https://files.pythonhosted.org/packages/96/0b/733f7fb323bbf4394f69b7c6485b6b7d373c301261c26af08ad72bcfa456/types_docker-7.2.0.20260728-py3-none-any.whl", hash = "sha256:f8d7a80dbc12cb7d794bf22d42f7bb1545db6226ee204dc685812a4695ac9a23", size = 51168, upload-time = "2026-07-28T04:52:13.201Z" },
 ]
 
 [[package]]
