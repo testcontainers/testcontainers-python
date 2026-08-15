@@ -166,7 +166,9 @@ dev = [
 
 # ---------- Hatchling build configuration ----------
 [build-system]
-requires = ["hatchling"]
+# hatchling>=1.32 emits Metadata-Version 2.5, which the pinned twine version
+# does not yet recognize as valid (https://github.com/pypa/twine/issues/1327).
+requires = ["hatchling>=1.26,<1.32"]
 build-backend = "hatchling.build"
 
 [tool.hatch.build]
