@@ -1,5 +1,13 @@
 # Changelog
 
+## [4.15.1](https://github.com/testcontainers/testcontainers-python/compare/testcontainers-v4.15.0...testcontainers-v4.15.1) (2026-08-16)
+
+
+### Bug Fixes
+
+* **build:** pin hatchling &lt;1.32 to fix twine check CI failure ([#1095](https://github.com/testcontainers/testcontainers-python/issues/1095)) ([c530436](https://github.com/testcontainers/testcontainers-python/commit/c5304363a41991ae3018ce95cd52346b07216b03))
+* **build:** upgrade twine to &gt;=7.0.0 to support Metadata-Version 2.5 ([#1100](https://github.com/testcontainers/testcontainers-python/issues/1100)) ([c958e40](https://github.com/testcontainers/testcontainers-python/commit/c958e40ca25b77c75d9fabbd8eb05736dded5790))
+
 ## [4.15.0](https://github.com/testcontainers/testcontainers-python/compare/testcontainers-v4.15.0-rc4...testcontainers-v4.15.0) (2026-07-24)
 
 
