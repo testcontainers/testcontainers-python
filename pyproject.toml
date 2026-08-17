@@ -134,7 +134,7 @@ test = [
   "sqlalchemy-cockroachdb>=2",
   "sqlalchemy-cratedb",
   "paramiko>=4",
-  "twine>=6.2.0",
+  "twine>=7.0.0",
   "anyio>=4",
   "tomli>=2.0; python_version < '3.11'", # required for pyproject.toml tests, TODO: remove once we drop py3.10 support
   "pytest-xdist>=3.8.0",
@@ -166,7 +166,9 @@ dev = [
 
 # ---------- Hatchling build configuration ----------
 [build-system]
-requires = ["hatchling"]
+# hatchling>=1.32 emits Metadata-Version 2.5, which the pinned twine version
+# does not yet recognize as valid (https://github.com/pypa/twine/issues/1327).
+requires = ["hatchling>=1.26,<1.32"]
 build-backend = "hatchling.build"
 
 [tool.hatch.build]
