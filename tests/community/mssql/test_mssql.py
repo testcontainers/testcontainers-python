@@ -8,7 +8,7 @@ pytestmark = pytest.mark.xdist_group("mssql")
 
 
 @pytest.mark.skipif(is_arm(), reason="mssql container not available for ARM")
-@pytest.mark.parametrize("version", ["2022-CU12-ubuntu-22.04", "2019-CU25-ubuntu-20.04"])
+@pytest.mark.parametrize("version", ["2022-CU12-ubuntu-22.04", "2019-CU25-ubuntu-20.04", "2025-latest"])
 def test_docker_run_mssql(version: str):
     with SqlServerContainer(f"mcr.microsoft.com/mssql/server:{version}", password="1Secure*Password2") as mssql:
         engine = sqlalchemy.create_engine(mssql.get_connection_url())
