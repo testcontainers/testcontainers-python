@@ -135,8 +135,8 @@ Here's a complete example of a multi-container application:
 
 ```python
 from testcontainers.core.network import Network
-from testcontainers.postgres import PostgresContainer
-from testcontainers.redis import RedisContainer
+from testcontainers.community.postgres import PostgresContainer
+from testcontainers.community.redis import RedisContainer
 
 def test_multi_container_app():
     # Create a network

@@ -18,6 +18,6 @@ pip install testcontainers[neo4j] neo4j
 
 <!--codeinclude-->
 
-[Creating a Neo4j container](../../modules/neo4j/example_basic.py)
+[Creating a Neo4j container](neo4j_example.py)
 
 <!--/codeinclude-->

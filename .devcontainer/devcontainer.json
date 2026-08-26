@@ -5,7 +5,7 @@
 	// Or use a Dockerfile or Docker Compose file. More info: https://containers.dev/guide/dockerfile
 	"build": {
 		// Path is relative to the devcontainer.json file.
-		// We prebuild the image to get poetry into the image
+		// We prebuild the image to get uv into the image
 		// This saves the user a bit of time, when re-opening containers
 		"dockerfile": "Dockerfile"
 	},

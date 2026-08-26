@@ -18,6 +18,6 @@ pip install testcontainers[milvus] requests
 
 <!--codeinclude-->
 
-[Creating a Milvus container](../../modules/milvus/example_basic.py)
+[Creating a Milvus container](milvus_example.py)
 
 <!--/codeinclude-->

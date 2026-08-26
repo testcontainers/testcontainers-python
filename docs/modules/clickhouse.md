@@ -18,7 +18,7 @@ pip install testcontainers[clickhouse] clickhouse-driver
 
 <!--codeinclude-->
 
-[Creating a ClickHouse container](../../modules/clickhouse/example_basic.py)
+[Creating a ClickHouse container](clickhouse_example.py)
 
 <!--/codeinclude-->
 

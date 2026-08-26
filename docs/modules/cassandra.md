@@ -18,6 +18,6 @@ pip install testcontainers[cassandra] cassandra-driver
 
 <!--codeinclude-->
 
-[Creating a Cassandra container](../../modules/cassandra/example_basic.py)
+[Creating a Cassandra container](cassandra_example.py)
 
 <!--/codeinclude-->

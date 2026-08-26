@@ -18,6 +18,6 @@ pip install testcontainers[mssql] pymssql
 
 <!--codeinclude-->
 
-[Creating an MSSQL container](../../modules/mssql/example_basic.py)
+[Creating an MSSQL container](mssql_example.py)
 
 <!--/codeinclude-->

@@ -18,6 +18,6 @@ pip install testcontainers[memcached] pymemcache
 
 <!--codeinclude-->
 
-[Creating a Memcached container](../../modules/memcached/example_basic.py)
+[Creating a Memcached container](memcached_example.py)
 
 <!--/codeinclude-->

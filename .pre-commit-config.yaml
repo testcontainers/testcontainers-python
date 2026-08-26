@@ -22,7 +22,7 @@ repos:
     hooks:
       - id: mypy
         name: mypy
-        entry: poetry run mypy
+        entry: uv run mypy
         args: ["--config-file", "pyproject.toml"]
         files: "core"  # start with the core being type checked
         language: system

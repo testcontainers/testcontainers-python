@@ -18,6 +18,6 @@ pip install testcontainers[nats] nats-py
 
 <!--codeinclude-->
 
-[Creating a NATS container](../../modules/nats/example_basic.py)
+[Creating a NATS container](nats_example.py)
 
 <!--/codeinclude-->

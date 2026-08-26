@@ -18,6 +18,6 @@ pip install testcontainers[azurite] azure-storage-blob
 
 <!--codeinclude-->
 
-[Creating an Azurite container](../../modules/azurite/example_basic.py)
+[Creating an Azurite container](azurite_example.py)
 
 <!--/codeinclude-->

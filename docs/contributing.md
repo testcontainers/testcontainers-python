@@ -23,16 +23,14 @@ We recommend following these steps:
 You need to have the following tools available to you:
 
 - `make` - You'll need a GNU Make for common developer activities
-- `poetry` - This is the primary package manager for the project
-- `pyenv` **Recommended**: For installing python versions for your system.
-  Poetry infers the current latest version from what it can find on the `PATH` so you are still fine if you don't use `pyenv`.
+- `uv` - This is the primary package manager for the project
 
 ### Build and test
 
-- Run `make install` to get `poetry` to install all dependencies and set up `pre-commit`
+- Run `make install` to get `uv` to install all dependencies and set up `pre-commit`
   - **Recommended**: Run `make` or `make help` to see other commands available to you.
 - After this, you should have a working virtual environment and proceed with writing code with your favorite IDE
-- **TIP**: You can run `make core/tests` or `make modules/<my-module>/tests` to run the tests specifically for that to speed up feedback cycles
+- **TIP**: You can run `make core/tests` or `make community/<my-module>/tests` to run the tests specifically for that to speed up feedback cycles
 - You can also run `make lint` to run the `pre-commit` for the entire codebase.
 
 ## Adding new modules
@@ -49,9 +47,11 @@ Once you've talked to the maintainers (we do our best to reply!) then you can pr
 
 ### Module documentation
 
-Leave examples for others with your mew module such as `modules/<new_module>/basic_example.py`. You can create as many examples as you want.
+Leave examples for others with your new module such as `docs/modules/<new_module>_example.py`. You can create as many examples as you want.
 
 Create a new `docs/modules/<new_module>.md` describing the basic use of the new container. There is a [starter template provided here](https://raw.githubusercontent.com/testcontainers/testcontainers-python/blob/main/docs/modules/template.md){:target="\_blank"}.
+
+Also create a `docs/community/<new_module>.rst` with the `.. autoclass` and `.. title` directives pointing at your container class — this is used by the Sphinx doctest runner.
 
 !!! important
 

@@ -18,6 +18,6 @@ pip install testcontainers[mongodb] pymongo
 
 <!--codeinclude-->
 
-[Creating a MongoDB container](../../modules/mongodb/example_basic.py)
+[Creating a MongoDB container](mongodb_example.py)
 
 <!--/codeinclude-->

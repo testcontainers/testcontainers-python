@@ -18,6 +18,6 @@ pip install testcontainers[kafka]
 
 <!--codeinclude-->
 
-[Creating a Kafka container](../../modules/kafka/example_basic.py)
+[Creating a Kafka container](kafka_example.py)
 
 <!--/codeinclude-->

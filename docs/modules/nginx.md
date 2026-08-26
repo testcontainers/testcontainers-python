@@ -18,6 +18,6 @@ pip install testcontainers[nginx]
 
 <!--codeinclude-->
 
-[Creating a Nginx container](../../modules/nginx/example_basic.py)
+[Creating a Nginx container](nginx_example.py)
 
 <!--/codeinclude-->

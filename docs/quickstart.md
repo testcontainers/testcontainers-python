@@ -18,7 +18,7 @@ pip install testcontainers
 
 ```python
 import pytest
-from testcontainers.redis import RedisContainer
+from testcontainers.community.redis import RedisContainer
 import redis
 
 def test_with_redis():
