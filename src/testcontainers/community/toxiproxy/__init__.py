@@ -84,7 +84,7 @@ class ToxiproxyContainer(DockerContainer):
         ...     toxiproxy = ToxiproxyContainer().with_network(network)
         ...     with nginx, toxiproxy:
         ...         proxy = toxiproxy.create_proxy("nginx", "nginx:80")
-        ...         proxy.add_toxic("latency", {"latency": 1000})
+        ...         _ = proxy.add_toxic("latency", {"latency": 1000})
     """
 
     CONTROL_PORT = 8474
