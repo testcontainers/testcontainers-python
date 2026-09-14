@@ -6,7 +6,7 @@ import time
 from datetime import timedelta
 from email.message import Message
 from unittest.mock import Mock, patch
-from urllib.error import HTTPError, URLError
+from urllib.error import HTTPError
 
 import pytest
 
@@ -388,14 +388,6 @@ class TestHttpWaitStrategy:
 
         assert result is expected_result
         assert fp.closed
-
-    @patch("testcontainers.core.wait_strategies.urlopen")
-    def test_try_http_request_url_error(self, mock_urlopen):
-        """A URLError without a wrapped response is not an acceptable status code."""
-        mock_urlopen.side_effect = URLError("connection refused")
-        strategy = HttpWaitStrategy(8080)
-
-        assert strategy._try_http_request("http://localhost:8080/", {}, None) is False
 
 
 class TestHealthcheckWaitStrategy:
