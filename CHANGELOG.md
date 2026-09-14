@@ -1,5 +1,21 @@
 # Changelog
 
+## [4.16.0](https://github.com/testcontainers/testcontainers-python/compare/testcontainers-v4.15.0...testcontainers-v4.16.0) (2026-09-14)
+
+
+### Features
+
+* **mssql:** Add new SQL Server version to test parameters ([#1079](https://github.com/testcontainers/testcontainers-python/issues/1079)) ([1a2804e](https://github.com/testcontainers/testcontainers-python/commit/1a2804e04fceab3b1734357fd98a4d5ad3603464))
+* support MongoDB replica set ([#1092](https://github.com/testcontainers/testcontainers-python/issues/1092)) ([5c70d54](https://github.com/testcontainers/testcontainers-python/commit/5c70d540e0df919e2de77ce8cc75b5c50cd772e7))
+
+
+### Bug Fixes
+
+* **build:** pin hatchling &lt;1.32 to fix twine check CI failure ([#1095](https://github.com/testcontainers/testcontainers-python/issues/1095)) ([c530436](https://github.com/testcontainers/testcontainers-python/commit/c5304363a41991ae3018ce95cd52346b07216b03))
+* **build:** upgrade twine to &gt;=7.0.0 to support Metadata-Version 2.5 ([#1100](https://github.com/testcontainers/testcontainers-python/issues/1100)) ([c958e40](https://github.com/testcontainers/testcontainers-python/commit/c958e40ca25b77c75d9fabbd8eb05736dded5790))
+* **minio:** Switch to a community-maintained MinIO image ([#1117](https://github.com/testcontainers/testcontainers-python/issues/1117)) ([8d81011](https://github.com/testcontainers/testcontainers-python/commit/8d810118547b333ac3a48428d09175ced58b8ff4))
+* **toxiproxy:** add Toxiproxy container module ([#1105](https://github.com/testcontainers/testcontainers-python/issues/1105)) ([16ba92e](https://github.com/testcontainers/testcontainers-python/commit/16ba92e5c90f5a9d4e56ac6e65921593a6eccfe7))
+
 ## [4.15.0](https://github.com/testcontainers/testcontainers-python/compare/testcontainers-v4.15.0-rc4...testcontainers-v4.15.0) (2026-07-24)
 
 
