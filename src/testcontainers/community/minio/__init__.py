@@ -36,7 +36,7 @@ class MinioContainer(DockerContainer):
 
     def __init__(
         self,
-        image: str = "minio/minio:RELEASE.2022-12-02T19-19-22Z",
+        image: str = "ghcr.io/coollabsio/minio",
         port: int = 9000,
         access_key: str = "minioadmin",
         secret_key: str = "minioadmin",
