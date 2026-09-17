@@ -1,9 +1,12 @@
 import itertools
 import logging
 import re
+import threading
 import time
 from datetime import timedelta
+from http.server import BaseHTTPRequestHandler, HTTPServer
 from unittest.mock import Mock, patch
+from urllib.error import HTTPError
 
 import pytest
 
@@ -360,6 +363,44 @@ class TestHttpWaitStrategy:
         assert strategy._port == expected_port
         assert strategy._path == expected_path
         assert strategy._tls is expected_tls
+
+    @pytest.mark.parametrize(
+        "status_code,expected",
+        [(503, False), (200, True)],
+        ids=["unexpected_status", "expected_status"],
+    )
+    def test_handle_http_error_always_closes_error(self, status_code, expected):
+        # Regression test for #1115: HTTPError wraps the response fp and must be closed.
+        error = Mock(spec=HTTPError)
+        error.code = status_code
+        strategy = HttpWaitStrategy(8080, "/health").for_status_code(200)
+        assert strategy._handle_http_error(error) is expected
+        error.close.assert_called_once_with()
+
+    def test_try_http_request_unexpected_status(self):
+        # End-to-end check for #1115: 503 against an expectation of 200 returns False.
+        class _FailHandler(BaseHTTPRequestHandler):
+            def do_GET(self):
+                body = b"error"
+                self.send_response(503)
+                self.send_header("Content-Length", str(len(body)))
+                self.end_headers()
+                self.wfile.write(body)
+
+            def log_message(self, *args):
+                pass
+
+        server = HTTPServer(("127.0.0.1", 0), _FailHandler)
+        thread = threading.Thread(target=server.serve_forever, daemon=True)
+        thread.start()
+        try:
+            port = server.server_address[1]
+            url = f"http://127.0.0.1:{port}/health"
+            assert HttpWaitStrategy(port, "/health").for_status_code(200)._try_http_request(url, {}, None) is False
+            assert HttpWaitStrategy(port, "/health").for_status_code(503)._try_http_request(url, {}, None) is True
+        finally:
+            server.shutdown()
+            thread.join(timeout=5)
 
 
 class TestHealthcheckWaitStrategy:
