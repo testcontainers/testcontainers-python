@@ -427,13 +427,19 @@ class HttpWaitStrategy(WaitStrategy):
 
     def _handle_http_error(self, error: Union[URLError, HTTPError]) -> bool:
         """Handle HTTP errors and return True if error is acceptable."""
-        if isinstance(error, HTTPError) and (
-            error.code in self._status_codes
-            or (self._status_code_predicate and self._status_code_predicate(error.code))
-        ):
-            return True
-        logger.debug(f"HTTP request failed: {error!s}")
-        return False
+        try:
+            if isinstance(error, HTTPError) and (
+                error.code in self._status_codes
+                or (self._status_code_predicate and self._status_code_predicate(error.code))
+            ):
+                return True
+            logger.debug(f"HTTP request failed: {error!s}")
+            return False
+        finally:
+            # HTTPError wraps the response body in a temporary file: always close it
+            # to avoid leaking file descriptors (see #1115).
+            if isinstance(error, HTTPError):
+                error.close()
 
 
 class HealthcheckWaitStrategy(WaitStrategy):
