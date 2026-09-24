@@ -105,8 +105,34 @@ class MongoDbContainer(DbContainer):
         )
 
     def _connect(self) -> None:
-        # LogMessageWaitStrategy handles waiting for container readiness
-        pass
+        # With a root user the image first runs a temporary server on localhost to create it, and that
+        # server also logs "waiting for connections". Ping until the real server answers.
+        # Credentials are passed as arguments rather than inside the URL, so any password can connect.
+        client: MongoClient[dict[str, Any]] = MongoClient(
+            host=self.get_container_host_ip(),
+            port=int(self.get_exposed_port(self.port)),
+            username=self.username,
+            password=self.password,
+            serverSelectionTimeoutMS=1000,
+            connectTimeoutMS=1000,
+            socketTimeoutMS=1000,
+        )
+        try:
+            self._wait_for_mongodb(client, time.monotonic() + testcontainers_config.timeout)
+        finally:
+            client.close()
+
+    def _wait_for_mongodb(self, client: MongoClient[dict[str, Any]], deadline: float) -> None:
+        last_error: Optional[Exception] = None
+        while time.monotonic() < deadline:
+            try:
+                client.admin.command("ping")
+                return
+            except PyMongoError as error:
+                last_error = error
+                time.sleep(testcontainers_config.sleep_time)
+
+        raise ContainerStartException("MongoDB did not become ready") from last_error
 
     def get_connection_client(self) -> MongoClient:
         return MongoClient(self.get_connection_url())
