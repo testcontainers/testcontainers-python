@@ -1,3 +1,5 @@
+import socket
+import threading
 from time import perf_counter, sleep
 
 import pytest
@@ -6,6 +8,7 @@ from docker.errors import NotFound
 
 from testcontainers.core.config import testcontainers_config
 from testcontainers.core.container import DockerContainer, Reaper
+from testcontainers.core.labels import LABEL_SESSION_ID, SESSION_ID
 from testcontainers.core.utils import is_mac
 from testcontainers.core.waiting_utils import wait_for_logs
 
@@ -95,3 +98,50 @@ def test_ryuk_is_reused_in_same_process():
     with DockerContainer("hello-world") as container:
         wait_for_logs(container, "Hello from Docker!")
         assert reaper_instance is Reaper._instance
+
+
+def _serve(connections: list) -> tuple[str, int, list]:
+    """Serve one scripted behaviour per incoming connection on a local port.
+
+    Each entry is "reset" (accept and close without reading, like docker-proxy before Ryuk is up),
+    "silent" (read the line but never answer) or "ack" (answer like Ryuk).
+    """
+    server = socket.socket()
+    server.bind(("127.0.0.1", 0))
+    server.listen()
+    received: list = []
+
+    def run() -> None:
+        for behaviour in connections:
+            conn, _ = server.accept()
+            with conn:
+                if behaviour == "reset":
+                    continue
+                received.append(conn.recv(1024))
+                if behaviour == "ack":
+                    conn.sendall(b"ACK\n")
+                    conn.recv(1024)  # keep the connection open until the client closes it
+                else:
+                    sleep(1.5)
+        server.close()
+
+    threading.Thread(target=run, daemon=True).start()
+    host, port = server.getsockname()
+    return host, port, received
+
+
+def test_reaper_retries_until_ryuk_acknowledges_the_filter():
+    # https://github.com/testcontainers/testcontainers-python/issues/1114
+    host, port, received = _serve(["reset", "silent", "ack"])
+    s = Reaper._connect_and_register(host, port, attempts=5, retry_delay=0.01)
+    try:
+        assert received[-1] == f"label={LABEL_SESSION_ID}={SESSION_ID}\r\n".encode()
+        assert len(received) == 2
+    finally:
+        s.close()
+
+
+def test_reaper_raises_when_ryuk_never_acknowledges():
+    host, port, _ = _serve(["reset", "reset"])
+    with pytest.raises(OSError):
+        Reaper._connect_and_register(host, port, attempts=2, retry_delay=0.01)

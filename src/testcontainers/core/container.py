@@ -7,6 +7,7 @@ import tarfile
 from dataclasses import dataclass
 from os import PathLike
 from socket import socket
+from time import sleep
 from types import TracebackType
 from typing import TYPE_CHECKING, Any, Optional, TypedDict, Union
 
@@ -498,11 +499,13 @@ class Reaper:
             .with_volume_mapping(c.ryuk_docker_socket, "/var/run/docker.sock", "rw")
             .with_kwargs(privileged=c.ryuk_privileged, auto_remove=True)
             .with_env("RYUK_RECONNECTION_TIMEOUT", c.ryuk_reconnection_timeout)
+            # Set before start(): a wait strategy only applies to a container that has not started yet.
+            # Ryuk 0.8 logs "Started!", newer versions log "msg=Started".
+            .waiting_for(LogMessageWaitStrategy(r"\bStarted\b").with_startup_timeout(20))
             .start()
         )
         rc = Reaper._container
         assert rc is not None
-        rc.waiting_for(LogMessageWaitStrategy(r".* Started!").with_startup_timeout(20))
 
         container_host = rc.get_container_host_ip()
         container_port = int(rc.get_exposed_port(8080))
@@ -514,33 +517,41 @@ class Reaper:
                 f"Could not obtain network details for {rcc.id}. Host: {container_host} Port: {container_port}"
             )
 
-        last_connection_exception: Optional[Exception] = None
-        for _ in range(50):
-            try:
-                s = socket()
-                Reaper._socket = s
-                s.settimeout(1)
-                s.connect((container_host, container_port))
-                last_connection_exception = None
-                break
-            except (ConnectionRefusedError, OSError) as e:
-                if Reaper._socket is not None:
-                    with contextlib.suppress(Exception):
-                        Reaper._socket.close()
-                    Reaper._socket = None
-                last_connection_exception = e
-
-                from time import sleep
-
-                sleep(0.5)
-        if last_connection_exception:
-            raise last_connection_exception
-
-        rs = Reaper._socket
-        assert rs is not None
-        rs.send(f"label={LABEL_SESSION_ID}={SESSION_ID}\r\n".encode())
+        Reaper._socket = Reaper._connect_and_register(container_host, container_port)
 
         Reaper._instance = Reaper()
         atexit.register(Reaper.delete_instance)
 
         return Reaper._instance
+
+    @staticmethod
+    def _connect_and_register(host: str, port: int, attempts: int = 50, retry_delay: float = 0.5) -> socket:
+        """Connect to Ryuk and register the session filter, retrying until Ryuk acknowledges it.
+
+        A published port can accept a connection before Ryuk listens behind it (docker-proxy on Linux),
+        so a successful connect is not enough: only Ryuk's ACK shows that the filter was registered.
+        """
+        filter_line = f"label={LABEL_SESSION_ID}={SESSION_ID}\r\n".encode()
+        last_exception: Optional[Exception] = None
+        for _ in range(attempts):
+            s = socket()
+            try:
+                s.settimeout(1)
+                s.connect((host, port))
+                s.sendall(filter_line)
+                reply = b""
+                while not reply.endswith(b"\n"):
+                    chunk = s.recv(64)
+                    if not chunk:
+                        raise ConnectionResetError("Ryuk closed the connection before acknowledging the filter")
+                    reply += chunk
+                if reply.strip() != b"ACK":
+                    raise ConnectionError(f"Unexpected reply from Ryuk: {reply!r}")
+                return s
+            except OSError as e:
+                with contextlib.suppress(Exception):
+                    s.close()
+                last_exception = e
+                sleep(retry_delay)
+        assert last_exception is not None
+        raise last_exception
