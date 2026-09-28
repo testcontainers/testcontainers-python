@@ -14,7 +14,7 @@
 from typing_extensions import Self
 
 from testcontainers.core.container import DockerContainer
-from testcontainers.core.waiting_utils import wait_container_is_ready, wait_for_logs
+from testcontainers.core.wait_strategies import LogMessageWaitStrategy
 
 
 class NatsContainer(DockerContainer):
@@ -59,10 +59,9 @@ class NatsContainer(DockerContainer):
         self.with_exposed_ports(self.client_port, self.management_port)
         if jetstream:
             self.with_command("-js")
-
-    @wait_container_is_ready()
-    def _healthcheck(self) -> None:
-        wait_for_logs(self, self._expected_ready_log, timeout=self._ready_timeout_secs)
+        self._wait_strategy = LogMessageWaitStrategy(self._expected_ready_log).with_startup_timeout(
+            self._ready_timeout_secs
+        )
 
     def nats_uri(self) -> str:
         return f"nats://{self.get_container_host_ip()}:{self.get_exposed_port(self.client_port)}"
@@ -75,5 +74,4 @@ class NatsContainer(DockerContainer):
 
     def start(self) -> Self:
         super().start()
-        self._healthcheck()
         return self
