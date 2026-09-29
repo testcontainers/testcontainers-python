@@ -1,0 +1,21 @@
+name: testcontainers-ryuk-fixture
+services:
+  service:
+    image: alpine:3.20
+    init: true
+    command: ["sleep", "300"]
+    volumes:
+      - data:/data
+      - external_data:/external
+    networks:
+      - default
+      - external_network
+volumes:
+  data: {}
+  external_data:
+    external: true
+    name: ${TC_RYUK_EXTERNAL_VOLUME}
+networks:
+  external_network:
+    external: true
+    name: ${TC_RYUK_EXTERNAL_NETWORK}

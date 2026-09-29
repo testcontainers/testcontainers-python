@@ -39,6 +39,43 @@ compose = DockerCompose(
 )
 ```
 
+## Cleanup after process termination
+
+Normal context-manager exit stops the environment using Docker Compose. To also
+clean up when the Python process is abruptly terminated, opt in to Ryuk:
+
+```python
+with DockerCompose("path/to/compose/directory", ryuk=True) as compose:
+    # Run tests against the services.
+    pass
+```
+
+`ryuk=True` generates a unique project name for this `DockerCompose` object and
+registers its `com.docker.compose.project` label with the process's shared Ryuk
+container before running `compose up`. All commands use the generated project
+name, including when the same object is stopped and restarted. Separate objects
+use separate projects, even if they use the same Compose files.
+
+The generated name overrides `COMPOSE_PROJECT_NAME` and the Compose file's
+top-level `name`. Hard-coded container names, published ports, and explicitly
+named resources are not made unique; use a Compose file suitable for isolated,
+disposable environments. External networks and volumes should be managed
+separately and must not carry the generated project's cleanup label.
+
+With `keep_volumes=True`, leaving the context preserves the environment's volumes
+for reuse by the same object. Those resources **remain eligible for Ryuk cleanup**
+after the owning process loses its connection. This option does not guarantee
+persistence beyond the process's lifetime when `ryuk=True`.
+
+`TESTCONTAINERS_RYUK_DISABLED=true` disables Ryuk startup and registration, even
+with `ryuk=True`; the generated project name remains unchanged. When Ryuk is
+enabled, startup or filter-registration errors prevent `compose up` from running.
+Ryuk must have access to the same Docker daemon as the Compose command.
+
+Without `ryuk=True`, project naming and cleanup behavior are unchanged. Continue
+using a context manager or calling `stop()` for normal cleanup; Ryuk is a fallback
+for abrupt termination. Stopping one environment does not stop the shared Ryuk.
+
 ## Accessing Services
 
 You can access service information and interact with containers:

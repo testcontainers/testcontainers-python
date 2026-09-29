@@ -7,8 +7,11 @@ import tarfile
 from dataclasses import dataclass
 from os import PathLike
 from socket import socket
+from threading import Lock
+from time import monotonic
 from types import TracebackType
 from typing import TYPE_CHECKING, Any, Optional, TypedDict, Union
+from urllib.parse import urlencode
 
 import docker.errors
 from docker import version
@@ -465,6 +468,47 @@ class Reaper:
     _instance: "Optional[Reaper]" = None
     _container: Optional[DockerContainer] = None
     _socket: Optional[socket] = None
+    _ACK_TIMEOUT = 10.0
+
+    def __init__(self) -> None:
+        self._filter_lock = Lock()
+        self._registration_failed = False
+
+    def register_labels_filter(self, labels: dict[str, str]) -> None:
+        """Register an additional cleanup filter and wait for Ryuk to acknowledge it."""
+        if not labels:
+            raise ValueError("A Ryuk cleanup filter must contain at least one label")
+
+        with self._filter_lock:
+            rs = Reaper._socket
+            if rs is None or self._registration_failed:
+                raise ConnectionError("Ryuk connection is unavailable for filter registration")
+
+            message = urlencode([("label", f"{key}={value}") for key, value in labels.items()])
+            previous_timeout = rs.gettimeout()
+            deadline = monotonic() + self._ACK_TIMEOUT
+            try:
+                rs.settimeout(self._ACK_TIMEOUT)
+                rs.sendall((message + "\n").encode())
+                response = b""
+                while len(response) < len(b"ACK\n"):
+                    remaining = deadline - monotonic()
+                    if remaining <= 0:
+                        raise TimeoutError("Timed out waiting for Ryuk to acknowledge a cleanup filter")
+                    rs.settimeout(remaining)
+                    chunk = rs.recv(len(b"ACK\n") - len(response))
+                    if not chunk:
+                        raise ConnectionError("Ryuk disconnected before acknowledging a cleanup filter")
+                    response += chunk
+                if response != b"ACK\n":
+                    raise ConnectionError(f"Unexpected acknowledgement from Ryuk: {response!r}")
+            except OSError:
+                # A late ACK must not be mistaken for the next filter's ACK. Keep
+                # the socket open so existing environments are not reaped early.
+                self._registration_failed = True
+                raise
+            finally:
+                rs.settimeout(previous_timeout)
 
     @classmethod
     def get_instance(cls) -> "Reaper":
@@ -536,11 +580,14 @@ class Reaper:
         if last_connection_exception:
             raise last_connection_exception
 
-        rs = Reaper._socket
-        assert rs is not None
-        rs.send(f"label={LABEL_SESSION_ID}={SESSION_ID}\r\n".encode())
+        instance = Reaper()
+        try:
+            instance.register_labels_filter({LABEL_SESSION_ID: SESSION_ID})
+        except OSError:
+            Reaper.delete_instance()
+            raise
 
-        Reaper._instance = Reaper()
+        Reaper._instance = instance
         atexit.register(Reaper.delete_instance)
 
         return Reaper._instance
