@@ -38,7 +38,7 @@ class TrinoContainer(DockerContainer):
         )
 
     def get_connection_url(self):
-        return f"trino://{self.user}@{self.get_container_host_ip()}:{self.port}"
+        return f"trino://{self.user}@{self.get_container_host_ip()}:{self.get_exposed_port(self.port)}"
 
     def _configure(self):
         pass
