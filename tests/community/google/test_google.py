@@ -2,8 +2,44 @@ from queue import Queue
 
 from google.cloud.datastore import Entity
 
-from testcontainers.community.google import DatastoreContainer, PubSubContainer
+from testcontainers.community.google import BigQueryContainer, DatastoreContainer, PubSubContainer
 from testcontainers.core.waiting_utils import wait_for_logs
+
+
+def test_bigquery_container_query():
+    with BigQueryContainer() as bigquery:
+        client = bigquery.get_client()
+        job = client.query("SELECT 1 AS one")
+        rows = list(job.result())
+        assert [dict(row) for row in rows] == [{"one": 1}]
+
+
+def test_bigquery_container_ddl_dml_roundtrip():
+    with BigQueryContainer() as bigquery:
+        client = bigquery.get_client()
+        client.create_dataset(f"{bigquery.project}.ds")
+        client.query("CREATE TABLE ds.people (name STRING, age INT64)").result()
+        client.query("INSERT INTO ds.people (name, age) VALUES ('Ada', 36), ('Grace', 85)").result()
+
+        job = client.query("SELECT name FROM ds.people WHERE age > 50 ORDER BY name")
+        rows = [dict(row) for row in job.result()]
+        assert rows == [{"name": "Grace"}]
+
+
+def test_bigquery_container_isolation():
+    with BigQueryContainer() as bigquery, BigQueryContainer() as bigquery2:
+        assert bigquery.get_rest_endpoint() != bigquery2.get_rest_endpoint(), "BigQuery containers use the same port."
+        client = bigquery.get_client()
+        client.create_dataset(f"{bigquery.project}.ds")
+
+        # A positive check (dataset lists differ) rather than expecting a query
+        # against the missing dataset to fail: the emulator reports a
+        # not-found error as a generic retryable INTERNAL, so the client
+        # library's default retry policy spends a minute retrying it instead
+        # of failing fast.
+        client2 = bigquery2.get_client()
+        assert [d.dataset_id for d in client.list_datasets()] == ["ds"]
+        assert [d.dataset_id for d in client2.list_datasets()] == []
 
 
 def test_pubsub_container():
