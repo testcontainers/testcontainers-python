@@ -11,9 +11,11 @@ from subprocess import CalledProcessError, CompletedProcess
 from subprocess import run as subprocess_run
 from types import TracebackType
 from typing import Any, Callable, Literal, Optional, TypeVar, Union, cast
+from uuid import uuid4
 
 from typing_extensions import Self
 
+from testcontainers.core.config import testcontainers_config
 from testcontainers.core.docker_client import DockerClient, get_docker_host_hostname, is_podman
 from testcontainers.core.exceptions import ContainerIsNotRunning, NoSuchPortExposed
 from testcontainers.core.inspect import ContainerInspectInfo, _ignore_properties
@@ -225,6 +227,10 @@ class DockerCompose:
             Whether to suppress output when pulling images.
         quiet_build:
             Whether to suppress output when building images.
+        ryuk:
+            Run in an isolated project and register it for Ryuk cleanup before startup.
+            Defaults to False. TESTCONTAINERS_RYUK_DISABLED disables registration,
+            but the project remains isolated. Retained volumes are eligible for Ryuk cleanup.
 
     Example:
 
@@ -260,10 +266,14 @@ class DockerCompose:
     profiles: Optional[list[str]] = None
     quiet_pull: bool = False
     quiet_build: bool = False
+    ryuk: bool = False
+    _project_name: Optional[str] = field(default=None, init=False, repr=False)
     _wait_strategies: Optional[dict[str, Any]] = field(default=None, init=False, repr=False)
     _docker_client: Optional[DockerClient] = field(default=None, init=False, repr=False)
 
     def __post_init__(self) -> None:
+        if self.ryuk:
+            self._project_name = f"testcontainers-{uuid4().hex}"
         if isinstance(self.compose_file_name, str):
             self.compose_file_name = [self.compose_file_name]
         if isinstance(self.env_file, str):
@@ -295,6 +305,8 @@ class DockerCompose:
     def compose_command_property(self) -> list[str]:
         binary = self.docker_command_path or _default_compose_binary()
         docker_compose_cmd = [binary, "compose"]
+        if self._project_name is not None:
+            docker_compose_cmd += ["--project-name", self._project_name]
         if self.compose_file_name:
             for file in self.compose_file_name:
                 docker_compose_cmd += ["-f", file]
@@ -319,6 +331,12 @@ class DockerCompose:
         """
         Starts the docker compose environment.
         """
+        if self._project_name is not None and not testcontainers_config.ryuk_disabled:
+            # container imports wait strategies, which in turn import compose.
+            from testcontainers.core.container import Reaper
+
+            Reaper.get_instance().register_labels_filter({"com.docker.compose.project": self._project_name})
+
         base_cmd = self.compose_command_property or []
 
         # pull means running a separate command before starting
