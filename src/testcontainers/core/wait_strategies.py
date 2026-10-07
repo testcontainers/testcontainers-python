@@ -418,7 +418,12 @@ class HttpWaitStrategy(WaitStrategy):
             with urlopen(request, timeout=1, context=ssl_context) as response:
                 return self._check_response(response, url)
 
-        except (URLError, HTTPError) as e:
+        except HTTPError as e:
+            # HTTPError wraps the response file object, so it doubles as a
+            # context manager to avoid leaking the file descriptor.
+            with e:
+                return self._handle_http_error(e)
+        except URLError as e:
             return self._handle_http_error(e)
         except (ConnectionResetError, ConnectionRefusedError, BrokenPipeError, OSError) as e:
             # Handle connection-level errors that can occur during HTTP requests

@@ -1,9 +1,12 @@
+import io
 import itertools
 import logging
 import re
 import time
 from datetime import timedelta
+from email.message import Message
 from unittest.mock import Mock, patch
+from urllib.error import HTTPError
 
 import pytest
 
@@ -360,6 +363,31 @@ class TestHttpWaitStrategy:
         assert strategy._port == expected_port
         assert strategy._path == expected_path
         assert strategy._tls is expected_tls
+
+    @pytest.mark.parametrize(
+        "status_codes,expected_result",
+        [
+            ({503}, True),
+            (set(), False),
+        ],
+        ids=[
+            "accepted_error_status_code",
+            "unaccepted_error_status_code",
+        ],
+    )
+    @patch("testcontainers.core.wait_strategies.urlopen")
+    def test_try_http_request_closes_http_error(self, mock_urlopen, status_codes, expected_result):
+        """HTTPError holds the response's file object and must be closed (issue #1115)."""
+        fp = io.BytesIO(b"error body")
+        mock_urlopen.side_effect = HTTPError("http://localhost:8080/", 503, "Service Unavailable", Message(), fp)
+        strategy = HttpWaitStrategy(8080)
+        for code in status_codes:
+            strategy.for_status_code(code)
+
+        result = strategy._try_http_request("http://localhost:8080/", {}, None)
+
+        assert result is expected_result
+        assert fp.closed
 
 
 class TestHealthcheckWaitStrategy:
