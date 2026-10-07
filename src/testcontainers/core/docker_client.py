@@ -479,6 +479,12 @@ class DockerClient:
         container = self.client.containers.get(container_id)
         return ContainerInspectInfo.from_dict(container.attrs)
 
+    def find_container_by_hash(self, hash_: str) -> Union[Container, None]:
+        for container in self.client.containers.list(all=True):
+            if container.labels.get("hash", None) == hash_:
+                return container
+        return None
+
 
 def get_docker_host() -> Optional[str]:
     host = c.tc_properties_get_tc_host() or os.getenv("DOCKER_HOST") or _get_docker_host_from_context()
