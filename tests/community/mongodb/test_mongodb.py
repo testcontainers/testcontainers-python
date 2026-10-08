@@ -2,6 +2,7 @@ import time
 from urllib.parse import parse_qs, urlsplit
 
 import pytest
+from pymongo import MongoClient
 
 from testcontainers.community.mongodb import MongoDBAtlasLocalContainer, MongoDbContainer, MongoDbReplicaSetContainer
 
@@ -27,6 +28,16 @@ def test_docker_run_mongodb(version: str):
 
         cursor = db.restaurants.find({"borough": "Manhattan"})
         assert cursor.next()["restaurant_id"] == doc["restaurant_id"]
+
+
+def test_mongodb_waits_for_the_real_server_on_a_slow_host():
+    # The image first runs a temporary server on localhost to create the root user, and it logs
+    # "waiting for connections" too. On a slow host start() must still wait for the real server.
+    # https://github.com/testcontainers/testcontainers-python/issues/1122
+    with MongoDbContainer("mongo:7.0.7").with_kwargs(nano_cpus=250_000_000) as mongo:
+        # A short server selection timeout, so a server that is not up yet fails the ping.
+        client = MongoClient(mongo.get_connection_url(), serverSelectionTimeoutMS=1000)
+        assert client.admin.command("ping")["ok"] == 1
 
 
 @pytest.mark.parametrize("version", ["7.0.7", "6.0.14", "5.0.26"])
