@@ -48,7 +48,7 @@ You can set environment variables to configure the library behaviour:
 | `TESTCONTAINERS_DOCKER_SOCKET_OVERRIDE` | `/var/run/docker.sock`      | Path to Docker's socket used by ryuk                                               |
 | `TESTCONTAINERS_RYUK_PRIVILEGED`        | `false`                     | Run ryuk as a privileged container                                                 |
 | `TESTCONTAINERS_RYUK_DISABLED`          | `false`                     | Disable ryuk                                                                       |
-| `RYUK_CONTAINER_IMAGE`                  | `testcontainers/ryuk:0.8.1` | Custom image for ryuk                                                              |
+| `RYUK_CONTAINER_IMAGE`                  | `testcontainers/ryuk:0.14.0` | Custom image for ryuk                                                              |
 | `RYUK_RECONNECTION_TIMEOUT`             | `10s`                       | Reconnection timeout for Ryuk TCP socket before Ryuk reaps all dangling containers |
 
 Alternatively you can set the configuration during runtime:

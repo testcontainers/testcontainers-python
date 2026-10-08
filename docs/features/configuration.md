@@ -46,7 +46,7 @@ The following properties are supported:
 | `ryuk.disabled`             | `TESTCONTAINERS_RYUK_DISABLED`              | Disable the Garbage Collector                        | false                     |
 | `ryuk.container.privileged` | `TESTCONTAINERS_RYUK_PRIVILEGED`            | Run Ryuk in privileged mode                          | false                     |
 | `ryuk.reconnection.timeout` | `RYUK_RECONNECTION_TIMEOUT`                 | Time to wait before reconnecting                     | 10s                       |
-| `ryuk.image`                | `RYUK_CONTAINER_IMAGE`                      | Ryuk container image                                 | testcontainers/ryuk:0.8.1 |
+| `ryuk.image`                | `RYUK_CONTAINER_IMAGE`                      | Ryuk container image                                 | testcontainers/ryuk:0.14.0 |
 | `connection.mode`           | `TESTCONTAINERS_CONNECTION_MODE`            | Connection mode (bridge_ip, gateway_ip, docker_host) | -                         |
 
 Additional configuration options:
@@ -129,7 +129,7 @@ docker.cert.path=/path/to/certs
 ryuk.disabled=false
 ryuk.container.privileged=true
 ryuk.reconnection.timeout=30s
-ryuk.image=testcontainers/ryuk:0.8.1
+ryuk.image=testcontainers/ryuk:0.14.0
 
 # Testcontainers configuration
 tc.host=tcp://my.testcontainers.host:1234

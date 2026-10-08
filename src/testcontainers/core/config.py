@@ -102,7 +102,7 @@ class TestcontainersConfiguration:
 
     max_tries: int = int(environ.get("TC_MAX_TRIES", "120"))
     sleep_time: float = float(environ.get("TC_POOLING_INTERVAL", "1"))
-    ryuk_image: str = environ.get("RYUK_CONTAINER_IMAGE", "testcontainers/ryuk:0.8.1")
+    ryuk_image: str = environ.get("RYUK_CONTAINER_IMAGE", "testcontainers/ryuk:0.14.0")
     _ryuk_privileged: Optional[bool] = None
     _ryuk_disabled: Optional[bool] = None
     _ryuk_docker_socket: str = ""
