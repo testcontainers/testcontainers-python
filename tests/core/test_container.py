@@ -3,7 +3,7 @@ from typing import Any
 import pytest
 
 from testcontainers.core.config import ConnectionMode, testcontainers_config
-from testcontainers.core.container import DockerContainer
+from testcontainers.core.container import DockerContainer, Reaper
 from testcontainers.core.docker_client import DockerClient
 
 FAKE_ID = "ABC123"
@@ -16,6 +16,10 @@ class FakeContainer:
     @property
     def id(self) -> str:
         return FAKE_ID
+
+    @property
+    def short_id(self) -> str:
+        return FAKE_ID[:12]
 
 
 @pytest.fixture
@@ -123,6 +127,72 @@ def test_image_no_prefix_applied_when_empty(monkeypatch: pytest.MonkeyPatch) -> 
     # Create a container and verify no prefix is applied
     container = DockerContainer("nginx:latest")
     assert container.image == "nginx:latest"
+
+
+class _FakeDockerClient:
+    """Stand-in for DockerClient that never touches a real Docker daemon."""
+
+    def create(self, *args, **kwargs) -> FakeContainer:
+        return FakeContainer()
+
+    def start(self, container: FakeContainer) -> None:
+        pass
+
+
+def _make_and_start_container(image: str, monkeypatch: pytest.MonkeyPatch) -> None:
+    """Construct a DockerContainer for `image` and drive start() to completion, without touching
+    a real Docker daemon. Patches the DockerClient the container module resolves at construction
+    time, since DockerContainer.__init__ eagerly builds one before a test gets a chance to swap it.
+    """
+    monkeypatch.setattr("testcontainers.core.container.DockerClient", lambda **kwargs: _FakeDockerClient())
+    DockerContainer(image).start()
+
+
+def test_start_does_not_recreate_reaper_for_ryuk_container_with_hub_prefix(monkeypatch: pytest.MonkeyPatch) -> None:
+    """Regression test for #1085.
+
+    Once TESTCONTAINERS_HUB_IMAGE_NAME_PREFIX is configured, self.image carries that prefix (see
+    __init__) but c.ryuk_image never does. Starting Ryuk's own container must still recognize
+    itself as Ryuk and skip requesting another Reaper - otherwise Reaper._create_instance() ->
+    DockerContainer(c.ryuk_image).start() -> Reaper.get_instance() recurses without end.
+    """
+    monkeypatch.setattr(testcontainers_config, "hub_image_name_prefix", "myregistry.example.com/")
+    monkeypatch.setattr(testcontainers_config, "ryuk_disabled", False)
+
+    reaper_calls = 0
+
+    def fake_get_instance() -> None:
+        nonlocal reaper_calls
+        reaper_calls += 1
+
+    monkeypatch.setattr(Reaper, "get_instance", staticmethod(fake_get_instance))
+
+    # Mirrors exactly how Reaper._create_instance() builds Ryuk's own container.
+    _make_and_start_container(testcontainers_config.ryuk_image, monkeypatch)
+
+    assert reaper_calls == 0, "starting Ryuk's own container must not request another Reaper"
+
+
+def test_start_still_creates_reaper_for_regular_container_with_hub_prefix(monkeypatch: pytest.MonkeyPatch) -> None:
+    """Companion to the regression test above: the recursion guard must not become a no-op.
+
+    A regular (non-Ryuk) container started with a hub_image_name_prefix configured should still
+    trigger Reaper.get_instance() as before.
+    """
+    monkeypatch.setattr(testcontainers_config, "hub_image_name_prefix", "myregistry.example.com/")
+    monkeypatch.setattr(testcontainers_config, "ryuk_disabled", False)
+
+    reaper_calls = 0
+
+    def fake_get_instance() -> None:
+        nonlocal reaper_calls
+        reaper_calls += 1
+
+    monkeypatch.setattr(Reaper, "get_instance", staticmethod(fake_get_instance))
+
+    _make_and_start_container("nginx:latest", monkeypatch)
+
+    assert reaper_calls == 1, "starting a regular container should still request the Reaper"
 
 
 def test_container_info():

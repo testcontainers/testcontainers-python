@@ -242,7 +242,13 @@ class DockerContainer:
         return self
 
     def start(self) -> Self:
-        if not c.ryuk_disabled and self.image != c.ryuk_image:
+        # self.image carries the configured hub_image_name_prefix (see __init__), but c.ryuk_image
+        # never does, so comparing the two directly here would never recognize Ryuk's own container
+        # once a prefix is configured (e.g. TESTCONTAINERS_HUB_IMAGE_NAME_PREFIX pointing at a
+        # private registry mirror). That would make every Ryuk container think it isn't Ryuk and
+        # try to spin up its own Reaper, which spins up another Ryuk container, recursing until
+        # Python raises RecursionError (see #1085). Apply the same prefix to both sides instead.
+        if not c.ryuk_disabled and self.image != c.hub_image_name_prefix + c.ryuk_image:
             logger.debug("Creating Ryuk container")
             Reaper.get_instance()
         logger.info("Pulling image %s", self.image)
