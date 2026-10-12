@@ -82,6 +82,7 @@ kafka = []
 keycloak = ["python-keycloak>=6; python_version < '4.0'"]
 localstack = ["boto3>=1"]
 mailpit = ["cryptography"]
+meilisearch = []
 memcached = []
 minio = ["minio>=7"]
 milvus = []
@@ -130,6 +131,7 @@ test = [
   "cassandra-driver>=3.30",
   "kafka-python-ng>=2",
   "hvac>=2; python_version < '4.0'",
+  "meilisearch>=0.43.0",
   "pymilvus>=2",
   "paho-mqtt>=2",
   "sqlalchemy-cockroachdb>=2",
