@@ -41,7 +41,7 @@ We have an [issue template](./ISSUE_TEMPLATE/new-container.md) for adding new co
 Once you've talked to the maintainers (we do our best to reply!) then you can proceed with contributing the new container.
 
 > [!WARNING]
-> PLease raise an issue before you try to contribute a new container! It helps maintainers understand your use-case and motivation.
+> Please raise an issue before you try to contribute a new container! It helps maintainers understand your use-case and motivation.
 > This way we can keep pull requests foruced on the "how", not the "why"! :pray:
 > It also gives maintainers a chance to give you last-minute guidance on caveats or expectations, particularly with
 > new extra dependencies and how to manage them.
@@ -64,7 +64,7 @@ This takes care of:
   - Release to PyPI via a [trusted publisher](https://docs.pypi.org/trusted-publishers/using-a-publisher/)
   - Automatically script updates in files where it's needed instead of hand-crafting it (i.e. in `pyproject.toml`)
 
-> [!CRITICAL]
+> [!CAUTION]
 > Community modules are supported on a best-effort basis and for maintenance reasons, any change to them
 > is only covered under minor and patch changes.
 >
