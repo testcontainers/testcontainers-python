@@ -1,3 +1,5 @@
+.. autoclass:: testcontainers.community.google.BigQueryContainer
+.. title:: testcontainers.community.google.BigQueryContainer
 .. autoclass:: testcontainers.community.google.DatastoreContainer
 .. title:: testcontainers.community.google.DatastoreContainer
 .. autoclass:: testcontainers.community.google.PubSubContainer

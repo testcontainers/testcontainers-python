@@ -72,6 +72,7 @@ test_module_import = ["httpx"]
 google = [
   "google-cloud-pubsub>=2",
   "google-cloud-datastore>=2",
+  "google-cloud-bigquery>=3",
 ]
 influxdb = [
   "influxdb>=5",
