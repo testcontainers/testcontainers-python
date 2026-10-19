@@ -18,7 +18,7 @@ from keycloak import KeycloakAdmin
 from typing_extensions import Self
 
 from testcontainers.core.container import DockerContainer
-from testcontainers.core.waiting_utils import wait_container_is_ready, wait_for_logs
+from testcontainers.core.wait_strategies import LogMessageWaitStrategy, WaitStrategy
 
 _DEFAULT_DEV_COMMAND = "start-dev"
 # Since Keycloak v26.0.0
@@ -96,23 +96,9 @@ class KeycloakContainer(DockerContainer):
         else:
             return f"http://{host}:{port}"
 
-    @wait_container_is_ready(requests.exceptions.ConnectionError, requests.exceptions.ReadTimeout)
-    def _readiness_probe(self) -> None:
-        # Keycloak provides REST API endpoints for health checks: https://www.keycloak.org/server/health
-        try:
-            # Try the new health endpoint for keycloak 25.0.0 and above
-            # See https://www.keycloak.org/docs/25.0.0/release_notes/#management-port-for-metrics-and-health-endpoints
-            response = requests.get(f"{self.get_management_url()}/health/ready", timeout=1)
-        except requests.exceptions.ConnectionError:
-            response = requests.get(f"{self.get_url()}/health/ready", timeout=1)
-        response.raise_for_status()
-        if _DEFAULT_DEV_COMMAND in self._command:
-            wait_for_logs(self, "started in \\d+\\.\\d+s")
-            wait_for_logs(self, "Created temporary admin user|Added user '")
-
     def start(self) -> Self:
         super().start()
-        self._readiness_probe()
+        KeycloakWaitStrategy().wait_until_ready(self)
         self._disable_ssl_required()
         return self
 
@@ -165,3 +151,32 @@ class KeycloakContainer(DockerContainer):
         }
         kwargs = {**default_kwargs, **kwargs}
         return KeycloakAdmin(**kwargs)
+
+
+class KeycloakWaitStrategy(WaitStrategy):
+    def wait_until_ready(self, container: KeycloakContainer):
+        self._poll(
+            lambda: self._poll_health(container),
+            transient_exceptions=[
+                requests.exceptions.ConnectionError,
+                requests.exceptions.ReadTimeout,
+            ],
+        )
+        if _DEFAULT_DEV_COMMAND in container._command:
+            for message in (
+                "started in \\d+\\.\\d+s",
+                "Created temporary admin user|Added user '",
+            ):
+                LogMessageWaitStrategy(message).wait_until_ready(container)
+
+    @classmethod
+    def _poll_health(cls, container: KeycloakContainer):
+        # Keycloak provides REST API endpoints for health checks: https://www.keycloak.org/server/health
+        try:
+            # Try the new health endpoint for keycloak 25.0.0 and above
+            # See https://www.keycloak.org/docs/25.0.0/release_notes/#management-port-for-metrics-and-health-endpoints
+            response = requests.get(f"{container.get_management_url()}/health/ready", timeout=1)
+        except requests.exceptions.ConnectionError:
+            response = requests.get(f"{container.get_url()}/health/ready", timeout=1)
+        response.raise_for_status()
+        return True
