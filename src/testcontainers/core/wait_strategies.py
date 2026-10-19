@@ -127,9 +127,9 @@ class LogMessageWaitStrategy(WaitStrategy):
             stderr = stderr_bytes.decode()
 
             predicate_result = (
-                self._message.search(stdout) or self._message.search(stderr)
+                self._check_message_occurs_n_times(stdout) or self._check_message_occurs_n_times(stderr)
                 if self._predicate_streams_and is False
-                else self._message.search(stdout) and self._message.search(stderr)
+                else self._check_message_occurs_n_times(stdout) and self._check_message_occurs_n_times(stderr)
             )
 
             if predicate_result:
@@ -150,6 +150,15 @@ class LogMessageWaitStrategy(WaitStrategy):
                 )
 
             time.sleep(self._poll_interval)
+
+    def _check_message_occurs_n_times(self, buffer: str) -> bool:
+        """Check if buffer contains as many occurrences of message as required"""
+        import itertools
+
+        # Limit the number of searches finditer does to self._times
+        matches_iter = itertools.islice(self._message.finditer(buffer), self._times)
+        # len(list(matches_iter)) would be simpler but constructs an unused list of matches
+        return sum(1 for _ in matches_iter) >= self._times
 
 
 class HttpWaitStrategy(WaitStrategy):

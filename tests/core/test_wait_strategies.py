@@ -118,13 +118,15 @@ class TestLogMessageWaitStrategy:
         assert strategy._predicate_streams_and is predicate_streams_and
 
     @pytest.mark.parametrize(
-        "container_logs,expected_message,should_succeed",
+        "container_logs,expected_message,times,should_succeed",
         [
-            ((b"test message", b""), "test message", True),
-            ((b"", b"test message"), "test message", True),
-            ((b"no match", b""), "test message", False),
-            ((b"test123", b""), re.compile(r"test\d+"), True),
-            ((b"test", b""), re.compile(r"test\d+"), False),
+            ((b"test message", b""), "test message", 1, True),
+            ((b"", b"test message"), "test message", 1, True),
+            ((b"no match", b""), "test message", 1, False),
+            ((b"test123", b""), re.compile(r"test\d+"), 1, True),
+            ((b"test", b""), re.compile(r"test\d+"), 1, False),
+            ((b"test", b""), re.compile(r"test"), 2, False),
+            ((b"test test", b""), re.compile(r"test"), 2, True),
         ],
         ids=[
             "stdout_contains_message_success",
@@ -132,12 +134,14 @@ class TestLogMessageWaitStrategy:
             "no_message_match_failure",
             "regex_pattern_match_success",
             "regex_pattern_no_match_failure",
+            "message_found_once_but_required_twice_failure",
+            "message_found_twice_as_required_success",
         ],
     )
     @patch("time.time")
     @patch("time.sleep")
-    def test_wait_until_ready(self, mock_sleep, mock_time, container_logs, expected_message, should_succeed):
-        strategy = LogMessageWaitStrategy(expected_message)
+    def test_wait_until_ready(self, mock_sleep, mock_time, container_logs, expected_message, times, should_succeed):
+        strategy = LogMessageWaitStrategy(expected_message, times=times)
         mock_container = Mock()
         mock_container.get_logs.return_value = container_logs
         # Mock the wrapped container to simulate a running container
