@@ -474,10 +474,14 @@ class Reaper:
         return Reaper._instance
 
     @classmethod
-    def delete_instance(cls) -> None:
+    def close_socket(cls) -> None:
         if Reaper._socket is not None:
             Reaper._socket.close()
             Reaper._socket = None
+
+    @classmethod
+    def delete_instance(cls) -> None:
+        Reaper.close_socket()
 
         if Reaper._container is not None and Reaper._container._container is not None:
             with contextlib.suppress(docker.errors.NotFound):
@@ -541,6 +545,7 @@ class Reaper:
         rs.send(f"label={LABEL_SESSION_ID}={SESSION_ID}\r\n".encode())
 
         Reaper._instance = Reaper()
-        atexit.register(Reaper.delete_instance)
+        # Only close the socket: Ryuk reaps the session after RYUK_RECONNECTION_TIMEOUT unless it is removed first.
+        atexit.register(Reaper.close_socket)
 
         return Reaper._instance

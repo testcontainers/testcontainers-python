@@ -1,5 +1,10 @@
+import os
+import subprocess
+import sys
+from contextlib import suppress
 from time import perf_counter, sleep
 
+import docker
 import pytest
 from docker import DockerClient
 from docker.errors import NotFound
@@ -95,3 +100,33 @@ def test_ryuk_is_reused_in_same_process():
     with DockerContainer("hello-world") as container:
         wait_for_logs(container, "Hello from Docker!")
         assert reaper_instance is Reaper._instance
+
+
+@pytest.mark.skipif(
+    is_mac(),
+    reason="Ryuk container reaping is unreliable on Docker Desktop for macOS due to VM-based container lifecycle handling",
+)
+@pytest.mark.inside_docker_check
+def test_reaper_removes_session_containers_after_interpreter_exit():
+    script = (
+        "from testcontainers.core.container import DockerContainer\n"
+        "container = DockerContainer('hello-world').start()\n"
+        "print(container.get_wrapped_container().id)\n"
+    )
+    child = subprocess.run(
+        [sys.executable, "-c", script],
+        env={**os.environ, "RYUK_RECONNECTION_TIMEOUT": "1s"},
+        capture_output=True,
+        text=True,
+        timeout=120,
+    )
+    assert child.returncode == 0, child.stderr
+    container_id = child.stdout.strip().splitlines()[-1]
+
+    docker_client = docker.from_env()
+    try:
+        # The process exited normally without stopping its container: Ryuk must reap it.
+        _wait_for_container_removed(docker_client, container_id, timeout=30)
+    finally:
+        with suppress(NotFound):
+            docker_client.containers.get(container_id).remove(force=True)
