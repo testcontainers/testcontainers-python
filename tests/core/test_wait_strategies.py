@@ -157,6 +157,30 @@ class TestLogMessageWaitStrategy:
             with pytest.raises(TimeoutError):
                 strategy.wait_until_ready(mock_container)
 
+    @patch("time.sleep")
+    def test_wait_until_ready_includes_logs_when_container_exits(self, mock_sleep):
+        strategy = LogMessageWaitStrategy("waiting for connections")
+        mock_container = Mock()
+        mock_container.get_logs.return_value = (
+            b"Fatal: unknown option",
+            b"stderr diagnostic line",
+        )
+        mock_wrapped = Mock()
+        mock_wrapped.status = "exited"
+        mock_wrapped.reload.return_value = None
+        mock_container.get_wrapped_container.return_value = mock_wrapped
+
+        with patch(
+            "testcontainers.core.waiting_utils._get_container_status_info",
+            return_value={"status": "exited", "exit_code": "1", "error": "", "health_status": "none"},
+        ):
+            with pytest.raises(RuntimeError, match="Recent stdout: .*Fatal: unknown option") as exc_info:
+                strategy.wait_until_ready(mock_container)
+
+        error_message = str(exc_info.value)
+        assert "Recent stderr: stderr diagnostic line" in error_message
+        assert "exit code: 1" in error_message
+
 
 class TestHttpWaitStrategy:
     """Test the HttpWaitStrategy class."""

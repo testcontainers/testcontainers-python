@@ -139,12 +139,16 @@ class LogMessageWaitStrategy(WaitStrategy):
             wrapped.reload()
             if wrapped.status not in _NOT_EXITED_STATUSES:
                 # Get exit information for better debugging
+                stdout_str, stderr_str = _get_container_logs_for_debugging(container)
                 status_info = _get_container_status_info(container)
+                message_pattern = self._message.pattern if hasattr(self._message, "pattern") else str(self._message)
 
                 raise RuntimeError(
                     f"Container exited (status: {status_info['status']}, exit code: {status_info['exit_code']}) "
-                    f"before emitting logs containing '{self._message.pattern if hasattr(self._message, 'pattern') else str(self._message)}'. "
+                    f"before emitting logs containing '{message_pattern}'. "
                     f"Container error: {status_info['error']}. "
+                    f"Recent stdout: {stdout_str}. "
+                    f"Recent stderr: {stderr_str}. "
                     f"Hint: Check container logs and ensure the application is configured to start correctly. "
                     f"The application may be crashing or exiting early."
                 )
