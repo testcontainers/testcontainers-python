@@ -5,25 +5,31 @@ import pytest
 from testcontainers.community.couchbase import CouchbaseContainer
 
 
-# The versions below should reflect the latest stable releases
-@pytest.mark.parametrize("version", ["7.17.18", "8.12.2"])
-def test_docker_run_couchbase(version):
-    username = "administrator"
-    password = "password"
-    bucket_name = "mybucket"
-    scope_name = "myscope"
-    collection_name = "mycollection"
-
-    with CouchbaseContainer(
-        username=username, password=password, bucket=bucket_name, scope=scope_name, collection=collection_name
-    ) as couchbase_container:
-        cluster = couchbase_container.client()
-        collection = cluster.bucket(bucket_name=bucket_name).scope(name=scope_name).collection(name=collection_name)
+def test_docker_run_couchbase_default_collection():
+    with CouchbaseContainer() as couchbase:
+        cluster = couchbase.client()
+        collection = cluster.bucket("default").default_collection()
         key = uuid.uuid4().hex
-        value = "world"
-        doc = {
-            "hello": value,
-        }
-        collection.upsert(key=key, value=doc)
-        returned_doc = collection.get(key=key)
-        assert returned_doc.value["hello"] == value
+        collection.upsert(key, {"hello": "world"})
+        assert collection.get(key).content_as[dict] == {"hello": "world"}
+
+
+# The versions below should reflect the latest Community Edition releases
+@pytest.mark.parametrize("image", ["couchbase/server:community-7.6.2", "couchbase/server:community-8.0.2"])
+def test_docker_run_couchbase_custom_keyspace(image):
+    with CouchbaseContainer(
+        image,
+        username="administrator",
+        password="secret-password",
+        bucket="mybucket",
+        scope="myscope",
+        collection="mycollection",
+    ) as couchbase:
+        cluster = couchbase.client()
+        collection = cluster.bucket("mybucket").scope("myscope").collection("mycollection")
+        key = uuid.uuid4().hex
+        collection.upsert(key, {"hello": "world"})
+        assert collection.get(key).content_as[dict] == {"hello": "world"}
+
+        rows = cluster.query("SELECT RAW 1 + 1").rows()
+        assert list(rows) == [2]

@@ -54,7 +54,7 @@ cassandra = []
 clickhouse = ["clickhouse-driver"]
 cosmosdb = ["azure-cosmos>=4"]
 cockroachdb = []
-couchbase = ["couchbase", "requests"]
+couchbase = ["couchbase"]
 cratedb = [
   "httpx",
   "sqlalchemy-cratedb"
@@ -321,6 +321,10 @@ ignore_missing_imports = true
 
 [[tool.mypy.overrides]]
 module = ["cassandra.*"]
+ignore_missing_imports = true
+
+[[tool.mypy.overrides]]
+module = ["couchbase.*"]
 ignore_missing_imports = true
 
 [[tool.mypy.overrides]]

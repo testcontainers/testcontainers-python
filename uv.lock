@@ -5538,7 +5538,6 @@ cosmosdb = [
 ]
 couchbase = [
     { name = "couchbase" },
-    { name = "requests" },
 ]
 cratedb = [
     { name = "httpx" },
@@ -5759,7 +5758,6 @@ requires-dist = [
     { name = "qdrant-client", marker = "extra == 'qdrant'", specifier = ">=1" },
     { name = "redis", marker = "extra == 'generic'", specifier = ">=7" },
     { name = "redis", marker = "extra == 'redis'", specifier = ">=7" },
-    { name = "requests", marker = "extra == 'couchbase'" },
     { name = "selenium", marker = "extra == 'selenium'", specifier = ">=4" },
     { name = "sqlalchemy", marker = "extra == 'db2'" },
     { name = "sqlalchemy", marker = "extra == 'generic'" },
