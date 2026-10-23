@@ -389,6 +389,89 @@ class TestHttpWaitStrategy:
         assert result is expected_result
         assert fp.closed
 
+    @pytest.mark.parametrize("status_code", [404, 503])
+    @pytest.mark.parametrize("match_status_with_predicate", [False, True])
+    @pytest.mark.parametrize("body,expected_result", [(b"starting", False), (b"ready", True)])
+    @patch("testcontainers.core.wait_strategies.urlopen")
+    def test_accepted_http_error_checks_response_body(
+        self, mock_urlopen, status_code, match_status_with_predicate, body, expected_result
+    ):
+        fp = io.BytesIO(body)
+        mock_urlopen.side_effect = HTTPError("http://localhost:8080/", status_code, "", Message(), fp)
+        response_predicate = Mock(side_effect=lambda text: text == "ready")
+        strategy = HttpWaitStrategy(8080).for_response_predicate(response_predicate)
+        if match_status_with_predicate:
+            strategy.for_status_code_matching(lambda code: code == status_code)
+        else:
+            strategy.for_status_code(status_code)
+
+        result = strategy._try_http_request("http://localhost:8080/", {}, None)
+
+        assert result is expected_result
+        response_predicate.assert_called_once_with(body.decode())
+        assert fp.closed
+
+    @patch("testcontainers.core.wait_strategies.urlopen")
+    def test_unaccepted_http_error_does_not_check_response_body(self, mock_urlopen):
+        fp = io.BytesIO(b"ready")
+        mock_urlopen.side_effect = HTTPError("http://localhost:8080/", 503, "", Message(), fp)
+        response_predicate = Mock(return_value=True)
+        strategy = HttpWaitStrategy(8080).for_response_predicate(response_predicate)
+
+        assert not strategy._try_http_request("http://localhost:8080/", {}, None)
+
+        response_predicate.assert_not_called()
+        assert fp.closed
+
+    @patch("testcontainers.core.wait_strategies.urlopen")
+    def test_http_error_is_closed_when_response_predicate_raises(self, mock_urlopen):
+        fp = io.BytesIO(b"invalid response")
+        mock_urlopen.side_effect = HTTPError("http://localhost:8080/", 503, "", Message(), fp)
+        response_predicate = Mock(side_effect=ValueError("invalid response"))
+        strategy = HttpWaitStrategy(8080).for_status_code(503).for_response_predicate(response_predicate)
+
+        with pytest.raises(ValueError, match="invalid response"):
+            strategy._try_http_request("http://localhost:8080/", {}, None)
+
+        assert fp.closed
+
+    @patch("testcontainers.core.wait_strategies.time.sleep")
+    @patch("testcontainers.core.wait_strategies.urlopen")
+    def test_http_wait_retries_until_error_response_body_matches(self, mock_urlopen, mock_sleep):
+        bodies = [io.BytesIO(b"starting"), io.BytesIO(b"ready")]
+        mock_urlopen.side_effect = [HTTPError("http://localhost:8080/", 503, "", Message(), fp) for fp in bodies]
+        container = Mock()
+        container.get_container_host_ip.return_value = "localhost"
+        container.get_exposed_port.return_value = 8080
+        strategy = HttpWaitStrategy(8080).for_status_code(503).for_response_predicate(lambda body: body == "ready")
+
+        strategy.wait_until_ready(container)
+
+        assert mock_urlopen.call_count == 2
+        mock_sleep.assert_called_once()
+        assert all(fp.closed for fp in bodies)
+
+    @patch("testcontainers.core.wait_strategies.time.sleep")
+    @patch("testcontainers.core.wait_strategies.time.time", side_effect=[0, 0, 2])
+    @patch("testcontainers.core.wait_strategies.urlopen")
+    def test_http_wait_times_out_when_error_response_body_never_matches(self, mock_urlopen, mock_time, mock_sleep):
+        fp = io.BytesIO(b"starting")
+        mock_urlopen.side_effect = HTTPError("http://localhost:8080/", 503, "", Message(), fp)
+        container = Mock()
+        container.get_container_host_ip.return_value = "localhost"
+        container.get_exposed_port.return_value = 8080
+        strategy = (
+            HttpWaitStrategy(8080)
+            .for_status_code(503)
+            .for_response_predicate(lambda body: body == "ready")
+            .with_startup_timeout(1)
+        )
+
+        with pytest.raises(TimeoutError, match="HTTP endpoint not ready"):
+            strategy.wait_until_ready(container)
+
+        assert fp.closed
+
 
 class TestHealthcheckWaitStrategy:
     """Test the HealthcheckWaitStrategy class."""
