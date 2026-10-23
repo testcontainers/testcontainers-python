@@ -18,6 +18,6 @@ pip install testcontainers[vault] hvac
 
 <!--codeinclude-->
 
-[Creating a Vault container](../../modules/vault/example_basic.py)
+[Creating a Vault container](vault_example.py)
 
 <!--/codeinclude-->

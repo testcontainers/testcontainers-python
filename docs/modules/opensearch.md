@@ -18,6 +18,6 @@ pip install testcontainers[opensearch] opensearch-py
 
 <!--codeinclude-->
 
-[Creating an OpenSearch container](../../modules/opensearch/example_basic.py)
+[Creating an OpenSearch container](opensearch_example.py)
 
 <!--/codeinclude-->

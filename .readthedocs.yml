@@ -4,7 +4,7 @@
 version: 2
 
 sphinx:
-   configuration: conf.py
+   configuration: docs/conf.py
 
 build:
    os: ubuntu-24.04

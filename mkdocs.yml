@@ -59,6 +59,7 @@ nav:
           - modules/cockroachdb.md
           - modules/cosmosdb.md
           - modules/couchbase.md
+          - modules/cratedb.md
           - modules/db2.md
           - modules/elasticsearch.md
           - modules/influxdb.md
@@ -96,6 +97,7 @@ nav:
       - modules/selenium.md
       - modules/sftp.md
       - modules/test_module_import.md
+      - modules/toxiproxy.md
       - modules/vault.md
   - System Requirements:
       - system_requirements/index.md

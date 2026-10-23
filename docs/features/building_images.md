@@ -4,113 +4,136 @@ Testcontainers-Python allows you to build Docker images from Dockerfiles during 
 
 ## Basic Image Building
 
-The simplest way to build an image is using the `build_image` function:
+The simplest way to build an image is using the `DockerImage` class. It is a context manager that builds the image on entry and removes it on exit:
 
 ```python
-from testcontainers.core.container import build_image
+from testcontainers.core.container import DockerContainer
+from testcontainers.core.image import DockerImage
 
-# Build an image from a Dockerfile
-image = build_image(
+# Build an image from a build context containing a Dockerfile
+with DockerImage(path="path/to/dockerfile/directory", tag="myapp:test") as image:
+    # Use the built image
+    with DockerContainer(str(image)) as container:
+        # Your test code here
+        pass
+```
+
+`path` is the build context directory. By default the Dockerfile is expected to be named `Dockerfile` within that directory.
+
+## Building with a Custom Dockerfile
+
+Use `dockerfile_path` to point at a Dockerfile with a different name or location (relative to the build context):
+
+```python
+with DockerImage(
     path="path/to/dockerfile/directory",
-    tag="myapp:test"
-)
-
-# Use the built image
-with GenericContainer(image) as container:
-    # Your test code here
-    pass
+    dockerfile_path="Dockerfile.test",
+    tag="myapp:test",
+) as image:
+    ...
 ```
 
 ## Building with Options
 
-You can customize the build process with various options:
+Any additional keyword arguments are forwarded to the underlying docker-py
+[`images.build`](https://docker-py.readthedocs.io/en/stable/images.html#docker.models.images.ImageCollection.build)
+call, so you can use all of its options.
+
+### Build Arguments
 
 ```python
-# Build with specific Dockerfile
-image = build_image(
+with DockerImage(
     path="path/to/dockerfile/directory",
-    dockerfile="Dockerfile.test",
-    tag="myapp:test"
-)
-
-# Build with build arguments
-image = build_image(
-    path="path/to/dockerfile/directory",
+    tag="myapp:test",
     buildargs={
         "VERSION": "1.0.0",
-        "ENVIRONMENT": "test"
+        "ENVIRONMENT": "test",
     },
-    tag="myapp:test"
-)
+) as image:
+    ...
+```
 
-# Build with target stage
-image = build_image(
+### Target Stage
+
+```python
+with DockerImage(
     path="path/to/dockerfile/directory",
+    tag="myapp:test",
     target="test",
-    tag="myapp:test"
-)
+) as image:
+    ...
 ```
 
-## Building with Context
+### Disabling the Build Cache
 
-You can specify a build context:
+Use the `no_cache` argument to bypass the build cache (equivalent to the CLI's `--no-cache`):
 
 ```python
-# Build with specific context
-image = build_image(
+with DockerImage(
     path="path/to/dockerfile/directory",
-    context="path/to/build/context",
-    tag="myapp:test"
-)
+    tag="myapp:test",
+    no_cache=True,
+) as image:
+    ...
 ```
 
-## Building with Cache
-
-You can control build caching:
+You can also reuse cache layers from existing images with `cache_from`:
 
 ```python
-# Build without cache
-image = build_image(
+with DockerImage(
     path="path/to/dockerfile/directory",
-    nocache=True,
-    tag="myapp:test"
-)
-
-# Build with specific cache from
-image = build_image(
-    path="path/to/dockerfile/directory",
+    tag="myapp:test",
     cache_from=["myapp:latest"],
-    tag="myapp:test"
-)
+) as image:
+    ...
 ```
 
-## Building with Platform
-
-You can specify the target platform:
+### Platform
 
 ```python
-# Build for specific platform
-image = build_image(
+with DockerImage(
     path="path/to/dockerfile/directory",
+    tag="myapp:test",
     platform="linux/amd64",
-    tag="myapp:test"
-)
+) as image:
+    ...
 ```
 
-## Building with Labels
-
-You can add labels to the built image:
+### Labels
 
 ```python
-# Build with labels
-image = build_image(
+with DockerImage(
     path="path/to/dockerfile/directory",
+    tag="myapp:test",
     labels={
         "test": "true",
-        "environment": "test"
+        "environment": "test",
     },
-    tag="myapp:test"
-)
+) as image:
+    ...
+```
+
+## Inspecting the Build
+
+`DockerImage` exposes helpers to inspect the result of a build:
+
+```python
+with DockerImage(path="path/to/dockerfile/directory", tag="myapp:test") as image:
+    print(image.short_id)        # short image ID
+    print(str(image))            # tag if set, otherwise short ID
+    logs = image.get_logs()      # list of build log entries
+    wrapped = image.get_wrapped_image()  # underlying docker-py Image
+```
+
+## Cleaning Up
+
+By default the image is removed when the context manager exits. Set `clean_up=False`
+to keep the image after the block completes:
+
+```python
+with DockerImage(path="path/to/dockerfile/directory", tag="myapp:test", clean_up=False) as image:
+    ...
+# image is still available here
 ```
 
 ## Best Practices
@@ -120,9 +143,8 @@ image = build_image(
 3. Use build arguments for configuration
 4. Consider build context size
 5. Use appropriate build caching
-6. Handle build failures
-7. Use appropriate platforms
-8. Add meaningful labels
+6. Use appropriate platforms
+7. Add meaningful labels
 
 ## Common Use Cases
 
@@ -130,50 +152,31 @@ image = build_image(
 
 ```python
 def test_custom_image():
-    # Build test image
-    image = build_image(
+    with DockerImage(
         path="path/to/dockerfile/directory",
+        tag="myapp:test",
         buildargs={"TEST_MODE": "true"},
-        tag="myapp:test"
-    )
-
-    # Use the test image
-    with GenericContainer(image) as container:
-        # Your test code here
-        pass
-```
-
-### Building with Dependencies
-
-```python
-def test_with_dependencies():
-    # Build base image
-    base_image = build_image(
-        path="path/to/base/dockerfile/directory",
-        tag="myapp:base"
-    )
-
-    # Build test image using base
-    test_image = build_image(
-        path="path/to/test/dockerfile/directory",
-        cache_from=[base_image],
-        tag="myapp:test"
-    )
+    ) as image:
+        with DockerContainer(str(image)) as container:
+            # Your test code here
+            pass
 ```
 
 ### Building for Different Environments
 
 ```python
 def test_different_environments():
-    # Build for different environments
     environments = ["dev", "test", "staging"]
 
     for env in environments:
-        image = build_image(
+        with DockerImage(
             path="path/to/dockerfile/directory",
+            tag=f"myapp:{env}",
             buildargs={"ENVIRONMENT": env},
-            tag=f"myapp:{env}"
-        )
+        ) as image:
+            with DockerContainer(str(image)) as container:
+                # Your test code here
+                pass
 ```
 
 ## Troubleshooting
@@ -181,10 +184,9 @@ def test_different_environments():
 If you encounter issues with image building:
 
 1. Check Dockerfile syntax
-2. Verify build context
+2. Verify the build context (the `path` argument)
 3. Check for missing files
 4. Verify build arguments
 5. Check for platform compatibility
 6. Verify cache settings
-7. Check for resource limits
-8. Verify Docker daemon state
+7. Verify Docker daemon state

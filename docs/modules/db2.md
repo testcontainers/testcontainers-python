@@ -18,7 +18,7 @@ pip install testcontainers[db2] sqlalchemy ibm-db
 
 <!--codeinclude-->
 
-[Creating a DB2 container](../../modules/db2/example_basic.py)
+[Creating a DB2 container](db2_example.py)
 
 <!--/codeinclude-->
 

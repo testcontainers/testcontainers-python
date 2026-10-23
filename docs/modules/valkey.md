@@ -18,6 +18,6 @@ pip install testcontainers[valkey]
 
 <!--codeinclude-->
 
-[Creating a Valkey container](../../modules/valkey/example_basic.py)
+[Creating a Valkey container](valkey_example.py)
 
 <!--/codeinclude-->

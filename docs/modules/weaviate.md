@@ -18,6 +18,6 @@ pip install testcontainers[weaviate] weaviate-client
 
 <!--codeinclude-->
 
-[Creating a Weaviate container](../../modules/weaviate/example_basic.py)
+[Creating a Weaviate container](weaviate_example.py)
 
 <!--/codeinclude-->

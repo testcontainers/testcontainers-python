@@ -1,6 +1,6 @@
 # Couchbase
 
-Since testcontainers-python <a href="https://github.com/testcontainers/testcontainers-python/releases/tag/v4.15.0-rc2"><span class="tc-version">:material-tag: v4.15.0-rc2</span></a>
+Since testcontainers-python <a href="https://github.com/testcontainers/testcontainers-python/releases/tag/v4.16.0"><span class="tc-version">:material-tag: v4.16.0</span></a>
 
 ## Introduction
 
@@ -18,6 +18,6 @@ pip install testcontainers[couchbase]
 
 <!--codeinclude-->
 
-[Creating a Couchbase container](../../modules/couchbase/example_basic.py)
+[Creating a Couchbase container](couchbase_example.py)
 
 <!--/codeinclude-->

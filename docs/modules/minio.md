@@ -18,6 +18,6 @@ pip install testcontainers[minio] minio requests
 
 <!--codeinclude-->
 
-[Creating a MinIO container](../../modules/minio/example_basic.py)
+[Creating a MinIO container](minio_example.py)
 
 <!--/codeinclude-->

@@ -18,6 +18,6 @@ pip install testcontainers[trino] trino
 
 <!--codeinclude-->
 
-[Creating a Trino container](../../modules/trino/example_basic.py)
+[Creating a Trino container](trino_example.py)
 
 <!--/codeinclude-->

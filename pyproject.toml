@@ -1,6 +1,6 @@
 [project]
 name = "testcontainers"
-version = "4.15.0-rc2"  # auto-incremented by release-please
+version = "4.15.0"  # auto-incremented by release-please
 description = "Python library for throwaway instances of anything that can run in a Docker container"
 readme = "README.md"
 requires-python = ">=3.10"
@@ -54,9 +54,13 @@ cassandra = []
 clickhouse = ["clickhouse-driver"]
 cosmosdb = ["azure-cosmos>=4"]
 cockroachdb = []
-couchbase = ['couchbase']
+couchbase = ["couchbase", "requests"]
+cratedb = [
+  "httpx",
+  "sqlalchemy-cratedb"
+]
 db2 = [
-  "sqlalchemy>=2",
+  "sqlalchemy",
   "ibm_db_sa; platform_machine != 'aarch64' and platform_machine != 'arm64'",
 ]
 elasticsearch = []
@@ -84,16 +88,16 @@ minio = ["minio>=7"]
 milvus = []
 mongodb = ["pymongo>=4"]
 mqtt = []
-mssql = ["sqlalchemy>=2", "pymssql>=2"]
-mysql = ["sqlalchemy>=2", "pymysql[rsa]>=1"]
+mssql = ["sqlalchemy", "pymssql>=2"]
+mysql = ["sqlalchemy", "pymysql[rsa]>=1"]
 nats = ["nats-py>=2"]
 neo4j = ["neo4j>=6"]
 nginx = []
 openfga = ["openfga-sdk"]
 opensearch = ["opensearch-py>=3; python_version < '4.0'"]
 ollama = []
-oracle = ["sqlalchemy>=2", "oracledb>=3"]
-oracle-free = ["sqlalchemy>=2", "oracledb>=3"]
+oracle = ["sqlalchemy", "oracledb>=3"]
+oracle-free = ["sqlalchemy", "oracledb>=3"]
 postgres = []
 qdrant = ["qdrant-client>=1"]
 rabbitmq = ["pika>=1"]
@@ -102,6 +106,7 @@ registry = ["bcrypt>=5"]
 selenium = ["selenium>=4"]
 scylla = ["cassandra-driver>=3; python_version < '3.14'"]
 sftp = ["cryptography"]
+toxiproxy = []
 valkey = []
 vault = []
 weaviate = ["weaviate-client>=4"]
@@ -119,26 +124,30 @@ test = [
   # TODO: Check what test requirements are really need and for which modules
   #       Make a group for each module requiring extra deps in order to test
   #       Each module with minimal extra depencies
-  "sqlalchemy>=2",
+  "sqlalchemy",
   "psycopg2-binary==2.9.11",
   "pg8000==1.31.5",
   "psycopg>=3",
-  "cassandra-driver>=3; python_version < '3.14'",
+  "cassandra-driver>=3.30",
   "kafka-python-ng>=2",
   "hvac>=2; python_version < '4.0'",
   "pymilvus>=2",
   "paho-mqtt>=2",
   "sqlalchemy-cockroachdb>=2",
+  "sqlalchemy-cratedb",
   "paramiko>=4",
-  "twine>=6.2.0",
+  "twine>=7.0.0",
   "anyio>=4",
-  "tomli", # required for pyproject.toml tests, TODO: remove once we drop py3.10 support
+  "tomli>=2.0; python_version < '3.11'", # required for pyproject.toml tests, TODO: remove once we drop py3.10 support
+  "pytest-xdist>=3.8.0",
 ]
 lint = [
   "mypy>=1",
   "types-paramiko>=4",
   "ruff",
   "pre-commit>=4",
+  "types-docker>=7.1.0.20260518",
+  "boto3-stubs-lite[boto3]",
 ]
 docs = [
   "sphinx>=8; python_version < '3.11'",
@@ -159,127 +168,32 @@ dev = [
 
 # ---------- Hatchling build configuration ----------
 [build-system]
-requires = ["hatchling"]
+# hatchling>=1.32 emits Metadata-Version 2.5, which the pinned twine version
+# does not yet recognize as valid (https://github.com/pypa/twine/issues/1327).
+requires = ["hatchling>=1.26,<1.32"]
 build-backend = "hatchling.build"
 
 [tool.hatch.build]
-# If you build sdists, you probably want to include core/ + modules/ in the sdist.
-# Adjust as needed.
 include = [
-  "core/**",
-  "modules/**",
+  "src/**",
   "README.md",
   "LICENSE*",
   "pyproject.toml",
 ]
 
-# TODO: Remove all this below once the project moved to `src` layout
+
 [tool.hatch.build.targets.wheel]
-# Mirror Poetry's multi-source package includes. Each path contains a "testcontainers" package.
 packages = [
-  "core/testcontainers",
-  "modules/arangodb/testcontainers",
-  "modules/aws/testcontainers",
-  "modules/azurite/testcontainers",
-  "modules/cassandra/testcontainers",
-  "modules/chroma/testcontainers",
-  "modules/clickhouse/testcontainers",
-  "modules/cockroachdb/testcontainers",
-  "modules/cosmosdb/testcontainers",
-  "modules/couchbase/testcontainers",
-  "modules/db2/testcontainers",
-  "modules/elasticsearch/testcontainers",
-  "modules/generic/testcontainers",
-  "modules/test_module_import/testcontainers",
-  "modules/google/testcontainers",
-  "modules/influxdb/testcontainers",
-  "modules/k3s/testcontainers",
-  "modules/kafka/testcontainers",
-  "modules/keycloak/testcontainers",
-  "modules/localstack/testcontainers",
-  "modules/mailpit/testcontainers",
-  "modules/memcached/testcontainers",
-  "modules/minio/testcontainers",
-  "modules/milvus/testcontainers",
-  "modules/mongodb/testcontainers",
-  "modules/mqtt/testcontainers",
-  "modules/mssql/testcontainers",
-  "modules/mysql/testcontainers",
-  "modules/nats/testcontainers",
-  "modules/neo4j/testcontainers",
-  "modules/nginx/testcontainers",
-  "modules/ollama/testcontainers",
-  "modules/openfga/testcontainers",
-  "modules/opensearch/testcontainers",
-  "modules/oracle-free/testcontainers",
-  "modules/postgres/testcontainers",
-  "modules/qdrant/testcontainers",
-  "modules/rabbitmq/testcontainers",
-  "modules/redis/testcontainers",
-  "modules/registry/testcontainers",
-  "modules/sftp/testcontainers",
-  "modules/selenium/testcontainers",
-  "modules/scylla/testcontainers",
-  "modules/trino/testcontainers",
-  "modules/valkey/testcontainers",
-  "modules/vault/testcontainers",
-  "modules/weaviate/testcontainers",
-]
-# Yeah we need to duplicate this folders here for hatchling to work, really waiting for src layout
-# There is a test that ensures both list are identical
-dev-mode-dirs = [
-  "core",
-  "modules/arangodb",
-  "modules/aws",
-  "modules/azurite",
-  "modules/cassandra",
-  "modules/chroma",
-  "modules/clickhouse",
-  "modules/cockroachdb",
-  "modules/cosmosdb",
-  "modules/couchbase",
-  "modules/db2",
-  "modules/elasticsearch",
-  "modules/generic",
-  "modules/test_module_import",
-  "modules/google",
-  "modules/influxdb",
-  "modules/k3s",
-  "modules/kafka",
-  "modules/keycloak",
-  "modules/localstack",
-  "modules/mailpit",
-  "modules/memcached",
-  "modules/minio",
-  "modules/milvus",
-  "modules/mongodb",
-  "modules/mqtt",
-  "modules/mssql",
-  "modules/mysql",
-  "modules/nats",
-  "modules/neo4j",
-  "modules/nginx",
-  "modules/ollama",
-  "modules/openfga",
-  "modules/opensearch",
-  "modules/oracle-free",
-  "modules/postgres",
-  "modules/qdrant",
-  "modules/rabbitmq",
-  "modules/redis",
-  "modules/registry",
-  "modules/sftp",
-  "modules/selenium",
-  "modules/scylla",
-  "modules/trino",
-  "modules/valkey",
-  "modules/vault",
-  "modules/weaviate",
+  "src/testcontainers",
 ]
 
 # ---------- Tool configs----------
 [tool.pytest.ini_options]
-addopts = "--tb=short --strict-markers"
+addopts = [
+  "--tb=short",
+  "--strict-markers",
+  "--import-mode=importlib",  # https://docs.pytest.org/en/stable/explanation/goodpractices.html#choosing-a-test-layout
+]
 log_cli = true
 log_cli_level = "INFO"
 markers = [
@@ -299,27 +213,38 @@ branch = true
 omit = ["oracle.py"]
 
 [tool.coverage.report]
-exclude_lines = [
+exclude_also = [
   "pass",
   "raise NotImplementedError",
+  "if TYPE_CHECKING:",
+  "@overload",
 ]
 
 [tool.coverage.paths]
-source = [
-    "core/testcontainers",
-    "*/site-packages/testcontainers",
-    "*/dist-packages/testcontainers",
+# only consider non-community/core packages for the coverage.
+# Community packages are run conditionally anyway.
+core = [
+    "src/testcontainers/core",
+    "*/site-packages/testcontainers/core",
+    "*/dist-packages/testcontainers/core",
+]
+compose = [
+    "src/testcontainers/compose",
+    "*/site-packages/testcontainers/compose",
+    "*/dist-packages/testcontainers/compose",
+]
+concat = [
+    "src/testcontainers/cocat",
+    "*/site-packages/testcontainer/cocat",
+    "*/dist-packages/testcontainers/cocat",
 ]
 
 [tool.ruff]
 target-version = "py39"
 line-length = 120
 fix = true
-src = ["core", "modules/*"]
 
 [tool.ruff.lint]
-fixable = ["I"]
-exclude = ["**/tests/**/*.py"]
 select = [
   "YTT",
   "B",
@@ -342,19 +267,33 @@ select = [
 ]
 ignore = [
   "E501",
-  "INP001",
   "A004",
+  "PT011",# there are a lof broad exception catches, fix later
+  "PT012", # multiple statements in pytest.raises are okay
+  "PT030", # also broad Depecration Warnings are okay
+  "TC001","TC002","TC003" # performance effect of type-like imports is minimal
 ]
 
 [tool.ruff.lint.per-file-ignores]
 "**/example_*.py" = ["T201"]
+"**/*_example.py" = ["T201"]
 "**/examples/*.py" = ["T201"]
+"tests/**" = [
+  "SIM", # we don't need simple code in tests
+  "T201", # prints are okay in tests
+  "T203",# pprint is okay in tests
+  "B017",# assert Exception is okay in tests
+  "RUF059",  # unused unpacked variables are okay in tests
+]
 
 [tool.ruff.lint.pyupgrade]
 keep-runtime-typing = true
 
 [tool.ruff.lint.flake8-type-checking]
 strict = true
+
+[tool.ruff.lint.flake8-pytest-style]
+parametrize-names-type = "csv"
 
 [tool.mypy]
 python_version = "3.10"
@@ -364,12 +303,7 @@ pretty = true
 show_error_codes = true
 warn_return_any = true
 strict = true
-modules = ["testcontainers.core"]
-mypy_path = [
-  "core",
-  "modules/mailpit",
-  "modules/sftp",
-]
+mypy_path = ["src"]
 enable_error_code = ["ignore-without-code", "redundant-expr", "truthy-bool"]
 
 [[tool.mypy.overrides]]
@@ -378,15 +312,15 @@ check_untyped_defs = true
 disable_error_code = ["no-untyped-def"]
 
 [[tool.mypy.overrides]]
-module = ["docker.*"]
+module = ["pika.*"]
 ignore_missing_imports = true
 
 [[tool.mypy.overrides]]
-module = ["wrapt.*"]
+module = ["influxdb.*"]
 ignore_missing_imports = true
 
 [[tool.mypy.overrides]]
-module = ["requests.*"]
+module = ["cassandra.*"]
 ignore_missing_imports = true
 
 [[tool.mypy.overrides]]

@@ -1,5 +1,63 @@
 # Changelog
 
+## [4.15.0](https://github.com/testcontainers/testcontainers-python/compare/testcontainers-v4.15.0-rc4...testcontainers-v4.15.0) (2026-07-24)
+
+
+### Bug Fixes
+
+* **cratedb:** add CrateDB community module ([#1051](https://github.com/testcontainers/testcontainers-python/issues/1051)) ([0976c7e](https://github.com/testcontainers/testcontainers-python/commit/0976c7e7ec3455e90731c84d4ab65de378d350d7))
+
+## [4.15.0-rc4](https://github.com/testcontainers/testcontainers-python/compare/testcontainers-v4.15.0-rc3...testcontainers-v4.15.0-rc4) (2026-06-11)
+
+
+### Features
+
+* extended configuration options for container.exec method ([#1050](https://github.com/testcontainers/testcontainers-python/issues/1050)) ([7dee471](https://github.com/testcontainers/testcontainers-python/commit/7dee471547a9b659728ca6f87c20fa5fa35fbe58))
+* **main:** enable typing for complete package ([237be27](https://github.com/testcontainers/testcontainers-python/commit/237be275fdca346f5ee53cee336fda2501e2b578))
+* **main:** make legacy imports available with deprecation notice ([ab6cca8](https://github.com/testcontainers/testcontainers-python/commit/ab6cca8e99e9b564aefddfa14edbc48a27d5a7bc))
+* **test:** start working on parallel-running tests (WIP!) ([2d24429](https://github.com/testcontainers/testcontainers-python/commit/2d2442929334dd8f1e6128df0ec6172ca08451af))
+
+
+### Bug Fixes
+
+* **arangodb:** replace deprecated add_hash_index with add_persistent_index ([50bb202](https://github.com/testcontainers/testcontainers-python/commit/50bb20251ca09dac715727f486b09b7d810e93fd))
+* **aws:** wrong path of test ([38089b0](https://github.com/testcontainers/testcontainers-python/commit/38089b06ac0ed69804807992c26fff6a03528b14))
+* **ci:** correct coverage paths ([b21eccd](https://github.com/testcontainers/testcontainers-python/commit/b21eccdee23504a5a28159f62c39f126c02b544e))
+* **ci:** fix community test selection ([5287fc8](https://github.com/testcontainers/testcontainers-python/commit/5287fc81d4a90c5c4a447fb19c18b0e37a4d3c12))
+* **ci:** ignore [@overload](https://github.com/overload) in coverage ([592c6d1](https://github.com/testcontainers/testcontainers-python/commit/592c6d17e50ee83b7e390dc56197d2b214c856e5))
+* **ci:** ignore TYPE_CHECKING block in coverage ([3bdc561](https://github.com/testcontainers/testcontainers-python/commit/3bdc561c0c03aad955e13b4e357cec74a0ebf5f3))
+* **core/registry:** use relative import for _LocalRegistryContainer ([961e3d1](https://github.com/testcontainers/testcontainers-python/commit/961e3d1f30548f6408dc5a380badab13ec42568f))
+* **core:** make is_podman respect resolved docker host ([#1048](https://github.com/testcontainers/testcontainers-python/issues/1048)) ([6018da3](https://github.com/testcontainers/testcontainers-python/commit/6018da37338a24a2407ee16620c78755533a8358))
+* **docs:** update docs reflecting new structure ([9427055](https://github.com/testcontainers/testcontainers-python/commit/9427055a6b832d99246d1ef8f304c4444e7e3a4e))
+* **doctests:** Ensure paths are correct ([f777673](https://github.com/testcontainers/testcontainers-python/commit/f777673df0a1e6a7405e30288d73a3a5a38f6d81))
+* **k3s:** replace tmpfs dict kwarg with with_tmpfs_mount() ([4d1da0c](https://github.com/testcontainers/testcontainers-python/commit/4d1da0cc99200c4224d8788b9733fc72364d91d6))
+* **keycloak:** disable SSL requirement for master realm after start ([2a85595](https://github.com/testcontainers/testcontainers-python/commit/2a855958f2ae5e50f02fea708090cdde74dfdca8))
+* **main:** adopt ci to new src structure ([dae421d](https://github.com/testcontainers/testcontainers-python/commit/dae421d08dc7c2b02850fc377546576fbbabbf5d))
+* **main:** adopt imports to new structure ([9155677](https://github.com/testcontainers/testcontainers-python/commit/9155677ce124ffe5b5f5a4a4520d8b1d260729e7))
+* **rabbitmq:** declare queue as durable ([2622736](https://github.com/testcontainers/testcontainers-python/commit/2622736a9a23e7ede94ee3f7d879e29b33da0695))
+* **ruff:** add **/*_example.py to per-file-ignores for T201 ([01dbd16](https://github.com/testcontainers/testcontainers-python/commit/01dbd16816852d254bbc2e1c7aafce12738814e7))
+* **sftp:** remove redundant start() calls and fix SSH connection options ([54cef56](https://github.com/testcontainers/testcontainers-python/commit/54cef56ffc53d43300908be5f1353cab02ba066b))
+* **trino:** increase default startup timeout from 30s to 60s ([2940501](https://github.com/testcontainers/testcontainers-python/commit/2940501dcccab30e505978bb4c8e477a884cac16))
+* **weaviate:** update and fix module ([5dd2aa1](https://github.com/testcontainers/testcontainers-python/commit/5dd2aa1892e345410a2b9f4a96c0b2c9eaeed3f7))
+
+## [4.15.0-rc3](https://github.com/testcontainers/testcontainers-python/compare/testcontainers-v4.15.0-rc2...testcontainers-v4.15.0-rc3) (2026-06-03)
+
+
+### Features
+
+* **core:** add Podman compatibility ([#1028](https://github.com/testcontainers/testcontainers-python/issues/1028)) ([37093ab](https://github.com/testcontainers/testcontainers-python/commit/37093ab8e1a86d1aecbad915f1af20934861ac35))
+* **core:** auto-detect DOCKER_HOST from current docker context ([#1026](https://github.com/testcontainers/testcontainers-python/issues/1026)) ([d4b8ff6](https://github.com/testcontainers/testcontainers-python/commit/d4b8ff66197e7eb57708c9579fa1fb41d6988f5e)), closes [#1025](https://github.com/testcontainers/testcontainers-python/issues/1025)
+
+
+### Bug Fixes
+
+* **core:** add container logs to TimeoutError when wait strategy times out ([#1007](https://github.com/testcontainers/testcontainers-python/issues/1007)) ([1fadb40](https://github.com/testcontainers/testcontainers-python/commit/1fadb40c456c3ccd4f13b1b82cd19c3ab22c2687))
+* **core:** close Reaper socket at interpreter exit to prevent ResourceWarning ([#1017](https://github.com/testcontainers/testcontainers-python/issues/1017)) ([d3a1517](https://github.com/testcontainers/testcontainers-python/commit/d3a1517f2c5c2e2a48a4c051b2203b80d9141759))
+* **cosmosdb:** replace distutils.strtobool removed in Python 3.12 ([#1018](https://github.com/testcontainers/testcontainers-python/issues/1018)) ([3e487f4](https://github.com/testcontainers/testcontainers-python/commit/3e487f4bab679204820826cfcbc282cb8fc60008))
+* **mongodb:** Use wait strategy instead of deprecated wait_for_logs ([#943](https://github.com/testcontainers/testcontainers-python/issues/943)) ([c8118e7](https://github.com/testcontainers/testcontainers-python/commit/c8118e7c9832743486115221fd8253bdc8c2a5ec))
+* **mssql:** use `ExecWaitStrategy` instead of deprecated `wait_container_is_ready` ([#1016](https://github.com/testcontainers/testcontainers-python/issues/1016)) ([4c53b89](https://github.com/testcontainers/testcontainers-python/commit/4c53b89a1faad9a592d2bb49123ef3e6bf33fdb9)), closes [#874](https://github.com/testcontainers/testcontainers-python/issues/874)
+* **neo4j:** Swap out use of depricated wait utils for wait_strategies ([#1012](https://github.com/testcontainers/testcontainers-python/issues/1012)) ([6deaf3b](https://github.com/testcontainers/testcontainers-python/commit/6deaf3b27e5f8d54ff9ae404dbd092e8014df079))
+
 ## [4.15.0-rc2](https://github.com/testcontainers/testcontainers-python/compare/testcontainers-v4.15.0-rc.1...testcontainers-v4.15.0-rc2) (2026-04-30)
 
 

@@ -18,7 +18,7 @@ pip install testcontainers[arangodb] python-arango
 
 <!--codeinclude-->
 
-[Creating an ArangoDB container](../../modules/arangodb/example_basic.py)
+[Creating an ArangoDB container](arangodb_example.py)
 
 <!--/codeinclude-->
 

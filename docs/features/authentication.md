@@ -7,7 +7,7 @@ Testcontainers-Python supports various methods of authenticating with Docker reg
 The simplest way to authenticate is using Docker's built-in credential store. Testcontainers-Python will automatically use credentials stored by Docker:
 
 ```python
-from testcontainers.generic import GenericContainer
+from testcontainers.community.generic import GenericContainer
 
 # Docker will automatically use stored credentials
 container = GenericContainer("private.registry.com/myimage:latest")
@@ -56,7 +56,7 @@ container = GenericContainer("private.registry.com/myimage:latest")
 For Amazon Elastic Container Registry (ECR), Testcontainers-Python supports automatic authentication:
 
 ```python
-from testcontainers.generic import GenericContainer
+from testcontainers.community.generic import GenericContainer
 
 # ECR authentication is handled automatically
 container = GenericContainer("123456789012.dkr.ecr.region.amazonaws.com/myimage:latest")
@@ -67,7 +67,7 @@ container = GenericContainer("123456789012.dkr.ecr.region.amazonaws.com/myimage:
 For Google Container Registry, you can use Google Cloud credentials:
 
 ```python
-from testcontainers.generic import GenericContainer
+from testcontainers.community.generic import GenericContainer
 
 # GCR authentication using Google Cloud credentials
 container = GenericContainer("gcr.io/myproject/myimage:latest")
@@ -78,7 +78,7 @@ container = GenericContainer("gcr.io/myproject/myimage:latest")
 For Azure Container Registry, you can use Azure credentials:
 
 ```python
-from testcontainers.generic import GenericContainer
+from testcontainers.community.generic import GenericContainer
 
 # ACR authentication using Azure credentials
 container = GenericContainer("myregistry.azurecr.io/myimage:latest")

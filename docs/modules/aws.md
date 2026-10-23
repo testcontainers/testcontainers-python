@@ -18,6 +18,6 @@ pip install testcontainers[aws] httpx
 
 <!--codeinclude-->
 
-[Creating an AWS container](../../modules/aws/example_basic.py)
+[Creating an AWS container](aws_example.py)
 
 <!--/codeinclude-->

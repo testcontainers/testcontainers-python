@@ -7,7 +7,7 @@ Testcontainers-Python provides several ways to copy data into containers. This i
 The simplest way to copy a file is using the `copy_file_to_container` method:
 
 ```python
-from testcontainers.generic import GenericContainer
+from testcontainers.community.generic import GenericContainer
 
 with GenericContainer("alpine:latest") as container:
     # Copy a single file

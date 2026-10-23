@@ -18,6 +18,6 @@ pip install testcontainers[mailpit] cryptography
 
 <!--codeinclude-->
 
-[Creating a Mailpit container](../../modules/mailpit/example_basic.py)
+[Creating a Mailpit container](mailpit_example.py)
 
 <!--/codeinclude-->

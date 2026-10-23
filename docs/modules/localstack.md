@@ -18,6 +18,6 @@ pip install testcontainers[localstack] boto3
 
 <!--codeinclude-->
 
-[Creating a LocalStack container](../../modules/localstack/example_basic.py)
+[Creating a LocalStack container](localstack_example.py)
 
 <!--/codeinclude-->

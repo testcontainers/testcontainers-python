@@ -18,6 +18,6 @@ pip install testcontainers[rabbitmq] pika
 
 <!--codeinclude-->
 
-[Creating a RabbitMQ container](../../modules/rabbitmq/example_basic.py)
+[Creating a RabbitMQ container](rabbitmq_example.py)
 
 <!--/codeinclude-->

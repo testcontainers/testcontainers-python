@@ -7,7 +7,7 @@ Testcontainers-Python provides several ways to access and follow container logs.
 The simplest way to access logs is using the `get_logs` method:
 
 ```python
-from testcontainers.generic import GenericContainer
+from testcontainers.community.generic import GenericContainer
 
 with GenericContainer("nginx:alpine") as container:
     # Get all logs
@@ -80,7 +80,7 @@ Here's how to use logs in tests:
 
 ```python
 import pytest
-from testcontainers.generic import GenericContainer
+from testcontainers.community.generic import GenericContainer
 
 def test_container_logs():
     with GenericContainer("nginx:alpine") as container:

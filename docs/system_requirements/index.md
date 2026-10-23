@@ -180,4 +180,4 @@ commands = pytest
 
 With any of these, once your environment is set up you can simply `pip install testcontainers` (or use Poetry’s `poetry add --dev testcontainers`) and begin writing your container-backed tests in Python.
 
-See the [General Docker Requirements](docker.md) to continue
+See [Supported Docker environments](docker.md) to continue

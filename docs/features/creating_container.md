@@ -12,7 +12,7 @@ Testcontainers-Python is a thin wrapper around Docker designed for use in tests.
 The simplest way to create a container is using the `GenericContainer` class:
 
 ```python
-from testcontainers.generic import GenericContainer
+from testcontainers.community.generic import GenericContainer
 
 def test_basic_container():
     with GenericContainer("nginx:alpine") as nginx:
@@ -109,7 +109,7 @@ finally:
 3. **Pytest fixtures:**
 ```python
 import pytest
-from testcontainers.generic import GenericContainer
+from testcontainers.community.generic import GenericContainer
 
 @pytest.fixture
 def nginx_container():
@@ -133,7 +133,7 @@ For details on waiting for containers to be ready, see [Wait strategies](wait_st
 You can get detailed information about containers using the `get_container_info()` method. This works with both `DockerContainer` and `ComposeContainer`:
 
 ```python
-from testcontainers.generic import GenericContainer
+from testcontainers.community.generic import GenericContainer
 
 def test_container_info():
     with GenericContainer("nginx:alpine") as container:

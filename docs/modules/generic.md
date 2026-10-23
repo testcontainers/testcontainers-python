@@ -18,6 +18,6 @@ pip install testcontainers[generic]
 
 <!--codeinclude-->
 
-[Creating a Generic container](../../modules/generic/example_basic.py)
+[Creating a Generic container](generic_example.py)
 
 <!--/codeinclude-->

@@ -70,18 +70,21 @@ However, sometimes customization is required. Testcontainers-Python will respect
 3. Read the **DOCKER_HOST** environment variable. E.g. `DOCKER_HOST=unix:///var/run/docker.sock`
    See [Docker environment variables](https://docs.docker.com/engine/reference/commandline/cli/#environment-variables) for more information.
 
-4. Read the default Docker socket path, without the unix schema. E.g. `/var/run/docker.sock`
+4. Read the **current Docker context** (as set by `docker context use`) and use its host. E.g. with a context pointing at `ssh://user@remote-host`, no extra configuration is needed.
+   The built-in `default` context is skipped so local sockets / named pipes go through the standard fallback.
 
-5. Read the **docker.host** property in the `~/.testcontainers.properties` file. E.g. `docker.host=tcp://my.docker.host:1234`
+5. Read the default Docker socket path, without the unix schema. E.g. `/var/run/docker.sock`
 
-6. Read the rootless Docker socket path, checking the following alternative locations:
+6. Read the **docker.host** property in the `~/.testcontainers.properties` file. E.g. `docker.host=tcp://my.docker.host:1234`
+
+7. Read the rootless Docker socket path, checking the following alternative locations:
 
    1. `${XDG_RUNTIME_DIR}/.docker/run/docker.sock`
    2. `${HOME}/.docker/run/docker.sock`
    3. `${HOME}/.docker/desktop/docker.sock`
    4. `/run/user/${UID}/docker.sock`, where `${UID}` is the user ID of the current user
 
-7. The library will raise a `DockerHostError` if none of the above are set, meaning that the Docker host was not detected.
+8. The library will raise a `DockerHostError` if none of the above are set, meaning that the Docker host was not detected.
 
 ## Docker Socket Path Detection
 

@@ -18,7 +18,7 @@ pip install testcontainers[chroma] chromadb requests
 
 <!--codeinclude-->
 
-[Creating a Chroma container](../../modules/chroma/example_basic.py)
+[Creating a Chroma container](chroma_example.py)
 
 <!--/codeinclude-->
 

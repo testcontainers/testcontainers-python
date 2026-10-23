@@ -18,6 +18,6 @@ pip install testcontainers[elasticsearch]
 
 <!--codeinclude-->
 
-[Creating an Elasticsearch container](../../modules/elasticsearch/example_basic.py)
+[Creating an Elasticsearch container](elasticsearch_example.py)
 
 <!--/codeinclude-->

@@ -83,8 +83,8 @@ container = GenericContainer(
 Many container implementations include built-in connection waiting. For example:
 
 ```python
-from testcontainers.redis import RedisContainer
-from testcontainers.postgres import PostgresContainer
+from testcontainers.community.redis import RedisContainer
+from testcontainers.community.postgres import PostgresContainer
 
 # Redis container waits for connection
 redis = RedisContainer()

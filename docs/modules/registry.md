@@ -18,6 +18,6 @@ pip install testcontainers[registry]
 
 <!--codeinclude-->
 
-[Creating a Registry container](../../modules/registry/example_basic.py)
+[Creating a Registry container](registry_example.py)
 
 <!--/codeinclude-->

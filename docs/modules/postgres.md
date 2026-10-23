@@ -18,6 +18,6 @@ pip install testcontainers[postgres] sqlalchemy psycopg2
 
 <!--codeinclude-->
 
-[Creating a PostgreSQL container](../../modules/postgres/example_basic.py)
+[Creating a PostgreSQL container](postgres_example.py)
 
 <!--/codeinclude-->
