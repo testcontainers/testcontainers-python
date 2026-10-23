@@ -249,6 +249,9 @@ class HttpWaitStrategy(WaitStrategy):
         """
         Set a predicate to match response body against.
 
+        The predicate must match for every accepted status code, including
+        explicitly accepted HTTP error statuses.
+
         Args:
             predicate: Function that takes response body and returns True if acceptable
 
@@ -436,6 +439,8 @@ class HttpWaitStrategy(WaitStrategy):
             error.code in self._status_codes
             or (self._status_code_predicate and self._status_code_predicate(error.code))
         ):
+            if self._response_predicate is not None:
+                return self._response_predicate(error.read().decode())
             return True
         logger.debug(f"HTTP request failed: {error!s}")
         return False

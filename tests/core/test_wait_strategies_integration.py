@@ -1,13 +1,59 @@
 from pathlib import Path
+from textwrap import dedent
+from urllib.request import urlopen
 
 import pytest
 
 from testcontainers.core.container import DockerContainer
-from testcontainers.core.wait_strategies import LogMessageWaitStrategy
+from testcontainers.core.wait_strategies import HttpWaitStrategy, LogMessageWaitStrategy
 
 
 class TestRealDockerIntegration:
     """Integration tests using real Docker containers."""
+
+    @pytest.mark.parametrize("status_code", [200, 404, 503])
+    def test_http_wait_checks_response_body_with_real_container(self, status_code):
+        # Keep the status constant so readiness depends on the response body.
+        # The first health request is not ready; the second one is.
+        server = dedent(
+            f"""
+            from http.server import BaseHTTPRequestHandler, HTTPServer
+
+            class Handler(BaseHTTPRequestHandler):
+                health_requests = 0
+
+                def do_GET(self):
+                    if self.path == "/requests":
+                        self.send_response(200)
+                        self.end_headers()
+                        self.wfile.write(str(Handler.health_requests).encode())
+                        return
+                    Handler.health_requests += 1
+                    body = b"starting" if Handler.health_requests == 1 else b"ready"
+                    self.send_response({status_code})
+                    self.end_headers()
+                    self.wfile.write(body)
+
+            HTTPServer(("0.0.0.0", 8080), Handler).serve_forever()
+            """
+        )
+        strategy = (
+            HttpWaitStrategy(8080, "/health")
+            .for_status_code(status_code)
+            .for_response_predicate(lambda body: body == "ready")
+            .with_startup_timeout(30)
+            .with_poll_interval(0.1)
+        )
+
+        with (
+            DockerContainer("python:3.12-alpine")
+            .with_exposed_ports(8080)
+            .with_command(["python", "-u", "-c", server])
+            .waiting_for(strategy) as container
+        ):
+            url = f"http://{container.get_container_host_ip()}:{container.get_exposed_port(8080)}/requests"
+            with urlopen(url, timeout=5) as response:
+                assert response.read() == b"2"
 
     def test_log_message_wait_strategy_with_real_container(self):
         """Test LogMessageWaitStrategy with a real container that outputs known logs."""
