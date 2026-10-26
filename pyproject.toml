@@ -63,6 +63,7 @@ db2 = [
   "ibm_db_sa; platform_machine != 'aarch64' and platform_machine != 'arm64'",
 ]
 elasticsearch = []
+gcs = []
 generic = [
   "httpx",
   "redis>=7",
@@ -135,6 +136,7 @@ test = [
   "sqlalchemy-cockroachdb>=2",
   "sqlalchemy-cratedb",
   "paramiko>=4",
+  "google-cloud-storage>=2",
   "twine>=7.0.0",
   "anyio>=4",
   "tomli>=2.0; python_version < '3.11'", # required for pyproject.toml tests, TODO: remove once we drop py3.10 support

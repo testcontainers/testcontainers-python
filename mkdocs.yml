@@ -77,6 +77,7 @@ nav:
           - modules/weaviate.md
       - modules/aws.md
       - modules/azurite.md
+      - modules/gcs.md
       - modules/generic.md
       - modules/google.md
       - modules/k3s.md
