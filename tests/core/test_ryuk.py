@@ -1,8 +1,9 @@
 from time import perf_counter, sleep
 
 import pytest
+import requests
 from docker import DockerClient
-from docker.errors import NotFound
+from docker.errors import APIError, NotFound
 
 from testcontainers.core.config import testcontainers_config
 from testcontainers.core.container import DockerContainer, Reaper
@@ -95,3 +96,62 @@ def test_ryuk_is_reused_in_same_process():
     with DockerContainer("hello-world") as container:
         wait_for_logs(container, "Hello from Docker!")
         assert reaper_instance is Reaper._instance
+
+
+def _response(status_code: int) -> requests.Response:
+    response = requests.Response()
+    response.status_code = status_code
+    response.reason = "Conflict" if status_code == 409 else "Server Error"
+    response.url = "http+docker://localhost/containers/ryuk"
+    return response
+
+
+class _DeadReaperContainer:
+    """Stands in for a ryuk container that died and that Docker is already auto-removing."""
+
+    def __init__(self, status_code: int) -> None:
+        self._container = object()
+        self._status_code = status_code
+
+    def stop(self) -> None:
+        raise APIError("removal of container is already in progress", response=_response(self._status_code))
+
+
+class _FakeSocket:
+    closed = False
+
+    def close(self) -> None:
+        self.closed = True
+
+
+def test_delete_instance_treats_removal_in_progress_as_gone(monkeypatch: pytest.MonkeyPatch):
+    # https://github.com/testcontainers/testcontainers-python/issues/1125
+    dead = Reaper()
+    sock = _FakeSocket()
+    monkeypatch.setattr(Reaper, "_instance", dead)
+    monkeypatch.setattr(Reaper, "_container", _DeadReaperContainer(409))
+    monkeypatch.setattr(Reaper, "_socket", sock)
+
+    Reaper.delete_instance()
+
+    assert sock.closed
+    assert Reaper._socket is None
+    assert Reaper._container is None
+    assert Reaper._instance is None
+
+    fresh = Reaper()
+    monkeypatch.setattr(Reaper, "_create_instance", classmethod(lambda cls: fresh))
+    assert Reaper.get_instance() is fresh
+
+
+def test_delete_instance_resets_its_state_when_stop_fails(monkeypatch: pytest.MonkeyPatch):
+    monkeypatch.setattr(Reaper, "_instance", Reaper())
+    monkeypatch.setattr(Reaper, "_container", _DeadReaperContainer(500))
+    monkeypatch.setattr(Reaper, "_socket", _FakeSocket())
+
+    with pytest.raises(APIError):
+        Reaper.delete_instance()
+
+    assert Reaper._socket is None
+    assert Reaper._container is None
+    assert Reaper._instance is None

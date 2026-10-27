@@ -475,16 +475,24 @@ class Reaper:
 
     @classmethod
     def delete_instance(cls) -> None:
-        if Reaper._socket is not None:
-            Reaper._socket.close()
+        container = Reaper._container
+        try:
+            if Reaper._socket is not None:
+                Reaper._socket.close()
+
+            if container is not None and container._container is not None:
+                try:
+                    container.stop()
+                except docker.errors.NotFound:
+                    pass
+                except APIError as e:
+                    # Ryuk runs with auto_remove, so if it died Docker may already be removing it (409).
+                    if e.status_code != 409:
+                        raise
+        finally:
+            # Reset whatever stop() did, so get_instance() creates a new reaper instead of returning a dead one.
             Reaper._socket = None
-
-        if Reaper._container is not None and Reaper._container._container is not None:
-            with contextlib.suppress(docker.errors.NotFound):
-                Reaper._container.stop()
             Reaper._container = None
-
-        if Reaper._instance is not None:
             Reaper._instance = None
 
     @classmethod
