@@ -1,6 +1,7 @@
 from time import perf_counter, sleep
 
 import pytest
+import requests
 from docker import DockerClient
 from docker.errors import APIError, NotFound
 
@@ -97,11 +98,12 @@ def test_ryuk_is_reused_in_same_process():
         assert reaper_instance is Reaper._instance
 
 
-class _FakeResponse:
-    def __init__(self, status_code: int) -> None:
-        self.status_code = status_code
-        self.reason = "Conflict" if status_code == 409 else "Server Error"
-        self.url = "http+docker://localhost/containers/ryuk"
+def _response(status_code: int) -> requests.Response:
+    response = requests.Response()
+    response.status_code = status_code
+    response.reason = "Conflict" if status_code == 409 else "Server Error"
+    response.url = "http+docker://localhost/containers/ryuk"
+    return response
 
 
 class _DeadReaperContainer:
@@ -112,7 +114,7 @@ class _DeadReaperContainer:
         self._status_code = status_code
 
     def stop(self) -> None:
-        raise APIError("removal of container is already in progress", response=_FakeResponse(self._status_code))
+        raise APIError("removal of container is already in progress", response=_response(self._status_code))
 
 
 class _FakeSocket:
