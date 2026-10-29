@@ -1,3 +1,5 @@
+from concurrent.futures import ThreadPoolExecutor
+from threading import Barrier
 from time import perf_counter, sleep
 
 import pytest
@@ -95,3 +97,31 @@ def test_ryuk_is_reused_in_same_process():
     with DockerContainer("hello-world") as container:
         wait_for_logs(container, "Hello from Docker!")
         assert reaper_instance is Reaper._instance
+
+
+def test_ryuk_is_created_once_when_containers_start_concurrently(monkeypatch: pytest.MonkeyPatch):
+    monkeypatch.setattr(Reaper, "_instance", None)
+    created: list[Reaper] = []
+
+    def slow_create_instance(cls: type[Reaper]) -> Reaper:
+        # Starting Ryuk takes seconds, which is the window the other threads race through.
+        sleep(0.2)
+        instance = Reaper()
+        created.append(instance)
+        Reaper._instance = instance
+        return instance
+
+    monkeypatch.setattr(Reaper, "_create_instance", classmethod(slow_create_instance))
+
+    workers = 8
+    barrier = Barrier(workers)
+
+    def get_instance(_: int) -> Reaper:
+        barrier.wait()
+        return Reaper.get_instance()
+
+    with ThreadPoolExecutor(max_workers=workers) as executor:
+        instances = list(executor.map(get_instance, range(workers)))
+
+    assert len(created) == 1
+    assert all(instance is created[0] for instance in instances)

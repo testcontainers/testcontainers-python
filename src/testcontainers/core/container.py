@@ -7,6 +7,7 @@ import tarfile
 from dataclasses import dataclass
 from os import PathLike
 from socket import socket
+from threading import RLock
 from types import TracebackType
 from typing import TYPE_CHECKING, Any, Optional, TypedDict, Union
 
@@ -465,11 +466,16 @@ class Reaper:
     _instance: "Optional[Reaper]" = None
     _container: Optional[DockerContainer] = None
     _socket: Optional[socket] = None
+    # Reentrant so that a nested get_instance() on the same thread, while Ryuk itself
+    # is starting, behaves as it did before the lock instead of deadlocking.
+    _lock = RLock()
 
     @classmethod
     def get_instance(cls) -> "Reaper":
         if Reaper._instance is None:
-            Reaper._instance = Reaper._create_instance()
+            with Reaper._lock:
+                if Reaper._instance is None:
+                    Reaper._instance = Reaper._create_instance()
 
         return Reaper._instance
 
