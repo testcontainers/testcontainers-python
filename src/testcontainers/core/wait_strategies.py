@@ -206,11 +206,13 @@ class HttpWaitStrategy(WaitStrategy):
         Example:
             strategy = HttpWaitStrategy.from_url("https://localhost:8080/api/health")
         """
-        from urllib.parse import urlparse
+        from urllib.parse import urlsplit
 
-        parsed = urlparse(url)
+        parsed = urlsplit(url)
         port = parsed.port or (443 if parsed.scheme == "https" else 80)
         path = parsed.path or "/"
+        if parsed.query:
+            path += f"?{parsed.query}"
 
         strategy = cls(port, path)
 
