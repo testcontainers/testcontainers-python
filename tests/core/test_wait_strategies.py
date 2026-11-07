@@ -365,6 +365,20 @@ class TestHttpWaitStrategy:
         assert strategy._tls is expected_tls
 
     @pytest.mark.parametrize(
+        "url,expected_path",
+        [
+            ("http://localhost:8080/health?ready=true", "/health?ready=true"),
+            ("http://localhost:8080?ready=true", "/?ready=true"),
+            ("https://localhost/health?a=1&a=2&empty=", "/health?a=1&a=2&empty="),
+            ("http://localhost/health?value=a%23b%26c#ignored", "/health?value=a%23b%26c"),
+            ("http://localhost/health;version=2?ready=true", "/health;version=2?ready=true"),
+        ],
+    )
+    def test_from_url_preserves_request_target(self, url, expected_path):
+        strategy = HttpWaitStrategy.from_url(url)
+        assert strategy._path == expected_path
+
+    @pytest.mark.parametrize(
         "status_codes,expected_result",
         [
             ({503}, True),
