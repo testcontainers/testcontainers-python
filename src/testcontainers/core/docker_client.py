@@ -354,7 +354,7 @@ class DockerClient:
                 if "IPAM" in network.attrs:
                     for config in network.attrs["IPAM"]["Config"]:
                         try:
-                            subnet = ipaddress.IPv4Network(config["Subnet"])
+                            subnet = ipaddress.IPv4Network(config["Subnet"], strict=False)
                         except ipaddress.AddressValueError:
                             continue
                         if docker_host in subnet:

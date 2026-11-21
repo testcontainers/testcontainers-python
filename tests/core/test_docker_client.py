@@ -218,7 +218,19 @@ def test_find_host_network_invalid_url(monkeypatch: pytest.MonkeyPatch) -> None:
     assert client.find_host_network() is None
 
 
-def test_find_host_network_found_by_docker_host(monkeypatch: pytest.MonkeyPatch) -> None:
+@pytest.mark.parametrize(
+    "subnet, expected",
+    [
+        ("172.22.0.0/16", "runner-network"),
+        ("172.22.0.7/25", "runner-network"),
+        ("172.22.0.129/25", None),
+    ],
+    ids=["canonical", "host-bits", "outside-subnet"],
+)
+def test_find_host_network_found_by_docker_host(
+    monkeypatch: pytest.MonkeyPatch, subnet: str, expected: str | None
+) -> None:
+    monkeypatch.setattr(docker, "from_env", MagicMock())
     client = DockerClient()
     monkeypatch.setattr(client, "host", lambda: "172.22.0.1")
 
@@ -238,9 +250,9 @@ def test_find_host_network_found_by_docker_host(monkeypatch: pytest.MonkeyPatch)
             "Created": "2024-10-11T16:08:36.005642863Z",
             "Driver": "bridge",
             "EnableIPv6": False,
-            "Name": "runner-346da30e-2641-1-8365005",
+            "Name": "runner-network",
             "IPAM": {
-                "Config": [{"Gateway": "172.22.0.1", "Subnet": "172.22.0.0/16"}],
+                "Config": [{"Gateway": "172.22.0.1", "Subnet": subnet}],
                 "Driver": "default",
                 "Options": None,
             },
@@ -259,7 +271,7 @@ def test_find_host_network_found_by_docker_host(monkeypatch: pytest.MonkeyPatch)
 
     monkeypatch.setattr(client, "client", FakeClient())
 
-    assert client.find_host_network() == "runner-346da30e-2641-1-8365005"
+    assert client.find_host_network() == expected
 
 
 def test_find_host_network_found_by_running_id(monkeypatch: pytest.MonkeyPatch) -> None:
