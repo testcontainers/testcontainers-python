@@ -4,11 +4,12 @@ import io
 import pathlib
 import sys
 import tarfile
+from collections.abc import Iterator
 from dataclasses import dataclass
 from os import PathLike
 from socket import socket
 from types import TracebackType
-from typing import TYPE_CHECKING, Any, Optional, TypedDict, Union
+from typing import TYPE_CHECKING, Any, BinaryIO, Optional, TypedDict, Union
 
 import docker.errors
 from docker import version
@@ -32,8 +33,29 @@ from testcontainers.core.waiting_utils import WaitStrategy
 
 if TYPE_CHECKING:
     from docker.models.containers import Container
+    from typing_extensions import Buffer
 
 logger = setup_logger(__name__)
+
+
+class _ArchiveReader(io.RawIOBase):
+    """Expose Docker's archive chunks as a sequential file for tarfile."""
+
+    def __init__(self, chunks: Iterator[bytes]) -> None:
+        self._chunks = filter(None, chunks)
+        self._pending = memoryview(b"")
+
+    def readable(self) -> bool:
+        return True
+
+    def readinto(self, buffer: "Buffer", /) -> int:
+        view = memoryview(buffer).cast("B")
+        if view and not self._pending:
+            self._pending = memoryview(next(self._chunks, b""))
+        size = min(len(view), len(self._pending))
+        view[:size] = self._pending[:size]
+        self._pending = self._pending[size:]
+        return size
 
 
 class Mount(TypedDict):
@@ -455,6 +477,33 @@ class DockerContainer:
                 extracted = tar.extractfile(member)
                 if extracted is not None:
                     destination_on_host.write_bytes(extracted.read())
+
+    def copy_file_from_container_to(self, source_in_container: str, destination: BinaryIO) -> None:
+        """Copy one regular file into an open binary stream at its current position.
+
+        Leave the destination open. A failed transfer can leave partial output.
+        """
+        chunk_size = 64 * 1024
+        chunks, _ = self.get_wrapped_container().get_archive(source_in_container, chunk_size=chunk_size)
+        try:
+            with io.BufferedReader(_ArchiveReader(chunks)) as reader, tarfile.open(fileobj=reader, mode="r|") as tar:
+                member = tar.next()
+                if member is None or not member.isfile():
+                    raise ValueError(f"Expected a regular file at {source_in_container!r}")
+                extracted = tar.extractfile(member)
+                assert extracted is not None
+                with extracted:
+                    while block := extracted.read(chunk_size):
+                        remaining = memoryview(block)
+                        while remaining:
+                            written = destination.write(remaining)
+                            if not written:
+                                raise OSError("Destination stream made no progress writing file data")
+                            remaining = remaining[written:]
+        finally:
+            close = getattr(chunks, "close", None)
+            if close is not None:
+                close()
 
 
 class Reaper:
