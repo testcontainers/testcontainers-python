@@ -8,10 +8,10 @@ Before you begin, review the [system requirements](system_requirements/index.md)
 
 ## 2. Install _Testcontainers for Python_
 
-Install testcontainers-python with pip:
+Use pip to install both `pytest` and Testcontainers with its `redis` extra for the Redis example.
 
 ```bash
-pip install testcontainers
+pip install 'testcontainers[redis]' pytest
 ```
 
 ## 3. Spin up Redis
