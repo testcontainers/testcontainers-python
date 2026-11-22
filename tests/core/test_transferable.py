@@ -1,7 +1,9 @@
 import io
 import tarfile
+from collections.abc import Iterator
 from pathlib import Path
 from typing import Any
+from unittest.mock import Mock
 
 import pytest
 
@@ -164,3 +166,46 @@ def test_copy_directory_into_container(tmp_path: Path):
         result = container.exec(f"cat {destination_in_container}/my_directory/my_file")
         assert result.exit_code == 0
         assert result.output == b"hello world"
+
+
+def test_stream_file_before_archive_is_exhausted(monkeypatch: pytest.MonkeyPatch):
+    monkeypatch.setattr("testcontainers.core.container.DockerClient", Mock())
+    container = DockerContainer("bash")
+    wrapped = Mock()
+    monkeypatch.setattr(container, "_container", wrapped)
+    payload = bytes(range(256)) * 4096
+    archive = build_transfer_tar(payload, "/data")
+    consumed = 0
+    closed = False
+
+    def chunks() -> Iterator[bytes]:
+        nonlocal consumed, closed
+        try:
+            for offset in range(0, len(archive), 4093):
+                chunk = archive[offset : offset + 4093]
+                consumed += len(chunk)
+                yield chunk
+        finally:
+            closed = True
+
+    class Sink(io.BytesIO):
+        def write(self, data: Any, /) -> int:
+            if self.tell() == 0:
+                assert 0 < consumed < len(payload)
+            return super().write(data[:5000])
+
+    wrapped.get_archive.return_value = chunks(), {}
+    sink = Sink()
+    container.copy_file_from_container_to("/data", sink)
+    assert closed
+    assert sink.getvalue() == payload
+
+
+def test_stream_from_running_container():
+    with DockerContainer("bash", command="sleep infinity") as container:
+        container.copy_into_container(b"data\x00", "/data")
+        destination = io.BytesIO()
+        container.copy_file_from_container_to("/data", destination)
+        assert destination.getvalue() == b"data\x00"
+        with pytest.raises(ValueError, match="regular file"):
+            container.copy_file_from_container_to("/tmp", destination)
