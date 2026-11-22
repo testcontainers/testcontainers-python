@@ -276,35 +276,35 @@ def test_find_host_network_found_by_running_id(monkeypatch: pytest.MonkeyPatch) 
     assert client.find_host_network() == "FAKE_NETWORK"
 
 
-def test_run_uses_found_network(monkeypatch: pytest.MonkeyPatch) -> None:
-    """
-    If a host network is found, use it
-    """
-    if is_ssh_docker_host():
-        pytest.skip("Host network discovery is skipped when DOCKER_HOST is set")
-
+@pytest.mark.parametrize(
+    "docker_host",
+    [
+        pytest.param(None, id="default_host"),
+        pytest.param("unix:///tmp/docker.sock", id="explicit_host"),
+    ],
+)
+def test_run_uses_found_network(monkeypatch: pytest.MonkeyPatch, docker_host: str | None) -> None:
+    get_host = MagicMock(return_value=None)
+    monkeypatch.setattr("testcontainers.core.docker_client.get_docker_host", get_host)
+    monkeypatch.setattr("testcontainers.core.docker_client.get_docker_auth_config", lambda: None)
+    mock_client = MagicMock()
+    mock_client.containers.run.return_value = b"CONTAINER"
+    monkeypatch.setattr("testcontainers.core.docker_client.docker.from_env", lambda **kwargs: mock_client)
     client = DockerClient()
-
-    class ContainerRunFake:
-        def __init__(self) -> None:
-            self.calls: list[dict[str, Any]] = []
-
-        def run(self, image: str, **kwargs: Any) -> bytes:
-            self.calls.append(kwargs)
-            return b"CONTAINER"
-
-    class FakeClient:
-        def __init__(self) -> None:
-            self.containers = ContainerRunFake()
-
-    fake_client = FakeClient()
-
-    monkeypatch.setattr(client, "find_host_network", lambda: "new_bridge_network")
-    monkeypatch.setattr(client, "client", fake_client)
+    get_host.return_value = docker_host
+    find_host_network = MagicMock(return_value="new_bridge_network")
+    monkeypatch.setattr(client, "find_host_network", find_host_network)
 
     assert client.run("test") == b"CONTAINER"
 
-    assert fake_client.containers.calls[0]["network"] == "new_bridge_network"
+    mock_client.containers.run.assert_called_once()
+    run_kwargs = mock_client.containers.run.call_args.kwargs
+    if docker_host is None:
+        find_host_network.assert_called_once_with()
+        assert run_kwargs["network"] == "new_bridge_network"
+    else:
+        find_host_network.assert_not_called()
+        assert "network" not in run_kwargs
 
 
 @pytest.mark.parametrize(
