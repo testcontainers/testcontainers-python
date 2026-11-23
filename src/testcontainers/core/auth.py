@@ -36,7 +36,7 @@ def process_docker_auth_config_encoded(auth_config_dict: dict[str, dict[str, dic
     for registry, auth in auths.items():
         auth_str = str(auth.get("auth"))
         auth_str = base64.b64decode(auth_str).decode("utf-8")
-        username, password = auth_str.split(":")
+        username, password = auth_str.split(":", 1)
         auth_info.append(DockerAuthInfo(registry, username, password))
 
     return auth_info
