@@ -1,3 +1,4 @@
+import base64
 import json
 
 import pytest
@@ -56,6 +57,19 @@ def test_parse_docker_auth_config_encoded_multiple():
         username="abc",
         password="123",
     )
+
+
+@pytest.mark.parametrize(
+    "username, password",
+    [
+        ("user", "pass:word:"),
+        ("_json_key", '{"type": "service_account", "token_uri": "https://oauth2.googleapis.com/token"}'),
+    ],
+)
+def test_parse_docker_auth_config_password_with_colon(username: str, password: str):
+    auth = base64.b64encode(f"{username}:{password}".encode()).decode()
+    auth_info = parse_docker_auth_config(json.dumps({"auths": {"gcr.io": {"auth": auth}}}))
+    assert auth_info == [DockerAuthInfo(registry="gcr.io", username=username, password=password)]
 
 
 def test_parse_docker_auth_config_unknown():
